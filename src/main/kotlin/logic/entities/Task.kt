@@ -1,8 +1,10 @@
 package org.example.logic.entities
 
 import kotlinx.datetime.LocalDateTime
+import java.util.*
+
 data class Task(
-    val id: String,
+    val id: String = UUID.randomUUID().toString(),
     val projectId: String,
     val name: String,
     val description: String,
