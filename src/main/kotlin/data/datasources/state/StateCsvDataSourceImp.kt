@@ -1,13 +1,8 @@
-package org.example.data.repo
+package org.example.data.datasources.state
 
-import org.example.data.datasources.state.StateDataSource
 import org.example.logic.entities.State
-import org.example.logic.repository.StateRepository
 
-class StateRepositoryImp(
-    private val stateDataSource: StateDataSource
-) : StateRepository {
-
+class StateCsvDataSourceImp: StateDataSource {
     override fun addState(state: State): Result<Boolean> {
         TODO("Not yet implemented")
     }

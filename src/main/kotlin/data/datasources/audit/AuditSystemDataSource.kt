@@ -1,4 +1,4 @@
-package org.example.data.datasources
+package org.example.data.datasources.audit
 
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.AuditSystemType

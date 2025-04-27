@@ -1,4 +1,4 @@
-package org.example.data.datasources
+package org.example.data.datasources.project
 
 import org.example.logic.entities.Project
 
