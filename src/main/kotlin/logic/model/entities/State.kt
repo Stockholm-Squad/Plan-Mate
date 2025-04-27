@@ -4,5 +4,5 @@ import java.util.*
 
 data class State(
     val id: String = UUID.randomUUID().toString(),
-    val name: String,
+    val name: String
 )

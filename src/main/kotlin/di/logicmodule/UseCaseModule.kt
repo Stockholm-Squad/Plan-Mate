@@ -1,9 +1,9 @@
 package org.example.di.logicmodule
 
-import auditSystemUseCaseModule
+import di.logicmodule.auditSystemUseCaseModule
+import di.logicmodule.stateUseCaseModule
+import di.logicmodule.taskUseCaseModule
 import org.koin.dsl.module
-import stateUseCaseModule
-import taskUseCaseModule
 
 
 val useCaseModule = module {

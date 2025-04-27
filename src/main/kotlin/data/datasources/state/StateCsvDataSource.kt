@@ -2,7 +2,7 @@ package org.example.data.datasources.state
 
 import logic.model.entities.State
 
-class StateCsvDataSourceImp : StateDataSource {
+class StateCsvDataSource : StateDataSource {
     override fun addState(state: State): Result<Boolean> {
         TODO("Not yet implemented")
     }

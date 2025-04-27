@@ -2,7 +2,7 @@ package org.example.data.datasources.project
 
 import logic.model.entities.Project
 
-class ProjectCsvDataSourceImp : ProjectDataSource {
+class ProjectCsvDataSource : ProjectDataSource {
     override fun getProjectById(id: String): Result<Project> {
         TODO("Not yet implemented")
     }

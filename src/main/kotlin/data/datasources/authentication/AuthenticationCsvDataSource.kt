@@ -2,7 +2,7 @@ package org.example.data.datasources.authentication
 
 import logic.model.entities.User
 
-class AuthenticationCsvDataSourceImp : AuthenticationDataSource {
+class AuthenticationCsvDataSource : AuthenticationDataSource {
     override fun getUserByUserName(userName: String): Result<User> {
         TODO("Not yet implemented")
     }
@@ -29,7 +29,7 @@ class AuthenticationCsvDataSourceImp : AuthenticationDataSource {
 
     override fun authenticateUser(
         userName: String,
-        password: String
+        hashedPassword: String
     ): Result<User> {
         TODO("Not yet implemented")
     }

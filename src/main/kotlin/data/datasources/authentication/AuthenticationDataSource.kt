@@ -9,5 +9,5 @@ interface AuthenticationDataSource {
     fun getAllUsers(): Result<List<User>>
     fun editUser(user: User): Result<Boolean>
     fun deleteUser(id: String): Result<Boolean>
-    fun authenticateUser(userName: String, password: String): Result<User> //TODO: password or hashedPassword
+    fun authenticateUser(userName: String, hashedPassword: String): Result<User>
 }

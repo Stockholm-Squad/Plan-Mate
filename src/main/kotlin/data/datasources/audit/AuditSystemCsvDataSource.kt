@@ -3,7 +3,7 @@ package org.example.data.datasources.audit
 import logic.model.entities.AuditSystem
 import logic.model.entities.AuditSystemType
 
-class AuditSystemCsvDataSourceImp : AuditSystemDataSource {
+class AuditSystemCsvDataSource : AuditSystemDataSource {
     override fun addAuditSystem(auditSystem: AuditSystem): Result<Boolean> {
         TODO("Not yet implemented")
     }
