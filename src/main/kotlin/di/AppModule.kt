@@ -5,5 +5,5 @@ import org.koin.dsl.module
 
 
 val appModule = module {
-    includes(useCaseModule, inputOutputModule)
+    includes(useCaseModule,uiModule, inputOutputModule)
 }
