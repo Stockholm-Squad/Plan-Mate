@@ -1,8 +1,8 @@
-package org.example.logic.repository
+package org.example.data.datasources.project
 
 import logic.model.entities.Project
 
-interface ProjectRepository {
+interface ProjectDataSource {
     fun getProjectById(id: String): Result<Project>
     fun addProject(project: Project): Result<Boolean>
     fun editProject(project: Project): Result<Boolean>

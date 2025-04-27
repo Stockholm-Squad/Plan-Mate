@@ -1,9 +1,8 @@
-package org.example.logic.repository
+package org.example.data.datasources.task
 
 import logic.model.entities.Task
 
-interface TaskRepository {
-
+interface TaskDataSource {
     fun getTaskById(id: String): Result<Task>
     fun addTask(task: Task): Result<Boolean>
     fun editTask(task: Task): Result<Boolean>
