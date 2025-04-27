@@ -9,5 +9,5 @@ data class AuditSystem(
     val entityId: String,
     val changeDescription: String,
     val changedBy: String,
-    val dateTime: LocalDateTime,
+    val dateTime: LocalDateTime
 )

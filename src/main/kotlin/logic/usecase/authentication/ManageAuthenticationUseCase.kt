@@ -1,8 +1,8 @@
-package org.example.logic.usecase
+package org.example.logic.usecase.authentication
 
 import org.example.logic.repository.AuthenticationRepository
 
-class GetAuthenticationUseCase(
+class ManageAuthenticationUseCase(
     private val authenticationRepository: AuthenticationRepository
 ) {
 

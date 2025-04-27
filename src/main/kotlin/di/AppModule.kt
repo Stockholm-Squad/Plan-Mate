@@ -1,6 +1,6 @@
 package org.example.di
 
-import datasourceModule
+import di.datamodule.datasourceModule
 import org.example.di.datamodule.repositoryModule
 import org.example.di.logicmodule.useCaseModule
 import org.koin.dsl.module
