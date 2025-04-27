@@ -1,6 +1,6 @@
-package org.example.data.datasources
+package org.example.data.datasources.authentication
 
-import org.example.logic.entities.User
+import logic.model.entities.User
 
 interface AuthenticationDataSource {
     fun getUserByUserName(userName: String): Result<User>

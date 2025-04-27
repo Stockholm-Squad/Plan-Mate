@@ -1,0 +1,21 @@
+package org.example.data.datasources.state
+
+import logic.model.entities.State
+
+class StateCsvDataSourceImp : StateDataSource {
+    override fun addState(state: State): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun editState(state: State): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteState(id: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAllStates(): Result<List<State>> {
+        TODO("Not yet implemented")
+    }
+}

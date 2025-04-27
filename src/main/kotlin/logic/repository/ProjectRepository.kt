@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import org.example.logic.entities.Project
+import logic.model.entities.Project
 
 interface ProjectRepository {
     fun getProjectById(id: String): Result<Project>

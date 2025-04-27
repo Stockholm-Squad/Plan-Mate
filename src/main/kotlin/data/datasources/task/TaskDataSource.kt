@@ -1,6 +1,6 @@
-package org.example.data.datasources
+package org.example.data.datasources.task
 
-import org.example.logic.entities.Task
+import logic.model.entities.Task
 
 interface TaskDataSource {
     fun getTaskById(id: String): Result<Task>

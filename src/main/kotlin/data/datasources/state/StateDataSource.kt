@@ -1,6 +1,6 @@
-package org.example.data.datasources
+package org.example.data.datasources.state
 
-import org.example.logic.entities.State
+import logic.model.entities.State
 
 interface StateDataSource {
     fun addState(state: State): Result<Boolean>

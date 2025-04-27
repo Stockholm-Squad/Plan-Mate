@@ -1,7 +1,7 @@
-package org.example.logic.entities
+package logic.model.entities
 
 
-import java.util.UUID
+import java.util.*
 
 data class Project(
     val id: String = UUID.randomUUID().toString(),

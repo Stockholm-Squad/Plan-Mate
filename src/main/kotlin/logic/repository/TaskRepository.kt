@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import org.example.logic.entities.Task
+import logic.model.entities.Task
 
 interface TaskRepository {
 

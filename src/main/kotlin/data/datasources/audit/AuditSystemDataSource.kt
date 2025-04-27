@@ -1,7 +1,7 @@
-package org.example.data.datasources
+package org.example.data.datasources.audit
 
-import org.example.logic.entities.AuditSystem
-import org.example.logic.entities.AuditSystemType
+import logic.model.entities.AuditSystem
+import logic.model.entities.AuditSystemType
 
 interface AuditSystemDataSource {
     fun addAuditSystem(auditSystem: AuditSystem): Result<Boolean>
