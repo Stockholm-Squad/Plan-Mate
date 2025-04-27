@@ -1,4 +1,4 @@
-package org.example.logic.utils
+package org.example.utils
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
@@ -8,7 +8,7 @@ import kotlinx.datetime.toLocalDateTime
 class DateHandler(){
     fun getCurrentDateTime(): LocalDateTime{
         val now = Clock.System.now()
-        val tz = TimeZone.currentSystemDefault()
-        return now.toLocalDateTime(tz)
+        val timeZone = TimeZone.currentSystemDefault()
+        return now.toLocalDateTime(timeZone)
     }
 }
