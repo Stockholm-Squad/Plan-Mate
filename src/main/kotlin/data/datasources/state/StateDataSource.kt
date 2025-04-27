@@ -1,8 +1,8 @@
-package org.example.logic.repository
+package org.example.data.datasources.state
 
 import logic.model.entities.State
 
-interface StateRepository {
+interface StateDataSource {
     fun addState(state: State): Result<Boolean>
     fun editState(state: State): Result<Boolean>
     fun deleteState(id: String): Result<Boolean>
