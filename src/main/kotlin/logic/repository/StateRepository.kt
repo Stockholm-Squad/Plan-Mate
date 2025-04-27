@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import org.example.logic.entities.State
+import logic.model.entities.State
 
 interface StateRepository {
     fun addState(state: State): Result<Boolean>

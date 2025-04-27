@@ -1,7 +1,7 @@
 package org.example.data.repo
 
+import logic.model.entities.Task
 import org.example.data.datasources.task.TaskDataSource
-import org.example.logic.entities.Task
 import org.example.logic.repository.TaskRepository
 
 class TaskRepositoryImp(

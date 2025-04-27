@@ -1,4 +1,4 @@
-package org.example.logic.entities
+package logic.model.entities
 
 enum class Role {
     ADMIN, MATE

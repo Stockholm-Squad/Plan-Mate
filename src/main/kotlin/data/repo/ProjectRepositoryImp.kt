@@ -1,7 +1,7 @@
 package org.example.data.repo
 
+import logic.model.entities.Project
 import org.example.data.datasources.project.ProjectDataSource
-import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(

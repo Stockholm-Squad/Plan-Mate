@@ -1,6 +1,6 @@
 package org.example.data.datasources.project
 
-import org.example.logic.entities.Project
+import logic.model.entities.Project
 
 interface ProjectDataSource {
     fun getProjectById(id: String): Result<Project>

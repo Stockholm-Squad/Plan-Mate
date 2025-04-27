@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import org.example.logic.entities.User
+import logic.model.entities.User
 
 interface AuthenticationRepository {
     fun getUserByUserName(userName: String): Result<User>

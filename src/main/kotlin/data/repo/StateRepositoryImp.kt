@@ -1,7 +1,7 @@
 package org.example.data.repo
 
+import logic.model.entities.State
 import org.example.data.datasources.state.StateDataSource
-import org.example.logic.entities.State
 import org.example.logic.repository.StateRepository
 
 class StateRepositoryImp(

@@ -1,7 +1,7 @@
 package org.example.data.repo
 
+import logic.model.entities.User
 import org.example.data.datasources.authentication.AuthenticationDataSource
-import org.example.logic.entities.User
 import org.example.logic.repository.AuthenticationRepository
 
 class AuthenticationRepositoryImp(

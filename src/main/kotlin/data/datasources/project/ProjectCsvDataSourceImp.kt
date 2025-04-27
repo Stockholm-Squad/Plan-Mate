@@ -1,8 +1,8 @@
 package org.example.data.datasources.project
 
-import org.example.logic.entities.Project
+import logic.model.entities.Project
 
-class ProjectCsvDataSourceImp: ProjectDataSource {
+class ProjectCsvDataSourceImp : ProjectDataSource {
     override fun getProjectById(id: String): Result<Project> {
         TODO("Not yet implemented")
     }

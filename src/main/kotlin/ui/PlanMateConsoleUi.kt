@@ -1,10 +1,6 @@
 package org.example.ui
 
-import org.example.ui.features.GetAuditSystemUi
-import org.example.ui.features.GetAuthenticationUi
-import org.example.ui.features.GetProjectUi
-import org.example.ui.features.GetStateUi
-import org.example.ui.features.GetTaskUi
+import org.example.ui.features.*
 
 class PlanMateConsoleUi(
     private val getAuthenticationUi: GetAuthenticationUi,

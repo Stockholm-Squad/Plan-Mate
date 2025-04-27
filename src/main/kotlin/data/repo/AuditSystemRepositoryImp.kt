@@ -1,8 +1,8 @@
 package org.example.data.repo
 
+import logic.model.entities.AuditSystem
+import logic.model.entities.AuditSystemType
 import org.example.data.datasources.audit.AuditSystemDataSource
-import org.example.logic.entities.AuditSystem
-import org.example.logic.entities.AuditSystemType
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(

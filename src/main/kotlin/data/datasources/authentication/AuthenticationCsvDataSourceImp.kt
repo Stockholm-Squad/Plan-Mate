@@ -1,8 +1,8 @@
 package org.example.data.datasources.authentication
 
-import org.example.logic.entities.User
+import logic.model.entities.User
 
-class AuthenticationCsvDataSourceImp: AuthenticationDataSource {
+class AuthenticationCsvDataSourceImp : AuthenticationDataSource {
     override fun getUserByUserName(userName: String): Result<User> {
         TODO("Not yet implemented")
     }

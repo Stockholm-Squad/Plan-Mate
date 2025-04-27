@@ -1,8 +1,8 @@
 package org.example.data.datasources.task
 
-import org.example.logic.entities.Task
+import logic.model.entities.Task
 
-class TaskCsvDataSourceImp: TaskDataSource {
+class TaskCsvDataSourceImp : TaskDataSource {
     override fun getTaskById(id: String): Result<Task> {
         TODO("Not yet implemented")
     }
