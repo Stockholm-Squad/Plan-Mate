@@ -1,14 +1,9 @@
-package org.example.data.repo
+package org.example.data.datasources.audit
 
-import org.example.data.datasources.audit.AuditSystemDataSource
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.AuditSystemType
-import org.example.logic.repository.AuditSystemRepository
 
-class AuditSystemRepositoryImp(
-    private val auditSystemDataSource: AuditSystemDataSource
-) : AuditSystemRepository {
-
+class AuditSystemCsvDataSourceImp: AuditSystemDataSource {
     override fun addAuditSystem(auditSystem: AuditSystem): Result<Boolean> {
         TODO("Not yet implemented")
     }

@@ -1,4 +1,4 @@
-package org.example.data.datasources
+package org.example.data.datasources.state
 
 import org.example.logic.entities.State
 

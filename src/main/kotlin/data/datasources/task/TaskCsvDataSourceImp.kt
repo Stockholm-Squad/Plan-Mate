@@ -1,13 +1,8 @@
-package org.example.data.repo
+package org.example.data.datasources.task
 
-import org.example.data.datasources.task.TaskDataSource
 import org.example.logic.entities.Task
-import org.example.logic.repository.TaskRepository
 
-class TaskRepositoryImp(
-    private val taskDataSource: TaskDataSource
-) : TaskRepository {
-
+class TaskCsvDataSourceImp: TaskDataSource {
     override fun getTaskById(id: String): Result<Task> {
         TODO("Not yet implemented")
     }

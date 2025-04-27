@@ -1,13 +1,8 @@
-package org.example.data.repo
+package org.example.data.datasources.authentication
 
-import org.example.data.datasources.authentication.AuthenticationDataSource
 import org.example.logic.entities.User
-import org.example.logic.repository.AuthenticationRepository
 
-class AuthenticationRepositoryImp(
-    private val authenticationDataSource: AuthenticationDataSource
-) : AuthenticationRepository {
-
+class AuthenticationCsvDataSourceImp: AuthenticationDataSource {
     override fun getUserByUserName(userName: String): Result<User> {
         TODO("Not yet implemented")
     }

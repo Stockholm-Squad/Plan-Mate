@@ -1,13 +1,8 @@
-package org.example.data.repo
+package org.example.data.datasources.project
 
-import org.example.data.datasources.project.ProjectDataSource
 import org.example.logic.entities.Project
-import org.example.logic.repository.ProjectRepository
 
-class ProjectRepositoryImp(
-    private val projectDataSource: ProjectDataSource
-) : ProjectRepository {
-
+class ProjectCsvDataSourceImp: ProjectDataSource {
     override fun getProjectById(id: String): Result<Project> {
         TODO("Not yet implemented")
     }
