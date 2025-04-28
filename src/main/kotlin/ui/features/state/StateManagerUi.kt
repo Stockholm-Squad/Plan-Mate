@@ -1,10 +1,15 @@
 package org.example.ui.features.state
 
-import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.common.AdminStateManagerUi
-import org.example.ui.features.common.UserStateManagerUi
+import logic.model.entities.Role
 
 class StateManagerUi(
-    private val getStateUseCase: ManageStatesUseCase
-) : AdminStateManagerUi, UserStateManagerUi {
+    private val adminStateManagerUi: AdminStateManagerUi,
+    private val mateStateManagerUi: MateStateManagerUi
+) {
+    fun getStateManagerUi(userRole: Role) {
+        when (userRole) {
+            Role.ADMIN -> adminStateManagerUi.launchUi()
+            Role.MATE -> mateStateManagerUi.launchUi()
+        }
+    }
 }
