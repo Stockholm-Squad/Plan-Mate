@@ -1,11 +1,11 @@
 package org.example.data.repo
 
 import logic.model.entities.State
-import org.example.data.datasources.state.StateDataSource
+import org.example.data.datasources.PlanMateDataSource
 import org.example.logic.repository.StateRepository
 
 class StateRepositoryImp(
-    private val stateDataSource: StateDataSource
+    private val stateDataSource: PlanMateDataSource<State>
 ) : StateRepository {
 
     override fun addState(state: State): Result<Boolean> {
