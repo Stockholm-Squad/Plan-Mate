@@ -1,21 +1,28 @@
 package org.example.logic.model.exceptions
 
 sealed class PlanMateExceptions(
-    exceptionMessage: ExceptionMessage
+    exceptionMessage: ExceptionMessage,
 ) : Throwable(message = exceptionMessage.message) {
     sealed class DataException(open val exceptionMessage: ExceptionMessage) : PlanMateExceptions(exceptionMessage) {
         data class ReadException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.READ_EXCEPTION_MESSAGE
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.READ_EXCEPTION_MESSAGE,
         ) : DataException(exceptionMessage)
 
         data class WriteException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.WRITE_EXCEPTION_MESSAGE
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.WRITE_EXCEPTION_MESSAGE,
+        ) : DataException(exceptionMessage)
+        data class EmptyDataException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.EMPTY_DATA_MESSAGE,
         ) : DataException(exceptionMessage)
     }
 
     sealed class LogicException(
-        open val exceptionMessage: ExceptionMessage
+        open val exceptionMessage: ExceptionMessage,
     ) : PlanMateExceptions(exceptionMessage) {
-
+        data class NotAllowedStateNameException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE,
+        ) : LogicException(
+            exceptionMessage
+        )
     }
 }

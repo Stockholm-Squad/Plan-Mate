@@ -16,4 +16,5 @@ class StateRepositoryImpTest {
         stateDataSource = mockk(relaxed = true)
         stateRepository = StateRepositoryImp(stateDataSource)
     }
+
 }
