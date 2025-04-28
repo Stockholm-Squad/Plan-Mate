@@ -3,7 +3,9 @@ package org.example.logic.usecase.state
 import logic.model.entities.State
 import org.example.logic.repository.StateRepository
 
-class ManageStatesUseCase(private val stateRepository: StateRepository) {
+class ManageStatesUseCase(
+    private val stateRepository: StateRepository
+) {
     fun addState(state: State): Result<Boolean> {
         TODO("Not yet implemented")
     }
