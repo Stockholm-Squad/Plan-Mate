@@ -1,8 +1,9 @@
 package org.example.data.datasources.project
 
 import logic.model.entities.Project
+import java.io.File
 
-class ProjectCsvDataSource : ProjectDataSource {
+class ProjectCsvDataSource(val file: File) : ProjectDataSource {
     override fun getProjectById(id: String): Result<Project> {
         TODO("Not yet implemented")
     }

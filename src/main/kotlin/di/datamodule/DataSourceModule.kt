@@ -15,7 +15,7 @@ import org.koin.dsl.module
 val datasourceModule = module {
     factory<AuditSystemDataSource> { AuditSystemCsvDataSource() }
     factory<AuthenticationDataSource> { AuthenticationCsvDataSource() }
-    factory<ProjectDataSource> { ProjectCsvDataSource() }
+    factory<ProjectDataSource> { ProjectCsvDataSource(get()) }
     factory<StateDataSource> { StateCsvDataSource() }
     factory<TaskDataSource> { TaskCsvDataSource() }
 }
