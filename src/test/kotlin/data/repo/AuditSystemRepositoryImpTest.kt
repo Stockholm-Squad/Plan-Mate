@@ -11,6 +11,7 @@ import org.example.data.datasources.audit.AuditSystemDataSource
 import org.example.data.repo.AuditSystemRepositoryImp
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -28,14 +29,12 @@ class AuditSystemRepositoryImpTest{
  @Test
  fun `addAuditSystem should return true when successfully added audit`() {
   // Given
-  val auditSystem = AuditSystem(
+  val auditSystem = createAuditSystem(
       id = "1",
       auditSystemType = AuditSystemType.TASK,
       entityId = "123",
       changeDescription = "change description",
-      dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-      changedBy = "Hamsa"
-  )
+      changedBy = "Hamsa")
 
   every { auditSystemRepositoryImp.addAuditSystem(auditSystem) } returns Result.success(true)
 
@@ -51,14 +50,12 @@ class AuditSystemRepositoryImpTest{
  @Test
  fun `getAuditSystemById should return audit system when found`(){
      // Given
-     val auditSystem = AuditSystem(
-         id = "1",
-         auditSystemType = AuditSystemType.TASK,
-         entityId = "123",
-         changeDescription = "change description",
-         dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-         changedBy = "Hamsa"
-     )
+     val auditSystem = createAuditSystem(
+     id = "1",
+     auditSystemType = AuditSystemType.TASK,
+     entityId = "123",
+     changeDescription = "change description",
+     changedBy = "Hamsa")
      every { auditSystemRepositoryImp.getAuditSystemById("1") } returns Result.success(auditSystem)
 
 
@@ -74,15 +71,12 @@ class AuditSystemRepositoryImpTest{
 @Test
 fun `getAllAuditSystems should return a list of auditSystem when found`(){
     // Given
-    val auditSystem = listOf( AuditSystem(
+    val auditSystem = listOf(createAuditSystem(
         id = "1",
         auditSystemType = AuditSystemType.TASK,
         entityId = "123",
         changeDescription = "change description",
-        dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-        changedBy = "Hamsa"
-    )
-    )
+        changedBy = "Hamsa"))
     every { auditSystemRepositoryImp.getAllAuditSystems() } returns Result.success(auditSystem)
 
     //When
@@ -99,14 +93,12 @@ fun `getAllAuditSystems should return a list of auditSystem when found`(){
 @Test
 fun `getAllAuditSystemsByType should return a list of auditSystem by type when found`(){
     // Given
-    val auditSystem = listOf(AuditSystem(
+    val auditSystem = listOf(createAuditSystem(
         id = "1",
         auditSystemType = AuditSystemType.TASK,
         entityId = "123",
         changeDescription = "change description",
-        dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-        changedBy = "Hamsa"
-    ))
+        changedBy = "Hamsa"))
     val auditSystemType = AuditSystemType.TASK
     every { auditSystemRepositoryImp.getAllAuditSystemsByType(auditSystemType) } returns Result.success(auditSystem)
 
@@ -123,14 +115,12 @@ fun `getAllAuditSystemsByType should return a list of auditSystem by type when f
 fun `getAllAuditSystemsEntityId should return a list of auditSystem by entityId when found`(){
 
     // Given
-    val auditSystem = listOf(AuditSystem(
+    val auditSystem = listOf(createAuditSystem(
         id = "1",
         auditSystemType = AuditSystemType.TASK,
         entityId = "123",
         changeDescription = "change description",
-        dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-        changedBy = "Hamsa"
-    ))
+        changedBy = "Hamsa"))
     every { auditSystemRepositoryImp.getAllAuditSystemsEntityId("1") } returns Result.success(auditSystem)
 
     // When
