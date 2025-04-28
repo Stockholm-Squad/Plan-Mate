@@ -9,22 +9,22 @@ class ProjectRepositoryImp(
 ) : ProjectRepository {
 
     override fun getProjectById(id: String): Result<Project> {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun addProject(project: Project): Result<Boolean> {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun editProject(project: Project): Result<Boolean> {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun deleteProject(id: String): Result<Boolean> {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun getAllProjects(): Result<List<Project>> {
-        TODO("Not yet implemented")
+        TODO()
     }
 }
