@@ -5,6 +5,7 @@ import org.example.input_output.output.OutputPrinter
 
 class SearchUtils(
     private val printer: OutputPrinter,
+    private val reader: InputReader,
 ) {
 
     /**
@@ -48,5 +49,10 @@ class SearchUtils(
         printer.showMessage(Constant.SEARCH_AGAIN_PROMPT)
         val input = readTrimmedLowercaseInput(reader)
         return if (isValidSearchAgainInput(input)) true else null
+    }
+
+    fun getMainMenuOption(): Int {
+        printer.showMessage(Constant.PLEASE_SELECT_OPTION)
+        return reader.readStringOrNull()?.toIntOrNull() ?: 0
     }
 }

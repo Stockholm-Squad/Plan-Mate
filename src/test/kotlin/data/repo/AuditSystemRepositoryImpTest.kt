@@ -4,13 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.datetime.Clock
-import logic.model.entities.AuditSystem
 import logic.model.entities.AuditSystemType
 import org.example.data.datasources.audit.AuditSystemDataSource
 import org.example.data.repo.AuditSystemRepositoryImp
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
