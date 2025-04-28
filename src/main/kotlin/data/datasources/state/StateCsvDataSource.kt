@@ -8,11 +8,11 @@ class StateCsvDataSource : StateDataSource {
     }
 
     override fun editState(state: State): Result<Boolean> {
-        TODO("Not yet implemented")
+        return Result.success(false)
     }
 
     override fun deleteState(id: String): Result<Boolean> {
-        TODO("Not yet implemented")
+        return Result.success(false)
     }
 
     override fun getAllStates(): Result<List<State>> {
