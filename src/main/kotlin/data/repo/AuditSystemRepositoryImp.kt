@@ -2,11 +2,12 @@ package org.example.data.repo
 
 import logic.model.entities.AuditSystem
 import logic.model.entities.AuditSystemType
-import org.example.data.datasources.audit.AuditSystemDataSource
+
+import org.example.data.datasources.PlanMateDataSource
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(
-    private val auditSystemDataSource: AuditSystemDataSource
+    private val auditSystemDataSource: PlanMateDataSource<AuditSystem>
 ) : AuditSystemRepository {
 
     override fun addAuditSystem(auditSystem: AuditSystem): Result<Boolean> {
