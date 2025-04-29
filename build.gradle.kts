@@ -37,6 +37,11 @@ dependencies {
     // junit params
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
+    //Data Frame
+    implementation("org.jetbrains.kotlinx:dataframe:0.15.0")
+    implementation("org.slf4j:slf4j-nop:2.0.9")
+
 }
 
 tasks.test {
