@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-class AuthenticationRepositoryTest {
+class UserRepositoryTest {
     private lateinit var authenticationRepository: AuthenticationRepository
     private val testHashedPassword = "hashed_$12222"
 
