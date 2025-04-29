@@ -4,7 +4,6 @@ import com.google.common.truth.Truth.assertThat
 import createState
 import io.mockk.every
 import io.mockk.mockk
-import logic.model.entities.State
 import org.example.logic.model.exceptions.PlanMateExceptions.DataException
 import org.example.logic.model.exceptions.PlanMateExceptions.LogicException
 import org.example.logic.repository.StateRepository
@@ -27,7 +26,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() {
         //Given
-        val state = State(id = "111", name = "do")
+        val state = createState(id = "111", name = "do")
         every { stateRepository.isStateExist(state.id) } returns Result.success(true)
         every { stateRepository.editState(state) } returns Result.success(true)
 
@@ -41,7 +40,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return success result with true when the name of state have leading and trailing space and repo returned success result of true`() {
         //Given
-        val state = State(id = "1", name = "    ToDo    ")
+        val state = createState(id = "1", name = "    ToDo    ")
         every { stateRepository.isStateExist(state.id) } returns Result.success(true)
         every { stateRepository.editState(state) } returns Result.success(true)
 
@@ -55,7 +54,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
         //Given
-        val state = State(id = "7", name = "#In Review$")
+        val state = createState(id = "7", name = "#In Review$")
         every { stateRepository.isStateExist(state.id) } returns Result.success(true)
         every { stateRepository.editState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
 
@@ -69,7 +68,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
-        val state = State(id = "4", name = "1In Rev3ew")
+        val state = createState(id = "4", name = "1In Rev3ew")
         every { stateRepository.isStateExist(state.id) } returns Result.success(true)
         every { stateRepository.editState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
         //When
@@ -82,7 +81,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
-        val state = State(id = "43", name = "")
+        val state = createState(id = "43", name = "")
         every { stateRepository.isStateExist(state.id) } returns Result.success(true)
         every { stateRepository.editState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
 
@@ -96,7 +95,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with state not exist exception when state is not exist`() {
         //Given
-        val state = State(id = "43", name = "")
+        val state = createState(id = "43", name = "")
         every { stateRepository.isStateExist(state.id) } returns Result.failure(LogicException.StateNotExistException())
 
         //When
@@ -150,7 +149,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `addState() should return success result with true when the name of state is valid`() {
         //Given
-        val state = State(id = "111", name = "do")
+        val state = createState(id = "111", name = "do")
         every { stateRepository.addState(state) } returns Result.success(true)
         //When
         val result = manageStatesUseCase.addState(state)
@@ -161,7 +160,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `addState() should return success result with true when the name of state have leading and trailing space`() {
         //Given
-        val state = State(id = "1", name = "    ToDo    ")
+        val state = createState(id = "1", name = "    ToDo    ")
         every { stateRepository.addState(state) } returns Result.success(true)
         //When
         val result = manageStatesUseCase.addState(state)
@@ -173,7 +172,7 @@ class ManageStatesUseCaseTest {
     fun `addState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
         //Given
 
-        val state = State(id = "7", name = "#In Review$")
+        val state = createState(id = "7", name = "#In Review$")
         every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
         //When
         val result = manageStatesUseCase.addState(state)
@@ -185,8 +184,32 @@ class ManageStatesUseCaseTest {
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
-        val state = State(id = "4", name = "1In Rev3ew")
+        val state = createState(id = "4", name = "1In Rev3ew")
         every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        //When
+        val result = manageStatesUseCase.addState(state)
+
+        //Then
+        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+    }
+    @Test
+    fun `addState() should return failure result with not allowed length exception when the name of state is more than 30`() {
+        //Given
+        val state = createState(id = "4", name = "hi in this state this is too long state")
+        every { stateRepository.addState(state) } returns Result.failure(LogicException.StateNameLengthException())
+        //When
+        val result = manageStatesUseCase.addState(state)
+
+        //Then
+        assertThrows<LogicException.StateNameLengthException> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `addState() should return failure result with not allowed state name exception when the name is blank string`() {
+        //Given
+        val state = createState(id = "43", name = "")
+        every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+
         //When
         val result = manageStatesUseCase.addState(state)
 
@@ -195,16 +218,16 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `addState() should return failure result with not allowed state name exception when the name is blank string`() {
+    fun `addState() should return failure result with already exist state exception when enter already exist state `() {
         //Given
-        val state = State(id = "43", name = "")
-        every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val state = createState(id = "43", name = "in review")
+        every { stateRepository.addState(state) } returns Result.failure(LogicException.StateAlreadyExistException())
 
         //When
         val result = manageStatesUseCase.addState(state)
 
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<LogicException.StateAlreadyExistException> { result.getOrThrow() }
     }
 
     @Test
@@ -217,14 +240,13 @@ class ManageStatesUseCaseTest {
         every { stateRepository.getAllStates() } returns Result.success(state)
         //  When
         val result = manageStatesUseCase.getAllStates()
-
         //Then
         assertThat(result.getOrThrow()).isEqualTo(state)
     }
 
     @Test
     fun `getAllStates() should return failure result with empty data exception when have no data`() {
-        //Given & When
+        //Given
         every { stateRepository.getAllStates() } returns Result.success(listOf())
         //  When
         val result = manageStatesUseCase.getAllStates()
@@ -234,18 +256,14 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `getAllStates() should return failure result with list of state when the file have data`() {
+    fun `getAllStates() should return failure result with exception when the state repository return failure`() {
         //Given
-        val state = listOf(
-            createState("2", "done"),
-            (createState("3", "in review"))
-        )
-        every { stateRepository.getAllStates() } returns Result.success(state)
+        every { stateRepository.getAllStates() } returns Result.failure(Throwable())
         //  When
         val result = manageStatesUseCase.getAllStates()
 
         //Then
-        assertThat(result.getOrThrow()).isEqualTo(state)
+        assertThrows<Throwable> { result.getOrThrow() }
     }
 
 }

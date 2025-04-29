@@ -17,5 +17,6 @@ class MateStateManagerUiImplTest {
         stateRepository = mockk(relaxed = true)
         manageStatesUseCase = ManageStatesUseCase(stateRepository)
         mateStateManagerUi = MateStateManagerUiImpl(manageStatesUseCase)
+
     }
 }

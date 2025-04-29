@@ -1,6 +1,7 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
+import createState
 import io.mockk.every
 import io.mockk.mockk
 import logic.model.entities.State
@@ -76,7 +77,6 @@ class StateRepositoryImpTest {
         every { stateDataSource.write(any()) } returns Result.success(
             value = true
         )
-
         //When
         val result = stateRepository.editState(state)
 
@@ -133,25 +133,22 @@ class StateRepositoryImpTest {
     fun `addState() should return success result with true when the state add successfully`() {
         //Given
         val state = State(id = "1", name = "Done")
-        every { stateDataSource.write(any()) } returns Result.failure(
-            Throwable()
-        )
+        every { stateDataSource.write(any()) } returns Result.success(true)
 
         //When
         val result = stateRepository.addState(state)
 
         //Then
-        assertThat(result.getOrNull()).isEqualTo(true)
+        assertThat(result.getOrThrow()).isEqualTo(true)
     }
 
     @Test
-    fun `addState() should return failure result with throwable when error happens while writing or reading from the csv file`() {
+    fun `addState() should return failure result with throwable when error happens while writing into the csv file`() {
         //Given
         val state = State(id = "123", name = "In Review")
         every { stateDataSource.write(any()) } returns Result.failure(
             Throwable()
         )
-
         //When
         val result = stateRepository.addState(state)
 
@@ -162,8 +159,9 @@ class StateRepositoryImpTest {
     @Test
     fun `getAllStates() should return success result with list of state when the file have data`() {
         //Given
-        val stateList = listOf(
-            State(id = "123", name = "In-progress")
+        val stateList = listOf( createState(id = "123", name = "In-progress"),
+        createState(id = "13", name = "done"),
+        createState(id = "10", name = "in review")
         )
         every { stateDataSource.read(any()) } returns Result.success(
             stateList
@@ -173,7 +171,7 @@ class StateRepositoryImpTest {
         val result = stateRepository.getAllStates()
 
         //Then
-        assertThat(result.getOrThrow()).isNotEmpty()
+        assertThat(result.getOrThrow()).isEqualTo(stateList)
 
     }
 

@@ -20,7 +20,7 @@ class StateRepositoryImp(
         TODO("Not yet implemented")
     }
 
-    override fun isStateExist(id: String): Result<Boolean> {
+    override fun isStateExist(id: String): Result<Boolean> {        // this is must name not id
         TODO("Not yet implemented")
     }
 

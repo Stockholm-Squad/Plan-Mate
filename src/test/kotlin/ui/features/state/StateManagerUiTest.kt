@@ -10,7 +10,6 @@ class StateManagerUiTest {
     private lateinit var adminStateManagerUi: AdminStateManagerUi
     private lateinit var mateStateManagerUi: MateStateManagerUi
     private lateinit var stateManagerUi: StateManagerUi
-
     @BeforeEach
     fun setUp() {
         adminStateManagerUi = mockk(relaxed = true)
