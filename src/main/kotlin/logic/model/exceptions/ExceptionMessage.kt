@@ -5,4 +5,7 @@ enum class ExceptionMessage(
 ) {
     READ_EXCEPTION_MESSAGE("Error while reading data!"),
     WRITE_EXCEPTION_MESSAGE("Error while writing data!"),
+    NO_DATA_IN_THE_FILE("The file is empty"),
+    NO_PROJECT_ADDED("No Project Added"),
+    COULD_NOT_UPDATE_PROJECT("Couldn't update project")
 }
