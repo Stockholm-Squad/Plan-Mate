@@ -12,9 +12,6 @@ class AuthenticationRepositoryImp(
         TODO("Not yet implemented")
     }
 
-    override fun getUserById(id: String): Result<User> {
-        TODO("Not yet implemented")
-    }
 
     override fun addUser(user: User): Result<Boolean> {
         TODO("Not yet implemented")

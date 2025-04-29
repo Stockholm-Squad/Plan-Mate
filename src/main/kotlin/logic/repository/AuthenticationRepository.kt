@@ -4,7 +4,6 @@ import logic.model.entities.User
 
 interface AuthenticationRepository {
     fun getUserByUserName(userName: String): Result<User>
-    fun getUserById(id: String): Result<User>
     fun addUser(user: User): Result<Boolean>
     fun getAllUsers(): Result<List<User>>
     fun editUser(user: User): Result<Boolean>
