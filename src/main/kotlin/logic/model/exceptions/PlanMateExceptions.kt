@@ -16,6 +16,9 @@ sealed class PlanMateExceptions(
     sealed class LogicException(
         open val exceptionMessage: ExceptionMessage
     ) : PlanMateExceptions(exceptionMessage) {
+        data class NoTasksFound(override val exceptionMessage: ExceptionMessage= ExceptionMessage.NO_TASKS_FOUNDED) : LogicException(exceptionMessage)
+        data class NoTasksCreated(override val exceptionMessage: ExceptionMessage= ExceptionMessage.) : LogicException(exceptionMessage)
 
     }
+
 }
