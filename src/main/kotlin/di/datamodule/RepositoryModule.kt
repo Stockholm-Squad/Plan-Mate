@@ -9,6 +9,6 @@ val repositoryModule = module {
     factory<AuthenticationRepository> { AuthenticationRepositoryImp(get()) }
     factory<ProjectRepository> { ProjectRepositoryImp(get()) }
     factory<StateRepository> { StateRepositoryImp(get()) }
-    factory<TaskRepository> { TaskRepositoryImp(get()) }
+    factory<TaskRepository> { TaskRepositoryImp(get(), get(), get()) }
 
 }
