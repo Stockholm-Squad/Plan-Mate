@@ -8,9 +8,8 @@ import logic.model.entities.Role
 import logic.model.entities.User
 import org.example.logic.repository.AuthenticationRepository
 import org.example.logic.usecase.authentication.AddUserUseCase
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class AddUserUseCaseTest {
@@ -28,8 +27,7 @@ class AddUserUseCaseTest {
     fun `should append new user when data is valid`() {
         // given
         val existingUsers = listOf(
-            User("user1", "hash1", Role.MATE),
-            User("user2", "hash2", Role.ADMIN)
+            User("user1", "hash1", Role.MATE), User("user2", "hash2", Role.ADMIN)
         )
         val newUser = User("newUser", "newHash", Role.MATE)
 
@@ -41,22 +39,22 @@ class AddUserUseCaseTest {
 
         // then
         assertThat(result.isSuccess).isTrue()
-        verify (exactly = 1) { addUserUseCase.addUser(newUser) }
+        verify(exactly = 1) { addUserUseCase.addUser(newUser) }
     }
+
     @Test
     fun `should reject weak passwords`() {
         // given
         val weakPasswordUser = User(
-            username = "validUser",
-            hashedPassword = "weak", // Too short
+            username = "validUser", hashedPassword = "weak", // Too short
             role = Role.MATE
         )
-         every { addUserUseCase.addUser(weakPasswordUser) } returns Result.failure(IllegalArgumentException())
+        every { addUserUseCase.addUser(weakPasswordUser) } returns Result.failure(IllegalArgumentException())
         // when
         val result = addUserUseCase.addUser(weakPasswordUser)
 
         // then
-       assertThrows<IllegalArgumentException>(){result.getOrThrow()}
+        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
         verify(exactly = 1) { addUserUseCase.addUser(weakPasswordUser) }
     }
 
@@ -65,8 +63,7 @@ class AddUserUseCaseTest {
         // given
         val emptyUsernameUser = User(
             username = "", // Empty username
-            hashedPassword = "validPassword123!",
-            role = Role.MATE
+            hashedPassword = "validPassword123!", role = Role.MATE
         )
         every { addUserUseCase.addUser(emptyUsernameUser) } returns Result.failure(IllegalArgumentException())
 
@@ -74,7 +71,7 @@ class AddUserUseCaseTest {
         val result = addUserUseCase.addUser(emptyUsernameUser)
 
         // then
-        assertThrows<IllegalArgumentException>(){result.getOrThrow()}
+        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
         verify(exactly = 1) { addUserUseCase.addUser(emptyUsernameUser) }
     }
 
@@ -88,8 +85,8 @@ class AddUserUseCaseTest {
         val result = addUserUseCase.addUser(existingUser.copy(hashedPassword = "newHash"))
 
         // then
-        assertThrows<IllegalArgumentException>(){result.getOrThrow()}
-        verify (exactly = 1) { addUserUseCase.addUser(existingUser.copy(hashedPassword = "newHash")) }
+        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
+        verify(exactly = 1) { addUserUseCase.addUser(existingUser.copy(hashedPassword = "newHash")) }
 
     }
 
@@ -108,6 +105,6 @@ class AddUserUseCaseTest {
         // then
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isEqualTo(appendError)
-        verify (exactly = 1) { addUserUseCase.addUser(user) }
+        verify(exactly = 1) { addUserUseCase.addUser(user) }
     }
 }

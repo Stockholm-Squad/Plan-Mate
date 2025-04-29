@@ -16,16 +16,16 @@ class UserRepositoryTest {
     private val testHashedPassword = "hashed_$12222"
 
     @BeforeTest
-    fun setup(){
-         authenticationRepository = mockk(relaxed = true)
+    fun setup() {
+        authenticationRepository = mockk(relaxed = true)
 
     }
 
     @Test
-    fun `getUserByUserName() should return correct result when correct userName`(){
+    fun `getUserByUserName() should return correct result when correct userName`() {
         //Given
-        val username="Halla"
-      val expectedUser = User(username = username, hashedPassword = testHashedPassword, role = Role.MATE)
+        val username = "Halla"
+        val expectedUser = User(username = username, hashedPassword = testHashedPassword, role = Role.MATE)
         every { authenticationRepository.getUserByUserName(username) } returns Result.success(expectedUser)
         //When
         val result = authenticationRepository.getUserByUserName(username)
@@ -33,22 +33,23 @@ class UserRepositoryTest {
         assertThat(result).isEqualTo(Result.success(expectedUser))
         verify(exactly = 1) { authenticationRepository.getUserByUserName(username) }
     }
+
     @Test
-    fun `getUserByUserName() should return result failer when is empty username ` (){
+    fun `getUserByUserName() should return result failer when is empty username `() {
         //Given
-        val username=""
-        val exception=NoSuchElementException("user not found")
+        val username = ""
+        val exception = NoSuchElementException("user not found")
         every { authenticationRepository.getUserByUserName(username) } returns Result.failure(exception)
         //When
         val result = authenticationRepository.getUserByUserName(username)
         //Then
-        assertThrows<NoSuchElementException> { result.getOrThrow()}
+        assertThrows<NoSuchElementException> { result.getOrThrow() }
         verify(exactly = 1) { authenticationRepository.getUserByUserName(username) }
 
     }
 
     @Test
-    fun `getAllUsers() should return list of users  when is there users data`(){
+    fun `getAllUsers() should return list of users  when is there users data`() {
         //Given
         val userList = listOf(
             User(username = "mate1", hashedPassword = testHashedPassword, role = Role.MATE),
@@ -65,14 +66,14 @@ class UserRepositoryTest {
     }
 
     @Test
-    fun `getAllUsers() should return  exception message when is no users ` (){
+    fun `getAllUsers() should return  exception message when is no users `() {
         //Given
-        val exception=NoSuchElementException("no users found")
+        val exception = NoSuchElementException("no users found")
         every { authenticationRepository.getAllUsers() } returns Result.failure(exception)
         //When
         val result = authenticationRepository.getAllUsers()
         //Then
-        assertThrows<NoSuchElementException> { result.getOrThrow()}
+        assertThrows<NoSuchElementException> { result.getOrThrow() }
         verify(exactly = 1) { authenticationRepository.getAllUsers() }
 
     }
@@ -81,9 +82,7 @@ class UserRepositoryTest {
     fun `addUser should return success when user is valid`() {
         // Given
         val newUser = User(
-            username = "newUser",
-            hashedPassword = testHashedPassword,
-            role = Role.MATE
+            username = "newUser", hashedPassword = testHashedPassword, role = Role.MATE
         )
         every { authenticationRepository.addUser(newUser) } returns Result.success(true)
 
@@ -100,9 +99,7 @@ class UserRepositoryTest {
     fun `addUser should fail when username is empty`() {
         // Given
         val invalidUser = User(
-            username = "",
-            hashedPassword = testHashedPassword,
-            role = Role.MATE
+            username = "", hashedPassword = testHashedPassword, role = Role.MATE
         )
         every { authenticationRepository.addUser(invalidUser) } returns Result.failure(
             IllegalArgumentException("Username cannot be empty")
@@ -112,7 +109,7 @@ class UserRepositoryTest {
         val result = authenticationRepository.addUser(invalidUser)
 
         // Then
-       assertThrows<IllegalArgumentException>(){ result.getOrThrow()}
+        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
         verify(exactly = 1) { authenticationRepository.addUser(invalidUser) }
 
     }
@@ -121,9 +118,7 @@ class UserRepositoryTest {
     fun `addUser should fail when password is empty`() {
         // Given
         val invalidUser = User(
-            username = "validUser",
-            hashedPassword = "",
-            role = Role.MATE
+            username = "validUser", hashedPassword = "", role = Role.MATE
         )
         every { authenticationRepository.addUser(invalidUser) } returns Result.failure(
             IllegalArgumentException("Password cannot be empty")
@@ -133,7 +128,7 @@ class UserRepositoryTest {
         val result = authenticationRepository.addUser(invalidUser)
 
         // Then
-      assertThrows<IllegalArgumentException>(){ result.getOrThrow()}
+        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
         verify(exactly = 1) { authenticationRepository.addUser(invalidUser) }
 
     }
