@@ -107,12 +107,15 @@ class AuditSystemManagerUiTest{
  }
 
  @Test
- fun `should show exit message when option 6 is selected`() {
+ fun `showAuditSystemManagerUI show exit message when option 6 is selected`() {
+  // Given
   every { searchUtils.getMainMenuOption() } returns 6
   every { searchUtils.shouldSearchAgain(reader) } returns false
 
+  // When
   auditSystemUi.showAuditSystemManagerUI()
 
+  // Then
   verify { printer.showMessage("Exiting") }
  }
 
