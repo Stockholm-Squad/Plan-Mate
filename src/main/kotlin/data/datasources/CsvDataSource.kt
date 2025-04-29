@@ -10,14 +10,13 @@ import kotlin.reflect.KClass
 
 class CsvDataSource<T : Any>(
     private val filePath: String,
-    private val type: KClass<T>
 ) : PlanMateDataSource<T> {
 
     override fun read(): Result<List<T>> {
         return try {
-            // ToDo check the error
-            val df = DataFrame.readCSV(filePath)
-           // val data: List<T> = df.cast(type).toList()
+
+//            val df = DataFrame.readCSV(filePath)
+//            val data: List<T> = createList(df)
 
             Result.success(emptyList())
 
