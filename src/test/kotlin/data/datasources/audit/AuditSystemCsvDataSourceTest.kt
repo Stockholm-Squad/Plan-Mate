@@ -2,139 +2,116 @@ package data.datasources.audit
 
 import logic.model.entities.AuditSystemType
 import com.google.common.truth.Truth.assertThat
+import io.kotest.mpp.file
 import org.example.data.datasources.audit.AuditSystemCsvDataSource
+import org.example.data.datasources.audit.AuditSystemDataSource
 import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AuditSystemCsvDataSourceTest{
+class AuditSystemCsvDataSourceTest {
 
-  private lateinit var auditSystemCsvDataSource: AuditSystemCsvDataSource
+    private lateinit var auditSystemCsvDataSource: AuditSystemCsvDataSource
+    private lateinit var tempFile: String
+
+    @BeforeEach
+    fun setUp() {
+        tempFile = "audit_system.csv"
+        auditSystemCsvDataSource = AuditSystemCsvDataSource()
+    }
+
+    @Test
+    fun `Write should return true when adding is valid`() {
+
+        // Given
+        val auditSystem = createAuditSystem(
+            id = "1",
+            auditSystemType = AuditSystemType.TASK,
+            entityId = "123",
+            changeDescription = "change description",
+            changedBy = "Hamsa"
+        )
 
 
-  @BeforeEach
-  fun setUp() {
-   auditSystemCsvDataSource = AuditSystemCsvDataSource()
-  }
+        // When
+        val result = auditSystemCsvDataSource.write(tempFile,auditSystem)
 
- @Test
- fun `addAuditSystem should return success when adding is valid`() {
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isTrue()
+    }
 
-  // Given
-  val auditSystem = createAuditSystem(
-   id = "1",
-   auditSystemType = AuditSystemType.TASK,
-   entityId = "123",
-   changeDescription = "change description",
-   changedBy = "Hamsa")
+    @Test
+    fun `Write should return false when adding data with empty entityId`() {
+
+        // Given
+        val auditSystem = createAuditSystem(
+            id = "1",
+            auditSystemType = AuditSystemType.TASK,
+            entityId = "", // empty ref to tasks
+            changeDescription = "change description",
+            changedBy = "Hamsa"
+        )
 
 
-  // When
-  val result = auditSystemCsvDataSource.addAuditSystem(auditSystem)
+        // When
+        val result = auditSystemCsvDataSource.write(tempFile,auditSystem)
 
-  // Then
-  assertThat(result.isSuccess).isTrue()
-  assertThat(result.getOrNull()).isTrue()
- }
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.getOrNull()).isFalse()
+    }
 
- @Test
- fun `getAuditSystemById should return correct audit system if exists`() {
+    @Test
+    fun `Write should return false when adding data with empty changedBy`() {
 
-  // Given
-  val auditSystem = createAuditSystem(
-   id = "1",
-   auditSystemType = AuditSystemType.TASK,
-   entityId = "123",
-   changeDescription = "change description",
-   changedBy = "Hamsa")
+        // Given
+        val auditSystem = createAuditSystem(
+            id = "1",
+            auditSystemType = AuditSystemType.TASK,
+            entityId = "123",
+            changeDescription = "change description",
+            changedBy = "" // empty user who do it
+        )
 
-  auditSystemCsvDataSource.addAuditSystem(auditSystem)
 
-  // When
-  val result = auditSystemCsvDataSource.getAuditSystemById("1")
+        // When
+        val result = auditSystemCsvDataSource.write(tempFile,auditSystem)
 
-  // Then
-  assertThat(result.isSuccess).isTrue()
-  assertThat(result.getOrNull()?.id).isEqualTo("1")
- }
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.getOrNull()).isFalse()
+    }
 
- @Test
- fun `getAllAuditSystems should return all added audit systems`() {
 
-  // Given
-  val auditSystem = listOf(createAuditSystem(
-   id = "1",
-   auditSystemType = AuditSystemType.TASK,
-   entityId = "123",
-   changeDescription = "change description",
-   changedBy = "Hamsa"),
-   createAuditSystem(
-    id = "2",
-    auditSystemType = AuditSystemType.TASK,
-    entityId = "123",
-    changeDescription = "change description",
-    changedBy = "Hamsa"))
+    @Test
+    fun `read should return all added audit systems`() {
 
-  auditSystem.forEach { auditSystemCsvDataSource.addAuditSystem(it) }
+        // Given
+        val auditSystem = listOf(
+            createAuditSystem(
+                id = "1",
+                auditSystemType = AuditSystemType.TASK,
+                entityId = "123",
+                changeDescription = "change description",
+                changedBy = "Hamsa"
+            ),
+            createAuditSystem(
+                id = "2",
+                auditSystemType = AuditSystemType.TASK,
+                entityId = "123",
+                changeDescription = "change description",
+                changedBy = "Hamsa"
+            )
+        )
 
-  // When
-  val result = auditSystemCsvDataSource.getAllAuditSystems()
+        auditSystem.forEach { auditSystemCsvDataSource.write(tempFile,it) }
 
-  // Then
-  assertThat(result.isSuccess).isTrue()
-  assertThat(result.getOrNull()).hasSize(2)
- }
+        // When
+        val result = auditSystemCsvDataSource.read(tempFile)
 
- @Test
- fun `getAllAuditSystemsByType should return only matching type`() {
-
-  // Given
-  val auditSystem = listOf(createAuditSystem(
-   id = "1",
-   auditSystemType = AuditSystemType.TASK,
-   entityId = "123",
-   changeDescription = "change description",
-   changedBy = "Hamsa"),
-   createAuditSystem(
-    id = "2",
-    auditSystemType = AuditSystemType.TASK,
-    entityId = "123",
-    changeDescription = "change description",
-    changedBy = "Hamsa"))
-  auditSystem.forEach { auditSystemCsvDataSource.addAuditSystem(it) }
-
-  // When
-  val result = auditSystemCsvDataSource.getAllAuditSystemsByType(AuditSystemType.TASK)
-
-  // Then
-  assertThat(result.isSuccess).isTrue()
-  assertThat(result.getOrNull()).hasSize(2)
-  assertThat(result.getOrNull()?.first()?.auditSystemType).isEqualTo(AuditSystemType.TASK)
- }
-
- @Test
- fun `getAllAuditSystemsEntityId should return only matching entity id`() {
-  // Given
-  val auditSystem = listOf(createAuditSystem(
-   id = "1",
-   auditSystemType = AuditSystemType.TASK,
-   entityId = "123",
-   changeDescription = "change description",
-   changedBy = "Hamsa"),
-   createAuditSystem(
-    id = "2",
-    auditSystemType = AuditSystemType.TASK,
-    entityId = "123",
-    changeDescription = "change description",
-    changedBy = "Hamsa"))
-  auditSystem.forEach { auditSystemCsvDataSource.addAuditSystem(it) }
-
-  // When
-  val result = auditSystemCsvDataSource.getAllAuditSystemsEntityId("1")
-
-  // Then
-  assertThat(result.isSuccess).isTrue()
-  assertThat(result.getOrNull()).hasSize(1)
-  assertThat(result.getOrNull()?.first()?.entityId).isEqualTo("1")
- }
- }
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).hasSize(2)
+    }
+}
