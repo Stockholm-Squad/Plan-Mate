@@ -7,7 +7,7 @@ import io.mockk.verify
 import logic.model.entities.Role
 import logic.model.entities.User
 import org.example.logic.repository.AuthenticationRepository
-import org.example.logic.usecase.authentication.AddUserUseCase
+import org.example.logic.usecase.user.AddUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
