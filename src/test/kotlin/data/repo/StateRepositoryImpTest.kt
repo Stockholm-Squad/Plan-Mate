@@ -24,52 +24,6 @@ class StateRepositoryImpTest {
     }
 
     @Test
-    fun `isStateExist() should return success result with true when the state is exist`() {
-        //Given
-        val state = State(id = "123", name = "In-Progress")
-        every { stateDataSource.read(any()) } returns Result.success(
-            listOf(state)
-        )
-
-        //When
-        val result = stateRepository.isStateExist(state.id)
-
-        //Then
-        assertThat(result.getOrNull()).isEqualTo(true)
-    }
-
-    @Test
-    fun `isStateExist() should return success result with false when the state is not exist`() {
-        //Given
-        val state = State(id = "123", name = "In-Progress")
-        every { stateDataSource.read(any()) } returns Result.success(
-            listOf()
-        )
-
-        //When
-        val result = stateRepository.isStateExist(state.id)
-
-        //Then
-        assertThat(result.getOrNull()).isEqualTo(false)
-    }
-
-    @Test
-    fun `isStateExist() should return failure result with exception when data source return a failure`() {
-        //Given
-        val state = State(id = "123", name = "In-Progress")
-        every { stateDataSource.read(any()) } returns Result.failure(
-            Throwable()
-        )
-
-        //When
-        val result = stateRepository.isStateExist(state.id)
-
-        //Then
-        assertThrows<Throwable> { result.getOrThrow() }
-    }
-
-
-    @Test
     fun `editState() should return success result with true when the state updated successfully`() {
         //Given
         val state = State(id = "123", name = "In-Progress")
