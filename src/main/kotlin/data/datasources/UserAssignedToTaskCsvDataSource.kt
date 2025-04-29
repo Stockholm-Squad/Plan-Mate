@@ -3,7 +3,7 @@ package org.example.data.datasources
 import org.example.data.entities.UserAssignedToTask
 
 class UserAssignedToTaskCsvDataSource : PlanMateDataSource<UserAssignedToTask> {
-    override fun read(filePath: String): Result<List<UserAssignedToTask>> {
+    override fun read(): Result<List<UserAssignedToTask>> {
         TODO("Not yet implemented")
     }
 
