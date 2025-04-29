@@ -24,5 +24,11 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
+
+        data class StateNotExistException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_NOT_EXIST_EXCEPTION,
+        ) : LogicException(
+            exceptionMessage
+        )
     }
 }

@@ -20,6 +20,10 @@ class StateRepositoryImp(
         TODO("Not yet implemented")
     }
 
+    override fun isStateExist(id: String): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun getAllStates(): Result<List<State>> {
         TODO("Not yet implemented")
     }
