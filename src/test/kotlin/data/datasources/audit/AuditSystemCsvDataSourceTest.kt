@@ -3,21 +3,22 @@ package data.datasources.audit
 import logic.model.entities.AuditSystemType
 import com.google.common.truth.Truth.assertThat
 import io.kotest.mpp.file
-import org.example.data.datasources.audit.AuditSystemCsvDataSource
-import org.example.data.datasources.audit.AuditSystemDataSource
+import logic.model.entities.AuditSystem
+import org.example.data.datasources.AuditSystemCsvDataSource
+import org.example.data.datasources.PlanMateDataSource
 import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AuditSystemCsvDataSourceTest {
 
-    private lateinit var auditSystemCsvDataSource: AuditSystemCsvDataSource
+    private lateinit var auditSystemCsvDataSource: PlanMateDataSource<AuditSystem>
     private lateinit var tempFile: String
 
     @BeforeEach
     fun setUp() {
         tempFile = "audit_system.csv"
-        auditSystemCsvDataSource = AuditSystemCsvDataSource()
+        auditSystemCsvDataSource = AuditSystemCsvDataSource(tempFile)
     }
 
     @Test
@@ -34,7 +35,7 @@ class AuditSystemCsvDataSourceTest {
 
 
         // When
-        val result = auditSystemCsvDataSource.write(tempFile,auditSystem)
+        val result = auditSystemCsvDataSource.write(listOf(auditSystem))
 
         // Then
         assertThat(result.isSuccess).isTrue()
@@ -55,7 +56,7 @@ class AuditSystemCsvDataSourceTest {
 
 
         // When
-        val result = auditSystemCsvDataSource.write(tempFile,auditSystem)
+        val result = auditSystemCsvDataSource.write(listOf(auditSystem))
 
         // Then
         assertThat(result.isFailure).isTrue()
@@ -76,7 +77,7 @@ class AuditSystemCsvDataSourceTest {
 
 
         // When
-        val result = auditSystemCsvDataSource.write(tempFile,auditSystem)
+        val result = auditSystemCsvDataSource.write(listOf(auditSystem))
 
         // Then
         assertThat(result.isFailure).isTrue()
@@ -105,7 +106,7 @@ class AuditSystemCsvDataSourceTest {
             )
         )
 
-        auditSystem.forEach { auditSystemCsvDataSource.write(tempFile,it) }
+        auditSystemCsvDataSource.write(auditSystem)
 
         // When
         val result = auditSystemCsvDataSource.read(tempFile)

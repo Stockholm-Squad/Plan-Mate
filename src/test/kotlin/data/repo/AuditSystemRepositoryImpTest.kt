@@ -4,8 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import logic.model.entities.AuditSystem
 import logic.model.entities.AuditSystemType
-import org.example.data.datasources.audit.AuditSystemDataSource
+import org.example.data.datasources.PlanMateDataSource
 import org.example.data.repo.AuditSystemRepositoryImp
 import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test
 class AuditSystemRepositoryImpTest{
 
   private lateinit var auditSystemRepositoryImp: AuditSystemRepositoryImp
-  private lateinit var auditSystemDataSource: AuditSystemDataSource
+  private lateinit var auditSystemDataSource: PlanMateDataSource<AuditSystem>
 
   @BeforeEach
   fun setUp() {

@@ -1,5 +1,6 @@
 package logic.usecase.audit
 
+import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import io.mockk.mockk
 import logic.model.entities.AuditSystemType
@@ -21,75 +22,68 @@ class ManageAuditSystemUseCaseTest {
     }
 
     @Test
-    fun `addAuditSystem should return true when successfully added audit`() {
+    fun `addChangeInTask should return true when successfully added task changes`() {
+        //given
 
+        //When
+        val result = manageAuditSystemUseCase.addChangeInTask()
+
+        // then
+        Truth.assertThat(result).isTrue()
     }
 
     @Test
-    fun `getAuditSystemById should return audit system when found`(){
+    fun `addChangeInProject should return true when successfully added project changes`(){
+        // when
+        val result = manageAuditSystemUseCase.addChangeInProject()
 
+        // then
+        Truth.assertThat(result).isTrue()
     }
 
     @Test
-    fun `getAllAuditSystemsEntityId should return only matching entity id`() {
-        // Given
-        val auditSystem = listOf(
-            createAuditSystem(
-                id = "1",
-                auditSystemType = AuditSystemType.TASK,
-                entityId = "123",
-                changeDescription = "change description",
-                changedBy = "Hamsa"
-            ),
-            createAuditSystem(
-                id = "2",
-                auditSystemType = AuditSystemType.TASK,
-                entityId = "123",
-                changeDescription = "change description",
-                changedBy = "Hamsa"
-            )
-        )
-        auditSystem.forEach { auditSystemRepository.addAuditSystem(it) }
+    fun `getTaskChanges should return audit system for task when found`(){
+        // when
+        val result = manageAuditSystemUseCase.getTaskChanges()
 
-        // When
-        val result = auditSystemRepository.getAllAuditSystemsEntityId("1")
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).hasSize(1)
-        assertThat(result.getOrNull()?.first()?.entityId).isEqualTo("1")
+        // then
+        Truth.assertThat(result).hasSize(0)
     }
 
     @Test
-    fun `getAllAuditSystemsByType should return only matching type`() {
+    fun `getProjectChanges should return audit system for project when found`(){
+        // when
+        val result = manageAuditSystemUseCase.getProjectChanges()
 
-        // Given
-        val auditSystem = listOf(
-            createAuditSystem(
-                id = "1",
-                auditSystemType = AuditSystemType.TASK,
-                entityId = "123",
-                changeDescription = "change description",
-                changedBy = "Hamsa"
-            ),
-            createAuditSystem(
-                id = "2",
-                auditSystemType = AuditSystemType.TASK,
-                entityId = "123",
-                changeDescription = "change description",
-                changedBy = "Hamsa"
-            )
-        )
-        auditSystem.forEach { auditSystemCsvDataSource.addAuditSystem(it) }
+        // then
+        Truth.assertThat(result).hasSize(0)
+    }
 
-        // When
-        val result = auditSystemCsvDataSource.getAllAuditSystemsByType(AuditSystemType.TASK)
+    @Test
+    fun `getChangesByUser should return audit system when found`(){
+        // when
+        val result = manageAuditSystemUseCase.getChangesByUser()
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).hasSize(2)
-        assertThat(result.getOrNull()?.first()?.auditSystemType).isEqualTo(AuditSystemType.TASK)
+        // then
+        Truth.assertThat(result).hasSize(0)
     }
 
 
+    @Test
+    fun `clearChanges should return true when clear was successful`(){
+        // when
+        val result = manageAuditSystemUseCase.clearChanges()
+
+        // then
+        Truth.assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `clearChanges should return false when there is no data to clear`(){
+        // when
+        val result = manageAuditSystemUseCase.clearChanges()
+
+        // then
+        Truth.assertThat(result).isFalse()
+    }
 }
