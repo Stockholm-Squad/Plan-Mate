@@ -8,6 +8,7 @@ import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.features.audit.AuditSystemManagerUi
+import org.example.utils.Constant
 import org.example.utils.SearchUtils
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -116,7 +117,20 @@ class AuditSystemManagerUiTest{
   auditSystemUi.showAuditSystemManagerUI()
 
   // Then
-  verify { printer.showMessage("Exiting") }
+  verify { printer.showMessage(Constant.EXITING) }
+ }
+
+ @Test
+ fun `showAuditSystemManagerUI should show invalid option message when invalid option is selected`() {
+  // Given
+  every { searchUtils.getMainMenuOption() } returns 7000
+  every { searchUtils.shouldSearchAgain(reader) } returns false
+
+  // When
+  auditSystemUi.showAuditSystemManagerUI()
+
+  // Then
+  verify { printer.showMessage(Constant.INVALID_SELECTION_MESSAGE) }
  }
 
  }
