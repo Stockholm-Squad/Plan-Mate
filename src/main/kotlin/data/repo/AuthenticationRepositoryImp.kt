@@ -1,11 +1,11 @@
 package org.example.data.repo
 
 import logic.model.entities.User
-import org.example.data.datasources.authentication.AuthenticationDataSource
+import org.example.data.datasources.PlanMateDataSource
 import org.example.logic.repository.AuthenticationRepository
 
 class AuthenticationRepositoryImp(
-    private val authenticationDataSource: AuthenticationDataSource
+    private val authenticationDataSource: PlanMateDataSource<User>
 ) : AuthenticationRepository {
 
     override fun getUserByUserName(userName: String): Result<User> {
