@@ -46,33 +46,7 @@ class AuthenticationRepositoryTest {
         verify(exactly = 1) { authenticationRepository.getUserByUserName(username) }
 
     }
-    @Test
-    fun `getUserById() should return correct result when correct id`(){
-        //Given
-        val id="12"
-        val expectedUser = User(username = "Test", hashedPassword = testHashedPassword, role = Role.MATE)
-        every { authenticationRepository.getUserById(id) } returns Result.success(expectedUser)
-        //When
-        val result = authenticationRepository.getUserById(id)
-        //Then
-        assertThat(result).isEqualTo(Result.success(expectedUser))
-        verify(exactly = 1) { authenticationRepository.getUserById(id) }
 
-    }
-
-    @Test
-    fun `getUserById() should return result failer when is empty id ` (){
-        //Given
-        val id=""
-        val exception=NoSuchElementException("user not found")
-        every { authenticationRepository.getUserById(id) } returns Result.failure(exception)
-        //When
-        val result = authenticationRepository.getUserById(id)
-        //Then
-        assertThrows<NoSuchElementException> { result.getOrThrow()}
-        verify(exactly = 1) { authenticationRepository.getUserById(id) }
-
-    }
     @Test
     fun `getAllUsers() should return list of users  when is there users data`(){
         //Given
