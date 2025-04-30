@@ -25,6 +25,6 @@ val uiModule = module {
     factory { TaskManagerUiMateMateImp(get()) }
 
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
-    factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
-    factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get()) }
+    factory<MateStateManagerUi> { MateStateManagerUiImpl(get(), get()) }
+    factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get()) }
 }
