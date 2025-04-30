@@ -11,7 +11,6 @@ import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.authentication.AuthenticateUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
-import java.security.MessageDigest
 import kotlin.test.Test
 
 class AuthenticateUseCaseTest() {
@@ -28,7 +27,7 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return failure when username is empty`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
             useCase.authUser(
-                userName = "",
+                username = "",
                 password = "password"
             ).getOrThrow()
         }
@@ -39,7 +38,7 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return failure when password is empty`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
             useCase.authUser(
-                userName = "username",
+                username = "username",
                 password = ""
             ).getOrThrow()
         }
@@ -50,7 +49,7 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return failure when username starts with a number`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
             useCase.authUser(
-                userName = "1john",
+                username = "1john",
                 password = "password"
             ).getOrThrow()
         }
@@ -61,7 +60,7 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return failure when username is less than 4 characters`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
             useCase.authUser(
-                userName = "abc",
+                username = "abc",
                 password = "password"
             ).getOrThrow()
         }
@@ -72,7 +71,7 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return failure when username is more than 20 characters`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
             useCase.authUser(
-                userName = "averyverylongusernamethatexceeds20",
+                username = "averyverylongusernamethatexceeds20",
                 password = "password"
             ).getOrThrow()
         }
@@ -83,7 +82,7 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return failure when password is less than 8 characters`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
             useCase.authUser(
-                userName = "validUser",
+                username = "validUser",
                 password = "short"
             ).getOrThrow()
         }
@@ -96,7 +95,7 @@ class AuthenticateUseCaseTest() {
         every { repository.getAllUsers() } returns Result.success(users)
         assertThrows<PlanMateExceptions.LogicException.UserDoesNotExist> {
             useCase.authUser(
-                userName = "Rodina",
+                username = "Rodina",
                 password = "rodinapassword"
             ).getOrThrow()
         }
@@ -109,7 +108,7 @@ class AuthenticateUseCaseTest() {
         every { repository.getAllUsers() } returns Result.success(users)
         assertThrows<PlanMateExceptions.LogicException.IncorrectPassword> {
             useCase.authUser(
-                userName = "johnDoe",
+                username = "johnDoe",
                 password = "password2"
             ).getOrThrow()
         }
@@ -122,7 +121,7 @@ class AuthenticateUseCaseTest() {
         every { repository.getAllUsers() } returns Result.success(users)
         val user =
             buildUser(username = "johnDoe", hashedPassword = "6c6b8a98fc1503009200747f9ca0420e", role = Role.MATE)
-        val result = useCase.authUser(userName = "johnDoe", password = "hashedPass1")
+        val result = useCase.authUser(username = "johnDoe", password = "hashedPass1")
         assertThat(result.getOrThrow()).isEqualTo(user)
         verify(exactly = 1) { repository.getAllUsers() }
     }
@@ -133,7 +132,7 @@ class AuthenticateUseCaseTest() {
         every { repository.getAllUsers() } returns Result.failure(Throwable())
         assertThrows<Throwable> {
             useCase.authUser(
-                userName = "johnDoe",
+                username = "johnDoe",
                 password = "password2"
             ).getOrThrow()
         }
@@ -145,7 +144,7 @@ class AuthenticateUseCaseTest() {
         every { repository.getAllUsers() } returns Result.failure(PlanMateExceptions.LogicException.UsersIsEmpty())
         assertThrows<PlanMateExceptions.LogicException.UsersIsEmpty> {
             useCase.authUser(
-                userName = "johnDoe",
+                username = "johnDoe",
                 password = "password2"
             ).getOrThrow()
         }

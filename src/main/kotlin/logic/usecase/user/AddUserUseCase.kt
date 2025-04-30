@@ -1,10 +1,10 @@
 package org.example.logic.usecase.user
 
 import logic.model.entities.User
-import org.example.logic.repository.AuthenticationRepository
+import org.example.logic.repository.UserRepository
 import java.security.MessageDigest
 
-class AddUserUseCase(private val authenticationRepository: AuthenticationRepository) {
+class AddUserUseCase(private val authenticationRepository: UserRepository ) {
 
     fun addUser(newUser: User): Result<Boolean> {
         val newUserWithHashedPassword = User(newUser.username, md5Hash(newUser.hashedPassword))

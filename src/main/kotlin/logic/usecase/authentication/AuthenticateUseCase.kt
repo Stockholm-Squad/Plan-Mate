@@ -9,18 +9,26 @@ import org.example.utils.hashToMd5
 class AuthenticateUseCase(
     private val userRepository: UserRepository
 ) {
-    fun authUser(userName: String, password: String): Result<User> {
+    fun authUser(username: String, password: String): Result<User> {
         return runCatching {
-            if (userName.isBlank() || userName.length > 20 || userName.length < 4 || userName.first()
-                    .isDigit()
-            ) throw PlanMateExceptions.LogicException.InvalidUserName()
-            if (password.isBlank() || password.length < 8) throw PlanMateExceptions.LogicException.InvalidPassword()
+            validateUserName(username)
+            validatePassword(password)
             userRepository.getAllUsers().fold(
-                onSuccess = { handleSuccess(username = userName, password = password, users = it) },
+                onSuccess = { handleSuccess(username = username, password = password, users = it) },
                 onFailure = { handleFailure(it as PlanMateExceptions.LogicException.UsersIsEmpty) })
         }.fold(
             onSuccess = { it },
             onFailure = { Result.failure(exception = it) })
+    }
+
+    private fun validateUserName(username: String) {
+        if (username.isBlank() || username.length > 20 || username.length < 4 || username.first()
+                .isDigit()
+        ) throw PlanMateExceptions.LogicException.InvalidUserName()
+    }
+
+    private fun validatePassword(password: String) {
+        if (password.isBlank() || password.length < 8) throw PlanMateExceptions.LogicException.InvalidPassword()
     }
 
     private fun handleSuccess(username: String, password: String, users: List<User>): Result<User> {

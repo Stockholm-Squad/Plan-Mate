@@ -6,7 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.Role
 import logic.model.entities.User
-import org.example.logic.repository.AuthenticationRepository
+import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.AddUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.assertThrows
 
 class AddUserUseCaseTest {
 
-    private lateinit var authRepository: AuthenticationRepository
+    private lateinit var authRepository: UserRepository
     private lateinit var addUserUseCase: AddUserUseCase
 
     @BeforeEach

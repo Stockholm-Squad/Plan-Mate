@@ -1,5 +1,6 @@
 package ui.features.authentication
 
+import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -45,7 +46,7 @@ class AuthenticateUiTest {
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
         every {
             useCase.authUser(
-                userName = username,
+                username = username,
                 password = password
             )
         } returns Result.failure(PlanMateExceptions.LogicException.InvalidUserName())
@@ -66,7 +67,7 @@ class AuthenticateUiTest {
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
         every {
-            useCase.authUser(userName = username, password = password)
+            useCase.authUser(username = username, password = password)
         } returns Result.failure(PlanMateExceptions.LogicException.InvalidPassword())
 
         ui.authenticateUser()
@@ -75,9 +76,9 @@ class AuthenticateUiTest {
     }
 
     @Test
-    fun `authenticateUser() should print user doesnot exist when username and password entered with not existing user`() {
+    fun `authenticateUser() should print user does not exist when username and password entered with not existing user`() {
         val expectedMessage = PlanMateExceptions.LogicException.UserDoesNotExist().message ?: ""
-        every { useCase.authUser(userName = "username", password = "password") } returns Result.failure(
+        every { useCase.authUser(username = "username", password = "password") } returns Result.failure(
             PlanMateExceptions.LogicException.UserDoesNotExist()
         )
         every { reader.readStringOrNull() } returnsMany listOf("username", "password")
@@ -90,7 +91,7 @@ class AuthenticateUiTest {
     @Test
     fun `authenticateUser() should print incorrect password when incorrect password entered with not existing user`() {
         val expectedMessage = PlanMateExceptions.LogicException.IncorrectPassword().message ?: ""
-        every { useCase.authUser(userName = "username", password = "password") } returns Result.failure(
+        every { useCase.authUser(username = "username", password = "password") } returns Result.failure(
             PlanMateExceptions.LogicException.IncorrectPassword()
         )
         every { reader.readStringOrNull() } returnsMany listOf("username", "password")
@@ -101,38 +102,34 @@ class AuthenticateUiTest {
     }
 
     @Test
-    fun `authenticateUser() should print admin options when admin successfully logs in`() {
-        every { reader.readStringOrNull() } returnsMany listOf("adminusername", "adminpassword")
+    fun `authenticateUser() should return user successfully when valid input logs in`() {
+        val user = buildUser(
+            username = "adminusername",
+            hashedPassword = "011a5aee585278f6be5352cd762203df",
+            role = Role.MATE
+        )
+        every { reader.readStringOrNull() } returnsMany listOf("userName", "userNamePassword")
         every {
             useCase.authUser(
-                userName = "adminusername",
-                password = "adminpassword"
+                username = "userName",
+                password = "userNamePassword"
             )
         } returns Result.success(
-            buildUser(
-                username = "adminusername",
-                hashedPassword = "hashedadminpassword",
-                role = Role.ADMIN
-            )
+            user
         )
-        verify(exactly = 1) { printer.showMessage("Admin options") }
-    }
-    @Test
-    fun `authenticateUser() should print mate options when admin successfully logs in`() {
-        every { reader.readStringOrNull() } returnsMany listOf("mateusername", "matepassword")
-        every {
-            useCase.authUser(
-                userName = "mateusername",
-                password = "matepassword"
-            )
-        } returns Result.success(
-            buildUser(
-                username = "mateusername",
-                hashedPassword = "hashedmatepassword",
-                role = Role.MATE
-            )
-        )
-        verify(exactly = 1) { printer.showMessage("mate options") }
+        assertThat(ui.authenticateUser()).isEqualTo(user)
     }
 
+    @Test
+    fun `authenticateUser() should print invalid message and returns null when username is null`() {
+        every { reader.readStringOrNull() } returns null andThen "username"
+        assertThat(ui.authenticateUser()).isEqualTo(null)
+        verify { printer.showMessage("Invalid input") }
+    }
+    @Test
+    fun `authenticateUser() should print invalid message and returns null when password is null`() {
+        every { reader.readStringOrNull() } returns "username" andThen null
+        assertThat(ui.authenticateUser()).isEqualTo(null)
+        verify { printer.showMessage("Invalid input") }
+    }
 }
