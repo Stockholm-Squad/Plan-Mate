@@ -7,6 +7,6 @@ enum class TaskOptions(val option: Int?) {
     EDIT_TASK(4),
     DELETE_TASK(5),
     SHOW_TASKS_BY_PROJECT_ID(6),
-    GET_MATE_TASK_ASSIGNMENTS(7),
-    EXIST(0);
+    SHOW_MATE_TASK_ASSIGNMENTS(7),
+    EXIT(0);
 }
