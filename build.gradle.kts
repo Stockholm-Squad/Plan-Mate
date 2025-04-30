@@ -16,13 +16,12 @@ dependencies {
     implementation("io.insert-koin:koin-core:4.0.3")
 
     // kotlin date time
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
 
 
     // Testing
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation(kotlin("test"))
-
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
     // kotest, assertion
     testImplementation("io.kotest:kotest-runner-junit5:5.7.2")
