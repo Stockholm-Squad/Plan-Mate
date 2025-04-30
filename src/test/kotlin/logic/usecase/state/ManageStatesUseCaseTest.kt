@@ -23,7 +23,6 @@ class ManageStatesUseCaseTest {
         stateRepository = mockk(relaxed = true)
         manageStatesUseCase = ManageStatesUseCase(stateRepository)
     }
-
     @Test
     fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() {
         //Given
@@ -140,35 +139,40 @@ class ManageStatesUseCaseTest {
 
     @Test
     fun `addState() should return success result with true when the name of state is valid`() {
-        //Given
-        val state = State(id = "111", name = "do")
-        every { stateRepository.addState(state) } returns Result.success(true)
-        //When
-        val result = manageStatesUseCase.addState(state)
-        //Then
-        assertThat(result.getOrNull()).isEqualTo(true)
+        // Given
+        val stateName = "ToDo"
+        val existingStates = listOf(State(name = "Done"))
+
+        every { stateRepository.getAllStates() } returns Result.success(existingStates)
+        every { stateRepository.addState(any()) } returns Result.success(true)
+
+        // When
+        val result = manageStatesUseCase.addState(stateName)
+
+        // Then
+        assertThat(result.getOrThrow()).isEqualTo(true)
     }
 
     @Test
     fun `addState() should return success result with true when the name of state have leading and trailing space`() {
         //Given
-        val state = State(id = "1", name = "    ToDo    ")
-        every { stateRepository.addState(state) } returns Result.success(true)
+        val stateName = "   ToDo    "
+        val existingStates = listOf(State(name = "Done"))
+        every { stateRepository.getAllStates() } returns Result.success(existingStates)
+        every { stateRepository.addState(stateName) } returns Result.success(true)
         //When
-        val result = manageStatesUseCase.addState(state)
+        val result = manageStatesUseCase.addState(stateName)
         //Then
-        assertThat(result.getOrNull()).isEqualTo(true)
+        assertThat(result.getOrThrow()).isEqualTo(true)
     }
 
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
         //Given
-
-        val state = State(id = "7", name = "#In Review$")
-        every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = "#I Review$"
+        every { stateRepository.addState(stateName) } returns Result.failure(LogicException.NotAllowedStateNameException())
         //When
-        val result = manageStatesUseCase.addState(state)
-
+        val result = manageStatesUseCase.addState(stateName)
         //Then
         assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
     }
@@ -176,10 +180,10 @@ class ManageStatesUseCaseTest {
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
-        val state = State(id = "4", name = "1In Rev3ew")
-        every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = "1I Rev3ew"
+        every { stateRepository.addState(stateName) } returns Result.failure(LogicException.NotAllowedStateNameException())
         //When
-        val result = manageStatesUseCase.addState(state)
+        val result = manageStatesUseCase.addState(stateName)
 
         //Then
         assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
@@ -188,17 +192,31 @@ class ManageStatesUseCaseTest {
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
-        val state = State(id = "43", name = "")
-        every { stateRepository.addState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = ""
+        every { stateRepository.addState(stateName) } returns Result.failure(LogicException.NotAllowedStateNameException())
 
         //When
-        val result = manageStatesUseCase.addState(state)
+        val result = manageStatesUseCase.addState(stateName)
 
         //Then
         assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
+
+
+    fun `addState() should return failure result with not allowed length exception when the name of state is more than 30`() {
+        //Given
+        val state = "hi in this state this is too long state"
+        every { stateRepository.addState(state) } returns Result.failure(LogicException.StateNameLengthException())
+        //When
+        val result = manageStatesUseCase.addState(state)
+        //Then
+        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+    }
+
+    @Test
+
     fun `getAllStates() should return success result with list of state when the file have data`() {
         //Given
         val state = listOf(
@@ -227,10 +245,9 @@ class ManageStatesUseCaseTest {
     @Test
     fun `getAllStates() should return failure result with read exception when error happens while reading from data`() {
         //Given
-        every { stateRepository.getAllStates() } returns Result.failure(DataException.ReadException())
+        every { stateRepository.getAllStates() } returns Result.failure(Throwable())
         //  When
         val result = manageStatesUseCase.getAllStates()
-
         //Then
         assertThrows<DataException.ReadException> { result.getOrThrow() }
     }

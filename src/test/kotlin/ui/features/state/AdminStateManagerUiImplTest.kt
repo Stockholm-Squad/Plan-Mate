@@ -181,7 +181,7 @@ class AdminStateManagerUiImplTest {
         val stateName = "do"
 
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addState(State(name = stateName)) } returns Result.success(true)
+        every { manageStatesUseCase.addState(stateName) } returns Result.success(true)
         //When
         adminStateManagerUi.addState()
         //Then
@@ -193,7 +193,7 @@ class AdminStateManagerUiImplTest {
         // Given
         val stateName = "do"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addState(State(name = stateName)) } returns Result.failure(
+        every { manageStatesUseCase.addState(stateName) } returns Result.failure(
             LogicException.StateAlreadyExistException(
                 ExceptionMessage.STATE_ALREADY_EXIST_MESSAGE
             )
@@ -210,7 +210,7 @@ class AdminStateManagerUiImplTest {
         // Given
         val stateName = "1in review!"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addState(State(name = stateName)) } returns Result.failure(
+        every { manageStatesUseCase.addState(stateName) } returns Result.failure(
             LogicException.StateAlreadyExistException(
                 ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE
             )
@@ -226,7 +226,7 @@ class AdminStateManagerUiImplTest {
         // Given
         val stateName = "hi in this state this is too long state"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addState(State(name = stateName)) } returns Result.failure(
+        every { manageStatesUseCase.addState(stateName) } returns Result.failure(
             LogicException.StateAlreadyExistException(
                 ExceptionMessage.STATE_NAME_LENGTH_MESSAGE
             )
