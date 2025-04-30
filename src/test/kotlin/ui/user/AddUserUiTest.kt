@@ -1,5 +1,5 @@
 // AddUserUiTest.kt
-package ui
+package ui.user
 
 import io.mockk.every
 import io.mockk.mockk
