@@ -10,7 +10,7 @@ class AuditSystemRepositoryImp(
     private val auditSystemDataSource: PlanMateDataSource<AuditSystem>
 ) : AuditSystemRepository {
     override fun recordAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean> =
-        auditSystemDataSource.write(auditSystem).fold(
+        auditSystemDataSource.append(auditSystem).fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(it) }
         )
@@ -22,32 +22,12 @@ class AuditSystemRepositoryImp(
             onFailure = { Result.failure(it) }
         )
 
-    override fun getTaskChangeLogsById(taskId: Int): Result<List<AuditSystem>> =
-        auditSystemDataSource.read().fold(
-            onSuccess = { auditList ->
-                val result = auditList.filter { it.entityId == taskId.toString() }
-                Result.success(result)
-            },
+    override fun initializeDataInFile(auditSystem: List<AuditSystem>): Result<Boolean> =
+        auditSystemDataSource.overWrite(auditSystem).fold(
+            onSuccess = { Result.success(it) },
             onFailure = { Result.failure(it) }
         )
 
 
-    override fun getProjectChangeLogsById(projectId: Int): Result<List<AuditSystem>> =
-        auditSystemDataSource.read().fold(
-            onSuccess = { auditList ->
-                val result = auditList.filter { it.entityId == projectId.toString() }
-                Result.success(result)
-            },
-            onFailure = { Result.failure(it) }
-        )
-
-    override fun getUserChangeLogsByUsername(username: String): Result<List<AuditSystem>> =
-        auditSystemDataSource.read().fold(
-            onSuccess = { auditList ->
-                val result = auditList.filter { it.changedBy == username }
-                Result.success(result)
-            },
-            onFailure = { Result.failure(it) }
-        )
 
 }

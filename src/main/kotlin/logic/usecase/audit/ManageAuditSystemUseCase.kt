@@ -5,36 +5,44 @@ import org.example.logic.repository.AuditSystemRepository
 
 class ManageAuditSystemUseCase(private val auditSystemRepository: AuditSystemRepository) {
 
-    fun getAllAuditSystems() : Result<List<AuditSystem>> =
+    fun getAllAuditSystems(): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(it) }
         )
 
-    fun getTaskChangeLogsById(taskId: Int) : Result<List<AuditSystem>> =
-        auditSystemRepository.getTaskChangeLogsById(taskId).fold(
-            onSuccess = { Result.success(it) },
+    fun getTaskChangeLogsById(taskId: Int): Result<List<AuditSystem>> =
+        auditSystemRepository.getAllAuditEntries().fold(
+            onSuccess = {
+                val result = it.filter { it.entityId == taskId.toString() }
+                Result.success(result)
+            },
             onFailure = { Result.failure(it) }
         )
 
-    fun getProjectChangeLogsById(projectId: Int) : Result<List<AuditSystem>> =
-        auditSystemRepository.getProjectChangeLogsById(projectId).fold(
-            onSuccess = { Result.success(it) },
+    fun getProjectChangeLogsById(projectId: Int): Result<List<AuditSystem>> =
+        auditSystemRepository.getAllAuditEntries().fold(
+            onSuccess = {
+                val result = it.filter { it.entityId == projectId.toString() }
+                Result.success(result)
+            },
             onFailure = { Result.failure(it) }
         )
 
-    fun getUserChangeLogsByUsername(username: String) : Result<List<AuditSystem>> =
-        auditSystemRepository.getUserChangeLogsByUsername(username).fold(
-            onSuccess = { Result.success(it) },
+    fun getUserChangeLogsByUsername(username: String): Result<List<AuditSystem>> =
+        auditSystemRepository.getAllAuditEntries().fold(
+            onSuccess = {
+                val result = it.filter { it.changedBy == username }
+                Result.success(result)
+            },
             onFailure = { Result.failure(it) }
         )
 
-    fun recordAuditEntry(auditEntry: AuditSystem) : Result<Boolean> =
-        auditSystemRepository.recordAuditEntry(auditEntry).fold(
+    fun recordAuditEntry(auditEntry: List<AuditSystem>): Result<Boolean> =
+        auditSystemRepository.recordAuditsEntries(auditEntry).fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(it) }
         )
-
 
 
 }

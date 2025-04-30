@@ -22,13 +22,4 @@ class AuditSystemCsvDataSource(private val filePath: String) : CsvDataSource<Aud
         }
     }
 
-    override fun append(model: List<AuditSystem>): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
-    override fun overWrite(model: List<AuditSystem>): Result<Boolean> {
-        TODO("Not yet implemented")
-
-    }
-
 }
