@@ -9,9 +9,7 @@ class StateRepositoryImp(
     private val stateDataSource: PlanMateDataSource<State>
 ) : StateRepository {
 
-    companion object {
-        var listOfStates = mutableListOf<State>()
-    }
+    private var listOfStates = mutableListOf<State>()
 
     init {
         getAllStates()
@@ -22,38 +20,49 @@ class StateRepositoryImp(
     }
 
     override fun editState(state: State): Result<Boolean> {
-        return listOfStates.map { item -> if (item.id == state.id) state else item }
-            .takeIf { it.isNotEmpty() }?.let {
-                stateDataSource.write(listOfStates).fold(
-                    onSuccess = { stateEdited -> Result.success(stateEdited) },
-                    onFailure = { exception ->
-                        listOfStates.add(state)
-                        Result.failure(exception)
-                    }
-                )
-            } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+        return getAllStates().fold(
+            onSuccess = { allStates ->
+                allStates.map { item -> if (item.id == state.id) state else item }
+                    .takeIf { it.isNotEmpty() && it.contains(state) }?.let {
+                        stateDataSource.write(allStates).fold(
+                            onSuccess = { stateEdited -> Result.success(stateEdited) },
+                            onFailure = { exception ->
+                                listOfStates.add(state)
+                                Result.failure(exception)
+                            }
+                        )
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+            },
+            onFailure = { Result.failure(exception = it) }
+        )
 
     }
 
     override fun deleteState(id: String): Result<Boolean> {
-        return listOfStates.takeIf { it.isNotEmpty() }?.let {
-            stateDataSource.write(listOf()).fold(
-                onSuccess = {
-                    listOfStates = mutableListOf()
-                    Result.success(true)
-                },
-                onFailure = { exception -> Result.failure(exception) }
-            )
-        } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+        return getAllStates().fold(
+            onSuccess = {
+                it.takeIf { it.isNotEmpty() }?.let {
+                    stateDataSource.write(listOf()).fold(
+                        onSuccess = {
+                            listOfStates = mutableListOf()
+                            Result.success(true)
+                        },
+                        onFailure = { exception -> Result.failure(exception) }
+                    )
+                } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+            },
+            onFailure = { exception -> Result.failure(exception) }
+        )
     }
 
     override fun getAllStates(): Result<List<State>> {
-        return listOfStates.takeIf { it.isNotEmpty() }?.let {
-            Result.success(listOfStates.toList())
-        } ?: stateDataSource.read().fold(
-            onSuccess = { data ->
-                listOfStates = data.toMutableList()
-                Result.success(listOfStates.toList())
+        return listOfStates.takeIf { it.isNotEmpty() }
+            ?.let {
+                Result.success(it)
+            } ?: stateDataSource.read().fold(
+            onSuccess = {
+                listOfStates = it.toMutableList()
+                Result.success(listOfStates)
             },
             onFailure = { exception -> this@StateRepositoryImp.handleReadException(exception) }
         )
