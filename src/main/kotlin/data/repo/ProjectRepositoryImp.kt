@@ -14,7 +14,7 @@ class ProjectRepositoryImp(
     }
 
     override fun addProject(project: Project): Result<Boolean> {
-        if (allProjects.isEmpty()) {
+        if (allProjects.size == 0) {
             getAllProjects()
         }
         allProjects.add(project)
