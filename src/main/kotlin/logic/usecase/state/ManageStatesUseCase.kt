@@ -10,11 +10,11 @@ class ManageStatesUseCase(
         TODO("Not yet implemented")
     }
 
-    fun editState(state: State): Result<Boolean> {
+    fun editState(stateName: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
-    fun deleteState(id: String): Result<Boolean> {
+    fun deleteState(stateName: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
@@ -22,7 +22,7 @@ class ManageStatesUseCase(
         TODO("Not yet implemented")
     }
 
-    fun isStateExist(id: String): Result<Boolean>{
+    private fun isStateExist(stateName: String): Result<Boolean>{
         TODO("Not yet implemented")
     }
 }

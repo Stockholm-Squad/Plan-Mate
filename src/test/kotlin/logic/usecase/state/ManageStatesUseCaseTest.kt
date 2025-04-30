@@ -25,60 +25,13 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `isStateExist() should return success result with true when the state is exist`() {
-        //Given
-        val stateId = "2"
-        every { stateRepository.getAllStates() } returns Result.success(
-            listOf(
-                State(id = "2", name = "TODO")
-            )
-        )
-
-        //When
-        val result = manageStatesUseCase.isStateExist(stateId)
-
-        //Then
-        assertThat(result.getOrNull()).isEqualTo(true)
-    }
-
-    @Test
-    fun `isStateExist() should return failure result with not found exception when the state is not exist`() {
-        //Given
-        val stateId = "2"
-        every { stateRepository.getAllStates() } returns Result.success(
-            listOf(
-
-            )
-        )
-
-        //When
-        val result = manageStatesUseCase.isStateExist(stateId)
-
-        //Then
-        assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
-    }
-
-    @Test
-    fun `isStateExist() should return failure result with exception when failure happen in get all states`() {
-        //Given
-        val stateId = "2"
-        every { stateRepository.getAllStates() } returns Result.failure(Throwable())
-
-        //When
-        val result = manageStatesUseCase.isStateExist(stateId)
-
-        //Then
-        assertThrows<Throwable> { result.getOrThrow() }
-    }
-
-    @Test
     fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() {
         //Given
-        val state = State(id = "111", name = "do")
-        every { stateRepository.editState(state) } returns Result.success(true)
+        val stateName = "do"
+        every { stateRepository.editState(any()) } returns Result.success(true)
 
         //When
-        val result = manageStatesUseCase.editState(state)
+        val result = manageStatesUseCase.editState(stateName)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -87,11 +40,11 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return success result with true when the name of state have leading and trailing space and repo returned success result of true`() {
         //Given
-        val state = State(id = "1", name = "    ToDo    ")
-        every { stateRepository.editState(state) } returns Result.success(true)
+        val stateName = "    ToDo    "
+        every { stateRepository.editState(any()) } returns Result.success(true)
 
         //When
-        val result = manageStatesUseCase.editState(state)
+        val result = manageStatesUseCase.editState(stateName)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -100,11 +53,11 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
         //Given
-        val state = State(id = "7", name = "#In Review$")
-        every { stateRepository.editState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = "#In Review$"
+        every { stateRepository.editState(any()) } returns Result.failure(LogicException.NotAllowedStateNameException())
 
         //When
-        val result = manageStatesUseCase.editState(state)
+        val result = manageStatesUseCase.editState(stateName)
 
         //Then
         assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
@@ -113,10 +66,10 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
-        val state = State(id = "4", name = "1In Rev3ew")
-        every { stateRepository.editState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = "1In Rev3ew"
+        every { stateRepository.editState(any()) } returns Result.failure(LogicException.NotAllowedStateNameException())
         //When
-        val result = manageStatesUseCase.editState(state)
+        val result = manageStatesUseCase.editState(stateName)
 
         //Then
         assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
@@ -125,11 +78,11 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
-        val state = State(id = "43", name = "")
-        every { stateRepository.editState(state) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = ""
+        every { stateRepository.editState(any()) } returns Result.failure(LogicException.NotAllowedStateNameException())
 
         //When
-        val result = manageStatesUseCase.editState(state)
+        val result = manageStatesUseCase.editState(stateName)
 
         //Then
         assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
@@ -138,35 +91,35 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with state not exist exception when state is not exist`() {
         //Given
-        val state = State(id = "43", name = "")
+        val stateName = "TODO"
 
         //When
-        val result = manageStatesUseCase.editState(state)
+        val result = manageStatesUseCase.editState(stateName)
 
         //Then
         assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
     }
 
     @Test
-    fun `deleteState() should return success result with true when the state id exist and the repo added successfully`() {
+    fun `deleteState() should return success result with true when the state name exist and the repo added successfully`() {
         //Given
-        val stateId = "435"
-        every { stateRepository.deleteState(stateId) } returns Result.success(true)
+        val stateName = "TODO"
+        every { stateRepository.deleteState(any()) } returns Result.success(true)
 
         //  When
-        val result = manageStatesUseCase.deleteState(stateId)
+        val result = manageStatesUseCase.deleteState(stateName)
 
         //Then
         assertThat(result.getOrThrow()).isEqualTo(true)
     }
 
     @Test
-    fun `deleteState() should return failure result with throwable when the state id not exist`() {
+    fun `deleteState() should return failure result with throwable when the state name not exist`() {
         //Given
-        val stateId = "435"
+        val stateName = "TODO"
 
         //  When
-        val result = manageStatesUseCase.deleteState(stateId)
+        val result = manageStatesUseCase.deleteState(stateName)
 
         //Then
         assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
@@ -175,11 +128,11 @@ class ManageStatesUseCaseTest {
     @Test
     fun `deleteState() should return failure result with throwable when repo returned failure result while editing`() {
         //Given
-        val stateId = "435"
-        every { stateRepository.deleteState(stateId) } returns Result.failure(Throwable())
+        val stateName = "TODO"
+        every { stateRepository.deleteState(any()) } returns Result.failure(Throwable())
 
         //  When
-        val result = manageStatesUseCase.deleteState(stateId)
+        val result = manageStatesUseCase.deleteState(stateName)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
