@@ -8,5 +8,6 @@ enum class ExceptionMessage(
     INVALID_USER_NAME("Invalid userName"),
     INVALID_PASSWORD("Invalid password"),
     USER_DOES_NOT_EXIST("User dose not exist"),
-    INCORRECT_PASSWORD("Incorrect password")
+    INCORRECT_PASSWORD("Incorrect password"),
+    FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
 }
