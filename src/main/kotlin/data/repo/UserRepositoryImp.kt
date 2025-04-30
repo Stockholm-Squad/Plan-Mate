@@ -2,21 +2,22 @@ package org.example.data.repo
 
 import logic.model.entities.User
 import org.example.data.datasources.PlanMateDataSource
+import org.example.data.datasources.UserCsvDataSource
 import org.example.logic.repository.UserRepository
 
 class UserRepositoryImp(
-    private val authenticationDataSource: PlanMateDataSource<User>
+    private val userCsvDataSource: PlanMateDataSource<User>
 ) : UserRepository {
-
-    override fun getUserByUserName(userName: String): Result<User> {
-        TODO("Not yet implemented")
-    }
     override fun addUser(user: User): Result<Boolean> {
-        TODO("Not yet implemented")
+        return userCsvDataSource.write(listOf(user)).fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(exception = it) })
     }
 
     override fun getAllUsers(): Result<List<User>> {
-        TODO("Not yet implemented")
+        return userCsvDataSource.read().fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(it) })
     }
 
 
