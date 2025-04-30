@@ -8,6 +8,7 @@ import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.project.ProjectManagerUi
+import org.example.ui.features.state.AdminStateManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +18,7 @@ import utils.buildProject
 
 class ProjectManagerUiTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
-    private lateinit var stateManagerUi: StateManagerUi
+    private lateinit var stateManagerUi: AdminStateManagerUi
     private lateinit var taskManagerUi: TaskManagerUi
     private lateinit var authenticationManagerUi: AuthenticationManagerUi
     private lateinit var inputReader: InputReader
