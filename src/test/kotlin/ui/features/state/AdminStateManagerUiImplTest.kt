@@ -8,6 +8,7 @@ import logic.model.entities.State
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinterImplementation
 import org.example.logic.model.exceptions.ExceptionMessage
+import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.model.exceptions.PlanMateExceptions.DataException
 import org.example.logic.model.exceptions.PlanMateExceptions.LogicException
 import org.example.logic.repository.StateRepository
@@ -41,6 +42,165 @@ class AdminStateManagerUiImplTest {
         )
     }
 
+    @Test
+    fun `editState() should print state updated successfully when enter a valid id and name`() {
+        val stateId = "1"
+        val stateName = "TODO"
+
+        every { reader.readStringOrNull() } returns stateId andThen stateName
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+        every { manageStatesUseCase.editState(State(stateId, stateName)) } returns Result.success(true)
+
+        //When
+        adminStateManagerUi.editState()
+
+        //Then
+        verify { printer.showMessage("State Updated successfully") }
+    }
+
+    @Test
+    fun `editState() should print no state exist when enter not valid id`() {
+        val stateId = "1"
+
+        every { reader.readStringOrNull() } returns stateId
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.failure(
+            LogicException.StateNotExistException()
+        )
+
+        //When
+        adminStateManagerUi.editState()
+
+        //Then
+        verify { printer.showMessage(ExceptionMessage.STATE_NOT_EXIST_MESSAGE.message) }
+    }
+
+    @Test
+    fun `editState() should print not allowed state name  when enter not valid name`() {
+        val stateId = "1"
+        val stateName = "1hnfjnj!"
+
+        every { reader.readStringOrNull() } returns stateId andThen stateName
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+        every { manageStatesUseCase.editState(State(stateId, stateName)) } returns Result.failure(
+            PlanMateExceptions.LogicException.NotAllowedStateNameException()
+        )
+
+        //When
+        adminStateManagerUi.editState()
+
+        //Then
+        verify { printer.showMessage(ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
+    }
+
+    @Test
+    fun `editState() should print state name is too long when enter not valid name`() {
+        val stateId = "1"
+        val stateName = "hi in this state this is too long state"
+
+        every { reader.readStringOrNull() } returns stateId andThen stateName
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+        every { manageStatesUseCase.editState(State(stateId, stateName)) } returns Result.failure(
+            LogicException.StateNameLengthException()
+        )
+
+        //When
+        adminStateManagerUi.editState()
+
+        //Then
+        verify { printer.showMessage(ExceptionMessage.STATE_NAME_LENGTH_MESSAGE.message) }
+    }
+
+    @Test
+    fun `editState() should print INVALID_INPUT when enter null`() {
+        // Given
+        every { reader.readStringOrNull() } returns null
+
+        //When
+        adminStateManagerUi.editState()
+
+        //Then
+        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+    }
+
+    @Test
+    fun `editState() should print error happens when edit use case failed`() {
+        val stateId = "1"
+        val stateName = "TODO"
+
+        every { reader.readStringOrNull() } returns stateId andThen stateName
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+        every { manageStatesUseCase.editState(State(stateId, stateName)) } returns Result.failure(
+            Throwable()
+        )
+
+        //When
+        adminStateManagerUi.editState()
+
+        //Then
+        verify { printer.showMessage("Failed to edit state, please try again!") }
+    }
+
+    @Test
+    fun `deleteState() should print state deleted message when state exist, user confirm to delete and state deleted`() {
+        // Given
+        val stateId = "1235"
+        every { reader.readStringOrNull() } returns stateId andThen "yes"
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+        every { manageStatesUseCase.deleteState(stateId) } returns Result.success(true)
+
+        //When
+        adminStateManagerUi.deleteState()
+
+        //Then
+        verify { printer.showMessage("State deleted successfully") }
+    }
+
+    @Test
+    fun `deleteState() should print state not exist when state not exist`() {
+        // Given
+        val stateId = "1235"
+        every { reader.readStringOrNull() } returns stateId andThen "yes"
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.failure(
+            LogicException.StateNotExistException()
+        )
+
+        //When
+        adminStateManagerUi.deleteState()
+
+        //Then
+        verify { printer.showMessage(ExceptionMessage.STATE_NOT_EXIST_MESSAGE.message) }
+    }
+
+    @Test
+    fun `deleteState() should print failed to delete the state when delete failed`() {
+        // Given
+        val stateId = "1235"
+        every { reader.readStringOrNull() } returns stateId andThen "yes"
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+        every { manageStatesUseCase.deleteState(stateId) } returns Result.failure(
+            Throwable()
+        )
+
+        //When
+        adminStateManagerUi.deleteState()
+
+        //Then
+        verify { printer.showMessage("Failed to delete the state") }
+    }
+
+    @Test
+    fun `deleteState() should print okay, as you like when use not confirm to delete`() {
+        // Given
+        val stateId = "1235"
+        every { reader.readStringOrNull() } returns stateId andThen "No"
+        every { manageStatesUseCase.isStateExist(stateId) } returns Result.success(true)
+
+        //When
+        adminStateManagerUi.deleteState()
+
+        //Then
+        verify { printer.showMessage("Okay, As you like!") }
+    }
 
 
     @Test
