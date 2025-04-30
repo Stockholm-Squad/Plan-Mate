@@ -117,7 +117,7 @@ class StateRepositoryImpTest {
         createState(id = "13", name = "done"),
         createState(id = "10", name = "in review")
         )
-        every { stateDataSource.read(any()) } returns Result.success(
+        every { stateDataSource.read() } returns Result.success(
             stateList
         )
 
@@ -132,7 +132,7 @@ class StateRepositoryImpTest {
     @Test
     fun `getAllStates() should return failure result with empty data exception  when the file is empty`() {
         //Given
-        every { stateDataSource.read(any()) } returns Result.success(
+        every { stateDataSource.read() } returns Result.success(
             listOf()
         )
 
