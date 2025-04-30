@@ -34,7 +34,7 @@ class TaskRepositoryImp(
             onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
         )
 
-    override fun deleteTask(id: String): Result<Boolean> =
+    override fun deleteTask(id: String?): Result<Boolean> =
         taskDataSource.read().fold(
             onSuccess = { tasks ->
                 val updatedTasks = tasks.filterNot { it.id == id }
