@@ -62,6 +62,16 @@ class ManageStatesUseCase(
         TODO("Not yet implemented")
     }
 
+    fun getStateIdByName(stateName: String): String? {
+        return isStateNameValid(stateName).fold(
+            onSuccess = {
+                isStateExist(stateName).takeIf { it != null }?.id
+            },
+            onFailure = { null }
+        )
+    }
+
+
     private fun isStateExist(stateName: String): State? {
         return this.getAllStates().fold(
             onSuccess = { allStates ->
