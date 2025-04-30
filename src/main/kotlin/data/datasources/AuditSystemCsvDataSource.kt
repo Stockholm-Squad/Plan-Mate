@@ -1,7 +1,6 @@
 package org.example.data.datasources
 
 import logic.model.entities.AuditSystem
-import logic.model.entities.Project
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -21,6 +20,15 @@ class AuditSystemCsvDataSource(private val filePath: String) : CsvDataSource<Aud
         } catch (t: Throwable) {
             Result.failure(PlanMateExceptions.DataException.ReadException())
         }
+    }
+
+    override fun append(model: List<AuditSystem>): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun overWrite(model: List<AuditSystem>): Result<Boolean> {
+        TODO("Not yet implemented")
+
     }
 
 }
