@@ -14,5 +14,5 @@ val datasourceModule = module {
     factory<PlanMateDataSource<User>> { AuthenticationCsvDataSource() }
     factory<PlanMateDataSource<Project>> { ProjectCsvDataSource() }
     factory<PlanMateDataSource<State>> { StateCsvDataSource() }
-    factory<PlanMateDataSource<Task>> { TaskCsvDataSource() }
+    factory<PlanMateDataSource<Task>> { TaskCsvDataSource(get()) }
 }
