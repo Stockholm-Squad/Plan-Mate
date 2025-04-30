@@ -45,11 +45,43 @@ class AdminStateManagerUiImpl(
     }
 
     override fun editState() {
-        println()
+        printer.showMessage("Please enter the state you want to update: ")
+        reader.readStringOrNull().takeIf { stateName ->
+            stateName != null
+        }?.let { stateName ->
+            manageStatesUseCase.editState(stateName = stateName).fold(
+                onSuccess = ::showStateUpdatedMessage,
+                onFailure = { showFailure("Failed to Update state: ${it.message}") }
+            )
+        } ?: showInvalidInput()
+    }
+
+    private fun showStateUpdatedMessage(isUpdated: Boolean) {
+        printer.showMessage("State updated successfully ^_^")
+    }
+
+    private fun showFailure(errorMessage: String) {
+        printer.showMessage(errorMessage)
+    }
+
+    private fun showInvalidInput() {
+        printer.showMessage("Invalid input, Please try again..")
     }
 
     override fun deleteState() {
-        println()
+        printer.showMessage("Please enter the state you want to delete: ")
+        reader.readStringOrNull().takeIf { stateName ->
+            stateName != null
+        }?.let { stateName ->
+            manageStatesUseCase.deleteState(stateName = stateName).fold(
+                onSuccess = ::showStateDeletedMessage,
+                onFailure = { showFailure("Failed to Delete state: ${it.message}") }
+            )
+        } ?: showInvalidInput()
+    }
+
+    private fun showStateDeletedMessage(isUpdated: Boolean) {
+        printer.showMessage("State deleted successfully ^_^")
     }
 
     override fun showAllStates() {
