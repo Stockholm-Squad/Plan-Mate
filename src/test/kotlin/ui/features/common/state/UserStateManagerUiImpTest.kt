@@ -9,8 +9,8 @@ import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.StateRepository
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.common.state.UserStateManagerUi
-import org.example.ui.features.common.state.UserStateManagerUiImp
+import org.example.ui.features.state.common.UserStateManagerUi
+import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

@@ -2,10 +2,9 @@ package ui.features.state
 
 import io.mockk.*
 import logic.model.entities.Role
-import org.example.ui.features.state.AdminStateManagerUi
-import org.example.ui.features.state.MateStateManagerUi
+import org.example.ui.features.state.admin.AdminStateManagerUi
+import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.StateManagerUi
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

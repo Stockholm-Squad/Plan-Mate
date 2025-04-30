@@ -1,4 +1,4 @@
-package org.example.ui.features.common.state
+package org.example.ui.features.state.common
 
 interface UserStateManagerUi {
     fun showAllStates()

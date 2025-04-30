@@ -1,9 +1,9 @@
-package org.example.ui.features.state
+package org.example.ui.features.state.admin
 
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.common.state.UserStateManagerUi
+import org.example.ui.features.state.common.UserStateManagerUi
 
 class AdminStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,

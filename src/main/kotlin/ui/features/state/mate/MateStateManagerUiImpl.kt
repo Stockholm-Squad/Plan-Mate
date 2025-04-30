@@ -1,7 +1,7 @@
-package org.example.ui.features.state
+package org.example.ui.features.state.mate
 
 import org.example.input_output.output.OutputPrinter
-import org.example.ui.features.common.state.UserStateManagerUi
+import org.example.ui.features.state.common.UserStateManagerUi
 
 class MateStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
