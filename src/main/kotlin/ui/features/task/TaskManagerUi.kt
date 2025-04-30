@@ -9,7 +9,6 @@ import org.example.utils.DateHandler
 import org.example.utils.TaskOptions
 import java.util.UUID
 
-
 class TaskManagerUi(
     private val manageTasksUseCase: ManageTasksUseCase,
     private val reader: InputReader,
@@ -52,7 +51,7 @@ class TaskManagerUi(
                     ?: printer.showMessage(UiMessages.NO_TASKS_FOUND.message)
             },
             onFailure = { exception ->
-                printer.showMessage("Error: ${exception.message}")
+                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
             }
         )
     }
@@ -68,13 +67,13 @@ class TaskManagerUi(
                 printer.showMessage("ID: ${task.id}, Name: ${task.name}, Description: ${task.description}, State: ${task.stateId}")
             },
             onFailure = { exception ->
-                printer.showMessage("Error: ${exception.message}")
+                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
             }
         )
     }
 
     private fun createTask(): Result<Boolean> {
-        printer.showMessage("Let's create a task!")
+        printer.showMessage(UiMessages.CREATE_TASK_INTRO.message)
 
         printer.showMessage(UiMessages.ENTER_TASK_NAME.message)
         val taskName = readStringOrNull()
@@ -119,13 +118,13 @@ class TaskManagerUi(
         val existingTask = manageTasksUseCase.getTaskById(taskId).getOrNull()
             ?: return printer.showMessage(UiMessages.TASK_NOT_FOUND.message.format(taskId))
 
-        printer.showMessage("Enter new task name (leave blank to keep current):")
+        printer.showMessage(UiMessages.EDIT_TASK_NAME_PROMPT.message)
         val newName = readStringOrNull() ?: existingTask.name
 
-        printer.showMessage("Enter new task description (leave blank to keep current):")
+        printer.showMessage(UiMessages.EDIT_TASK_DESCRIPTION_PROMPT.message)
         val newDescription = readStringOrNull() ?: existingTask.description
 
-        printer.showMessage("Enter new state ID (leave blank to keep current):")
+        printer.showMessage(UiMessages.EDIT_TASK_STATE_ID_PROMPT.message)
         val newStateId = readStringOrNull() ?: existingTask.stateId
 
         val updatedDate = DateHandler().getCurrentDateTime()
@@ -175,7 +174,7 @@ class TaskManagerUi(
                     ?: printer.showMessage(UiMessages.NO_TASKS_FOR_USER.message.format(userId))
             }
             .onFailure { exception ->
-                printer.showMessage("Error: ${exception.message}")
+                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
             }
     }
 
@@ -194,7 +193,7 @@ class TaskManagerUi(
                     ?: printer.showMessage(UiMessages.NO_PROJECT_TASKS.message.format(projectId))
             }
             .onFailure { exception ->
-                printer.showMessage("Error: ${exception.message}")
+                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
             }
     }
 
@@ -213,7 +212,7 @@ class TaskManagerUi(
                     ?: printer.showMessage(UiMessages.NO_STATES_FOR_PROJECT.message.format(projectId))
             }
             .onFailure { exception ->
-                printer.showMessage("Error: ${exception.message}")
+                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
             }
     }
 
@@ -223,14 +222,14 @@ class TaskManagerUi(
     private fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
 
     private fun invalidChoice() {
-        println(UiMessages.INVALID_OPTION.message)
+        printer.showMessage(UiMessages.INVALID_OPTION.message)
     }
 
     private fun exit() {
-        println(UiMessages.GOODBYE.message)
+        printer.showMessage(UiMessages.GOODBYE.message)
     }
 
     private fun printMenu() {
-        println(UiMessages.MENU_HEADER.message)
+        printer.showMessage(UiMessages.MENU_HEADER.message)
     }
 }
