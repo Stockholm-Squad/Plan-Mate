@@ -13,6 +13,6 @@ val datasourceModule = module {
     factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource() }
     factory<PlanMateDataSource<User>> { AuthenticationCsvDataSource() }
     factory<PlanMateDataSource<Project>> { ProjectCsvDataSource(filePath = "projects.csv") }
-    factory<PlanMateDataSource<State>> { StateCsvDataSource() }
+    factory<PlanMateDataSource<State>> { StateCsvDataSource(filePath = "state.csv") }
     factory<PlanMateDataSource<Task>> { TaskCsvDataSource() }
 }

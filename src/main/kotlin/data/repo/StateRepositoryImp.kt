@@ -13,32 +13,38 @@ class StateRepositoryImp(
         var listOfStates = mutableListOf<State>()
     }
 
+    init {
+        getStates()
+    }
+
     override fun addState(state: State): Result<Boolean> {
         TODO("Not yet implemented")
     }
 
     override fun editState(state: State): Result<Boolean> {
-        return getStates().fold(
-            onSuccess = { data ->
-                listOfStates.map {
-                    if (it.id == state.id) state else it
-                }.let {
-                    stateDataSource.write(listOfStates)
-                    Result.success(true)
-                }
-            },
-            onFailure = { exception -> Result.failure(exception) }
-        )
+        return listOfStates.map { item -> if (item.id == state.id) state else item }
+            .takeIf { it.isNotEmpty() }?.let {
+                stateDataSource.write(listOfStates).fold(
+                    onSuccess = { stateEdited -> Result.success(stateEdited) },
+                    onFailure = { exception ->
+                        listOfStates.add(state)
+                        Result.failure(exception)
+                    }
+                )
+            } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+
     }
 
     override fun deleteState(id: String): Result<Boolean> {
-        return stateDataSource.write(listOf()).fold(
-            onSuccess = {
-                listOfStates = mutableListOf()
-                Result.success(true)
-            },
-            onFailure = { exception -> Result.failure(exception) }
-        )
+        return listOfStates.takeIf { it.isNotEmpty() }?.let {
+            stateDataSource.write(listOf()).fold(
+                onSuccess = {
+                    listOfStates = mutableListOf()
+                    Result.success(true)
+                },
+                onFailure = { exception -> Result.failure(exception) }
+            )
+        } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
     }
 
 
