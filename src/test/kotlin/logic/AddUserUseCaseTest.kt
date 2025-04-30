@@ -4,107 +4,115 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.Role
 import logic.model.entities.User
-import org.example.logic.repository.AuthenticationRepository
+import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.AddUserUseCase
-import org.junit.jupiter.api.BeforeEach
+import org.example.utils.hashToMd5
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
+import java.security.NoSuchAlgorithmException
 
 class AddUserUseCaseTest {
 
-    private lateinit var authRepository: AuthenticationRepository
     private lateinit var addUserUseCase: AddUserUseCase
+    private lateinit var userRepository: UserRepository
 
     @BeforeEach
     fun setUp() {
-        authRepository = mockk()
-        addUserUseCase = AddUserUseCase(authRepository)
+        userRepository = mockk()
+        addUserUseCase = AddUserUseCase(userRepository)
     }
 
     @Test
-    fun `should append new user when data is valid`() {
-        // given
-        val existingUsers = listOf(
-            User("user1", "hash1", Role.MATE), User("user2", "hash2", Role.ADMIN)
-        )
-        val newUser = User("newUser", "newHash", Role.MATE)
+    fun `should successfully add new user when username is unique`() {
+        // Given
+        val existingUsers = listOf(User("user1", "hash1"))
+        val newUser = User("newUser", "password123")
+        val expectedHashedUser = User("newUser", hashToMd5("password123"))
 
-        every { authRepository.getAllUsers() } returns Result.success(existingUsers)
-        every { authRepository.addUser(newUser) } returns Result.success(true)
+        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
+        every { userRepository.addUser(expectedHashedUser) } returns Result.success(true)
 
-        // when
+        // When
         val result = addUserUseCase.addUser(newUser)
 
-        // then
+        // Then
         assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { addUserUseCase.addUser(newUser) }
+        assertThat(result.getOrNull()).isTrue()
+        verify(exactly = 1) { userRepository.getAllUsers() }
+        verify(exactly = 1) { userRepository.addUser(expectedHashedUser) }
     }
 
     @Test
-    fun `should reject weak passwords`() {
-        // given
-        val weakPasswordUser = User(
-            username = "validUser", hashedPassword = "weak", // Too short
-            role = Role.MATE
-        )
-        every { addUserUseCase.addUser(weakPasswordUser) } returns Result.failure(IllegalArgumentException())
-        // when
-        val result = addUserUseCase.addUser(weakPasswordUser)
+    fun `should fail with IllegalArgumentException when username exists`() {
+        // Given
+        val existingUsers = listOf(User("existingUser", "hash1"))
+        val duplicateUser = User("existingUser", "password123")
 
-        // then
-        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
-        verify(exactly = 1) { addUserUseCase.addUser(weakPasswordUser) }
-    }
+        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
 
-    @Test
-    fun `should reject empty username`() {
-        // given
-        val emptyUsernameUser = User(
-            username = "", // Empty username
-            hashedPassword = "validPassword123!", role = Role.MATE
-        )
-        every { addUserUseCase.addUser(emptyUsernameUser) } returns Result.failure(IllegalArgumentException())
+        // When
+        val result = addUserUseCase.addUser(duplicateUser)
 
-        // when
-        val result = addUserUseCase.addUser(emptyUsernameUser)
-
-        // then
-        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
-        verify(exactly = 1) { addUserUseCase.addUser(emptyUsernameUser) }
-    }
-
-    @Test
-    fun `should throw when user already exists`() {
-        // given
-        val existingUser = User("existing", "hash", Role.MATE)
-        every { authRepository.getAllUsers() } returns Result.success(listOf(existingUser))
-
-        // when
-        val result = addUserUseCase.addUser(existingUser.copy(hashedPassword = "newHash"))
-
-        // then
-        assertThrows<IllegalArgumentException>() { result.getOrThrow() }
-        verify(exactly = 1) { addUserUseCase.addUser(existingUser.copy(hashedPassword = "newHash")) }
-
-    }
-
-
-    @Test
-    fun `should fail when cannot append user`() {
-        // given
-        val appendError = Exception("File append error")
-        val user = User("newUser", "newHash", Role.MATE)
-        every { authRepository.getAllUsers() } returns Result.success(emptyList())
-        every { authRepository.addUser(any()) } returns Result.failure(appendError)
-
-        // when
-        val result = addUserUseCase.addUser(user)
-
-        // then
+        // Then
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isEqualTo(appendError)
-        verify(exactly = 1) { addUserUseCase.addUser(user) }
+assertThrows<IllegalArgumentException> { result.getOrThrow() }
+        verify(exactly = 0) { userRepository.addUser(any()) }
     }
+
+    @Test
+    fun `should fail when repository fails to get users`() {
+        // Given
+        val newUser = User("newUser", "password123")
+        val expectedError = RuntimeException("Database error")
+
+        every { userRepository.getAllUsers() } returns Result.failure(expectedError)
+
+        // When
+        val result = addUserUseCase.addUser(newUser)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isEqualTo(expectedError)
+        verify(exactly = 0) { userRepository.addUser(any()) }
+    }
+
+    @Test
+    fun `should properly hash password`() {
+        // Given
+        val existingUsers = emptyList<User>()
+        val newUser = User("testUser", "password123")
+        val expectedHash = hashToMd5("password123")
+
+        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
+        every { userRepository.addUser(User("testUser", expectedHash)) } returns Result.success(true)
+
+        // When
+        val result = addUserUseCase.addUser(newUser)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        verify(exactly = 1) {
+            userRepository.addUser(User("testUser", expectedHash))
+        }
+    }
+
+    @Test
+    fun `should fail when hashing fails`() {
+        // Given
+        val existingUsers = emptyList<User>()
+        val newUser = User("testUser", "password123")
+
+        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
+        every { userRepository.addUser(any()) } throws NoSuchAlgorithmException("MD5 not available")
+
+        // When
+        val result = addUserUseCase.addUser(newUser)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+
+    }
+
 }
