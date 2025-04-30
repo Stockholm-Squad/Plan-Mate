@@ -272,18 +272,14 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `getAllStates() should return failure result with list of state when the file have data`() {
+    fun `getAllStates() should return failure result with read exception when error happens while reading from data`() {
         //Given
-        val state = listOf(
-            createState("2", "done"),
-            (createState("3", "in review"))
-        )
-        every { stateRepository.getAllStates() } returns Result.success(state)
+        every { stateRepository.getAllStates() } returns Result.failure(DataException.ReadException())
         //  When
         val result = manageStatesUseCase.getAllStates()
 
         //Then
-        assertThat(result.getOrThrow()).isEqualTo(state)
+        assertThrows<DataException.ReadException> { result.getOrThrow() }
     }
 
 }

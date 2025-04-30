@@ -289,19 +289,19 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage(state.toString()) } // this change when i implement
+        verify { printer.showMessage(state.toString()) } // this change when i implement in ui
 
     }
 
     @Test
-    fun `showAllStates() should print  result with all states when have data`() {
+    fun `showAllStates() should print empty data message when no data available`() {
         // Given
         every { manageStatesUseCase.getAllStates() } returns Result.failure(DataException.EmptyDataException())
         //When
         adminStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.EMPTY_DATA_MESSAGE.message) } // this change when i implement
+        verify { printer.showMessage(ExceptionMessage.EMPTY_DATA_MESSAGE.message) }
 
     }
 
