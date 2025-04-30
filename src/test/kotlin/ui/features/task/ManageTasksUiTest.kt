@@ -425,7 +425,7 @@ class ManageTasksUiTest {
         every { manageTasksUseCase.getAllStatesByProjectId(projectId) } returns Result.success(emptyStates)
 
         taskManagerUi.showStateOfProject()
-        verify { printer.showMessage("${ExceptionMessage.NO_TASKS_FOUNDED}") }
+        verify { printer.showMessage("${ExceptionMessage.NO_STATE_FOUND}") }
     }
 
 
