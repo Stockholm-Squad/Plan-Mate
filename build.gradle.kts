@@ -37,6 +37,10 @@ dependencies {
     // junit params
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
+    //Data Frame
+    implementation("org.jetbrains.kotlinx:dataframe:0.15.0")
+
 }
 
 tasks.test {
