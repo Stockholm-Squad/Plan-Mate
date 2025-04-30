@@ -25,6 +25,53 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
+    fun `isStateExist() should return success result with true when the state is exist`() {
+        //Given
+        val stateId = "2"
+        every { stateRepository.getAllStates() } returns Result.success(
+            listOf(
+                State(id = "2", name = "TODO")
+            )
+        )
+
+        //When
+        val result = manageStatesUseCase.isStateExist(stateId)
+
+        //Then
+        assertThat(result.getOrNull()).isEqualTo(true)
+    }
+
+    @Test
+    fun `isStateExist() should return failure result with not found exception when the state is not exist`() {
+        //Given
+        val stateId = "2"
+        every { stateRepository.getAllStates() } returns Result.success(
+            listOf(
+
+            )
+        )
+
+        //When
+        val result = manageStatesUseCase.isStateExist(stateId)
+
+        //Then
+        assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
+    }
+
+    @Test
+    fun `isStateExist() should return failure result with exception when failure happen in get all states`() {
+        //Given
+        val stateId = "2"
+        every { stateRepository.getAllStates() } returns Result.failure(Throwable())
+
+        //When
+        val result = manageStatesUseCase.isStateExist(stateId)
+
+        //Then
+        assertThrows<Throwable> { result.getOrThrow() }
+    }
+
+    @Test
     fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() {
         //Given
         val state = State(id = "111", name = "do")

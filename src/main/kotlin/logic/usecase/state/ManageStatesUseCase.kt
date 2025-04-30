@@ -21,4 +21,8 @@ class ManageStatesUseCase(
     fun getAllStates(): Result<List<State>> {
         TODO("Not yet implemented")
     }
+
+    fun isStateExist(id: String): Result<Boolean>{
+        TODO("Not yet implemented")
+    }
 }
