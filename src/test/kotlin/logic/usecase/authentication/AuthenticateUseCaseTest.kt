@@ -11,6 +11,7 @@ import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.authentication.AuthenticateUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
+import java.security.MessageDigest
 import kotlin.test.Test
 
 class AuthenticateUseCaseTest() {
@@ -29,7 +30,7 @@ class AuthenticateUseCaseTest() {
             useCase.authUser(
                 userName = "",
                 password = "password"
-            )
+            ).getOrThrow()
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
@@ -40,7 +41,7 @@ class AuthenticateUseCaseTest() {
             useCase.authUser(
                 userName = "username",
                 password = ""
-            )
+            ).getOrThrow()
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
@@ -51,7 +52,7 @@ class AuthenticateUseCaseTest() {
             useCase.authUser(
                 userName = "1john",
                 password = "password"
-            )
+            ).getOrThrow()
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
@@ -62,7 +63,7 @@ class AuthenticateUseCaseTest() {
             useCase.authUser(
                 userName = "abc",
                 password = "password"
-            )
+            ).getOrThrow()
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
@@ -73,7 +74,7 @@ class AuthenticateUseCaseTest() {
             useCase.authUser(
                 userName = "averyverylongusernamethatexceeds20",
                 password = "password"
-            )
+            ).getOrThrow()
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
@@ -84,7 +85,7 @@ class AuthenticateUseCaseTest() {
             useCase.authUser(
                 userName = "validUser",
                 password = "short"
-            )
+            ).getOrThrow()
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
@@ -119,8 +120,10 @@ class AuthenticateUseCaseTest() {
     fun `authUser() should return success when user and password are valid`() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.success(users)
-        val user = buildUser(username = "johnDoe", hashedPassword = "hashedPass1", role = Role.MATE)
-        assertThat(useCase.authUser(userName = "johnDoe", password = "password").getOrThrow()).isEqualTo(user)
+        val user =
+            buildUser(username = "johnDoe", hashedPassword = "6c6b8a98fc1503009200747f9ca0420e", role = Role.MATE)
+        val result = useCase.authUser(userName = "johnDoe", password = "hashedPass1")
+        assertThat(result.getOrThrow()).isEqualTo(user)
         verify(exactly = 1) { repository.getAllUsers() }
     }
 
@@ -129,6 +132,18 @@ class AuthenticateUseCaseTest() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.failure(Throwable())
         assertThrows<Throwable> {
+            useCase.authUser(
+                userName = "johnDoe",
+                password = "password2"
+            ).getOrThrow()
+        }
+        verify(exactly = 1) { repository.getAllUsers() }
+    }
+
+    @Test
+    fun `authUser() should return failure when users are empty`() {
+        every { repository.getAllUsers() } returns Result.failure(PlanMateExceptions.LogicException.UsersIsEmpty())
+        assertThrows<PlanMateExceptions.LogicException.UsersIsEmpty> {
             useCase.authUser(
                 userName = "johnDoe",
                 password = "password2"

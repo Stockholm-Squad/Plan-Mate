@@ -16,7 +16,7 @@ class UserCsvDataSource(private val filePath: String) : CsvDataSource<User>(file
             DataFrame.readCSV(filePath).cast<User>().toList().let {
                 Result.success(it)
             }
-        } catch (t: Throwable) {
+        } catch (t: PlanMateExceptions) {
             Result.failure(PlanMateExceptions.DataException.ReadException())
         }
     }

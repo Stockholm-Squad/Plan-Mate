@@ -10,4 +10,5 @@ enum class ExceptionMessage(
     USER_DOES_NOT_EXIST("User dose not exist"),
     INCORRECT_PASSWORD("Incorrect password"),
     FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
+    USERS_IS_EMPTY("Users is empty")
 }
