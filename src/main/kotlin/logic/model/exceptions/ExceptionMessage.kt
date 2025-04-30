@@ -5,6 +5,7 @@ enum class ExceptionMessage(
 ) {
     READ_EXCEPTION_MESSAGE("Error while reading data!"),
     WRITE_EXCEPTION_MESSAGE("Error while writing data!"),
+    FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
     NOT_ALLOWED_STATE_NAME_MESSAGE("Only letters are allowed!"),
     EMPTY_DATA_MESSAGE("No data available"),
     STATE_NOT_EXIST_MESSAGE("The state not exist"),

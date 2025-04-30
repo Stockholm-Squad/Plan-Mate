@@ -3,7 +3,7 @@ package org.example.data.datasources
 import logic.model.entities.AuditSystem
 
 class AuditSystemCsvDataSource : PlanMateDataSource<AuditSystem> {
-    override fun read(filePath: String): Result<List<AuditSystem>> {
+    override fun read(): Result<List<AuditSystem>> {
         TODO("Not yet implemented")
     }
 

@@ -15,6 +15,10 @@ sealed class PlanMateExceptions(
         data class EmptyDataException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.EMPTY_DATA_MESSAGE,
         ) : DataException(exceptionMessage)
+
+        data class FileNotExistException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.FILE_NOT_EXIST_EXCEPTION_MESSAGE
+        ) : DataException(exceptionMessage)
     }
 
     sealed class LogicException(
