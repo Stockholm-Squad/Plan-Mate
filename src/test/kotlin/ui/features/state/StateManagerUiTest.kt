@@ -1,7 +1,6 @@
 package ui.features.state
 
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import logic.model.entities.Role
 import org.example.ui.features.state.AdminStateManagerUi
 import org.example.ui.features.state.MateStateManagerUi
@@ -22,15 +21,11 @@ class StateManagerUiTest {
         stateManagerUi = StateManagerUi(adminStateManagerUi, mateStateManagerUi)
     }
 
-    @AfterEach
-    fun tearDown() {
-        verify(exactly = 1) { stateManagerUi.launchStateManagerUi(any()) }
-    }
-
     @Test
     fun `launchStateManagerUi() should launch adminStateManagerUi when role is ADMIN`() {
         //Given
         val role = Role.ADMIN
+        every { adminStateManagerUi.launchUi() } just runs
 
         //When
         stateManagerUi.launchStateManagerUi(role)
@@ -43,6 +38,7 @@ class StateManagerUiTest {
     fun `launchStateManagerUi() should launch mateStateManagerUi when role is MATE`() {
         //Given
         val role = Role.MATE
+        every { mateStateManagerUi.launchUi() } just runs
 
         //When
         stateManagerUi.launchStateManagerUi(role)
