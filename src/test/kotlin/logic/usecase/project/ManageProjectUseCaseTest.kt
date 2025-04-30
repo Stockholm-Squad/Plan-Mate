@@ -8,6 +8,7 @@ import logic.model.entities.Project
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
 import org.junit.jupiter.api.BeforeEach
+import utils.buildProject
 import kotlin.test.Test
 
 class ManageProjectUseCaseTest {
@@ -98,7 +99,7 @@ class ManageProjectUseCaseTest {
         every { repository.getAllProjects() } returns Result.success(listOf(testProject))
         every { repository.editProject(testProject) } returns Result.success(true)
 
-        val result = useCase.updateProject("1")
+        val result = useCase.updateProject(buildProject(id = "1"))
 
         assertThat(result.isSuccess).isTrue()
         verify { repository.editProject(testProject) }
@@ -108,7 +109,7 @@ class ManageProjectUseCaseTest {
     fun `updateProject returns failure when project not found`() {
         every { repository.getAllProjects() } returns Result.success(emptyList())
 
-        val result = useCase.updateProject("1")
+        val result = useCase.updateProject(buildProject(id = "1"))
 
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)

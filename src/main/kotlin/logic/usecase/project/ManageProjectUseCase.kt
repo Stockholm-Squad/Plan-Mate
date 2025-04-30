@@ -34,8 +34,8 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
     }
 
 
-    fun updateProject(id: String): Result<Boolean> {
-        return getProjectById(id).fold(
+    fun updateProject(project: Project): Result<Boolean> {
+        return getProjectById(project.id).fold(
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
             onSuccess = { project -> Result.success(true).onSuccess { projectRepository.editProject(project) } }
         )
@@ -49,7 +49,11 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
     }
 
 
-    fun assignUsersToTask() {
+    fun assignUsersToProject(username: String, projectId: String):Result<Boolean> {
+        TODO()
+    }
+
+    fun isProjectExists(projectId: String): Result<Boolean> {
         TODO()
     }
 
