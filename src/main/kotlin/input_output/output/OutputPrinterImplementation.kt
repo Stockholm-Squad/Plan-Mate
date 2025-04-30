@@ -9,7 +9,17 @@ class OutputPrinterImplementation : OutputPrinter {
 
     }
 
-    override fun showState(state: State) {
-        println(state)
+    override fun showStates(states: List<State>) {
+        this.printStateUsingSwimlaneUi(states)
+    }
+
+    private fun printStateUsingSwimlaneUi(states: List<State>) {
+        println("┌──────────────────────────────┐")
+        println("│ State                        │")
+        println("├──────────────────────────────┤")
+        states.forEach {
+            println("│ %-28s │".format(it.name))
+        }
+        println("└──────────────────────────────┘")
     }
 }
