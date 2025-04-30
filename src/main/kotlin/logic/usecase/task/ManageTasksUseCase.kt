@@ -1,6 +1,5 @@
 package org.example.logic.usecase.task
 
-import kotlinx.datetime.LocalDateTime
 import logic.model.entities.Task
 import org.example.data.entities.MateTaskAssignment
 import org.example.data.entities.TaskInProject
@@ -15,7 +14,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { exception -> Result.failure(exception) }
         )
 
-    fun getTaskById(taskId: String): Result<Task> =
+    fun getTaskById(taskId: String?): Result<Task> =
         taskRepository.getAllTasks().fold(
             onSuccess = { tasks ->
                 tasks.find { it.id == taskId }
@@ -42,7 +41,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             }
         )
 
-    fun deleteTask(taskId: String): Result<Boolean> =
+    fun deleteTask(taskId: String?): Result<Boolean> =
         getTaskById(taskId).fold(
             onSuccess = { existingTask ->
                 taskRepository.deleteTask(taskId)

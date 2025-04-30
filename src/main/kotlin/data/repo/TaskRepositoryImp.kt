@@ -33,7 +33,7 @@ class TaskRepositoryImp(
             onFailure = { exception -> Result.failure(exception) }
         )
 
-    override fun deleteTask(id: String): Result<Boolean> =
+    override fun deleteTask(id: String?): Result<Boolean> =
         taskDataSource.read("tasks.csv").fold(
             onSuccess = { tasks ->
                 val updatedTasks = tasks.filterNot { it.id == id }
