@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+
     // koin
     implementation("io.insert-koin:koin-core:4.0.3")
 
@@ -39,6 +40,7 @@ dependencies {
 
     //Data Frame
     implementation("org.jetbrains.kotlinx:dataframe:0.15.0")
+    implementation("org.slf4j:slf4j-nop:2.0.9")
 
 }
 

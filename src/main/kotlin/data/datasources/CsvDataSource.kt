@@ -1,38 +1,46 @@
 package org.example.data.datasources
 
-
-import org.example.logic.model.exceptions.PlanMateExceptions
-import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.*
-import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
-import kotlin.reflect.KClass
+import java.io.File
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
-class CsvDataSource<T : Any>(
+abstract class CsvDataSource<T : Any>(
     private val filePath: String,
 ) : PlanMateDataSource<T> {
 
-    override fun read(): Result<List<T>> {
-        return try {
+    protected fun resolveFile(): File = File(filePath)
 
-//            val df = DataFrame.readCSV(filePath)
-//            val data: List<T> = createList(df)
+    abstract override fun read(): Result<List<T>>
 
-            Result.success(emptyList())
-
-        } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
-        }
-    }
-
+    @Suppress("UNCHECKED_CAST")
     override fun write(data: List<T>): Result<Boolean> {
-        return try {
-//            val dfRead = data.toDataFrame()
-//            dfRead.writeCSV(filePath)
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+        val file = resolveFile()
+
+        if (data.isEmpty()) {
+            file.writeText("")
+            return Result.success(true)
+        }
+
+        // Convert to DataFrame using Kotlin reflection
+        return data.first()::class.let { classType ->
+            classType.memberProperties.map { it.name }.let { columnsNames ->
+                columnsNames.map { colName ->
+                    colName to data.map { item ->
+                        (classType.memberProperties.first { it.name == colName } as KProperty1<T, *>)
+                            .apply { isAccessible = true }
+                            .get(item)
+                    }
+                }.let { columns ->
+                    dataFrameOf(*columns.toTypedArray()).also {
+                        it.writeCSV(file)
+                    }.let {
+                        Result.success(true)
+                    }
+                }
+            }
         }
     }
-
 }

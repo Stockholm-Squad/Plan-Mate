@@ -48,4 +48,4 @@ Please make sure the following have been completed:
 
 List any related issues or tasks:
 
-- Resolves: [Bug title or issue #]([https://github.com/](https://github.com/Stockholm-Squad/Plan-Mate))
+- Resolves: [Bug title or issue #]([https://github.com/](https://github.com/Stockholm-Squad/Food-Change-Mood))
