@@ -5,11 +5,26 @@ import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.StateRepository
 
 class ManageStatesUseCase(
-    private val stateRepository: StateRepository
+    private val stateRepository: StateRepository,
 ) {
-    fun addState(state: State): Result<Boolean> {
-        TODO("Not yet implemented")
+    fun addState(stateName: String): Result<Boolean> {
+        return stateRepository.addState(stateName).fold(
+            onSuccess = {
+                stateName.trim()
+                it.let {
+                    stateName.isNotBlank() && isValidLength(stateName) && !isStateExists(stateName) && isLetterAndWhiteSpace(stateName)
+                }
+                Result.success(
+                    true
+                )
+            },
+            onFailure = { Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) }
+        )
+
     }
+
+
+
 
     fun editState(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
@@ -27,13 +42,14 @@ class ManageStatesUseCase(
         )
     }
 
+
     private fun isStateNameValid(stateName: String): Result<Boolean> {
-        return stateName.trim().takeIf {
+        return stateName.takeIf {
             stateName.isNotBlank() &&
                     stateName.length <= 20 &&
-                    stateName.contains("^[A-Za-z]+\$")
+                    stateName.contains("^[A-Za-z]+$".toRegex()) // Ensure only letters
         }?.let { Result.success(true) }
-            ?: Result.failure(PlanMateExceptions.LogicException.InvalidStateName())
+            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) // Invalid state name
     }
 
     fun deleteState(stateName: String): Result<Boolean> {
@@ -59,7 +75,14 @@ class ManageStatesUseCase(
     }
 
     fun getAllStates(): Result<List<State>> {
-        TODO("Not yet implemented")
+        return stateRepository.getAllStates().fold(
+            onSuccess = { data ->
+                data.takeIf { data.isNotEmpty() }?.let {
+                    Result.success(data)
+                } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+            },
+            onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
+        )
     }
 
     fun getStateIdByName(stateName: String): String? {
@@ -79,5 +102,19 @@ class ManageStatesUseCase(
             },
             onFailure = { null }
         )
+    }
+
+
+    private fun isValidLength(stateName: String): Boolean {
+        return stateName.length <= 30
+    }
+
+    private fun isLetterAndWhiteSpace(stateName: String): Boolean {
+        return stateName.all { char -> char.isLetter() || char.isWhitespace() }
+    }
+
+    private fun isStateExists(stateName: String): Boolean {
+
+        return getAllStates().getOrThrow().any { state: State -> state.name.equals(stateName, ignoreCase = true) }
     }
 }
