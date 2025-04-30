@@ -1,19 +1,18 @@
 package org.example.ui.features.state
 
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.common.state.UserStateManagerUiImp
+import org.example.ui.features.common.state.UserStateManagerUi
 
 class MateStateManagerUiImpl(
-    private val manageStatesUseCase: ManageStatesUseCase,
+    private val userStateManagerUi: UserStateManagerUi,
     outputPrinter: OutputPrinter
-) : MateStateManagerUi, UserStateManagerUiImp(manageStatesUseCase, outputPrinter) {
+) : MateStateManagerUi, UserStateManagerUi {
 
     override fun launchUi() {
-        TODO("Not yet implemented")
+        this.showAllStates()
     }
 
     override fun showAllStates() {
-        TODO("Not yet implemented")
+        userStateManagerUi.showAllStates()
     }
 }

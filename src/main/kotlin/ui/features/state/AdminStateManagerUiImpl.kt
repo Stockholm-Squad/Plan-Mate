@@ -3,31 +3,32 @@ package org.example.ui.features.state
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.common.state.UserStateManagerUiImp
+import org.example.ui.features.common.state.UserStateManagerUi
 
 class AdminStateManagerUiImpl(
+    private val userStateManagerUi: UserStateManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter
-) : AdminStateManagerUi, UserStateManagerUiImp(manageStatesUseCase, outputPrinter) {
+) : AdminStateManagerUi, UserStateManagerUi {
 
     override fun launchUi() {
-        TODO("Not yet implemented")
+        println()
     }
 
     override fun addState() {
-        TODO("Not yet implemented")
+        println()
     }
 
     override fun editState() {
-        TODO("Not yet implemented")
+        println()
     }
 
     override fun deleteState() {
-        TODO("Not yet implemented")
+        println()
     }
 
     override fun showAllStates() {
-        TODO("Not yet implemented")
+        userStateManagerUi.showAllStates()
     }
 }

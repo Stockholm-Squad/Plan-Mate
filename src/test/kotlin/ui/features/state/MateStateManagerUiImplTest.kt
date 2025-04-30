@@ -1,22 +1,35 @@
 package ui.features.state
 
-import io.mockk.mockk
-import org.example.logic.repository.StateRepository
-import org.example.logic.usecase.state.ManageStatesUseCase
+import io.mockk.*
+import org.example.input_output.output.OutputPrinter
+import org.example.ui.features.common.state.UserStateManagerUi
 import org.example.ui.features.state.MateStateManagerUi
 import org.example.ui.features.state.MateStateManagerUiImpl
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class MateStateManagerUiImplTest {
-    private lateinit var stateRepository: StateRepository
-    private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var mateStateManagerUi: MateStateManagerUi
+    private lateinit var userStateManagerUi: UserStateManagerUi
+    private lateinit var printer: OutputPrinter
 
     @BeforeEach
     fun setUp() {
-        stateRepository = mockk(relaxed = true)
-        manageStatesUseCase = ManageStatesUseCase(stateRepository)
-        mateStateManagerUi = MateStateManagerUiImpl(manageStatesUseCase)
+        printer = mockk(relaxed = true)
+        userStateManagerUi = mockk(relaxed = true)
+        mateStateManagerUi = MateStateManagerUiImpl(userStateManagerUi, printer)
 
+    }
+
+    @Test
+    fun `launch() should call a show all function from parent class and print list of data when called`() {
+        //Given
+        every { userStateManagerUi.showAllStates() } just runs
+
+        //When
+        mateStateManagerUi.launchUi()
+
+        //Then
+        verify { userStateManagerUi.showAllStates() }
     }
 }
