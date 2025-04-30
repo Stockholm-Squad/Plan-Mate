@@ -14,7 +14,7 @@ class StateRepositoryImp(
     }
 
     init {
-        getStates()
+        getAllStates()
     }
 
     override fun addState(state: State): Result<Boolean> {
@@ -47,12 +47,7 @@ class StateRepositoryImp(
         } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
     }
 
-
     override fun getAllStates(): Result<List<State>> {
-        TODO("Not yet implemented")
-    }
-
-    private fun getStates(): Result<List<State>> {
         return listOfStates.takeIf { it.isNotEmpty() }?.let {
             Result.success(listOfStates.toList())
         } ?: stateDataSource.read().fold(
@@ -68,7 +63,7 @@ class StateRepositoryImp(
         return throwable.takeIf { throwable is PlanMateExceptions.DataException }?.let { dataException ->
             dataException.takeIf { throwable is PlanMateExceptions.DataException.FileNotExistException }?.let {
                 listOfStates = mutableListOf()
-                Result.success(listOf())
+                Result.failure(PlanMateExceptions.DataException.EmptyDataException())
             } ?: Result.failure(throwable)
         } ?: Result.failure(throwable)
     }
