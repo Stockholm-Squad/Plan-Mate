@@ -4,9 +4,9 @@ import logic.model.entities.AuditSystem
 import logic.model.entities.AuditSystemType
 
 interface AuditSystemRepository {
-    fun addAuditSystem(auditSystem: AuditSystem): Result<Boolean>
-    fun getAuditSystemById(id: String): Result<AuditSystem>
-    fun getAllAuditSystems(): Result<List<AuditSystem>>
-    fun getAllAuditSystemsByType(type: AuditSystemType): Result<List<AuditSystem>>
-    fun getAllAuditSystemsEntityId(entityId: String): Result<List<AuditSystem>>
+    fun recordAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean>
+    fun getAllAuditEntries(): Result<List<AuditSystem>>
+    fun getTaskChangeLogsById(taskId: Int): Result<List<AuditSystem>>
+    fun getProjectChangeLogsById(projectId: Int): Result<List<AuditSystem>>
+    fun getUserChangeLogsByUsername(username: String): Result<List<AuditSystem>>
 }
