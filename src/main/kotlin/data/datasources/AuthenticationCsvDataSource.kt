@@ -11,7 +11,7 @@ class AuthenticationCsvDataSource : PlanMateDataSource<User> {
         TODO("Not yet implemented")
     }
 
-    override fun write(model: List<User>): Result<Boolean> {
+    override fun overWrite(model: List<User>): Result<Boolean> {
         TODO("Not yet implemented")
     }
 

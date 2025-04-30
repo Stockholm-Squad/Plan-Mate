@@ -11,7 +11,7 @@ class AuditSystemCsvDataSource : PlanMateDataSource<AuditSystem> {
         TODO("Not yet implemented")
     }
 
-    override fun write(model: List<AuditSystem>): Result<Boolean> {
+    override fun overWrite(model: List<AuditSystem>): Result<Boolean> {
         TODO("Not yet implemented")
     }
 

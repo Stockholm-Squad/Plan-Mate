@@ -18,7 +18,7 @@ abstract class CsvDataSource<T : Any>(
     abstract override fun read(): Result<List<T>>
 
     @Suppress("UNCHECKED_CAST")
-    override fun write(model: List<T>): Result<Boolean> {
+    override fun overWrite(model: List<T>): Result<Boolean> {
         val file = resolveFile()
 
         if (model.isEmpty()) {
