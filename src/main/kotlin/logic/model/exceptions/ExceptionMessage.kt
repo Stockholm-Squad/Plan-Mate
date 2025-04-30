@@ -12,6 +12,7 @@ enum class ExceptionMessage(
     STATE_ALREADY_EXIST_MESSAGE("The state is already exist!"),
     STATE_NAME_LENGTH_MESSAGE("The state name is too long!"),
     INVALID_INPUT("Error Not valid input!"),
-    NO_STATE_FOUNDED_MESSAGE("There is no states!!")
+    NO_STATE_FOUNDED_MESSAGE("There is no states!!"),
+    INVALID_STATE_NAME_MESSAGE("Invalid state name!!")
 
 }

@@ -50,5 +50,11 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
+
+        data class InvalidStateName(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_STATE_NAME_MESSAGE,
+        ) : LogicException(
+            exceptionMessage
+        )
     }
 }

@@ -12,25 +12,44 @@ class ManageStatesUseCase(
     }
 
     fun editState(stateName: String): Result<Boolean> {
-        return isStateExist(stateName)
-            .takeIf { it != null }
-            ?.let { state ->
-                stateRepository.editState(state).fold(
-                    onSuccess = { Result.success(it) },
-                    onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
-                )
-            } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+        return isStateNameValid(stateName).fold(
+            onSuccess = {
+                isStateExist(stateName)
+                    .takeIf { it != null }
+                    ?.let { state ->
+                        stateRepository.editState(state).fold(
+                            onSuccess = { Result.success(it) },
+                            onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
+                        )
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+            },
+            onFailure = { throwable -> Result.failure(throwable) }
+        )
+    }
+
+    private fun isStateNameValid(stateName: String): Result<Boolean> {
+        return stateName.trim().takeIf {
+            stateName.isNotBlank() &&
+                    stateName.length <= 20 &&
+                    stateName.contains("^[A-Za-z]+\$")
+        }?.let { Result.success(true) }
+            ?: Result.failure(PlanMateExceptions.LogicException.InvalidStateName())
     }
 
     fun deleteState(stateName: String): Result<Boolean> {
-        return isStateExist(stateName)
-            .takeIf { it != null }
-            ?.let { state ->
-                stateRepository.deleteState(state).fold(
-                    onSuccess = { Result.success(it) },
-                    onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
-                )
-            } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+        return isStateNameValid(stateName).fold(
+            onSuccess = {
+                isStateExist(stateName)
+                    .takeIf { it != null }
+                    ?.let { state ->
+                        stateRepository.deleteState(state).fold(
+                            onSuccess = { Result.success(it) },
+                            onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
+                        )
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+            },
+            onFailure = { throwable -> Result.failure(throwable) }
+        )
     }
 
     private fun handleStateNotExistException(throwable: Throwable): Result<Boolean> {
