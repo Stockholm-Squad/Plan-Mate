@@ -7,6 +7,10 @@ class UserAssignedToProjectCsvDataSource : PlanMateDataSource<UserAssignedToProj
         TODO("Not yet implemented")
     }
 
+    override fun append(model: List<UserAssignedToProject>): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun write(model: List<UserAssignedToProject>): Result<Boolean> {
         TODO("Not yet implemented")
     }

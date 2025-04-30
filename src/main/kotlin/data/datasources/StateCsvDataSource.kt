@@ -7,6 +7,10 @@ class StateCsvDataSource : PlanMateDataSource<State> {
         TODO("Not yet implemented")
     }
 
+    override fun append(model: List<State>): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
     override fun write(model: List<State>): Result<Boolean> {
         TODO("Not yet implemented")
     }
