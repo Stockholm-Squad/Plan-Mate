@@ -72,7 +72,7 @@ class TaskManagerUi(
         )
     }
 
-    private fun createTask(): Result<Boolean> {
+    fun createTask(): Result<Boolean> {
         printer.showMessage(UiMessages.CREATE_TASK_INTRO.message)
 
         printer.showMessage(UiMessages.ENTER_TASK_NAME.message)
@@ -110,7 +110,7 @@ class TaskManagerUi(
             }
     }
 
-    private fun editTask() {
+   fun editTask() {
         printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
         val taskId = readStringOrNull()
             ?: return printer.showMessage(UiMessages.TASK_ID_EMPTY.message)
@@ -145,7 +145,7 @@ class TaskManagerUi(
             }
     }
 
-    private fun deleteTask() {
+     fun deleteTask() {
         printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
         val taskId = readStringOrNull()
             ?: return printer.showMessage(UiMessages.TASK_ID_EMPTY.message)
@@ -159,7 +159,7 @@ class TaskManagerUi(
             }
     }
 
-    private fun showAllMateTaskAssignment() {
+     fun showAllMateTaskAssignment() {
         printer.showMessage(UiMessages.TASK_ASSIGNMENT_PROMPT.message)
         val userId = readStringOrNull()
             ?: return printer.showMessage(UiMessages.TASK_ASSIGNMENT_EMPTY.message)
@@ -178,7 +178,7 @@ class TaskManagerUi(
             }
     }
 
-    private fun showAllTasksInProject() {
+    fun showAllTasksInProject() {
         printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
         val projectId = readStringOrNull()
             ?: return printer.showMessage(UiMessages.PROJECT_ID_EMPTY.message)
@@ -197,7 +197,7 @@ class TaskManagerUi(
             }
     }
 
-    private fun showStateOfProject() {
+     fun showStateOfProject() {
         printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
         val projectId = readStringOrNull()
             ?: return printer.showMessage(UiMessages.PROJECT_ID_EMPTY.message)
