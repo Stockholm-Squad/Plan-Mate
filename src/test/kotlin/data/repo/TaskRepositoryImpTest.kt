@@ -9,7 +9,9 @@ import org.example.data.datasources.PlanMateDataSource
 import org.example.data.entities.MateTaskAssignment
 import org.example.data.entities.TaskInProject
 import org.example.data.repo.TaskRepositoryImp
+import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
+import org.example.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -17,30 +19,28 @@ import org.junit.jupiter.api.assertThrows
 class TaskRepositoryImpTest {
 
     private lateinit var taskDataSource: PlanMateDataSource<Task>
-    private lateinit var taskInProjectDataSource: PlanMateDataSource<TaskInProject>
     private lateinit var mateTaskAssignmentCsvDataSource: PlanMateDataSource<MateTaskAssignment>
     private lateinit var taskRepository: TaskRepository
+    private lateinit var dataHandler: DateHandler
 
     @BeforeEach
     fun setUp() {
         taskDataSource = mockk(relaxed = true)
-        taskInProjectDataSource = mockk(relaxed = true)
         mateTaskAssignmentCsvDataSource = mockk(relaxed = true)
         taskRepository = TaskRepositoryImp(
             taskDataSource,
-            taskInProjectDataSource,
-            mateTaskAssignmentCsvDataSource
-        )
+            mateTaskAssignmentCsvDataSource)
+        dataHandler= DateHandler()
     }
 
     @Test
     fun `getAllTasks() should return success result with a list of tasks when the file has data`() {
         // Given
         val taskList = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)),
-            Task(id = "2", name = "Task 2", description = "Description 2", stateId = "state2", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate =dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime()),
+            Task(id = "2", name = "Task 2", description = "Description 2", stateId = "state2", createdDate = dataHandler.getCurrentDateTime(), updatedDate =dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(taskList)
+        every { taskDataSource.read() } returns Result.success(taskList)
 
         // When
         val result = taskRepository.getAllTasks()
@@ -52,15 +52,15 @@ class TaskRepositoryImpTest {
     @Test
     fun `getAllTasks() should return failure result with throwable when error happens while reading from the file`() {
         // Given
-        every { taskDataSource.read("tasks.csv") } returns Result.failure(Throwable("File read error"))
+        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
         val result = taskRepository.getAllTasks()
 
         // Then
-        assertThrows<Throwable> { result.getOrThrow() }
+        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
     }
-  
+
     @Test
     fun `createTask() should return success result with true when the task is created successfully`() {
         // Given
@@ -69,13 +69,13 @@ class TaskRepositoryImpTest {
             name = "Task 3",
             description = "Description 3",
             stateId = "state3",
-            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
-            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
         )
         val existingTasks = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate =dataHandler.getCurrentDateTime(), updatedDate =dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
+        every { taskDataSource.read() } returns Result.success(existingTasks)
         every { taskDataSource.write(any()) } returns Result.success(true)
 
         // When
@@ -93,19 +93,19 @@ class TaskRepositoryImpTest {
             name = "Task 1",
             description = "Description 1",
             stateId = "state1",
-            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
-            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
         )
         val existingTasks = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate =dataHandler.getCurrentDateTime(), updatedDate =dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
+        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
         val result = taskRepository.createTask(newTask)
 
         // Then
-        assertThrows<Throwable> { result.getOrThrow() }
+        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
     }
 
     @Test
@@ -116,13 +116,13 @@ class TaskRepositoryImpTest {
             name = "Updated Task",
             description = "Updated Description",
             stateId = "state2",
-            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
-            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
         )
         val existingTasks = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
+        every { taskDataSource.read() } returns Result.success(existingTasks)
         every { taskDataSource.write(any()) } returns Result.success(true)
 
         // When
@@ -140,19 +140,16 @@ class TaskRepositoryImpTest {
             name = "Updated Task",
             description = "Updated Description",
             stateId = "state2",
-            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
-            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
         )
-        val existingTasks = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
-        )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
+        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
         val result = taskRepository.editTask(updatedTask)
 
         // Then
-        assertThrows<Throwable> { result.getOrThrow() }
+        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
     }
 
     @Test
@@ -160,9 +157,9 @@ class TaskRepositoryImpTest {
         // Given
         val taskId = "1"
         val existingTasks = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
+        every { taskDataSource.read() } returns Result.success(existingTasks)
         every { taskDataSource.write(any()) } returns Result.success(true)
 
         // When
@@ -177,82 +174,45 @@ class TaskRepositoryImpTest {
         // Given
         val taskId = "999"
         val existingTasks = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
+        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
         val result = taskRepository.deleteTask(taskId)
 
         // Then
-        assertThrows<Throwable> { result.getOrThrow() }
+        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
     }
-
     @Test
-    fun `getAllTasksByProjectId() should return success result with tasks filtered by project ID`() {
+    fun `getAllMateTaskAssignment should return success when read is successful`() {
         // Given
-        val projectId = "project1"
-        val taskInProjectList = listOf(
-            TaskInProject(taskId = "1", projectId = "project1"),
-            TaskInProject(taskId = "2", projectId = "project2")
-        )
-        every { taskInProjectDataSource.read("tasks_in_projects.csv") } returns Result.success(taskInProjectList)
+        val mateName = "Ali"
+        val assignments = listOf(MateTaskAssignment("task1", "Ali"), MateTaskAssignment("task2", "Ali"))
+        every {mateTaskAssignmentCsvDataSource.read() } returns Result.success(assignments)
 
         // When
-        val result = taskRepository.getAllTasksByProjectId(projectId)
+        val result = taskRepository.getAllMateTaskAssignment(mateName)
 
-        // Then
-        assertThat(result.getOrNull()).isEqualTo(listOf(TaskInProject(taskId = "1", projectId = "project1")))
+        //Then
+        assertThat(result.getOrNull()).isEqualTo(assignments)
     }
-
     @Test
-    fun `getAllTasksByProjectId() should return failure result with throwable when no tasks are found for the project ID`() {
+    fun `getAllMateTaskAssignment should return failure with ReadException when read fails`() {
         // Given
-        val projectId = "project999"
-        val taskInProjectList = listOf(
-            TaskInProject(taskId = "1", projectId = "project1"),
-            TaskInProject(taskId = "2", projectId = "project2")
-        )
-        every { taskInProjectDataSource.read("tasks_in_projects.csv") } returns Result.success(taskInProjectList)
+        val mateName = "Ali"
+        every { mateTaskAssignmentCsvDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
-        val result = taskRepository.getAllTasksByProjectId(projectId)
+        val result = taskRepository.getAllMateTaskAssignment(mateName)
 
         // Then
-        assertThrows<Throwable> { result.getOrThrow() }
+
+       assertThrows<PlanMateExceptions.DataException.ReadException> {
+            result.getOrThrow()
+        }
     }
 
-    @Test
-    fun `getAllTasksByUserId() should return success result with tasks filtered by user ID`() {
-        // Given
-        val userId = "user1"
-        val mateTaskAssignmentLists = listOf(
-            MateTaskAssignment(user = "user1", taskId = "1"),
-            MateTaskAssignment(user = "user2", taskId = "2")
-        )
-        every { mateTaskAssignmentCsvDataSource.read("users_assigned_to_tasks.csv") } returns Result.success(mateTaskAssignmentLists)
 
-        // When
-        val result = taskRepository.getAllMateTaskAssignment(userId)
 
-        // Then
-        assertThat(result.getOrNull()).isEqualTo(listOf(MateTaskAssignment(user = "user1", taskId = "1")))
-    }
-
-    @Test
-    fun `getAllTasksByUserId() should return failure result with throwable when no tasks are found for the user ID`() {
-        // Given
-        val userId = "user999"
-        val mateTaskAssignmentLists = listOf(
-            MateTaskAssignment(user = "user1", taskId = "1"),
-            MateTaskAssignment(user = "user2", taskId = "2")
-        )
-        every { mateTaskAssignmentCsvDataSource.read("users_assigned_to_tasks.csv") } returns Result.success(mateTaskAssignmentLists)
-
-        // When
-        val result = taskRepository.getAllMateTaskAssignment(userId)
-
-        // Then
-        assertThrows<Throwable> { result.getOrThrow() }
-    }
 }

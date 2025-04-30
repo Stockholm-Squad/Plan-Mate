@@ -14,6 +14,7 @@ enum class ExceptionMessage(
     TASK_NOT_FOUND ( "Task not found"),
     TASK_EDITED_SUCCESSFULLY("Task Updated Successfully"),
     FAILED_TO_EDIT_TASK("Failed to update task"),
-    NO_STATE_FOUND("No states found for the project.")
+    NO_STATE_FOUND("No states found for the project."),
+    TASK_ALREADY_EXISTS("task is existed")
 
 }

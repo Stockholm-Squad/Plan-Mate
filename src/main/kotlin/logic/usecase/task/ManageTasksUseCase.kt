@@ -57,18 +57,18 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { exception -> Result.failure(exception) }
         )
 
-    fun getAllTasksByProjectId(projectId: String): Result<List<TaskInProject>> =
-        taskRepository.getAllTasksByProjectId(projectId).fold(
-            onSuccess = { Result.success(it) },
-            onFailure = { exception -> Result.failure(exception) }
-        )
-
-    fun getAllStatesByProjectId(projectId: String): Result<List<Pair<String, String>>> =
-        taskRepository.getAllTasksByProjectId(projectId).fold(
-            onSuccess = { tasks ->
-                val states = tasks.map { Pair(it.taskId, it.stateId) }
-                Result.success(states)
-            },
-            onFailure = { exception -> Result.failure(exception) }
-        )
+//    fun getAllTasksByProjectId(projectId: String): Result<List<TaskInProject>> =
+//        taskRepository.getAllTasksByProjectId(projectId).fold(
+//            onSuccess = { Result.success(it) },
+//            onFailure = { exception -> Result.failure(exception) }
+//        )
+//
+//    fun getAllStatesByProjectId(projectId: String): Result<List<Pair<String, String>>> =
+//        taskRepository.getAllTasksByProjectId(projectId).fold(
+//            onSuccess = { tasks ->
+//                val states = tasks.map { Pair(it.taskId, it.stateId) }
+//                Result.success(states)
+//            },
+//            onFailure = { exception -> Result.failure(exception) }
+//        )
 }

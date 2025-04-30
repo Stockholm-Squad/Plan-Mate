@@ -22,11 +22,11 @@ class TaskRepositoryImp(
     override fun editTask(task: Task): Result<Boolean> =
         readTasks().fold(
             onSuccess = { tasks ->
-                val updatedTasks = tasks.map { if (it.id == task.id) task else it }
-                taskDataSource.write(updatedTasks)
+                taskDataSource.write(tasks.map { it.takeIf { it.id != task.id } ?: task })
             },
             onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
         )
+
 
     override fun deleteTask(id: String?): Result<Boolean> =
         readTasks().fold(
@@ -55,7 +55,7 @@ class TaskRepositoryImp(
         )
     }
 
-    private fun writeTasks(tasks: List<Task>): Result<Boolean> {
+     fun writeTasks(tasks: List<Task>): Result<Boolean> {
         return taskDataSource.write(tasks).fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }

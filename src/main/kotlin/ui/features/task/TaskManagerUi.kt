@@ -29,7 +29,7 @@ class TaskManagerUi(
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
-            TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
+           // TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
             TaskOptions.EXIT -> {
                 exit()
@@ -83,7 +83,7 @@ class TaskManagerUi(
         val taskDescription = readStringOrNull()
             ?: return Result.failure(Throwable(UiMessages.TASK_DESCRIPTION_EMPTY.message))
 
-        showStateOfProject()
+      //  showStateOfProject()
 
         printer.showMessage(UiMessages.ENTER_STATE_ID.message)
         val stateId = readStringOrNull()
@@ -177,44 +177,44 @@ class TaskManagerUi(
                 printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
             }
     }
-
-    fun showAllTasksInProject() {
-        printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
-        val projectId = readStringOrNull()
-            ?: return printer.showMessage(UiMessages.PROJECT_ID_EMPTY.message)
-
-        manageTasksUseCase.getAllTasksByProjectId(projectId)
-            .onSuccess { tasks ->
-                tasks.takeUnless { it.isEmpty() }
-                    ?.also { printer.showMessage(UiMessages.PROJECT_TASKS.message.format(projectId)) }
-                    ?.forEachIndexed { index, task ->
-                        printer.showMessage("${index + 1}. Task ID: ${task.taskId}, Name: ${task.projectId}")
-                    }
-                    ?: printer.showMessage(UiMessages.NO_PROJECT_TASKS.message.format(projectId))
-            }
-            .onFailure { exception ->
-                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
-            }
-    }
-
-     fun showStateOfProject() {
-        printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
-        val projectId = readStringOrNull()
-            ?: return printer.showMessage(UiMessages.PROJECT_ID_EMPTY.message)
-
-        manageTasksUseCase.getAllStatesByProjectId(projectId)
-            .onSuccess { states ->
-                states.takeUnless { it.isEmpty() }
-                    ?.also { printer.showMessage(UiMessages.STATES_FOR_PROJECT.message.format(projectId)) }
-                    ?.forEachIndexed { index, (taskId, stateId) ->
-                        printer.showMessage("${index + 1}. Task ID: $taskId, State ID: $stateId")
-                    }
-                    ?: printer.showMessage(UiMessages.NO_STATES_FOR_PROJECT.message.format(projectId))
-            }
-            .onFailure { exception ->
-                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
-            }
-    }
+//
+//    fun showAllTasksInProject() {
+//        printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
+//        val projectId = readStringOrNull()
+//            ?: return printer.showMessage(UiMessages.PROJECT_ID_EMPTY.message)
+//
+//        manageTasksUseCase.getAllTasksByProjectId(projectId)
+//            .onSuccess { tasks ->
+//                tasks.takeUnless { it.isEmpty() }
+//                    ?.also { printer.showMessage(UiMessages.PROJECT_TASKS.message.format(projectId)) }
+//                    ?.forEachIndexed { index, task ->
+//                        printer.showMessage("${index + 1}. Task ID: ${task.taskId}, Name: ${task.projectId}")
+//                    }
+//                    ?: printer.showMessage(UiMessages.NO_PROJECT_TASKS.message.format(projectId))
+//            }
+//            .onFailure { exception ->
+//                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
+//            }
+//    }
+//
+//     fun showStateOfProject() {
+//        printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
+//        val projectId = readStringOrNull()
+//            ?: return printer.showMessage(UiMessages.PROJECT_ID_EMPTY.message)
+//
+//        manageTasksUseCase.getAllStatesByProjectId(projectId)
+//            .onSuccess { states ->
+//                states.takeUnless { it.isEmpty() }
+//                    ?.also { printer.showMessage(UiMessages.STATES_FOR_PROJECT.message.format(projectId)) }
+//                    ?.forEachIndexed { index, (taskId, stateId) ->
+//                        printer.showMessage("${index + 1}. Task ID: $taskId, State ID: $stateId")
+//                    }
+//                    ?: printer.showMessage(UiMessages.NO_STATES_FOR_PROJECT.message.format(projectId))
+//            }
+//            .onFailure { exception ->
+//                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
+//            }
+//    }
 
     private fun readStringOrNull(): String? =
         reader.readStringOrNull()?.takeUnless { it.isBlank() }
