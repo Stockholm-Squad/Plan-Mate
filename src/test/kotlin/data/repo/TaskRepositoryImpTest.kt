@@ -3,16 +3,16 @@ package data.repo
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.datetime.LocalDateTime
 import logic.model.entities.Task
 import org.example.data.datasources.PlanMateDataSource
 import org.example.data.entities.MateTaskAssignment
 import org.example.data.entities.TaskInProject
 import org.example.data.repo.TaskRepositoryImp
 import org.example.logic.repository.TaskRepository
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
-import kotlin.test.Test
-
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class TaskRepositoryImpTest {
 
@@ -37,8 +37,8 @@ class TaskRepositoryImpTest {
     fun `getAllTasks() should return success result with a list of tasks when the file has data`() {
         // Given
         val taskList = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false),
-            Task(id = "2", projectId = "project1", userId = "user2", name = "Task 2", description = "Description 2", completed = true)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)),
+            Task(id = "2", name = "Task 2", description = "Description 2", stateId = "state2", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(taskList)
 
@@ -60,46 +60,20 @@ class TaskRepositoryImpTest {
         // Then
         assertThrows<Throwable> { result.getOrThrow() }
     }
-
-    @Test
-    fun `getTaskById() should return success result with the task when the task is found`() {
-        // Given
-        val taskId = "1"
-        val taskList = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false),
-            Task(id = "2", projectId = "project1", userId = "user2", name = "Task 2", description = "Description 2", completed = true)
-        )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(taskList)
-
-        // When
-        val result = taskRepository.getTaskById(taskId)
-
-        // Then
-        assertThat(result.getOrNull()).isEqualTo(taskList.find { it.id == taskId })
-    }
-
-    @Test
-    fun `getTaskById() should return failure result with throwable when the task is not found`() {
-        // Given
-        val taskId = "999"
-        val taskList = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
-        )
-        every { taskDataSource.read("tasks.csv") } returns Result.success(taskList)
-
-        // When
-        val result = taskRepository.getTaskById(taskId)
-
-        // Then
-        assertThrows<Throwable> { result.getOrThrow() }
-    }
-
+  
     @Test
     fun `createTask() should return success result with true when the task is created successfully`() {
         // Given
-        val newTask = Task(id = "3", projectId = "project1", userId = "user1", name = "Task 3", description = "Description 3", completed = false)
+        val newTask = Task(
+            id = "3",
+            name = "Task 3",
+            description = "Description 3",
+            stateId = "state3",
+            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
+            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+        )
         val existingTasks = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
         every { taskDataSource.write(any()) } returns Result.success(true)
@@ -114,9 +88,16 @@ class TaskRepositoryImpTest {
     @Test
     fun `createTask() should return failure result with throwable when the task already exists`() {
         // Given
-        val newTask = Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+        val newTask = Task(
+            id = "1",
+            name = "Task 1",
+            description = "Description 1",
+            stateId = "state1",
+            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
+            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+        )
         val existingTasks = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
 
@@ -130,9 +111,16 @@ class TaskRepositoryImpTest {
     @Test
     fun `editTask() should return success result with true when the task is updated successfully`() {
         // Given
-        val updatedTask = Task(id = "1", projectId = "project1", userId = "user1", name = "Updated Task", description = "Updated Description", completed = true)
+        val updatedTask = Task(
+            id = "1",
+            name = "Updated Task",
+            description = "Updated Description",
+            stateId = "state2",
+            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
+            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+        )
         val existingTasks = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
         every { taskDataSource.write(any()) } returns Result.success(true)
@@ -147,9 +135,16 @@ class TaskRepositoryImpTest {
     @Test
     fun `editTask() should return failure result with throwable when the task to edit does not exist`() {
         // Given
-        val updatedTask = Task(id = "999", projectId = "project1", userId = "user1", name = "Updated Task", description = "Updated Description", completed = true)
+        val updatedTask = Task(
+            id = "999",
+            name = "Updated Task",
+            description = "Updated Description",
+            stateId = "state2",
+            createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0),
+            updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0)
+        )
         val existingTasks = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
 
@@ -165,7 +160,7 @@ class TaskRepositoryImpTest {
         // Given
         val taskId = "1"
         val existingTasks = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
         every { taskDataSource.write(any()) } returns Result.success(true)
@@ -182,7 +177,7 @@ class TaskRepositoryImpTest {
         // Given
         val taskId = "999"
         val existingTasks = listOf(
-            Task(id = "1", projectId = "project1", userId = "user1", name = "Task 1", description = "Description 1", completed = false)
+            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = LocalDateTime(2025, 4, 29, 12, 0, 0), updatedDate = LocalDateTime(2025, 4, 29, 12, 0, 0))
         )
         every { taskDataSource.read("tasks.csv") } returns Result.success(existingTasks)
 
@@ -232,16 +227,16 @@ class TaskRepositoryImpTest {
         // Given
         val userId = "user1"
         val mateTaskAssignmentLists = listOf(
-            MateTaskAssignment(taskId = "1", user = "user1"),
-            MateTaskAssignment(taskId = "2", user = "user2")
+            MateTaskAssignment(user = "user1", taskId = "1"),
+            MateTaskAssignment(user = "user2", taskId = "2")
         )
         every { mateTaskAssignmentCsvDataSource.read("users_assigned_to_tasks.csv") } returns Result.success(mateTaskAssignmentLists)
 
         // When
-        val result = taskRepository.getAllTasksByUserId(userId)
+        val result = taskRepository.getAllMateTaskAssignment(userId)
 
         // Then
-        assertThat(result.getOrNull()).isEqualTo(listOf(MateTaskAssignment(taskId = "1", user = "user1")))
+        assertThat(result.getOrNull()).isEqualTo(listOf(MateTaskAssignment(user = "user1", taskId = "1")))
     }
 
     @Test
@@ -249,13 +244,13 @@ class TaskRepositoryImpTest {
         // Given
         val userId = "user999"
         val mateTaskAssignmentLists = listOf(
-            MateTaskAssignment(taskId = "1", user = "user1"),
-            MateTaskAssignment(taskId = "2", user = "user2")
+            MateTaskAssignment(user = "user1", taskId = "1"),
+            MateTaskAssignment(user = "user2", taskId = "2")
         )
         every { mateTaskAssignmentCsvDataSource.read("users_assigned_to_tasks.csv") } returns Result.success(mateTaskAssignmentLists)
 
         // When
-        val result = taskRepository.getAllTasksByUserId(userId)
+        val result = taskRepository.getAllMateTaskAssignment(userId)
 
         // Then
         assertThrows<Throwable> { result.getOrThrow() }

@@ -5,6 +5,7 @@ enum class ExceptionMessage(
 ) {
     READ_EXCEPTION_MESSAGE("Error while reading data!"),
     WRITE_EXCEPTION_MESSAGE("Error while writing data!"),
+    FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
     NO_TASKS_FOUNDED("No Tasks founded"),
     TASK_CREATED_SUCCESSFULLY("Task Created Successfully"),
     FAILED_TO_CREATE_TASK("Failed to create task"),

@@ -12,7 +12,7 @@ import org.koin.dsl.module
 val datasourceModule = module {
     factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource() }
     factory<PlanMateDataSource<User>> { AuthenticationCsvDataSource() }
-    factory<PlanMateDataSource<Project>> { ProjectCsvDataSource() }
+    factory<PlanMateDataSource<Project>> { ProjectCsvDataSource(filePath = "projects.csv") }
     factory<PlanMateDataSource<State>> { StateCsvDataSource() }
     factory<PlanMateDataSource<Task>> { TaskCsvDataSource(get()) }
 }

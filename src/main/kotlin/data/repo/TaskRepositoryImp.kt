@@ -13,19 +13,19 @@ class TaskRepositoryImp(
 ) : TaskRepository {
 
     override fun getAllTasks(): Result<List<Task>> =
-        taskDataSource.read("tasks.csv").fold(
+        taskDataSource.read().fold(
             onSuccess = { Result.success(it) },
             onFailure = { exception -> Result.failure(exception) }
         )
 
     override fun createTask(task: Task): Result<Boolean> =
-        taskDataSource.read("tasks.csv").fold(
+        taskDataSource.read().fold(
             onSuccess = { tasks -> taskDataSource.write(tasks + task) },
             onFailure = { exception -> Result.failure(exception) }
         )
 
     override fun editTask(task: Task): Result<Boolean> =
-        taskDataSource.read("tasks.csv").fold(
+        taskDataSource.read().fold(
             onSuccess = { tasks ->
                 val updatedTasks = tasks.map { if (it.id == task.id) task else it }
                 taskDataSource.write(updatedTasks)
@@ -33,8 +33,8 @@ class TaskRepositoryImp(
             onFailure = { exception -> Result.failure(exception) }
         )
 
-    override fun deleteTask(id: String?): Result<Boolean> =
-        taskDataSource.read("tasks.csv").fold(
+    override fun deleteTask(id: String): Result<Boolean> =
+        taskDataSource.read().fold(
             onSuccess = { tasks ->
                 val updatedTasks = tasks.filterNot { it.id == id }
                 taskDataSource.write(updatedTasks)
@@ -43,13 +43,13 @@ class TaskRepositoryImp(
         )
 
     override fun getAllMateTaskAssignment(mateName: String): Result<List<MateTaskAssignment>> =
-        mateTaskAssignment.read("users_assigned_to_tasks.csv").fold(
+        mateTaskAssignment.read().fold(
             onSuccess = { Result.success(it) },
             onFailure = { exception -> Result.failure(exception) }
         )
 
     override fun getAllTasksByProjectId(projectId: String): Result<List<TaskInProject>> =
-        taskInProjectDataSource.read("tasks_in_projects.csv").fold(
+        taskInProjectDataSource.read().fold(
             onSuccess = { Result.success(it) },
             onFailure = { exception -> Result.failure(exception) }
         )
