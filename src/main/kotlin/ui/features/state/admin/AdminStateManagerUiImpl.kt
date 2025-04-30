@@ -2,6 +2,7 @@ package org.example.ui.features.state.admin
 
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
+import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
@@ -10,7 +11,7 @@ class AdminStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
     private val reader: InputReader,
-    private val printer: OutputPrinter
+    private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
 
     override fun launchUi() {
@@ -39,9 +40,18 @@ class AdminStateManagerUiImpl(
         return false
     }
 
-
     override fun addState() {
-        println()
+        printer.showMessage("Please enter name for the state:")
+        reader.readStringOrNull().
+        takeIf {
+            stateName -> stateName != null }?.
+        let { stateName ->
+            manageStatesUseCase.addState(stateName = stateName).
+            fold(
+                onSuccess = ::showAddStateMessage,
+                onFailure = { showFailure("Failed to Add state: ${it.message}") }
+            )
+        } ?: showInvalidInput()
     }
 
     override fun editState() {
@@ -57,6 +67,10 @@ class AdminStateManagerUiImpl(
     }
 
     private fun showStateUpdatedMessage(isUpdated: Boolean) {
+        printer.showMessage("State updated successfully ^_^")
+    }
+
+    private fun showAddStateMessage(isUpdated: Boolean) {
         printer.showMessage("State updated successfully ^_^")
     }
 
@@ -83,8 +97,12 @@ class AdminStateManagerUiImpl(
     private fun showStateDeletedMessage(isUpdated: Boolean) {
         printer.showMessage("State deleted successfully ^_^")
     }
-
     override fun showAllStates() {
+        printer.showMessage("this is all state:")
+        manageStatesUseCase.getAllStates().fold(
+            onSuccess = { it.forEach { state -> println(state) } },
+            onFailure = { printer.showMessage("not available state") }
+        )
         userStateManagerUi.showAllStates()
     }
 }
