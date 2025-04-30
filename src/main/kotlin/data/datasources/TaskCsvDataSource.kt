@@ -11,7 +11,7 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 class TaskCsvDataSource(private val filePath: String) : CsvDataSource<Task>(filePath) {
     override fun read(): Result<List<Task>> {
         super.resolveFile().also {
-            if (!it.exists()) return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+            if (!it.exists()){ return Result.failure(PlanMateExceptions.DataException.FileNotExistException()) }
         }
 
         return try {
