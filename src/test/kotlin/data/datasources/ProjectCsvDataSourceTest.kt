@@ -89,7 +89,7 @@ class ProjectCsvDataSourceTest {
                 Project(id = "2", name = "Project B", stateId = "State B")
             )
 
-            val result = dataSource.write(projects)
+            val result = dataSource.overWrite(projects)
             assertTrue(result.isSuccess)
             assertTrue(result.getOrThrow())
 
@@ -103,7 +103,7 @@ class ProjectCsvDataSourceTest {
 
         @Test
         fun `write should handle empty list`() {
-            val result = dataSource.write(emptyList())
+            val result = dataSource.overWrite(emptyList())
             assertTrue(result.isSuccess)
             assertTrue(result.getOrThrow())
 

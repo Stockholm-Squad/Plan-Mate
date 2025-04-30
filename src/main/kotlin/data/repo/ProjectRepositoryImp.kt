@@ -18,19 +18,19 @@ class ProjectRepositoryImp(
             getAllProjects()
         }
         allProjects.add(project)
-        return projectDataSource.write(allProjects).fold(
+        return projectDataSource.overWrite(allProjects).fold(
             onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) },
             onSuccess = { Result.success(true) }
         )
     }
 
     override fun editProject(project: Project): Result<Boolean> {
-        return projectDataSource.write(listOf(project)).fold(
+        return projectDataSource.overWrite(listOf(project)).fold(
             onFailure = { error -> Result.failure(PlanMateExceptions.DataException.ReadException()) },
             onSuccess = {
                 val updated = updateProjectInTheList(project)
                 if (updated) {
-                    projectDataSource.write(allProjects)
+                    projectDataSource.overWrite(allProjects)
                 }
                 Result.success(updated)
             }
@@ -55,7 +55,7 @@ class ProjectRepositoryImp(
         return projectDataSource.read().fold(
             onFailure = { error -> Result.failure(PlanMateExceptions.DataException.ReadException()) },
             onSuccess = {
-                Result.success(allProjects.remove(project)).onSuccess { projectDataSource.write(allProjects) }
+                Result.success(allProjects.remove(project)).onSuccess { projectDataSource.overWrite(allProjects) }
             }
         )
     }
