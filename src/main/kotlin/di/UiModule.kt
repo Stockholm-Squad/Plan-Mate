@@ -3,6 +3,8 @@ package org.example.di
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.authentication.AuthenticationManagerUi
+import org.example.ui.features.common.state.UserStateManagerUi
+import org.example.ui.features.common.state.UserStateManagerUiImp
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.AdminStateManagerUi
 import org.example.ui.features.state.AdminStateManagerUiImpl
@@ -22,6 +24,7 @@ val uiModule = module {
     factory { TaskManagerUiMateImp(get()) }
     factory { TaskManagerUiMateMateImp(get()) }
 
+    factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get()) }
 }

@@ -11,6 +11,7 @@ sealed class PlanMateExceptions(
         data class WriteException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.WRITE_EXCEPTION_MESSAGE,
         ) : DataException(exceptionMessage)
+
         data class EmptyDataException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.EMPTY_DATA_MESSAGE,
         ) : DataException(exceptionMessage)
@@ -37,6 +38,11 @@ sealed class PlanMateExceptions(
         )
         data class StateNameLengthException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_NAME_LENGTH_MESSAGE,
+        ) : LogicException(
+            exceptionMessage
+        )
+        data class NoStatesFoundedException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATE_FOUNDED_MESSAGE,
         ) : LogicException(
             exceptionMessage
         )
