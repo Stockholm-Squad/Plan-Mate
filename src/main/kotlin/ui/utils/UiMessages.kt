@@ -31,6 +31,11 @@ enum class UiMessages(val message: String) {
     NO_PROJECT_TASKS("No tasks found for project '%s'."),
     STATES_FOR_PROJECT("States for project '%s':"),
     NO_STATES_FOR_PROJECT("No states found for project '%s'."),
+    CREATE_TASK_INTRO("Let's create a task!"),
+    EDIT_TASK_NAME_PROMPT("Enter new task name (leave blank to keep current):"),
+    EDIT_TASK_DESCRIPTION_PROMPT("Enter new task description (leave blank to keep current):"),
+    EDIT_TASK_STATE_ID_PROMPT("Enter new state ID (leave blank to keep current):"),
+    GENERIC_ERROR("Error: %s"),
     MENU_HEADER("""
         ========================= Tasks Option =========================
         Please Choose an option. Pick a number between 0 and 7!
