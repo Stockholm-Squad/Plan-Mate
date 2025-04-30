@@ -5,10 +5,12 @@ import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.features.user.AddUserUi
 
 
 class PlanMateConsoleUi(
     private val manageAuthenticationUi: AuthenticationManagerUi,
+    private val addUserUi: AddUserUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
     private val stateManagerUi: StateManagerUi,

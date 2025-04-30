@@ -1,105 +1,109 @@
+// AddUserUiTest.kt
 package ui
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.User
+import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.user.AddUserUseCase
 import org.example.ui.features.user.AddUserUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AddUserUITest {
+class AddUserUiTest {
 
-    private lateinit var addUserUI: AddUserUi
+    private lateinit var addUserUi: AddUserUi
     private lateinit var addUserUseCase: AddUserUseCase
     private lateinit var printer: OutputPrinter
+    private lateinit var inputReader: InputReader
 
     @BeforeEach
     fun setUp() {
-        addUserUseCase = mockk(relaxed = true)
+        addUserUseCase = mockk()
         printer = mockk(relaxed = true)
-        addUserUI = AddUserUi(addUserUseCase, printer)
+        inputReader = mockk()
+        addUserUi = AddUserUi(addUserUseCase, printer, inputReader)
     }
 
     @Test
-    fun `addUser should print header and success message when successful`() {
+    fun `launchUi should show success when user is added`() {
         // Given
-        val user = User("john_doe", "hashedPassword123")
-        every { addUserUseCase.addUser(user) } returns Result.success(true)
+        val username = "testUser"
+        val password = "testPass123"
+        every { inputReader.readStringOrNull() } returnsMany listOf(username, password)
+        every { addUserUseCase.addUser(any()) } returns Result.success(true)
 
         // When
-        addUserUI.addUser(user)
+        addUserUi.launchUi()
 
         // Then
         verify {
-            printer.showMessage("➕ Adding new user...")
-            printer.showMessage("✅ User ${user.username} added successfully!")
+            printer.showMessage("✅ User $username added successfully!")
         }
     }
 
     @Test
-    fun `addUser should print error message when failure occurs`() {
+    fun `launchUi should show error when addUser returns false`() {
         // Given
-        val user = User("john_doe", "hashedPassword123")
-        val errorMessage = "Username already exists"
-        every { addUserUseCase.addUser(user) } returns Result.failure(RuntimeException(errorMessage))
+        val username = "testUser"
+        val password = "testPass123"
+        every { inputReader.readStringOrNull() } returnsMany listOf(username, password)
+        every { addUserUseCase.addUser(any()) } returns Result.success(false)
 
         // When
-        addUserUI.addUser(user)
+        addUserUi.launchUi()
 
         // Then
         verify {
-            printer.showMessage("➕ Adding new user...")
-            printer.showMessage("❌ Error: $errorMessage")
+            printer.showMessage("❌ Error: Failed to add user")
         }
     }
 
     @Test
-    fun `addUser should call use case exactly once`() {
+    fun `launchUi should show validation error for invalid input`() {
         // Given
-        val user = User("john_doe", "hashedPassword123")
-        every { addUserUseCase.addUser(user) } returns Result.success(true)
+        val username = ""
+        val password = "testPass123"
+        every { inputReader.readStringOrNull() } returnsMany listOf(username, password)
+        every { addUserUseCase.addUser(any()) } returns Result.failure(IllegalArgumentException("Username cannot be empty"))
 
         // When
-        addUserUI.addUser(user)
-
-        // Then
-        verify(exactly = 1) { addUserUseCase.addUser(user) }
-    }
-
-    @Test
-    fun `addUser should print validation error when username is empty`() {
-        // Given
-        val invalidUser = User("", "hashedPassword123")
-        every { addUserUseCase.addUser(invalidUser) } returns
-                Result.failure(IllegalArgumentException("Username cannot be empty"))
-
-        // When
-        addUserUI.addUser(invalidUser)
+        addUserUi.launchUi()
 
         // Then
         verify {
-            printer.showMessage("➕ Adding new user...")
-            printer.showMessage("❌ Validation error: Username cannot be empty")
+            printer.showMessage("Error: Username cannot be empty")
         }
     }
 
     @Test
-    fun `addUser should print validation error when password is empty`() {
+    fun `launchUi should handle null username`() {
         // Given
-        val invalidUser = User("john_doe", "")
-        every { addUserUseCase.addUser(invalidUser) } returns
-                Result.failure(IllegalArgumentException("Password cannot be empty"))
+        every { inputReader.readStringOrNull() } returns null
 
         // When
-        addUserUI.addUser(invalidUser)
+        addUserUi.launchUi()
 
         // Then
+        verify(exactly = 0) { addUserUseCase.addUser(any()) }
         verify {
-            printer.showMessage("➕ Adding new user...")
-            printer.showMessage("❌ Validation error: Password cannot be empty")
+            printer.showMessage("❌ Error: Username and password cannot be empty")
+        }
+    }
+
+    @Test
+    fun `launchUi should handle null password`() {
+        // Given
+        every { inputReader.readStringOrNull() } returnsMany listOf("testUser", null)
+
+        // When
+        addUserUi.launchUi()
+
+        // Then
+        verify(exactly = 0) { addUserUseCase.addUser(any()) }
+        verify {
+            printer.showMessage("❌ Error: Username and password cannot be empty")
         }
     }
 }
