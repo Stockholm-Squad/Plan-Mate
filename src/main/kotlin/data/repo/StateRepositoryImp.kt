@@ -9,13 +9,9 @@ class StateRepositoryImp(
     private val stateDataSource: PlanMateDataSource<State>,
 ) : StateRepository {
 
-    init {
-        getAllStates()
-    }
-
     override fun addState(stateName: String): Result<Boolean> {
         return stateDataSource.write(listOf(State(name = stateName))).fold(
-            onSuccess = {value ->
+            onSuccess = { value ->
                 Result.success(value)
             },
             onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
@@ -26,30 +22,25 @@ class StateRepositoryImp(
     override fun editState(state: State): Result<Boolean> {
         return getAllStates().fold(
             onSuccess = { currentStates ->
-                val updatedStates = currentStates.map {
-                    if (it.id == state.id) state else it
-                }
-
-                stateDataSource.write(updatedStates).fold(
+                stateDataSource.write(currentStates + state).fold(
                     onSuccess = { Result.success(true) },
                     onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
                 )
             },
-            onFailure = {exception ->  Result.failure(exception) }
+            onFailure = { exception -> Result.failure(exception) }
         )
     }
 
-    override fun deleteState(id: String): Result<Boolean> {
-        TODO()
-//        return listOfStates.takeIf { it.isNotEmpty() }?.let {
-//            stateDataSource.write(listOf()).fold(
-//                onSuccess = {
-//                    listOfStates = mutableListOf()
-//                    Result.success(true)
-//                },
-//                onFailure = { exception -> Result.failure(exception) }
-//            )
-//        } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+    override fun deleteState(state: State): Result<Boolean> {
+        return getAllStates().fold(
+            onSuccess = { currentStates ->
+                stateDataSource.write(currentStates - state).fold(
+                    onSuccess = { Result.success(true) },
+                    onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
+                )
+            },
+            onFailure = { exception -> Result.failure(exception) }
+        )
     }
 
     override fun getAllStates(): Result<List<State>> {
