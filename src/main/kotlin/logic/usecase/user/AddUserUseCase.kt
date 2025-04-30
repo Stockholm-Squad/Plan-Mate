@@ -2,32 +2,41 @@ package org.example.logic.usecase.user
 
 import logic.model.entities.User
 import org.example.logic.repository.UserRepository
+import org.example.utils.hashToMd5
 import java.security.MessageDigest
-
-class AddUserUseCase(private val authenticationRepository: UserRepository ) {
+class AddUserUseCase(private val userRepository: UserRepository) {
 
     fun addUser(newUser: User): Result<Boolean> {
-        val newUserWithHashedPassword = User(newUser.username, md5Hash(newUser.hashedPassword))
-        return authenticationRepository.getAllUsers()
-            .mapCatching { existingUsers ->
-                // Validate no duplicate username
-                if (existingUsers.any { it.username == newUser.username }) {
-                    throw IllegalArgumentException("User ${newUser.username} already exists")
-                }
-
-                // Append new user to file
-                authenticationRepository.addUser(newUserWithHashedPassword).getOrThrow()
-            }
+        return userRepository.getAllUsers()
+            .fold(
+                onSuccess = { onSuccessHandler(newUser, it) },
+                onFailure = { error -> Result.failure(error) }
+            )
     }
 
-    private fun md5Hash(password: String): String {
+    private fun onSuccessHandler(
+        newUser: User,
+        existingUsers: List<User>
+    ) = try {
+        validateNewUser(newUser, existingUsers)
+        val hashedUser = createHashedUser(newUser)
+        userRepository.addUser(hashedUser)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    private fun validateNewUser(newUser: User, existingUsers: List<User>) {
+        if (existingUsers.any { it.username == newUser.username }) {
+            throw IllegalArgumentException("User ${newUser.username} already exists")
+        }
+    }
+
+     fun createHashedUser(user: User): User {
         return try {
-            val md = MessageDigest.getInstance("MD5")
-            val digested = md.digest(password.toByteArray())
-            digested.fold("") { str, byte -> str + "%02x".format(byte) }
+            User(user.username, hashToMd5(user.hashedPassword))
         } catch (e: Exception) {
             throw RuntimeException("Failed to hash password", e)
         }
     }
-}
 
+}
