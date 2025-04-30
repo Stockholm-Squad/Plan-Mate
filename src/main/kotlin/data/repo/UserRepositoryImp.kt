@@ -11,7 +11,7 @@ class UserRepositoryImp(
 ) : UserRepository {
     override fun addUser(user: User): Result<Boolean> {
 
-        return userCsvDataSource.write(listOf(user)).fold(
+        return userCsvDataSource.append(listOf(user)).fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(exception = it) })
     }
