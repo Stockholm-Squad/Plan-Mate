@@ -7,7 +7,7 @@ import org.example.utils.hashToMd5
 
 class CreateUserUseCase(private val userRepository: UserRepository) {
 
-    fun addUser(username: String, password: String): Result<Boolean> {
+    fun createUser(username: String, password: String): Result<Boolean> {
         return runCatching {
             validateUserName(username)
             validatePassword(password)

@@ -28,7 +28,7 @@ class AddUserUi(
     }
 
     private fun addUser(username: String, password: String) {
-        createUserUseCase.addUser(username, password)
+        createUserUseCase.createUser(username, password)
             .onSuccess { success ->
                 if (success) {
                     printer.showMessage("✅ User ${username} added successfully!")
