@@ -6,7 +6,7 @@ import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.utils.Constant
 import org.example.utils.SearchUtils
 
-class AuditSystemManagerUi(
+class AuditSystemManagerUiImp(
     private val useCase: ManageAuditSystemUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
