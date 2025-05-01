@@ -110,5 +110,69 @@ class ProjectCsvDataSourceTest {
             val content = File(testFilePath).readText()
             assertEquals("", content)
         }
+
+        @Test
+        fun `read should return ReadException on invalid CSV`() {
+            File(testFilePath).writeText("invalid,csv,data\nnot,matching,fields\n1")
+
+            val result = dataSource.read()
+
+            assertTrue(result.isFailure)
+            assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        }
+
     }
+
+    @Nested
+    inner class AppendTests {
+
+        @Test
+        fun `append should add records to empty file`() {
+            val projects = listOf(
+                Project(id = "1", name = "Project A", stateId = "State A"),
+                Project(id = "2", name = "Project B", stateId = "State B")
+            )
+
+            val result = dataSource.append(projects)
+
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrThrow())
+
+            val content = File(testFilePath).readText()
+            assertTrue(content.contains("1,Project A,State A"))
+            assertTrue(content.contains("2,Project B,State B"))
+        }
+
+        @Test
+        fun `append should add records to existing file`() {
+            val initialProjects = listOf(
+                Project(id = "1", name = "Project A", stateId = "State A")
+            )
+            dataSource.overWrite(initialProjects)
+
+            val newProjects = listOf(
+                Project(id = "2", name = "Project B", stateId = "State B")
+            )
+
+            val result = dataSource.append(newProjects)
+
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrThrow())
+
+            val content = File(testFilePath).readText()
+            assertTrue(content.contains("1,Project A,State A"))
+            assertTrue(content.contains("2,Project B,State B"))
+        }
+
+        @Test
+        fun `append should do nothing with empty list`() {
+            val result = dataSource.append(emptyList())
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrThrow())
+
+            val content = File(testFilePath).readText()
+            assertEquals("", content)
+        }
+    }
+
 }
