@@ -38,7 +38,13 @@ class ProjectManagerUi(
             )
     }
 
-    fun showProjectById(id: String) {
+    fun showProjectById() {
+        outputPrinter.showMessage("Enter project ID: ")
+        val id = inputReader.readStringOrNull() ?: run {
+            outputPrinter.showMessage("Invalid project ID")
+            return
+        }
+
         manageProjectUseCase.getProjectById(id)
             .fold(
                 onSuccess = { project ->
@@ -63,35 +69,26 @@ class ProjectManagerUi(
         outputPrinter.showMessage("Available states:")
         stateManagerUi.showAllStates()
 
-
-        var stateInput = ""
-
+        var stateId = ""
         while (true) {
-
-            while (true) {
-                outputPrinter.showMessage("Enter state ID (or 'new' to create a new state): ")
-                val input = inputReader.readStringOrNull() ?: continue
-                stateInput = input
-                break
+            outputPrinter.showMessage("Enter state ID (or 'new' to create a new state): ")
+            when (val input = inputReader.readStringOrNull()) {
+                "new" -> stateManagerUi.addState()
+                null -> continue
+                else -> {
+                    stateId = input
+                    break
+                }
             }
-
-            if (stateInput == "new") {
-                stateManagerUi.addState()
-                continue
-            }
-            break
         }
 
-
-        manageProjectUseCase.addProject(Project(name = name, stateId = stateInput))
+        manageProjectUseCase.addProject(Project(name = name, stateId = stateId))
             .fold(
                 onSuccess = { success ->
                     if (success) {
                         outputPrinter.showMessage("Project added successfully")
-
                         outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
-                        val addTasks = inputReader.readStringOrNull()
-                        if (addTasks.equals("yes", ignoreCase = true)) {
+                        if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
                             taskManagerUi.addTask()
                         }
                     } else {
@@ -104,20 +101,25 @@ class ProjectManagerUi(
             )
     }
 
-    fun editProject(id: String) {
+    fun editProject() {
+        outputPrinter.showMessage("Enter project ID to edit: ")
+        val id = inputReader.readStringOrNull() ?: run {
+            outputPrinter.showMessage("Invalid project ID")
+            return
+        }
+
         manageProjectUseCase.getProjectById(id)
             .fold(
                 onSuccess = { project ->
-                    outputPrinter.showMessage("Enter new project name (leave blank to keep current): ")
+                    outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
                     val newName = inputReader.readStringOrNull() ?: project.name
 
                     outputPrinter.showMessage("Current state: ${project.stateId}")
                     outputPrinter.showMessage("Available states:")
                     stateManagerUi.showAllStates()
 
-                    outputPrinter.showMessage("Enter new state ID (leave blank to keep current): ")
-                    val newStateIdInput = inputReader.readStringOrNull()
-                    val newStateId = newStateIdInput ?: project.stateId
+                    outputPrinter.showMessage("Enter new state ID (leave blank to keep '${project.stateId}'): ")
+                    val newStateId = inputReader.readStringOrNull() ?: project.stateId
 
                     manageProjectUseCase.updateProject(Project(id, newName, newStateId))
                         .fold(
@@ -139,7 +141,13 @@ class ProjectManagerUi(
             )
     }
 
-    fun deleteProject(id: String) {
+    fun deleteProject() {
+        outputPrinter.showMessage("Enter project ID to delete: ")
+        val id = inputReader.readStringOrNull() ?: run {
+            outputPrinter.showMessage("Invalid project ID")
+            return
+        }
+
         manageProjectUseCase.removeProjectById(id)
             .fold(
                 onSuccess = { success ->
@@ -158,23 +166,22 @@ class ProjectManagerUi(
     fun assignUsersToProject() {
         while (true) {
             outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
-            val addUser = inputReader.readStringOrNull()
-            if (addUser.equals("yes", ignoreCase = true)) {
+            if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
                 authenticationManagerUi.addUser()
             }
 
             outputPrinter.showMessage("Enter username to assign (or 'done' to finish): ")
-            val username = inputReader.readStringOrNull()
+            val username = inputReader.readStringOrNull() ?: continue
             if (username.equals("done", ignoreCase = true)) break
 
             outputPrinter.showMessage("Enter project ID: ")
-            val projectId = inputReader.readStringOrNull() ?: ""
+            val projectId = inputReader.readStringOrNull() ?: continue
 
-            assignUserToProject(username ?: "", projectId)
+            assignUserToProject(username, projectId)
         }
     }
 
-    fun assignUserToProject(username: String, projectId: String): Boolean {
+    private fun assignUserToProject(username: String, projectId: String): Boolean {
         if (authenticationUseCase.isUserExists(username).isFailure) {
             outputPrinter.showMessage("User does not exist")
             return false
@@ -204,6 +211,27 @@ class ProjectManagerUi(
     }
 
     override fun launchUi() {
-        TODO("Not yet implemented")
+        while (true) {
+            outputPrinter.showMessage("\nProject Management:")
+            outputPrinter.showMessage("1. Show all projects")
+            outputPrinter.showMessage("2. Show project details")
+            outputPrinter.showMessage("3. Add project")
+            outputPrinter.showMessage("4. Edit project")
+            outputPrinter.showMessage("5. Delete project")
+            outputPrinter.showMessage("6. Assign users to project")
+            outputPrinter.showMessage("0. Exit")
+            outputPrinter.showMessage("Enter your choice: ")
+
+            when (inputReader.readStringOrNull()) {
+                "1" -> showAllProjects()
+                "2" -> showProjectById()
+                "3" -> addProject()
+                "4" -> editProject()
+                "5" -> deleteProject()
+                "6" -> assignUsersToProject()
+                "0" -> return
+                else -> outputPrinter.showMessage("Invalid choice")
+            }
+        }
     }
 }

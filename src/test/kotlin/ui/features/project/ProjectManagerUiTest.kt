@@ -102,9 +102,10 @@ class ProjectManagerUiTest {
             // Given
             val project = buildProject(id = "1", name = "Project A")
             every { manageProjectUseCase.getProjectById("1") } returns Result.success(project)
+            every { inputReader.readStringOrNull() } returnsMany listOf("1")
 
             // When
-            projectManagerUi.showProjectById("1")
+            projectManagerUi.showProjectById()
 
             // Then
             verify { outputPrinter.showMessage("Project Details:") }
@@ -116,9 +117,10 @@ class ProjectManagerUiTest {
         fun `should display error message when project does not exist`() {
             // Given
             every { manageProjectUseCase.getProjectById("999") } returns Result.failure(NoSuchElementException("Project not found"))
+            every { inputReader.readStringOrNull() } returnsMany listOf("999")
 
             // When
-            projectManagerUi.showProjectById("999")
+            projectManagerUi.showProjectById()
 
             // Then
             verify { outputPrinter.showMessage("error: Project not found") }
@@ -130,11 +132,9 @@ class ProjectManagerUiTest {
         @Test
         fun `should successfully add project with valid name and state`() {
             // Given
-            val project1 = buildProject(name = "New Project", stateId = "state 1")
-
-            every { inputReader.readStringOrNull() } returnsMany listOf("New Project", "1", "no")
+            every { inputReader.readStringOrNull() } returnsMany listOf("New Project", "state 1", "no")
             every { stateManagerUi.showAllStates() } returns Unit
-            every { manageProjectUseCase.addProject(project1) } returns Result.success(true)
+            every { manageProjectUseCase.addProject(any()) } returns Result.success(true)
 
             // When
             projectManagerUi.addProject()
@@ -148,13 +148,11 @@ class ProjectManagerUiTest {
         @Test
         fun `should prompt to create new state when requested`() {
             // Given
-            val project1 = buildProject(name = "New Project", stateId = "state 1")
-
-            every { inputReader.readStringOrNull() } returnsMany listOf("New Project", "new", "1", "no")
+            every { inputReader.readStringOrNull() } returnsMany listOf("New Project", "new", "state 1", "no")
             every { stateManagerUi.showAllStates() } returns Unit
             every { stateManagerUi.addState() } returns Unit
 
-            every { manageProjectUseCase.addProject(project1) } returns Result.success(true)
+            every { manageProjectUseCase.addProject(any<Project>()) } returns Result.success(true)
 
             // When
             projectManagerUi.addProject()
@@ -183,7 +181,7 @@ class ProjectManagerUiTest {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("New Project", "1", "no")
             every { stateManagerUi.showAllStates() } returns Unit
-            every { manageProjectUseCase.addProject(any()) } returns Result.failure(Exception("Creation failed"))
+            every { manageProjectUseCase.addProject(any<Project>()) } returns Result.failure(Exception("Creation failed"))
 
             // When
             projectManagerUi.addProject()
@@ -199,13 +197,13 @@ class ProjectManagerUiTest {
         fun `should successfully edit existing project`() {
             // Given
             val project = buildProject(id = "1", name = "Old Name")
-            val updatedProject = buildProject(id = "1", name = "ssss", stateId = "ggg")
+            val updatedProject = buildProject(id = "1", name = "New Name", stateId = project.stateId)
             every { manageProjectUseCase.getProjectById("1") } returns Result.success(project)
-            every { inputReader.readStringOrNull() } returnsMany listOf("New Name", "", "no")
+            every { inputReader.readStringOrNull() } returnsMany listOf("1" , "New Name", "", "no")
             every { manageProjectUseCase.updateProject(updatedProject) } returns Result.success(true)
 
             // When
-            projectManagerUi.editProject("1")
+            projectManagerUi.editProject()
 
             // Then
             verify { outputPrinter.showMessage("Project updated successfully") }
@@ -214,10 +212,11 @@ class ProjectManagerUiTest {
         @Test
         fun `should show error when editing non-existent project`() {
             // Given
+            every { inputReader.readStringOrNull() } returns "999"
             every { manageProjectUseCase.getProjectById("999") } returns Result.failure(NoSuchElementException())
 
             // When
-            projectManagerUi.editProject("999")
+            projectManagerUi.editProject()
 
             // Then
             verify { outputPrinter.showMessage("error: Project not found") }
@@ -227,13 +226,13 @@ class ProjectManagerUiTest {
         fun `should show error when edit operation fails`() {
             // Given
             val project = buildProject(id = "1")
-            val updatedProject = buildProject(id = "1", name = "ddddd")
+            val updatedProject = buildProject(id = "1", name = "New Name")
             every { manageProjectUseCase.getProjectById("1") } returns Result.success(project)
-            every { inputReader.readStringOrNull() } returnsMany listOf("New Name", "", "no")
+            every { inputReader.readStringOrNull() } returnsMany listOf("1","New Name", "", "no")
             every { manageProjectUseCase.updateProject(updatedProject) } returns Result.failure(Exception("Update failed"))
 
             // When
-            projectManagerUi.editProject("1")
+            projectManagerUi.editProject()
 
             // Then
             verify { outputPrinter.showMessage("error: Update failed") }
@@ -246,9 +245,10 @@ class ProjectManagerUiTest {
         fun `should successfully delete existing project`() {
             // Given
             every { manageProjectUseCase.removeProjectById("1") } returns Result.success(true)
+            every { inputReader.readStringOrNull() } returnsMany listOf("1")
 
             // When
-            projectManagerUi.deleteProject("1")
+            projectManagerUi.deleteProject()
 
             // Then
             verify { outputPrinter.showMessage("Project deleted successfully") }
@@ -258,9 +258,10 @@ class ProjectManagerUiTest {
         fun `should show error when delete operation fails`() {
             // Given
             every { manageProjectUseCase.removeProjectById("1") } returns Result.failure(Exception("Deletion failed"))
+            every { inputReader.readStringOrNull() } returnsMany listOf("1")
 
             // When
-            projectManagerUi.deleteProject("1")
+            projectManagerUi.deleteProject()
 
             // Then
             verify { outputPrinter.showMessage("error: Deletion failed") }
@@ -301,7 +302,7 @@ class ProjectManagerUiTest {
         fun `should show error when user does not exist`() {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("no", "nonexistent", "done")
-            every { manageAuthenticationUseCase.isUserExists("nonexistent") } returns Result.success(false)
+            every { manageAuthenticationUseCase.isUserExists("nonexistent") } returns Result.failure(Throwable())
 
             // When
             projectManagerUi.assignUsersToProject()
@@ -315,7 +316,8 @@ class ProjectManagerUiTest {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("no", "user1", "999", "done")
             every { manageAuthenticationUseCase.isUserExists("user1") } returns Result.success(true)
-            every { manageProjectUseCase.isProjectExists("999") } returns Result.success(false)
+            every { manageProjectUseCase.isProjectExists("999") } returns Result.failure(Throwable())
+            every { manageProjectUseCase.assignUsersToProject("user1", "999") } returns Result.success(true)
 
             // When
             projectManagerUi.assignUsersToProject()
