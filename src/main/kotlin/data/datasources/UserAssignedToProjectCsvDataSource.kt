@@ -2,16 +2,28 @@ package org.example.data.datasources
 
 import org.example.data.entities.UserAssignedToProject
 
-class UserAssignedToProjectCsvDataSource : PlanMateDataSource<UserAssignedToProject> {
+import org.example.logic.model.exceptions.PlanMateExceptions
+import org.jetbrains.kotlinx.dataframe.DataFrame
+import org.jetbrains.kotlinx.dataframe.api.cast
+import org.jetbrains.kotlinx.dataframe.api.toList
+import org.jetbrains.kotlinx.dataframe.io.readCSV
+import java.io.File
+
+class UserAssignedToProjectCsvDataSource(private val filePath: String) : CsvDataSource<UserAssignedToProject>(filePath) {
     override fun read(): Result<List<UserAssignedToProject>> {
-        TODO("Not yet implemented")
-    }
+        super.resolveFile().also {
+            if (!it.exists()) return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+        }
 
-    override fun append(model: List<UserAssignedToProject>): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
+        return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
 
-    override fun overWrite(model: List<UserAssignedToProject>): Result<Boolean> {
-        TODO("Not yet implemented")
+            DataFrame.readCSV(filePath).cast<UserAssignedToProject>().toList().let {
+                Result.success(it)
+            }
+        } catch (t: Throwable) {
+            Result.failure(PlanMateExceptions.DataException.ReadException())
+        }
     }
 }
