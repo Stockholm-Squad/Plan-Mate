@@ -1,4 +1,4 @@
-package org.example.data.entities
+package data.models
 
 data class UserAssignedToProject(
     val userName: String,

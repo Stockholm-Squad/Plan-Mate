@@ -1,8 +1,7 @@
 package org.example.logic.repository
 
 import logic.model.entities.Task
-import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
+import data.models.MateTaskAssignment
 
 interface TaskRepository {
     fun getAllTasks(): Result<List<Task>>

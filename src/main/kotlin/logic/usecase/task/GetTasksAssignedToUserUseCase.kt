@@ -1,6 +1,6 @@
 package org.example.logic.usecase.task
 
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
 

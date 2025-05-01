@@ -2,8 +2,8 @@ package org.example.data.repo
 
 import logic.model.entities.Project
 import org.example.data.datasources.PlanMateDataSource
-import org.example.data.entities.TaskInProject
-import org.example.data.entities.UserAssignedToProject
+import data.models.TaskInProject
+import data.models.UserAssignedToProject
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
 

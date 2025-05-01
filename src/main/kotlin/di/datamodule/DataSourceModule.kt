@@ -2,9 +2,9 @@ package di.datamodule
 
 import logic.model.entities.*
 import org.example.data.datasources.*
-import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
-import org.example.data.entities.UserAssignedToProject
+import data.models.MateTaskAssignment
+import data.models.TaskInProject
+import data.models.UserAssignedToProject
 import org.koin.dsl.module
 
 val datasourceModule = module {

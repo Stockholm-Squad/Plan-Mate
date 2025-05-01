@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import org.example.data.entities.UserAssignedToProject
+import data.models.UserAssignedToProject
 
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame

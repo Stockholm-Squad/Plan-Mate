@@ -5,11 +5,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.PlanMateExceptions
-import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase

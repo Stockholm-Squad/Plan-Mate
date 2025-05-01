@@ -1,4 +1,4 @@
-package org.example.data.entities
+package data.models
 
 data class MateTaskAssignment(
     val userName: String,

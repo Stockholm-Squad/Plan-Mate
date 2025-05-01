@@ -2,7 +2,7 @@ package org.example.ui.input_output.output
 
 import logic.model.entities.AuditSystem
 import logic.model.entities.Task
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
 import logic.model.entities.State
 
 

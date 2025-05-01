@@ -1,6 +1,6 @@
 package utils
 
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
 
 fun buildMateTaskAssignment(
     userName: String = "",

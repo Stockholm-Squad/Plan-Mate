@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import org.example.data.entities.TaskInProject
+import data.models.TaskInProject
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

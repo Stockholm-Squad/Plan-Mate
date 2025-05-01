@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.model.entities.Task
 import org.example.data.datasources.PlanMateDataSource
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
 import org.example.data.repo.TaskRepositoryImp
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository

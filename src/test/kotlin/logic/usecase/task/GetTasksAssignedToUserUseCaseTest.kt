@@ -3,7 +3,7 @@ package logic.usecase.task
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
