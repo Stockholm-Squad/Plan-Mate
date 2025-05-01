@@ -19,11 +19,9 @@ val uiModule = module {
 
     factory { AuditSystemManagerUi(get(),get(),get(),get()) }
     factory { AuthenticationManagerUi(get()) }
-    factory { ProjectManagerUi(get(), get(), get(), get(), get(), get(), get()) }
-
+    factory { ProjectManagerUi(get(),get(),get(),get(),get(),get(),get(),get()) }
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
     factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get(), get()) }
-
 }

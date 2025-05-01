@@ -1,4 +1,4 @@
-package org.example.logic.usecase.project
+package logic.usecase.project
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -7,6 +7,7 @@ import io.mockk.verify
 import logic.model.entities.Project
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
+import org.example.logic.usecase.project.ManageProjectUseCase
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertThrows
 import utils.buildProject
@@ -241,5 +242,50 @@ class ManageProjectUseCaseTest {
         }
     }
 
+    @Nested
+    inner class IsProjectExists {
+        @Test
+        fun `should return true when project exists`() {
+            // Given
+            val projectId = "1"
+            val existingProject = buildProject(id = projectId, name = "Existing Project")
+            every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
+
+            // When
+            val result = manageProjectUseCase.isProjectExists(projectId)
+
+            // Then
+            assertThat(result.getOrThrow()).isTrue()
+            verify { projectRepository.getAllProjects() }
+        }
+
+        @Test
+        fun `should return false when project does not exist`() {
+            // Given
+            val projectId = "non-existent"
+            every { projectRepository.getAllProjects() } returns Result.success(emptyList())
+
+            // When
+            val result = manageProjectUseCase.isProjectExists(projectId)
+
+            // Then
+            assertThrows<Throwable> { result.getOrThrow() }
+            verify { projectRepository.getAllProjects() }
+        }
+
+        @Test
+        fun `should return failure when repository fails to get projects`() {
+            // Given
+            val projectId = "1"
+            every { projectRepository.getAllProjects() } returns Result.failure(Exception("Database error"))
+
+            // When
+            val result = manageProjectUseCase.isProjectExists(projectId)
+
+            // Then
+            assertThrows<Throwable> { result.getOrThrow() }
+            verify { projectRepository.getAllProjects() }
+        }
+    }
 
 }

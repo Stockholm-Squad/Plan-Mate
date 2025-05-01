@@ -49,13 +49,10 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
         )
     }
 
-
-    fun assignUsersToProject(username: String, projectId: String): Result<Boolean> {
-        TODO()
-    }
-
     fun isProjectExists(projectId: String): Result<Boolean> {
-        TODO()
+        return getProjectById(projectId).fold(
+            onSuccess = { Result.success(true) },
+            onFailure = { throwable -> Result.failure(throwable) }
+        )
     }
-
 }
