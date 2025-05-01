@@ -7,11 +7,11 @@ import org.example.data.entities.UserAssignedToProject
 import org.koin.dsl.module
 
 val datasourceModule = module {
-    factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource() }
+    factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource(filePath = "audits.csv") }
     factory<PlanMateDataSource<User>> { AuthenticationCsvDataSource() }
     factory<PlanMateDataSource<Project>> { ProjectCsvDataSource(filePath = "projects.csv") }
     factory<PlanMateDataSource<TaskInProject>> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
     factory<PlanMateDataSource<UserAssignedToProject>> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
-    factory<PlanMateDataSource<State>> { StateCsvDataSource() }
+    factory<PlanMateDataSource<State>> { StateCsvDataSource(filePath = "state.csv") }
     factory<PlanMateDataSource<Task>> { TaskCsvDataSource() }
 }

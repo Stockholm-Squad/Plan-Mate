@@ -9,4 +9,13 @@ enum class ExceptionMessage(
     NO_DATA_IN_THE_FILE("The file is empty"),
     NO_PROJECT_ADDED("No Project Added"),
     COULD_NOT_UPDATE_PROJECT("Couldn't update project")
+    NOT_ALLOWED_STATE_NAME_MESSAGE("Only letters are allowed!"),
+    EMPTY_DATA_MESSAGE("No data available"),
+    STATE_NOT_EXIST_MESSAGE("The state not exist"),
+    STATE_ALREADY_EXIST_MESSAGE("The state is already exist!"),
+    STATE_NAME_LENGTH_MESSAGE("The state name is too long!"),
+    INVALID_INPUT("Error Not valid input!"),
+    NO_STATE_FOUNDED_MESSAGE("There is no states!!"),
+    INVALID_STATE_NAME_MESSAGE("Invalid state name!!")
+
 }
