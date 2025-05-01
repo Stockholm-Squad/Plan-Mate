@@ -3,7 +3,6 @@ package org.example.ui.features.project
 import logic.model.entities.Project
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.usecase.authentication.AuthenticateUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
