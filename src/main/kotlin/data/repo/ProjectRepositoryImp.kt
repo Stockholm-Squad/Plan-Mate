@@ -66,7 +66,10 @@ class ProjectRepositoryImp(
     }
 
     override fun addTaskInProject(projectId: String, taskId: String): Result<Boolean> {
-        return taskInProjectDataSource.append(listOf(TaskInProject(projectId = projectId, taskId = taskId)))
+        return taskInProjectDataSource.append(listOf(TaskInProject(
+            projectId = projectId, taskId = taskId,
+            stateId = TODO()
+        )))
     }
 
     override fun deleteTaskFromProject(projectId: String, taskId: String): Result<Boolean> {
