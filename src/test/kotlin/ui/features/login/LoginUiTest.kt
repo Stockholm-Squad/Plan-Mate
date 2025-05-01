@@ -1,4 +1,4 @@
-package ui.features.authentication
+package ui.features.login
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -9,16 +9,16 @@ import modle.buildUser
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.PlanMateExceptions
-import org.example.logic.usecase.authentication.AuthenticateUseCase
-import org.example.ui.features.authentication.AuthenticateUi
+import logic.usecase.login.LoginUseCase
+import org.example.ui.features.login.LoginUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.Test
 
-class AuthenticateUiTest {
-    private lateinit var useCase: AuthenticateUseCase
-    private lateinit var ui: AuthenticateUi
+class LoginUiTest {
+    private lateinit var useCase: LoginUseCase
+    private lateinit var ui: LoginUi
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
 
@@ -27,7 +27,7 @@ class AuthenticateUiTest {
         reader = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         useCase = mockk(relaxed = true)
-        ui = AuthenticateUi(getAuthenticationUseCase = useCase, reader = reader, printer = printer)
+        ui = LoginUi(getAuthenticationUseCase = useCase, reader = reader, printer = printer)
     }
 
     @ParameterizedTest
@@ -45,7 +45,7 @@ class AuthenticateUiTest {
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
         every {
-            useCase.authUser(
+            useCase.loginUser(
                 username = username,
                 password = password
             )
@@ -67,7 +67,7 @@ class AuthenticateUiTest {
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
         every {
-            useCase.authUser(username = username, password = password)
+            useCase.loginUser(username = username, password = password)
         } returns Result.failure(PlanMateExceptions.LogicException.InvalidPassword())
 
         ui.authenticateUser()
@@ -78,7 +78,7 @@ class AuthenticateUiTest {
     @Test
     fun `authenticateUser() should print user does not exist when username and password entered with not existing user`() {
         val expectedMessage = PlanMateExceptions.LogicException.UserDoesNotExist().message ?: ""
-        every { useCase.authUser(username = "username", password = "password") } returns Result.failure(
+        every { useCase.loginUser(username = "username", password = "password") } returns Result.failure(
             PlanMateExceptions.LogicException.UserDoesNotExist()
         )
         every { reader.readStringOrNull() } returnsMany listOf("username", "password")
@@ -91,7 +91,7 @@ class AuthenticateUiTest {
     @Test
     fun `authenticateUser() should print incorrect password when incorrect password entered with not existing user`() {
         val expectedMessage = PlanMateExceptions.LogicException.IncorrectPassword().message ?: ""
-        every { useCase.authUser(username = "username", password = "password") } returns Result.failure(
+        every { useCase.loginUser(username = "username", password = "password") } returns Result.failure(
             PlanMateExceptions.LogicException.IncorrectPassword()
         )
         every { reader.readStringOrNull() } returnsMany listOf("username", "password")
@@ -110,7 +110,7 @@ class AuthenticateUiTest {
         )
         every { reader.readStringOrNull() } returnsMany listOf("userName", "userNamePassword")
         every {
-            useCase.authUser(
+            useCase.loginUser(
                 username = "userName",
                 password = "userNamePassword"
             )

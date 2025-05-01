@@ -1,4 +1,4 @@
-package logic.usecase.authentication
+package logic.usecase.login
 
 import logic.model.entities.Role
 import modle.buildUser

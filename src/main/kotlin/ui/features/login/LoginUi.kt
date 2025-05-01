@@ -1,13 +1,13 @@
-package org.example.ui.features.authentication
+package org.example.ui.features.login
 
 import logic.model.entities.User
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.usecase.authentication.AuthenticateUseCase
+import logic.usecase.login.LoginUseCase
 
 
-class AuthenticateUi(
-    private val getAuthenticationUseCase: AuthenticateUseCase,
+class LoginUi(
+    private val getAuthenticationUseCase: LoginUseCase,
     private val printer: OutputPrinter,
     private var reader: InputReader
 ) {
@@ -16,7 +16,7 @@ class AuthenticateUi(
         return reader.readStringOrNull()?.let { username ->
             printer.showMessage("Enter Password")
             reader.readStringOrNull()?.let { password ->
-                getAuthenticationUseCase.authUser(username = username, password = password)
+                getAuthenticationUseCase.loginUser(username = username, password = password)
                     .fold(onSuccess = { user -> user }, onFailure = {
                         handleFailure(it.message.toString())
                         null
