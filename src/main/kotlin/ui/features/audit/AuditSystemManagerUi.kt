@@ -17,11 +17,11 @@ class AuditSystemManagerUi(
         do {
             printer.showMessage(Constant.SHOW_AUDIT_SYSTEM_OPTIONS)
             when (searchUtils.getMainMenuOption()) {
-                1 -> displayAuditLogsByTaskId()
-                2 -> displayAuditLogsByProjectId()
-                3 -> displayAuditByUsername()
+                1 -> displayAllAuditSystems()
+                2 -> displayAuditLogsByTaskId()
+                3 -> displayAuditLogsByProjectId()
                 4 -> displayAuditByAuditId()
-                5 -> displayAllAuditSystems()
+                5 -> displayAuditByUsername()
                 6 -> printer.showMessage(Constant.EXITING)
                 else -> printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
             }

@@ -11,11 +11,11 @@ object Constant {
     //audit system constants
     val SHOW_AUDIT_SYSTEM_OPTIONS = """
         |----------- Audit System Menu -----------|
-        | 1. Show Audit Logs by Task ID           |
-        | 2. Show Audit Logs by Project ID        |
-        | 3. Show Audit Logs by Username          |
+        | 1. Show All Audit Entries               |
+        | 2. Show Audit Logs by Task ID           |
+        | 3. Show Audit Logs by Project ID        |
         | 4. Show Audit Logs by Audit System ID   |
-        | 5. Show All Audit Entries               |
+        | 5. Show Audit Logs by Username          |
         | 6. Exit                                 |
     """.trimIndent()
 
