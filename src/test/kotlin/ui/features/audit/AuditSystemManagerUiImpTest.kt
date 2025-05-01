@@ -6,18 +6,18 @@ import io.mockk.verify
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
-import org.example.ui.features.audit.AuditSystemManagerUi
+import org.example.ui.features.audit.AuditSystemManagerUiImp
 import org.example.utils.Constant
 import org.example.utils.SearchUtils
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AuditSystemManagerUiTest {
+class AuditSystemManagerUiImpTest {
 
     private lateinit var useCase: ManageAuditSystemUseCase
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
-    private lateinit var auditSystemUi: AuditSystemManagerUi
+    private lateinit var auditSystemUi: AuditSystemManagerUiImp
     private lateinit var searchUtils: SearchUtils
 
     @BeforeEach
@@ -27,7 +27,7 @@ class AuditSystemManagerUiTest {
         printer = mockk(relaxed = true)
         searchUtils = mockk(relaxed = true)
 
-        auditSystemUi = AuditSystemManagerUi(
+        auditSystemUi = AuditSystemManagerUiImp(
             useCase,
             reader = reader,
             printer = printer,

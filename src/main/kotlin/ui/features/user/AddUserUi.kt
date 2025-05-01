@@ -1,0 +1,43 @@
+// AddUserUi.kt
+package org.example.ui.features.user
+
+import org.example.input_output.input.InputReader
+import org.example.input_output.output.OutputPrinter
+import org.example.logic.usecase.user.AddUserUseCase
+
+class AddUserUi(
+    private val addUserUseCase: AddUserUseCase,
+    private val printer: OutputPrinter,
+    private val inputReader: InputReader
+) {
+    fun launchUi() {
+        printer.showMessage("➕ Adding new user...")
+        // Get username input
+        printer.showMessage("Enter username:")
+        val username = inputReader.readStringOrNull()
+        // Get password input
+        printer.showMessage("Enter password:")
+        val password = inputReader.readStringOrNull()
+
+        // Create user if both inputs are valid
+        if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
+            addUser(username, password)
+        } else {
+            printer.showMessage("❌ Error: Username and password cannot be empty")
+        }
+    }
+
+    private fun addUser(username: String, password: String) {
+        addUserUseCase.addUser(username, password)
+            .onSuccess { success ->
+                if (success) {
+                    printer.showMessage("✅ User ${username} added successfully!")
+                } else {
+                    printer.showMessage("❌ Error: Failed to add user")
+                }
+            }
+            .onFailure { error ->
+                printer.showMessage("Error: ${error.message}")
+            }
+    }
+}
