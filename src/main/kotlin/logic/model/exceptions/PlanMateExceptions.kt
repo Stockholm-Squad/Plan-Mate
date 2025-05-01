@@ -21,8 +21,6 @@ sealed class PlanMateExceptions(
     sealed class LogicException(
         open val exceptionMessage: ExceptionMessage
     ) : PlanMateExceptions(exceptionMessage) {
-        data class NoTasksCreated(override val exceptionMessage: ExceptionMessage= ExceptionMessage.FAILED_TO_CREATE_TASK) : LogicException(exceptionMessage)
-        data class NoTasksDeleted(override val exceptionMessage: ExceptionMessage= ExceptionMessage.FAILED_TO_DELETE_TASK) : LogicException(exceptionMessage)
 
         data class NoProjectAdded(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_PROJECT_ADDED) :
             DataException(exceptionMessage)
