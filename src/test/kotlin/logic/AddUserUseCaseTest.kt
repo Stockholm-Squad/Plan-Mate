@@ -10,10 +10,8 @@ import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.AddUserUseCase
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 class AddUserUseCaseTest() {
     private lateinit var repository: UserRepository
@@ -90,8 +88,9 @@ class AddUserUseCaseTest() {
         }
         verify(exactly = 0) { repository.getAllUsers() }
     }
+
     @Test
-   fun`checkUserExists should throw UserExist when username exists in list`() {
+    fun `checkUserExists should throw UserExist when username exists in list`() {
         // Given
         val existingUsername = "existingUser"
         val users = listOf(
