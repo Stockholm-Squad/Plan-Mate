@@ -9,7 +9,7 @@ import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.AddUserUi
+import org.example.ui.features.user.CreateUserUi
 import org.example.utils.Constant
 
 
@@ -21,7 +21,7 @@ class PlanMateConsoleUi(
     private val taskManagerUi: TaskManagerUi,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val addUserUi: AddUserUi
+    private val createUserUi: CreateUserUi
 ) {
     fun invoke() {
         while (true) {
@@ -71,7 +71,7 @@ class PlanMateConsoleUi(
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
                 AdminChoice.MANAGE_TASKS.choice -> TODO()
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
-                AdminChoice.ADD_MATE.choice -> addUserUi.launchUi()
+                AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()

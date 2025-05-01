@@ -15,7 +15,7 @@ import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.task.admin.TaskManagerUiMateImp
 import org.example.ui.features.task.mate.TaskManagerUiMateMateImp
-import org.example.ui.features.user.AddUserUi
+import org.example.ui.features.user.CreateUserUi
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -24,7 +24,7 @@ val uiModule = module {
 
     factory<AuditSystemManagerUi> { AuditSystemManagerUiImp(get(), get(), get(), get()) }
     factory { LoginUi(get(), get(), get()) }
-    factory { AddUserUi(get(),get(),get()) }
+    factory { CreateUserUi(get(),get(),get()) }
     factory { ProjectManagerUi(get(),get(),get(),get(),get(),get(),get()) }
     factory<TaskManagerUi> { TaskManagerUiMateImp(get()) }
     factory { TaskManagerUiMateMateImp(get()) }
