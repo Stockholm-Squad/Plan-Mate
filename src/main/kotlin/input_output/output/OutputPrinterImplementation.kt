@@ -18,13 +18,25 @@ class OutputPrinterImplementation : OutputPrinter {
         val groupedByEntityType = audits.groupBy { it.auditSystemType }
 
         for ((entityType, entries) in groupedByEntityType) {
-            println("===== $entityType =====") // Swimlane title
+            println("\n========== $entityType ==========\n")
+            println(String.format("| %-36s | %-12s | %-15s | %-20s | %-30s |",
+                "ID", "Entity ID", "Changed By", "Date", "Change Description"))
+            println("-".repeat(130))
+
             for (entry in entries) {
-                println("ID: ${entry.id}, EntityID: ${entry.entityId}, ChangedBy: ${entry.changedBy}, Date: ${entry.dateTime}, Action: ${entry.changeDescription}")
+                println(String.format("| %-36s | %-12s | %-15s | %-20s | %-30s |",
+                    entry.id,
+                    entry.entityId,
+                    entry.changedBy,
+                    entry.dateTime,
+                    entry.changeDescription.take(30)
+                ))
             }
-            println() // Space between swimlanes
+
+            println("-".repeat(130)) // Swimlane separator
         }
     }
+
 
 
 }
