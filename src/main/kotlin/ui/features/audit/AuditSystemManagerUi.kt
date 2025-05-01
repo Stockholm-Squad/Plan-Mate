@@ -35,6 +35,7 @@ class AuditSystemManagerUi(
         )
 
     private fun displayAuditLogsByProjectId() {
+        printer.showMessage(Constant.PROMPT_PROJECT_ID)
         reader.readStringOrNull()?.let {
             useCase.getProjectChangeLogsById(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
@@ -45,6 +46,7 @@ class AuditSystemManagerUi(
     }
 
     private fun displayAuditLogsByTaskId() {
+        printer.showMessage(Constant.PROMPT_TASK_ID)
         reader.readStringOrNull()?.let {
             useCase.getTaskChangeLogsById(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
@@ -54,6 +56,7 @@ class AuditSystemManagerUi(
     }
 
     private fun displayAuditByAuditId() {
+        printer.showMessage(Constant.PROMPT_AUDIT_SYSTEM_ID)
         reader.readStringOrNull()?.let {
             useCase.getAuditSystemByID(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
@@ -63,6 +66,7 @@ class AuditSystemManagerUi(
     }
 
     private fun displayAuditByUsername() {
+        printer.showMessage(Constant.PROMPT_USERNAMES)
         reader.readStringOrNull()?.let {
             useCase.getUserChangeLogsByUsername(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
