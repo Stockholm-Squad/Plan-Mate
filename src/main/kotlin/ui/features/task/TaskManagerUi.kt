@@ -196,13 +196,13 @@ class TaskManagerUi(
     }
 
     private fun printTaskOptionsMenu() {
-        println("========================= Tasks Option =========================")
-        println("Please Choose an option. Pick a number between 0 and 7!\n")
+        printer.showMessage("========================= Tasks Option =========================")
+       printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
 
         TaskOptions.entries
             .forEach { println("${it.option}. ${it.label}") }
 
-        println("-----------------------------------------------------")
-        print("Choose an option: ")
+        printer.showMessage("-----------------------------------------------------")
+       printer.showMessage("Choose an option: ")
     }
 }
