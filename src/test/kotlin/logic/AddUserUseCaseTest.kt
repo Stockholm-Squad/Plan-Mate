@@ -5,114 +5,136 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.User
+import logic.usecase.authentication.getAllUsers
+import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.AddUserUseCase
-import org.example.utils.hashToMd5
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import java.security.NoSuchAlgorithmException
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-class AddUserUseCaseTest {
-
-    private lateinit var addUserUseCase: AddUserUseCase
-    private lateinit var userRepository: UserRepository
+class AddUserUseCaseTest() {
+    private lateinit var repository: UserRepository
+    private lateinit var useCase: AddUserUseCase
 
     @BeforeEach
     fun setUp() {
-        userRepository = mockk()
-        addUserUseCase = AddUserUseCase(userRepository)
+        repository = mockk(relaxed = true)
+        useCase = AddUserUseCase(repository)
     }
 
     @Test
-    fun `should successfully add new user when username is unique`() {
-        // Given
-        val existingUsers = listOf(User("user1", "hash1"))
-        val newUser = User("newUser", "password123")
-        val expectedHashedUser = User("newUser", hashToMd5("password123"))
-
-        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
-        every { userRepository.addUser(expectedHashedUser) } returns Result.success(true)
-
-        // When
-        val result = addUserUseCase.addUser(newUser)
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isTrue()
-        verify(exactly = 1) { userRepository.getAllUsers() }
-        verify(exactly = 1) { userRepository.addUser(expectedHashedUser) }
+    fun `addUser() should return failure when username is empty`() {
+        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+            useCase.addUser(
+                username = "",
+                password = "password"
+            ).getOrThrow()
+        }
+        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
-    fun `should fail with IllegalArgumentException when username exists`() {
-        // Given
-        val existingUsers = listOf(User("existingUser", "hash1"))
-        val duplicateUser = User("existingUser", "password123")
-
-        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
-
-        // When
-        val result = addUserUseCase.addUser(duplicateUser)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-assertThrows<IllegalArgumentException> { result.getOrThrow() }
-        verify(exactly = 0) { userRepository.addUser(any()) }
+    fun `addUser() should return failure when password is empty`() {
+        assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
+            useCase.addUser(
+                username = "username",
+                password = ""
+            ).getOrThrow()
+        }
+        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
-    fun `should fail when repository fails to get users`() {
-        // Given
-        val newUser = User("newUser", "password123")
-        val expectedError = RuntimeException("Database error")
-
-        every { userRepository.getAllUsers() } returns Result.failure(expectedError)
-
-        // When
-        val result = addUserUseCase.addUser(newUser)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isEqualTo(expectedError)
-        verify(exactly = 0) { userRepository.addUser(any()) }
+    fun `addUser() should return failure when username starts with a number`() {
+        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+            useCase.addUser(
+                username = "1john",
+                password = "password"
+            ).getOrThrow()
+        }
+        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
-    fun `should properly hash password`() {
+    fun `addUser() should return failure when username is less than 4 characters`() {
+        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+            useCase.addUser(
+                username = "abc",
+                password = "password"
+            ).getOrThrow()
+        }
+        verify(exactly = 0) { repository.getAllUsers() }
+    }
+
+    @Test
+    fun `addUser() should return failure when username is more than 20 characters`() {
+        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+            useCase.addUser(
+                username = "averyverylongusernamethatexceeds20",
+                password = "password"
+            ).getOrThrow()
+        }
+        verify(exactly = 0) { repository.getAllUsers() }
+    }
+
+    @Test
+    fun `addUser() should return failure when password is less than 8 characters`() {
+        assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
+            useCase.addUser(
+                username = "validUser",
+                password = "short"
+            ).getOrThrow()
+        }
+        verify(exactly = 0) { repository.getAllUsers() }
+    }
+    @Test
+   fun`checkUserExists should throw UserExist when username exists in list`() {
         // Given
-        val existingUsers = emptyList<User>()
-        val newUser = User("testUser", "password123")
-        val expectedHash = hashToMd5("password123")
+        val existingUsername = "existingUser"
+        val users = listOf(
+            User("otherUser1", "hash1"),
+            User(existingUsername, "hash2"),
+            User("otherUser2", "hash3")
+        )
 
-        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
-        every { userRepository.addUser(User("testUser", expectedHash)) } returns Result.success(true)
-
-        // When
-        val result = addUserUseCase.addUser(newUser)
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) {
-            userRepository.addUser(User("testUser", expectedHash))
+        // When & Then
+        assertThrows<PlanMateExceptions.LogicException.UserExist> {
+            useCase.checkUserExists(users, existingUsername)
         }
     }
 
     @Test
-    fun `should fail when hashing fails`() {
-        // Given
-        val existingUsers = emptyList<User>()
-        val newUser = User("testUser", "password123")
-
-        every { userRepository.getAllUsers() } returns Result.success(existingUsers)
-        every { userRepository.addUser(any()) } throws NoSuchAlgorithmException("MD5 not available")
-
-        // When
-        val result = addUserUseCase.addUser(newUser)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-
+    fun `addUser() should return success when user and password are valid`() {
+        val users = getAllUsers()
+        every { repository.getAllUsers() } returns Result.success(users)
+        val result = useCase.addUser(username = "johnDoe", password = "hashedPass1")
+        assertThat(result.getOrThrow()).isEqualTo(true)
+        verify(exactly = 1) { repository.getAllUsers() }
     }
 
+    @Test
+    fun `addUser() should return failure when repo fails`() {
+        val users = getAllUsers()
+        every { repository.getAllUsers() } returns Result.failure(Throwable())
+        assertThrows<Throwable> {
+            useCase.addUser(
+                username = "johnDoe",
+                password = "password2"
+            ).getOrThrow()
+        }
+        verify(exactly = 1) { repository.getAllUsers() }
+    }
+
+    @Test
+    fun `addUser() should return failure when users are empty`() {
+        every { repository.getAllUsers() } returns Result.failure(PlanMateExceptions.LogicException.UsersIsEmpty())
+        assertThrows<PlanMateExceptions.LogicException.UsersIsEmpty> {
+            repository.getAllUsers(
+            ).getOrThrow()
+        }
+        verify(exactly = 1) { repository.getAllUsers() }
+    }
 }
