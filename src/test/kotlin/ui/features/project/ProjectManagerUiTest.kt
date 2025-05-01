@@ -9,7 +9,6 @@ import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUi
