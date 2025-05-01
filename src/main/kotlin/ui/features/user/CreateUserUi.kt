@@ -20,13 +20,13 @@ class CreateUserUi(
 
         // Create user if both inputs are valid
         if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
-            addUser(username, password)
+            createUser(username, password)
         } else {
             printer.showMessage("❌ Error: Username and password cannot be empty")
         }
     }
 
-    private fun addUser(username: String, password: String) {
+    private fun createUser(username: String, password: String) {
         createUserUseCase.createUser(username, password)
             .onSuccess { success ->
                 if (success) {
