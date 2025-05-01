@@ -1,6 +1,6 @@
 package org.example.data.entities
 
-data class UserAssignedToTask(
-    val user: String,
+data class MateTaskAssignment(
+    val userName: String,
     val taskId: String
 )

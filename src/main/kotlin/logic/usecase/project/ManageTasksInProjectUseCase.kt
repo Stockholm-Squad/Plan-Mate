@@ -2,18 +2,18 @@ package org.example.logic.usecase.project
 
 import logic.model.entities.Task
 import org.example.logic.repository.ProjectRepository
-import org.example.logic.repository.TaskRepository
+import org.example.logic.usecase.task.ManageTasksUseCase
 
 class ManageTasksInProjectUseCase(
     private val projectRepository: ProjectRepository,
-    private val taskRepository: TaskRepository,
+    private val taskUseCase: ManageTasksUseCase
 ) {
 
     fun getTasksAssignedToProject(projectId: String): Result<List<Task>> {
         return projectRepository.getTasksInProject(projectId = projectId).fold(
             onSuccess = { tasksIds ->
                 tasksIds.mapNotNull {
-                    taskRepository.getTaskById(it).fold(
+                    taskUseCase.getTaskById(it).fold(
                         onSuccess = { task -> task },
                         onFailure = { null }
                     )

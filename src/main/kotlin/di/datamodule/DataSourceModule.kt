@@ -2,6 +2,7 @@ package di.datamodule
 
 import logic.model.entities.*
 import org.example.data.datasources.*
+import org.example.data.entities.MateTaskAssignment
 import org.example.data.entities.TaskInProject
 import org.example.data.entities.UserAssignedToProject
 import org.koin.dsl.module
@@ -13,5 +14,6 @@ val datasourceModule = module {
     factory<PlanMateDataSource<TaskInProject>> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
     factory<PlanMateDataSource<UserAssignedToProject>> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
     factory<PlanMateDataSource<State>> { StateCsvDataSource(filePath = "state.csv") }
-    factory<PlanMateDataSource<Task>> { TaskCsvDataSource() }
+    factory<PlanMateDataSource<Task>> { TaskCsvDataSource(filePath = "task.csv") }
+    factory<PlanMateDataSource<MateTaskAssignment>> { MateTaskAssignmentCsvDataSource(filePath = "mate_task_assignment.csv") }
 }

@@ -176,7 +176,7 @@ class ProjectManagerUiTest {
             projectManagerUi.launchUi()
 
             // Then
-            verify { taskManagerUi.addTask() }
+            verify { taskManagerUi.createTask() }
         }
 
         @Test
