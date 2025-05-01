@@ -10,11 +10,11 @@ class StateRepositoryImp(
 ) : StateRepository {
 
     override fun addState(stateName: String): Result<Boolean> {
-        return stateDataSource.overWrite(listOf(State(name = stateName))).fold(
+        return stateDataSource.append(listOf(State(name = stateName))).fold(
             onSuccess = { value ->
                 Result.success(value)
             },
-            onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
+            onFailure = { exception ->  Result.failure(Throwable(exception)) }
         )
     }
 
