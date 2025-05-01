@@ -1,17 +1,12 @@
 package di.datamodule
 
 import logic.model.entities.*
-import org.example.data.datasources.AuditSystemCsvDataSource
-import org.example.data.datasources.AuthenticationCsvDataSource
-import org.example.data.datasources.PlanMateDataSource
-import org.example.data.datasources.ProjectCsvDataSource
-import org.example.data.datasources.StateCsvDataSource
-import org.example.data.datasources.TaskCsvDataSource
+import org.example.data.datasources.*
 import org.koin.dsl.module
 
 val datasourceModule = module {
     factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource(filePath = "audits.csv") }
-    factory<PlanMateDataSource<User>> { AuthenticationCsvDataSource() }
+    factory<PlanMateDataSource<User>> { UserCsvDataSource(filePath = "user.csv") }
     factory<PlanMateDataSource<Project>> { ProjectCsvDataSource(filePath = "projects.csv") }
     factory<PlanMateDataSource<State>> { StateCsvDataSource(filePath = "state.csv") }
     factory<PlanMateDataSource<Task>> { TaskCsvDataSource() }

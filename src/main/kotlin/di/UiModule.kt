@@ -2,7 +2,7 @@ package org.example.di
 
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.audit.AuditSystemManagerUiImp
-import org.example.ui.features.authentication.AuthenticationManagerUi
+import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUi
@@ -13,6 +13,7 @@ import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.example.ui.features.task.admin.TaskManagerUiMateImp
 import org.example.ui.features.task.mate.TaskManagerUiMateMateImp
+import org.example.ui.features.user.AddUserUi
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -20,8 +21,9 @@ val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
     factory { AuditSystemManagerUiImp(get(), get(), get(), get()) }
-    factory { AuthenticationManagerUi(get()) }
+    factory { LoginUi(get(), get(), get()) }
     factory { ProjectManagerUi(get()) }
+    factory { AddUserUi(get(), get(), get()) }
     factory { TaskManagerUiMateImp(get()) }
     factory { TaskManagerUiMateMateImp(get()) }
 

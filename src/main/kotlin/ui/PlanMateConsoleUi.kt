@@ -5,21 +5,23 @@ import logic.model.entities.User
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.ui.features.audit.AuditSystemManagerUi
-import org.example.ui.features.authentication.AuthenticationManagerUi
+import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.features.user.AddUserUi
 import org.example.utils.Constant
 
 
 class PlanMateConsoleUi(
-    private val manageAuthenticationUi: AuthenticationManagerUi,
+    private val loginUi: LoginUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
     private val stateManagerUi: StateManagerUi,
     private val taskManagerUi: TaskManagerUi,
     private val printer: OutputPrinter,
-    private val reader: InputReader
+    private val reader: InputReader,
+    private val addUserUi: AddUserUi
 ) {
     fun invoke() {
         while (true) {
