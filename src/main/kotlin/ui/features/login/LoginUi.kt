@@ -1,9 +1,10 @@
 package org.example.ui.features.login
 
 import logic.model.entities.User
+import logic.usecase.login.LoginUseCase
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import logic.usecase.login.LoginUseCase
+import org.example.utils.Constant
 
 
 class LoginUi(
@@ -12,9 +13,9 @@ class LoginUi(
     private var reader: InputReader
 ) {
     fun authenticateUser(): User? {
-        printer.showMessage("Enter user name")
+        printer.showMessage("Please enter your user name: ")
         return reader.readStringOrNull()?.let { username ->
-            printer.showMessage("Enter Password")
+            printer.showMessage("Please enter your Password: ")
             reader.readStringOrNull()?.let { password ->
                 getAuthenticationUseCase.loginUser(username = username, password = password)
                     .fold(onSuccess = { user -> user }, onFailure = {
@@ -22,10 +23,6 @@ class LoginUi(
                         null
                     })
             }
-        }.also {
-            printer.showMessage("Invalid input")
-        }.also {
-            printer.showMessage("Invalid input")
         }
     }
 

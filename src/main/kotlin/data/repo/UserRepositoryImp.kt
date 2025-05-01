@@ -2,7 +2,6 @@ package org.example.data.repo
 
 import logic.model.entities.User
 import org.example.data.datasources.PlanMateDataSource
-import org.example.data.datasources.UserCsvDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 

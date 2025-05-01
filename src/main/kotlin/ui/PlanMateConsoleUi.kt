@@ -34,7 +34,7 @@ class PlanMateConsoleUi(
         when (user?.role) {
             Role.ADMIN -> handleAdminUi()
             Role.MATE -> handleMateUi()
-            null -> printer.showMessage("User not found, please try again")
+            null -> return
         }
     }
 
@@ -45,11 +45,13 @@ class PlanMateConsoleUi(
 
     private fun logout() {
         printer.showMessage("Thank you for using PlanMate system")
+        printer.showMessage("--------------------------")
         user = null
     }
 
     private fun showErrorChoice() {
         printer.showMessage("Invalid input, please try again")
+        printer.showMessage("--------------------------")
     }
 
     private fun handleMateChoice() {
