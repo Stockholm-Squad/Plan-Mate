@@ -1,28 +1,29 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.User
-import org.example.logic.repository.AuthenticationRepository
 import org.example.logic.repository.ProjectRepository
+import org.example.logic.repository.UserRepository
 
 class ManageUsersAssignedToProjectUseCase(
     private val projectRepository: ProjectRepository,
-    private val authRepository: AuthenticationRepository,
+    private val userRepository: UserRepository,
 ) {
     fun getUsersAssignedToProject(projectId: String): Result<List<User>> {
-        return projectRepository.getUsersAssignedToProject(projectId = projectId).fold(
-            onSuccess = { userNames ->
-                userNames.mapNotNull {
-                    authRepository.getUserByUserName(it).fold(
-                        onSuccess = { user -> user },
-                        onFailure = { null }
-                    )
-                }.let {
-                    Result.success(it)
-                }
-            },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
 
+        return userRepository.getAllUsers().fold(
+            onSuccess = { allUsers ->
+                projectRepository.getUsersAssignedToProject(projectId = projectId).fold(
+                    onSuccess = { userNames ->
+                        userNames.mapNotNull { userName ->
+                            allUsers.find { it.username == userName }
+                        }.let {
+                            Result.success(it)
+                        }
+                    },
+                    onFailure = { throwable -> Result.failure(throwable) }
+                )
+            },
+            onFailure = { Result.failure(Throwable()) })
     }
 
     fun assignUserToProject(projectId: String, userName: String): Result<Boolean> {

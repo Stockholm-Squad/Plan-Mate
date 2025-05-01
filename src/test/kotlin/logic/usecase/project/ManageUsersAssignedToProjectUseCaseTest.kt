@@ -1,10 +1,11 @@
 package logic.usecase.project
 
 import io.mockk.*
+import logic.model.entities.Role
 import logic.model.entities.User
-import org.example.logic.repository.AuthenticationRepository
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
@@ -12,7 +13,7 @@ import kotlin.test.Test
 
 class ManageUsersAssignedToProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
-    private lateinit var authRepository: AuthenticationRepository
+    private lateinit var userRepository: UserRepository
     private lateinit var useCase: ManageUsersAssignedToProjectUseCase
     private val testUser = User(username = "user1", hashedPassword = "user1@test.com")
     private val anotherUser = User(username = "user2", hashedPassword = "user2@test.com")
@@ -20,8 +21,8 @@ class ManageUsersAssignedToProjectUseCaseTest {
     @BeforeEach
     fun setUp() {
         projectRepository = mockk()
-        authRepository = mockk()
-        useCase = ManageUsersAssignedToProjectUseCase(projectRepository, authRepository)
+        userRepository = mockk()
+        useCase = ManageUsersAssignedToProjectUseCase(projectRepository, userRepository)
     }
 
     @AfterEach
@@ -33,8 +34,11 @@ class ManageUsersAssignedToProjectUseCaseTest {
     fun `getUsersAssignedToProject should return users when successful`() {
         // Given
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1", "user2"))
-        every { authRepository.getUserByUserName("user1") } returns Result.success(testUser)
-        every { authRepository.getUserByUserName("user2") } returns Result.success(anotherUser)
+//        every { userRepository.getUserByUserName("user1") } returns Result.success(testUser)
+//        every { userRepository.getUserByUserName("user2") } returns Result.success(anotherUser)
+        every { userRepository.getAllUsers() } returns Result.success(
+            listOf(testUser, anotherUser)
+        )
 
         // When
         val result = useCase.getUsersAssignedToProject("1")
@@ -47,10 +51,20 @@ class ManageUsersAssignedToProjectUseCaseTest {
     @Test
     fun `getUsersAssignedToProject should filter out null users`() {
         // Given
-        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1", "user2", "user3"))
-        every { authRepository.getUserByUserName("user1") } returns Result.success(testUser)
-        every { authRepository.getUserByUserName("user2") } returns Result.failure(RuntimeException())
-        every { authRepository.getUserByUserName("user3") } returns Result.success(anotherUser)
+        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(
+            listOf(
+                "user1",
+                "user2",
+                "user3"
+            )
+        )
+//        every { userRepository.getUserByUserName("user1") } returns Result.success(testUser)
+//        every { userRepository.getUserByUserName("user2") } returns Result.failure(RuntimeException())
+//        every { userRepository.getUserByUserName("user3") } returns Result.success(anotherUser)
+        every { userRepository.getAllUsers() } returns Result.success(
+            listOf(testUser, anotherUser)
+        )
+
 
         // When
         val result = useCase.getUsersAssignedToProject("1")
@@ -65,6 +79,26 @@ class ManageUsersAssignedToProjectUseCaseTest {
         // Given
         val expectedException = PlanMateExceptions.DataException.ReadException()
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
+        every { userRepository.getAllUsers() } returns Result.success(
+            listOf(
+                User(
+                    username = "user1",
+                    hashedPassword = "",
+                    role = Role.MATE
+                ),
+                User(
+                    username = "user2",
+                    hashedPassword = "",
+                    role = Role.MATE
+                ),
+                User(
+                    username = "user3",
+                    hashedPassword = "",
+                    role = Role.MATE
+                ),
+            )
+        )
+
 
         // When
         val result = useCase.getUsersAssignedToProject("1")
