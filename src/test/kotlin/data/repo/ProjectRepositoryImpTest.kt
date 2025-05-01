@@ -5,14 +5,10 @@ import io.mockk.*
 import logic.model.entities.Project
 import org.example.data.datasources.PlanMateDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.TestMethodOrder
+import org.junit.jupiter.api.*
 import utils.buildProject
 import kotlin.test.Test
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class ProjectRepositoryImpTest {
 
     private lateinit var dataSource: PlanMateDataSource<Project>
@@ -27,7 +23,6 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    @Order(2)
     fun `getAllProjects() should read from data source if cache is empty`() {
         every { dataSource.read() } returns Result.success(listOf(testProject))
 
@@ -37,7 +32,6 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    @Order(1)
     fun `getAllProjects() should return failure when read fails`() {
         every { dataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
@@ -48,71 +42,73 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    @Order(3)
     fun `addProject() should write project to data source and return success`() {
-        every { dataSource.read() } returns Result.success(emptyList())
-        every { dataSource.overWrite(any()) } returns Result.success(true)
-
+        //Given
+        every { dataSource.append(listOf(testProject)) } returns Result.success(true)
+        //When
         val result = repository.addProject(testProject)
-
+        //Then
         assertThat(result.isSuccess).isTrue()
-        verify { dataSource.overWrite(match { it.contains(testProject) }) }
-       // verify(exactly = 1) { dataSource.read() }
+
     }
 
     @Test
-    @Order(4)
     fun `addProject() should return failure when write fails`() {
-        every { dataSource.read() } returns Result.success(emptyList())
-        every { dataSource.overWrite(any()) } returns Result.failure(Exception("fail"))
+        //Given
+        every { dataSource.append(listOf(testProject)) } returns Result.failure(
+            PlanMateExceptions.DataException.WriteException()
+        )
 
         val result = repository.addProject(testProject)
 
-        assertThat(result.isFailure).isTrue()
+        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
 
     }
 
     @Test
-    @Order(5)
     fun `editProject() should update existing project and write to data source`() {
-        every { dataSource.overWrite(any()) } returns Result.success(true)
+        //Given
+        every { dataSource.read() } returns Result.success(listOf(testProject, anotherProject))
+        every { dataSource.overWrite(listOf(testProject, anotherProject)) } returns Result.success(true)
 
-        // Preload with project
-        repository.addProject(testProject)
-
+        //When
         val updated = testProject.copy(name = "Updated")
         val result = repository.editProject(updated)
-
+        //Then
         assertThat(result.isSuccess).isTrue()
 
     }
 
     @Test
-    @Order(5)
-    fun `editProject() should return false when project not found`() {
-        every { dataSource.overWrite(any()) } returns Result.success(true)
+    fun `editProject() should fail when he can not read form data source`() {
+        //Given
+        every { dataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
-        val result = repository.editProject(anotherProject)
+        //When
+        val result = repository.editProject(testProject)
 
-        assertThat(result.getOrNull()).isFalse()
+        //When Then
+        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+
     }
+
 
     @Test
     fun `editProject() should return failure when write fails`() {
-        every { dataSource.overWrite(any()) } returns Result.failure(Exception("fail"))
+        every { dataSource.read() } returns Result.success(listOf(testProject))
+        every { dataSource.overWrite(listOf(testProject)) } returns Result.failure(PlanMateExceptions.DataException.WriteException())
 
         val result = repository.editProject(testProject)
 
-        assertThat(result.isFailure).isTrue()
+        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
     }
 
     @Test
-    @Order(4)
     fun `deleteProject() should remove from list and write to data source`() {
         every { dataSource.read() } returns Result.success(listOf(testProject))
-        every { dataSource.overWrite(any()) } returns Result.success(true)
+        every { dataSource.overWrite(listOf(testProject, anotherProject)) } returns Result.success(true)
 
-        repository.addProject(testProject)
+
         val result = repository.deleteProject(testProject)
 
         assertThat(result.isSuccess).isTrue()
@@ -130,14 +126,12 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    @Order(2)
     fun `getAllProjects() should return cached list if not empty`() {
-        every { dataSource.overWrite(any()) } returns Result.success(true)
+        every { dataSource.read() } returns Result.success(listOf(testProject, anotherProject))
 
-        repository.addProject(testProject)
         val result = repository.getAllProjects()
 
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(listOf(testProject, anotherProject))
     }
 
 

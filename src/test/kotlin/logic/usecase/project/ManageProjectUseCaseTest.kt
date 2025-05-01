@@ -7,132 +7,239 @@ import io.mockk.verify
 import logic.model.entities.Project
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertThrows
 import utils.buildProject
-import kotlin.test.Test
+import kotlin.random.Random
 
 class ManageProjectUseCaseTest {
-
-    private lateinit var repository: ProjectRepository
-    private lateinit var useCase: ManageProjectUseCase
-
-    private val testProject = Project(id = "1", name = "Test Project", stateId = "")
+    private lateinit var projectRepository: ProjectRepository
+    private lateinit var manageProjectUseCase: ManageProjectUseCase
 
     @BeforeEach
-    fun setup() {
-        repository = mockk(relaxed = true)
-        useCase = ManageProjectUseCase(repository)
+    fun setUp() {
+        projectRepository = mockk(relaxed = true)
+        manageProjectUseCase = ManageProjectUseCase(projectRepository)
     }
 
-    @Test
-    fun `getAllProjects returns success when repository returns list`() {
-        every { repository.getAllProjects() } returns Result.success(listOf(testProject))
+    @Nested
+    inner class GetAllProjects {
+        @Test
+        fun `should return all projects when repository succeeds`() {
+            // Given
+            val expectedProjects = listOf(
+                buildProject(id = "1", name = "Project 1"),
+                buildProject(id = "2", name = "Project 2")
+            )
+            every { projectRepository.getAllProjects() } returns Result.success(expectedProjects)
 
-        val result = useCase.getAllProjects()
+            // When
+            val result = manageProjectUseCase.getAllProjects()
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).containsExactly(testProject)
+            // Then
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrNull()).isEqualTo(expectedProjects)
+
+        }
+
+        @Test
+        fun `should return failure when repository fails`() {
+            // Given
+            val expectedException = PlanMateExceptions.LogicException.NoObjectFound()
+            every { projectRepository.getAllProjects() } returns Result.failure(expectedException)
+
+            // When
+            val result = manageProjectUseCase.getAllProjects()
+
+            // Then
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            verify { projectRepository.getAllProjects() }
+        }
     }
 
-    @Test
-    fun `getAllProjects returns failure when repository fails`() {
-        every { repository.getAllProjects() } returns Result.failure(Exception("Fail"))
+    @Nested
+    inner class GetProjectById {
+        @Test
+        fun `should return project when it exists`() {
+            // Given
+            val projectId = "3"
+            val expectedProject = buildProject(id = projectId, name = "Test Project")
+            val allProjects = listOf(
+                buildProject(id = "1", name = "Project 1"),
+                expectedProject,
+                buildProject(id = "2", name = "Project 2")
+            )
+            every { projectRepository.getAllProjects() } returns Result.success(allProjects)
 
-        val result = useCase.getAllProjects()
+            // When
+            val result = manageProjectUseCase.getProjectById(projectId)
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            // Then
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrNull()).isEqualTo(expectedProject)
+            verify { projectRepository.getAllProjects() }
+        }
+
+        @Test
+        fun `should return failure when project does not exist`() {
+            // Given
+            val projectId = "3"
+            val allProjects = listOf(
+                buildProject(id = "1", name = "Project 1"),
+                buildProject(id = "2", name = "Project 2")
+            )
+            every { projectRepository.getAllProjects() } returns Result.success(allProjects)
+
+            // When
+            val result = manageProjectUseCase.getProjectById(projectId)
+
+            // Then
+            assertThrows<PlanMateExceptions.LogicException.NoObjectFound> { result.getOrThrow() }
+        }
+
+        @Test
+        fun `should return failure when repository fails`() {
+            // Given
+            val projectId = "123"
+
+            every { projectRepository.getAllProjects() } returns Result.failure(PlanMateExceptions.LogicException.NoProjectAdded())
+
+            // When
+            val result = manageProjectUseCase.getProjectById(projectId)
+
+            // Then
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            verify { projectRepository.getAllProjects() }
+        }
     }
 
-    @Test
-    fun `getProjectById returns project when found`() {
-        every { repository.getAllProjects() } returns Result.success(listOf(testProject))
+    @Nested
+    inner class AddProject {
+        @Test
+        fun `should return success when project is added successfully`() {
+            // Given
+            val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
+            every { projectRepository.addProject(project) } returns Result.success(true)
 
-        val result = useCase.getProjectById("1")
+            // When
+            val result = manageProjectUseCase.addProject(project)
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(testProject)
+            // Then
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrNull()).isTrue()
+            verify { projectRepository.addProject(project) }
+        }
+
+        @Test
+        fun `should return failure when project addition fails`() {
+            // Given
+            val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
+            val expectedException = Exception("Database error")
+            every { projectRepository.addProject(project) } returns Result.failure(expectedException)
+
+            // When
+            val result = manageProjectUseCase.addProject(project)
+
+            // Then
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoProjectAdded::class.java)
+            verify { projectRepository.addProject(project) }
+        }
     }
 
-    @Test
-    fun `getProjectById returns failure when repository fails`() {
-        every { repository.getAllProjects() } returns Result.failure(Exception("Fail"))
+    @Nested
+    inner class UpdateProject {
+        @Test
+        fun `should return success when project exists and is updated`() {
+            // Given
+            val projectId = "123"
+            val existingProject = buildProject(id = projectId, name = "Existing Project")
+            val updatedProject = existingProject.copy(name = "Updated Project")
+            every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
+            every { projectRepository.editProject(updatedProject) } returns Result.success(true)
 
-        val result = useCase.getProjectById("1")
+            // When
+            val result = manageProjectUseCase.updateProject(updatedProject)
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            // Then
+            assertThat(result.isSuccess).isTrue()
+        }
+
+        @Test
+        fun `should return failure when project does not exist`() {
+            // Given
+            val projectId = "non-existent"
+            val existingProject = buildProject(id = projectId, name = "Existing Project")
+            every { projectRepository.editProject(existingProject) } returns Result.failure(PlanMateExceptions.LogicException.NoObjectFound())
+
+            // When
+            val result = manageProjectUseCase.updateProject(existingProject)
+
+            // Then
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+
+
+        }
+
+
     }
 
-    @Test
-    fun `getProjectById returns failure when project not found`() {
-        every { repository.getAllProjects() } returns Result.success(emptyList())
+    @Nested
+    inner class RemoveProjectById {
+        @Test
+        fun `should return success when project exists and is deleted`() {
+            // Given
+            val projectId = "123"
+            val existingProject = buildProject(id = projectId, name = "Project to delete")
+            every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
+            every { projectRepository.deleteProject(existingProject) } returns Result.success(true)
 
-        val result = useCase.getProjectById("1")
+            // When
+            val result = manageProjectUseCase.removeProjectById(projectId)
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            // Then
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrNull()).isTrue()
+            verify { projectRepository.getAllProjects() }
+            verify { projectRepository.deleteProject(existingProject) }
+        }
+
+        @Test
+        fun `should return failure when project does not exist`() {
+            // Given
+            val projectId = "non-existent"
+            every { projectRepository.getAllProjects() } returns Result.success(emptyList())
+
+            // When
+            val result = manageProjectUseCase.removeProjectById(projectId)
+
+            // Then
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            verify { projectRepository.getAllProjects() }
+            verify(exactly = 0) { projectRepository.deleteProject(any()) }
+        }
+
+        @Test
+        fun `should return failure when repository fails to get projects`() {
+            // Given
+            val projectId = "123"
+            val expectedException = Exception("Database error")
+            every { projectRepository.getAllProjects() } returns Result.failure(expectedException)
+
+            // When
+            val result = manageProjectUseCase.removeProjectById(projectId)
+
+            // Then
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            verify { projectRepository.getAllProjects() }
+            verify(exactly = 0) { projectRepository.deleteProject(any()) }
+        }
     }
 
-    @Test
-    fun `addProject returns success when added`() {
-        every { repository.addProject(testProject) } returns Result.success(true)
 
-        val result = useCase.addProject(testProject)
-
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isTrue()
-    }
-
-    @Test
-    fun `addProject returns failure when repository fails`() {
-        every { repository.addProject(testProject) } returns Result.failure(Exception("fail"))
-
-        val result = useCase.addProject(testProject)
-
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoProjectAdded::class.java)
-    }
-
-    @Test
-    fun `updateProject returns success and calls repository`() {
-        every { repository.getAllProjects() } returns Result.success(listOf(testProject))
-        every { repository.editProject(testProject) } returns Result.success(true)
-
-        val result = useCase.updateProject(buildProject(id = "1"))
-
-        assertThat(result.isSuccess).isTrue()
-        verify { repository.editProject(testProject) }
-    }
-
-    @Test
-    fun `updateProject returns failure when project not found`() {
-        every { repository.getAllProjects() } returns Result.success(emptyList())
-
-        val result = useCase.updateProject(buildProject(id = "1"))
-
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
-    }
-
-    @Test
-    fun `removeProjectById returns success and calls repository`() {
-        every { repository.getAllProjects() } returns Result.success(listOf(testProject))
-        every { repository.deleteProject(testProject) } returns Result.success(true)
-
-        val result = useCase.removeProjectById("1")
-
-        assertThat(result.isSuccess).isTrue()
-        verify { repository.deleteProject(testProject) }
-    }
-
-    @Test
-    fun `removeProjectById returns failure when project not found`() {
-        every { repository.getAllProjects() } returns Result.success(emptyList())
-
-        val result = useCase.removeProjectById("1")
-
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
-    }
 }

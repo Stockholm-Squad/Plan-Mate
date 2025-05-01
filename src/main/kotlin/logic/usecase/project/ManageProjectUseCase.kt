@@ -16,12 +16,13 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
     fun getProjectById(id: String): Result<Project> {
         return projectRepository.getAllProjects().fold(
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
-            onSuccess = { allProjects -> Result.success(getProject(id, allProjects)) }
+            onSuccess = { allProjects -> getProject(id, allProjects) }
         )
     }
 
-    private fun getProject(id: String, allProjects: List<Project>): Project {
-        return allProjects.find { it.id == id } ?: throw PlanMateExceptions.LogicException.NoObjectFound()
+    private fun getProject(id: String, allProjects: List<Project>): Result<Project> {
+        return allProjects.find { it.id == id }?.let { Result.success(it) }
+            ?: Result.failure(PlanMateExceptions.LogicException.NoObjectFound())
 
     }
 
@@ -35,21 +36,21 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
 
 
     fun updateProject(project: Project): Result<Boolean> {
-        return getProjectById(project.id).fold(
+        return projectRepository.editProject(project).fold(
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
-            onSuccess = { project -> Result.success(true).onSuccess { projectRepository.editProject(project) } }
+            onSuccess = { Result.success(true) }
         )
     }
 
     fun removeProjectById(id: String): Result<Boolean> {
         return getProjectById(id).fold(
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
-            onSuccess = { project -> Result.success(true).onSuccess { projectRepository.deleteProject(project) } }
+            onSuccess = { project -> Result.success(true).let { projectRepository.deleteProject(project) } }
         )
     }
 
 
-    fun assignUsersToProject(username: String, projectId: String):Result<Boolean> {
+    fun assignUsersToProject(username: String, projectId: String): Result<Boolean> {
         TODO()
     }
 

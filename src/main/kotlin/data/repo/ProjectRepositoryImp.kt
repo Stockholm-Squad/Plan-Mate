@@ -9,66 +9,44 @@ class ProjectRepositoryImp(
     private val projectDataSource: PlanMateDataSource<Project>
 ) : ProjectRepository {
 
-    companion object {
-        private var allProjects: MutableList<Project> = emptyList<Project>().toMutableList()
-    }
 
     override fun addProject(project: Project): Result<Boolean> {
-        if (allProjects.size == 0) {
-            getAllProjects()
-        }
-        allProjects.add(project)
-        return projectDataSource.overWrite(allProjects).fold(
+        return projectDataSource.append(listOf(project)).fold(
             onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) },
             onSuccess = { Result.success(true) }
         )
     }
 
     override fun editProject(project: Project): Result<Boolean> {
-        return projectDataSource.overWrite(listOf(project)).fold(
-            onFailure = { error -> Result.failure(PlanMateExceptions.DataException.ReadException()) },
+        return projectDataSource.read().fold(
+            onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) },
             onSuccess = {
-                val updated = updateProjectInTheList(project)
-                if (updated) {
-                    projectDataSource.overWrite(allProjects)
+                it.map {
+                    if (it.id == project.id)
+                    {
+                        project
+                    }
+                    else
+                        it
                 }
-                Result.success(updated)
+                projectDataSource.overWrite(it)
             }
         )
     }
 
-    private fun updateProjectInTheList(project: Project): Boolean {
-        return try {
-            val index = allProjects.indexOfFirst { it.id == project.id }
-            if (index != -1) {
-                allProjects[index] = project
-                true
-            } else {
-                false
-            }
-        } catch (e: Exception) {
-            false
-        }
-    }
 
     override fun deleteProject(project: Project): Result<Boolean> {
         return projectDataSource.read().fold(
-            onFailure = { error -> Result.failure(PlanMateExceptions.DataException.ReadException()) },
+            onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) },
             onSuccess = {
-                Result.success(allProjects.remove(project)).onSuccess { projectDataSource.overWrite(allProjects) }
+                it.filterNot { it.id == project.id }.let { projectList -> projectDataSource.overWrite(projectList) }
+
             }
         )
     }
 
 
     override fun getAllProjects(): Result<List<Project>> {
-        return allProjects
-            .takeIf { it.isNotEmpty() }?.let { Result.success(it) }
-            ?: projectDataSource.read().fold(
-                onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) },
-                onSuccess = { projects ->
-                    Result.success(projects).onSuccess { allProjects = projects.toMutableList() }
-                }
-            )
+        return projectDataSource.read()
     }
 }
