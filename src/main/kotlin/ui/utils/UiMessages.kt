@@ -20,7 +20,9 @@ enum class UiMessages(val message: String) {
     EMPTY_TASK_STATE_INPUT("Task state cannot be empty."),
     INVALID_STATE_NAME("Invalid state name. No matching state ID found."),
     INVALID_OPTION("Invalid option. Please choose a valid option from the menu."),
-    GOODBYE("Goodbye! Thank you for using the Task Manager.");
-
+    GOODBYE("Goodbye! Thank you for using the Task Manager."),
+    NO_TASKS_FOUND_IN_PROJECT("No task found in project"),
+    EMPTY_PROJECT_ID_INPUT("Empty project input"),
+    PROJECT_ID_PROMPT("Enter Project id:");
     override fun toString(): String = message
 }

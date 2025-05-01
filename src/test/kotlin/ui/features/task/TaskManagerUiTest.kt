@@ -10,6 +10,7 @@ import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
@@ -29,7 +30,7 @@ class TaskManagerUiTest {
     private lateinit var uiUtils: UiUtils
     private lateinit var manageTasksUseCase: ManageTasksUseCase
     private lateinit var manageStateUseCase: ManageStatesUseCase
-    private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
     private lateinit var getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
     private lateinit var taskManagerUi: TaskManagerUi
 
@@ -41,7 +42,7 @@ class TaskManagerUiTest {
 
         manageTasksUseCase = mockk(relaxed = true)
         manageStateUseCase = mockk(relaxed = true)
-        manageProjectUseCase = mockk(relaxed = true)
+        manageTasksInProjectUseCase = mockk(relaxed = true)
         getTasksAssignedToUserUseCase = mockk(relaxed = true)
 
         taskManagerUi = TaskManagerUi(
@@ -50,7 +51,7 @@ class TaskManagerUiTest {
             uiUtils,
             manageTasksUseCase,
             manageStateUseCase,
-            manageProjectUseCase,
+            manageTasksInProjectUseCase,
             getTasksAssignedToUserUseCase
         )
     }
@@ -579,6 +580,73 @@ class TaskManagerUiTest {
         verify(exactly = 1) { printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTaskAssignmentFound().message}") }
     }
     //endregion
+
+    //region showAllTasksInProject
+    @Test
+    fun `showAllTasksInProject() should display tasks when tasks are found in project`() {
+        // Given
+        val projectId = "proj-1"
+        val tasks = listOf(buildTask("1", "Task 1"), buildTask("2", "Task 2"))
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns projectId
+        every { manageTasksInProjectUseCase.getTasksAssignedToProject(projectId) } returns Result.success(tasks)
+
+        // When
+        taskManagerUi.showAllTasksInProject()
+
+        // Then
+        verify { printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message) }
+        verify { printer.printTaskList(tasks) }
+        verify(exactly = 0) { printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message) }
+    }
+
+    @Test
+    fun `showAllTasksInProject() should show no tasks message when project has no tasks`() {
+        // Given
+        val projectId = "proj-2"
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns projectId
+        every { manageTasksInProjectUseCase.getTasksAssignedToProject(projectId) } returns Result.success(emptyList())
+
+        // When
+        taskManagerUi.showAllTasksInProject()
+
+        // Then
+        verify { printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message) }
+        verify { printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message) }
+        verify(exactly = 0) { printer.printTaskList(any()) }
+    }
+
+    @Test
+    fun `showAllTasksInProject() should show empty project ID message when input is blank`() {
+        // Given
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns null
+
+        // When
+        taskManagerUi.showAllTasksInProject()
+
+        // Then
+        verify { printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message) }
+        verify { printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message) }
+        verify(exactly = 0) { manageTasksInProjectUseCase.getTasksAssignedToProject(any()) }
+    }
+
+    @Test
+    fun `showAllTasksInProject() should handle failure from use case gracefully`() {
+        // Given
+        val projectId = "proj-3"
+        val exception = PlanMateExceptions.LogicException.NoTaskAssignmentFound()
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns projectId
+        every { manageTasksInProjectUseCase.getTasksAssignedToProject(projectId) } returns Result.failure(exception)
+
+        // When
+        taskManagerUi.showAllTasksInProject()
+
+        // Then
+        verify { printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message) }
+        verify { printer.showMessage("Error: ${exception.message}") }
+    }
+    //endregion
+
     @Test
     fun `launchUi() should print task options menu and exit on valid exit input`() {
         // Given
@@ -612,6 +680,5 @@ class TaskManagerUiTest {
         verify(exactly = 1) { manageTasksUseCase.getAllTasks() }
         verify { uiUtils.exit() }
     }
-
 
 }

@@ -82,7 +82,6 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
-
         data class NoStatesFoundedException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATE_FOUNDED_MESSAGE,
         ) : LogicException(

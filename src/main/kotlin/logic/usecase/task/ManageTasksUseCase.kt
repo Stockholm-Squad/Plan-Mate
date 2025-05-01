@@ -41,10 +41,11 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
         getTaskById(taskId).fold(
             onSuccess = {
                 taskRepository.deleteTask(taskId).fold(
-                    onSuccess = { Result.success(true) },
+                    onSuccess = { Result.success(it) },
                     onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksDeleted()) }
                 )
             },
             onFailure = { Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException()) }
         )
+
 }

@@ -30,5 +30,6 @@ enum class ExceptionMessage(
     NO_PROJECT_ADDED("No Project Added"),
     NO_DATA_IN_THE_FILE("The file is empty"),
     FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
-    INVALID_INPUT("Invalid input");
+    INVALID_INPUT("Invalid input")
+   ;
 }

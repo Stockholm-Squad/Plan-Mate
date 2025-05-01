@@ -4,6 +4,7 @@ import logic.model.entities.Task
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
@@ -21,7 +22,7 @@ class TaskManagerUi(
     private val uiUtils: UiUtils,
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageStatesUseCase,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
     private val getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
 ) : UiLauncher {
 
@@ -39,7 +40,7 @@ class TaskManagerUi(
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
-//            TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
+            TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
             TaskOptions.EXIT -> {
                 uiUtils.exit()
@@ -141,21 +142,21 @@ class TaskManagerUi(
         )
     }
 
-//    private fun showAllTasksInProject() {
-//        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
-//
-//        val projectId = uiUtils.readNonBlankInputOrNull(reader)
-//            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
-//
-//        manageProjectUseCase.getTasksByProjectId(projectId).fold(
-//            onSuccess = { tasks: List<Task> ->
-//                tasks.takeUnless { it.isEmpty() }
-//                    ?.let { printer.printTaskList(it) }
-//                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
-//            },
-//            onFailure = ::handleFailure
-//        )
-//    }
+    fun showAllTasksInProject() {
+        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
+
+        val projectId = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
+
+        manageTasksInProjectUseCase.getTasksAssignedToProject(projectId).fold(
+            onSuccess = { tasks: List<Task> ->
+                tasks.takeUnless { it.isEmpty() }
+                    ?.let { printer.printTaskList(it) }
+                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
+            },
+            onFailure = ::handleFailure
+        )
+    }
 
     fun showAllMateTaskAssignment() {
         printer.showMessage(UiMessages.USER_NAME_PROMPT.message)
