@@ -1,7 +1,7 @@
 package org.example.di
 
 import org.example.ui.PlanMateConsoleUi
-import org.example.ui.features.audit.AuditSystemManagerUi
+import org.example.ui.features.audit.AuditSystemManagerUiImp
 import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.common.UserStateManagerUiImp
@@ -18,7 +18,7 @@ import org.koin.dsl.module
 val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
-    factory { AuditSystemManagerUi(get(),get(),get(),get()) }
+    factory { AuditSystemManagerUiImp(get(),get(),get(),get()) }
     factory { AuthenticationManagerUi(get()) }
     factory { ProjectManagerUi(get()) }
     factory { TaskManagerUiMateImp(get()) }
