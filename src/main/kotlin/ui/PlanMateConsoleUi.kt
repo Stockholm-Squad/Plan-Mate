@@ -71,7 +71,7 @@ class PlanMateConsoleUi(
                 AdminChoice.MANAGE_PROJECTS.choice -> TODO()
                 AdminChoice.MANAGE_TASKS.choice -> TODO()
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
-                AdminChoice.ADD_MATE.choice -> TODO()
+                AdminChoice.ADD_MATE.choice -> addUserUi.launchUi()
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
@@ -81,7 +81,7 @@ class PlanMateConsoleUi(
 
     private fun manageAuthenticationUI(): User? {
         if (user != null) return user
-        return User("", "")//manageAuthenticationUi.launch()
+        return loginUi.authenticateUser()
     }
 
     companion object {
