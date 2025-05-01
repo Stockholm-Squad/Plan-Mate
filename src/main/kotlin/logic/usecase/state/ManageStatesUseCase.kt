@@ -8,28 +8,26 @@ class ManageStatesUseCase(
     private val stateRepository: StateRepository,
 ) {
     fun addState(stateName: String): Result<Boolean> {
-        return stateRepository.addState(stateName).fold(
-            onSuccess = {
-                stateName.trim()
-                it.let {
-                    stateName.isNotBlank() && isValidLength(stateName) && !isStateExists(stateName) && isLetterAndWhiteSpace(stateName)
-                }
-                Result.success(
-                    true
-                )
+        return isStateNameValid(stateName).fold(
+            onSuccess = { validStateName ->
+                validStateName.takeIf { !isStateExist(it) }
+                    ?.let {
+                        stateRepository.addState(it).fold(
+                            onSuccess = { Result.success(true) },
+                            onFailure = { exception -> Result.failure(exception) }
+                        )
+
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateAlreadyExistException())
             },
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) }
         )
-
     }
-
-
 
 
     fun editState(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
-            onSuccess = {
-                isStateExist(stateName)
+            onSuccess = { validStateName ->
+                getState(validStateName)
                     .takeIf { it != null }
                     ?.let { state ->
                         stateRepository.editState(state).fold(
@@ -43,19 +41,19 @@ class ManageStatesUseCase(
     }
 
 
-    private fun isStateNameValid(stateName: String): Result<Boolean> {
-        return stateName.takeIf {
-            stateName.isNotBlank() &&
-                    stateName.length <= 20 &&
-                    stateName.contains("^[A-Za-z]+$".toRegex()) // Ensure only letters
-        }?.let { Result.success(true) }
-            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) // Invalid state name
+    private fun isStateNameValid(stateName: String): Result<String> {
+        return stateName.trim().takeIf {
+            it.isNotBlank() &&
+                    isValidLength(it) &&
+                    isLetterAndWhiteSpace(it)
+        }?.let { Result.success(it) }
+            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException())
     }
 
     fun deleteState(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = {
-                isStateExist(stateName)
+                getState(stateName)
                     .takeIf { it != null }
                     ?.let { state ->
                         stateRepository.deleteState(state).fold(
@@ -81,24 +79,28 @@ class ManageStatesUseCase(
                     Result.success(data)
                 } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
             },
-            onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
+            onFailure = { exception -> Result.failure(exception) }
         )
     }
 
     fun getStateIdByName(stateName: String): String? {
         return isStateNameValid(stateName).fold(
             onSuccess = {
-                isStateExist(stateName).takeIf { it != null }?.id
+                getState(stateName).takeIf { it != null }?.id
             },
             onFailure = { null }
         )
     }
 
 
-    private fun isStateExist(stateName: String): State? {
+    private fun isStateExist(stateName: String): Boolean {
+        return if (getState(stateName) != null) true else false
+    }
+
+    private fun getState(stateName: String): State? {
         return this.getAllStates().fold(
             onSuccess = { allStates ->
-                allStates.firstOrNull { state -> state.name == stateName }
+                allStates.firstOrNull { state -> state.name.equals(stateName, ignoreCase = true) }
             },
             onFailure = { null }
         )
@@ -113,8 +115,4 @@ class ManageStatesUseCase(
         return stateName.all { char -> char.isLetter() || char.isWhitespace() }
     }
 
-    private fun isStateExists(stateName: String): Boolean {
-
-        return getAllStates().getOrThrow().any { state: State -> state.name.equals(stateName, ignoreCase = true) }
-    }
 }
