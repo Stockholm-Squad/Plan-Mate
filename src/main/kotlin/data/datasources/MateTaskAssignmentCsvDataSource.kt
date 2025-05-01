@@ -8,7 +8,10 @@ import org.jetbrains.kotlinx.dataframe.api.toList
 import org.jetbrains.kotlinx.dataframe.io.readCSV
 
 
-class MateTaskAssignmentCsvDataSource(private val filePath: String) : CsvDataSource<MateTaskAssignment>(filePath) {
+class MateTaskAssignmentCsvDataSource(
+    private val filePath: String
+) : CsvDataSource<MateTaskAssignment>(filePath) {
+
     override fun read(): Result<List<MateTaskAssignment>> {
         super.resolveFile().also {
             if (!it.exists()) return Result.failure(PlanMateExceptions.DataException.FileNotExistException())

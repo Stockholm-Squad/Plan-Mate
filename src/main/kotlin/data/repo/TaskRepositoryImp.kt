@@ -13,29 +13,29 @@ class TaskRepositoryImp(
 
     override fun getAllTasks(): Result<List<Task>> = readTasks()
 
-    override fun createTask(task: Task): Result<Boolean> =
-        readTasks().fold(
-            onSuccess = { tasks -> writeTasks(tasks + task) },
-            onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
+    override fun createTask(task: Task): Result<Boolean> {
+        return taskDataSource.append(listOf(task)).fold(
+            onSuccess = { Result.success(true) },
+            onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
         )
+    }
 
     override fun editTask(task: Task): Result<Boolean> =
         readTasks().fold(
             onSuccess = { tasks ->
-                taskDataSource.write(tasks.map { it.takeIf { it.id != task.id } ?: task })
+                writeTasks(tasks.map { it.takeIf { it.id != task.id } ?: task })
             },
             onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
         )
-
 
     override fun deleteTask(id: String?): Result<Boolean> =
         readTasks().fold(
             onSuccess = { tasks ->
-                val updatedTasks = tasks.filterNot { it.id == id }
-                taskDataSource.write(updatedTasks)
+                writeTasks(tasks.filterNot { it.id == id })
             },
             onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
         )
+
 
     override fun getAllMateTaskAssignment(mateName: String): Result<List<MateTaskAssignment>> =
         mateTaskAssignment.read().fold(
@@ -55,24 +55,10 @@ class TaskRepositoryImp(
         )
     }
 
-     fun writeTasks(tasks: List<Task>): Result<Boolean> {
-        return taskDataSource.write(tasks).fold(
+    fun writeTasks(tasks: List<Task>): Result<Boolean> {
+        return taskDataSource.overWrite(tasks).fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
         )
     }
 }
-
-
-
-
-
-//    override fun getAllTasksInProjects(): Result<List<TaskInProject>> {
-//        return taskInProjectDataSource.read()
-//    }
-//    override fun linkTaskToProject(taskInProject: TaskInProject): Result<Boolean> {
-//        return taskInProjectDataSource.read().fold(
-//            onSuccess = { links -> taskInProjectDataSource.write(links + taskInProject) },
-//            onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }
-//        )
-//    }
