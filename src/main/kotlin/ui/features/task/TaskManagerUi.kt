@@ -141,21 +141,21 @@ class TaskManagerUi(
         )
     }
 
-//    private fun showAllTasksInProject() {
-//        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
-//
-//        val projectId = uiUtils.readNonBlankInputOrNull(reader)
-//            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
-//
-//        manageProjectUseCase.getTasksByProjectId(projectId).fold(
-//            onSuccess = { tasks: List<Task> ->
-//                tasks.takeUnless { it.isEmpty() }
-//                    ?.let { printer.printTaskList(it) }
-//                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
-//            },
-//            onFailure = ::handleFailure
-//        )
-//    }
+    private fun showAllTasksInProject() {
+        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
+
+        val projectId = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
+
+        manageProjectUseCase.getTasksByProjectId(projectId).fold(
+            onSuccess = { tasks: List<Task> ->
+                tasks.takeUnless { it.isEmpty() }
+                    ?.let { printer.printTaskList(it) }
+                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
+            },
+            onFailure = ::handleFailure
+        )
+    }
 
     fun showAllMateTaskAssignment() {
         printer.showMessage(UiMessages.USER_NAME_PROMPT.message)
