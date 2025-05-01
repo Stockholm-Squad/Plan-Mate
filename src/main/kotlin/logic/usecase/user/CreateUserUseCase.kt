@@ -15,7 +15,7 @@ class CreateUserUseCase(private val userRepository: UserRepository) {
             userRepository.getAllUsers().fold(
                 onSuccess = {
                     handleSuccess(username = username, password = password, users = it).fold(
-                        onSuccess = { userRepository.addUser(it) },
+                        onSuccess = { userRepository.createUser(it) },
                         onFailure = { handleFailure(it as PlanMateExceptions) })
                 },
                 onFailure = { handleFailure(it as PlanMateExceptions.LogicException.UsersIsEmpty) })
