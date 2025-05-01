@@ -1,5 +1,6 @@
 package org.example.input_output.output
 
+import logic.model.entities.State
 import logic.model.entities.Task
 import org.example.data.entities.MateTaskAssignment
 import kotlin.collections.forEach
@@ -27,5 +28,19 @@ class OutputPrinterImplementation : OutputPrinter {
         assignments.forEachIndexed { index, it ->
             println("${index + 1}. Task ID: ${it.taskId}")
         }
+    }
+
+    override fun showStates(states: List<State>) {
+        this.printStateUsingSwimlaneUi(states)
+    }
+
+    private fun printStateUsingSwimlaneUi(states: List<State>) {
+        println("┌──────────────────────────────┐")
+        println("│ State                        │")
+        println("├──────────────────────────────┤")
+        states.forEach {
+            println("│ %-28s │".format(it.name))
+        }
+        println("└──────────────────────────────┘")
     }
 }

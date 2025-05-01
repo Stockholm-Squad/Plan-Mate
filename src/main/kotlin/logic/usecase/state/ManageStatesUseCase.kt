@@ -1,22 +1,118 @@
 package org.example.logic.usecase.state
 
 import logic.model.entities.State
+import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.StateRepository
 
-class ManageStatesUseCase(private val stateRepository: StateRepository) {
-    fun addState(state: State): Result<Boolean> {
-        TODO("Not yet implemented")
+class ManageStatesUseCase(
+    private val stateRepository: StateRepository,
+) {
+    fun addState(stateName: String): Result<Boolean> {
+        return isStateNameValid(stateName).fold(
+            onSuccess = { validStateName ->
+                validStateName.takeIf { !isStateExist(it) }
+                    ?.let {
+                        stateRepository.addState(it).fold(
+                            onSuccess = { Result.success(true) },
+                            onFailure = { exception -> Result.failure(exception) }
+                        )
+
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateAlreadyExistException())
+            },
+            onFailure = { Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) }
+        )
     }
 
-    fun editState(state: State): Result<Boolean> {
-        TODO("Not yet implemented")
+
+    fun editState(stateName: String): Result<Boolean> {
+        return isStateNameValid(stateName).fold(
+            onSuccess = { validStateName ->
+                getState(validStateName)
+                    .takeIf { it != null }
+                    ?.let { state ->
+                        stateRepository.editState(state).fold(
+                            onSuccess = { Result.success(it) },
+                            onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
+                        )
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+            },
+            onFailure = { throwable -> Result.failure(throwable) }
+        )
     }
 
-    fun deleteState(id: String): Result<Boolean> {
-        TODO("Not yet implemented")
+
+    private fun isStateNameValid(stateName: String): Result<String> {
+        return stateName.trim().takeIf {
+            it.isNotBlank() &&
+                    isValidLength(it) &&
+                    isLetterAndWhiteSpace(it)
+        }?.let { Result.success(it) }
+            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException())
+    }
+
+    fun deleteState(stateName: String): Result<Boolean> {
+        return isStateNameValid(stateName).fold(
+            onSuccess = {
+                getState(stateName)
+                    .takeIf { it != null }
+                    ?.let { state ->
+                        stateRepository.deleteState(state).fold(
+                            onSuccess = { Result.success(it) },
+                            onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
+                        )
+                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+            },
+            onFailure = { throwable -> Result.failure(throwable) }
+        )
+    }
+
+    private fun handleStateNotExistException(throwable: Throwable): Result<Boolean> {
+        return throwable.takeIf { it is PlanMateExceptions.DataException.FileNotExistException }
+            ?.let { Result.failure(PlanMateExceptions.LogicException.StateNotExistException()) }
+            ?: Result.failure(throwable)
     }
 
     fun getAllStates(): Result<List<State>> {
-        TODO("Not yet implemented")
+        return stateRepository.getAllStates().fold(
+            onSuccess = { data ->
+                data.takeIf { data.isNotEmpty() }?.let {
+                    Result.success(data)
+                } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+            },
+            onFailure = { exception -> Result.failure(exception) }
+        )
     }
+
+    fun getStateIdByName(stateName: String): String? {
+        return isStateNameValid(stateName).fold(
+            onSuccess = {
+                getState(stateName).takeIf { it != null }?.id
+            },
+            onFailure = { null }
+        )
+    }
+
+
+    private fun isStateExist(stateName: String): Boolean {
+        return if (getState(stateName) != null) true else false
+    }
+
+    private fun getState(stateName: String): State? {
+        return this.getAllStates().fold(
+            onSuccess = { allStates ->
+                allStates.firstOrNull { state -> state.name.equals(stateName, ignoreCase = true) }
+            },
+            onFailure = { null }
+        )
+    }
+
+
+    private fun isValidLength(stateName: String): Boolean {
+        return stateName.length <= 30
+    }
+
+    private fun isLetterAndWhiteSpace(stateName: String): Boolean {
+        return stateName.all { char -> char.isLetter() || char.isWhitespace() }
+    }
+
 }
