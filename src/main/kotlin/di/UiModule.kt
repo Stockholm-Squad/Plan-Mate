@@ -2,7 +2,7 @@ package org.example.di
 
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.audit.AuditSystemManagerUiImp
-import org.example.ui.features.authentication.AuthenticateUi
+import org.example.ui.features.login.LoginUi
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.project.ProjectManagerUi
@@ -20,7 +20,7 @@ val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
     factory { AuditSystemManagerUiImp(get(),get(),get(),get()) }
-    factory { AuthenticateUi(get(),get(),get()) }
+    factory { LoginUi(get(),get(),get()) }
     factory { ProjectManagerUi(get()) }
     factory { AddUserUi(get(),get(),get()) }
     factory { TaskManagerUiMateImp(get()) }

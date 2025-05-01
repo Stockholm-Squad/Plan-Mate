@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.User
-import logic.usecase.authentication.getAllUsers
+import logic.usecase.login.getAllUsers
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.AddUserUseCase

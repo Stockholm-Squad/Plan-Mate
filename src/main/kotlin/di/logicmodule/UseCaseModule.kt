@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 val useCaseModule = module {
     includes(
-        auditSystemUseCaseModule, authenticationUseCaseModule,
+        auditSystemUseCaseModule, loginUseCaseModule,
         taskUseCaseModule, projectUseCaseModule, stateUseCaseModule, addUserUseCaseModule
     )
 }
