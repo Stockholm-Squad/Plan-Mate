@@ -68,7 +68,7 @@ class PlanMateConsoleUi(
         printer.showMessage(Constant.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
-                AdminChoice.MANAGE_PROJECTS.choice -> TODO()
+                AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
                 AdminChoice.MANAGE_TASKS.choice -> TODO()
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
                 AdminChoice.ADD_MATE.choice -> addUserUi.launchUi()
