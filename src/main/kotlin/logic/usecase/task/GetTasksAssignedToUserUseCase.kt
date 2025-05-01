@@ -4,7 +4,9 @@ import org.example.data.entities.MateTaskAssignment
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
 
-class GetTasksAssignedToUserUseCase(private val taskRepository: TaskRepository) {
+class GetTasksAssignedToUserUseCase(
+    private val taskRepository: TaskRepository
+) {
 
     fun getAllMateTaskAssignment(userName: String): Result<List<MateTaskAssignment>> =
         taskRepository.getAllMateTaskAssignment(userName).fold(
