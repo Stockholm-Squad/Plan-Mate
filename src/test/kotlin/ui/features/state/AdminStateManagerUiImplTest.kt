@@ -1,38 +1,32 @@
 package ui.features.state
 
-import createState
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.State
 import org.example.input_output.input.InputReader
-import org.example.input_output.output.OutputPrinterImplementation
+import org.example.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.ExceptionMessage
-import org.example.logic.model.exceptions.PlanMateExceptions.DataException
 import org.example.logic.model.exceptions.PlanMateExceptions.LogicException
-import org.example.logic.repository.StateRepository
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUiImpl
+import org.example.ui.features.state.common.UserStateManagerUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AdminStateManagerUiImplTest {
-    private lateinit var stateRepository: StateRepository
     private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var adminStateManagerUi: AdminStateManagerUiImpl
     private lateinit var userStateManagerUi: UserStateManagerUi
-    private lateinit var printer: OutputPrinterImplementation
+    private lateinit var printer: OutputPrinter
     private lateinit var reader: InputReader
 
     @BeforeEach
     fun setUp() {
-        stateRepository = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         reader = mockk(relaxed = true)
         userStateManagerUi = mockk(relaxed = true)
 
-        manageStatesUseCase = ManageStatesUseCase(stateRepository)
+        manageStatesUseCase = mockk(relaxed = true)
         adminStateManagerUi = AdminStateManagerUiImpl(
             userStateManagerUi = userStateManagerUi,
             manageStatesUseCase = manageStatesUseCase,
@@ -40,23 +34,88 @@ class AdminStateManagerUiImplTest {
             printer = printer
         )
     }
+    @Test
+    fun `addState should succeed with valid input`() {
+        every { reader.readStringOrNull() } returns "NewState"
+        every { manageStatesUseCase.addState(any()) } returns Result.success(true)
+
+        adminStateManagerUi.addState()
+
+        verify { printer.showMessage("Please enter name for the state:") }
+        verify { printer.showMessage("State added successfully ^_^") }
+    }
+
+    @Test
+    fun `addState should fail with invalid input`() {
+        every { reader.readStringOrNull() } returns null
+
+        adminStateManagerUi.addState()
+
+        verify { printer.showMessage("Invalid input, Please try again..") }
+    }
+
+    @Test
+    fun `editState should succeed with valid input`() {
+        every { reader.readStringOrNull() } returns "ExistingState"
+        every { manageStatesUseCase.editState("ExistingState") } returns Result.success(true)
+
+        adminStateManagerUi.editState()
+
+        verify { printer.showMessage("State updated successfully ^_^") }
+    }
+
+    @Test
+    fun `editState should fail with invalid input`() {
+        every { reader.readStringOrNull() } returns ""
+
+        adminStateManagerUi.editState()
+
+        verify { printer.showMessage("Invalid input, Please try again..") }
+    }
+
+    @Test
+    fun `deleteState should show success message on valid input`() {
+        every { reader.readStringOrNull() } returns "StateToDelete"
+        every { manageStatesUseCase.deleteState("StateToDelete") } returns Result.success(true)
+
+        adminStateManagerUi.deleteState()
+
+        verify { printer.showMessage("State deleted successfully ^_^") }
+    }
+
+    @Test
+    fun `deleteState should show error message on failure`() {
+        every { reader.readStringOrNull() } returns "BadState"
+        every { manageStatesUseCase.deleteState("BadState") } returns Result.failure(Exception("some error"))
+
+        adminStateManagerUi.deleteState()
+
+        verify { printer.showMessage("Failed to Delete state: some error") }
+    }
+
+    @Test
+    fun `showAllStates should delegate to userStateManagerUi`() {
+        adminStateManagerUi.showAllStates()
+        verify { userStateManagerUi.showAllStates() }
+    }
 
     @Test
     fun `editState() should print state updated successfully when a valid name`() {
+        //Given
         val stateName = "TODO"
-
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.editState(any()) } returns Result.success(true)
+        every { this@AdminStateManagerUiImplTest.manageStatesUseCase.editState(stateName) } returns Result.success(true)
 
         //When
         adminStateManagerUi.editState()
 
         //Then
-        verify { printer.showMessage("State Updated successfully") }
+        verify { printer.showMessage("Please enter the state you want to update: ") }
+        verify { printer.showMessage("State updated successfully ^_^") }
     }
 
     @Test
-    fun `editState() should print not allowed state name  when enter not valid name`() {
+    fun `editState() should print invalid input when enter not valid name`() {
         val stateName = "1hnfjnj!"
 
         every { reader.readStringOrNull() } returns stateName
@@ -68,23 +127,7 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi.editState()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
-    }
-
-    @Test
-    fun `editState() should print state name is too long when enter not valid name`() {
-        val stateName = "hi in this state this is too long state"
-
-        every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.editState(stateName) } returns Result.failure(
-            LogicException.StateNameLengthException()
-        )
-
-        //When
-        adminStateManagerUi.editState()
-
-        //Then
-        verify { printer.showMessage(ExceptionMessage.STATE_NAME_LENGTH_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Update state: " + ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
     }
 
     @Test
@@ -96,41 +139,26 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi.editState()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+        verify { printer.showMessage("Invalid input, Please try again..") }
     }
 
     @Test
-    fun `editState() should print error happens when edit use case failed`() {
-        val stateName = "TODO"
-
-        every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.editState(any()) } returns Result.failure(
-            Throwable()
-        )
-
-        //When
-        adminStateManagerUi.editState()
-
-        //Then
-        verify { printer.showMessage("Failed to edit state, please try again!") }
-    }
-
-    @Test
-    fun `deleteState() should print state deleted message when state exist, user confirm to delete and state deleted`() {
+    fun `deleteState() should print state deleted message when state is deleted`() {
         // Given
         val stateName = "TODO"
-        every { reader.readStringOrNull() } returns stateName andThen "yes"
+        every { reader.readStringOrNull() } returns stateName
         every { manageStatesUseCase.deleteState(any()) } returns Result.success(true)
 
         //When
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessage("State deleted successfully") }
+        verify { printer.showMessage("Please enter the state you want to delete: ") }
+        verify { printer.showMessage("State deleted successfully ^_^") }
     }
 
     @Test
-    fun `deleteState() should print state not exist when state not exist`() {
+    fun `deleteState() should print state not exist when use case returns state not exist`() {
         // Given
         val stateName = "In-Progress"
         every { reader.readStringOrNull() } returns stateName andThen "yes"
@@ -142,50 +170,22 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.STATE_NOT_EXIST_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Delete state: " + ExceptionMessage.STATE_NOT_EXIST_MESSAGE.message) }
     }
-
-    @Test
-    fun `deleteState() should print failed to delete the state when delete failed`() {
-        // Given
-        val stateName = "In-Progress"
-        every { reader.readStringOrNull() } returns stateName andThen "yes"
-        every { manageStatesUseCase.deleteState(any()) } returns Result.failure(
-            Throwable()
-        )
-
-        //When
-        adminStateManagerUi.deleteState()
-
-        //Then
-        verify { printer.showMessage("Failed to delete the state") }
-    }
-
-    @Test
-    fun `deleteState() should print okay, as you like when use not confirm to delete`() {
-        // Given
-        val stateName = "In-Progress"
-        every { reader.readStringOrNull() } returns stateName andThen "No"
-
-        //When
-        adminStateManagerUi.deleteState()
-
-        //Then
-        verify { printer.showMessage("Okay, As you like!") }
-    }
-
 
     @Test
     fun `addState() should add success when enter valid state`() {
-
+        //Given
         val stateName = "do"
-
         every { reader.readStringOrNull() } returns stateName
         every { manageStatesUseCase.addState(stateName) } returns Result.success(true)
+
         //When
         adminStateManagerUi.addState()
+
         //Then
-        verify { printer.showMessage("add successfully") }
+        verify { printer.showMessage("Please enter name for the state:") }
+        verify { printer.showMessage("State added successfully ^_^") }
     }
 
     @Test
@@ -201,7 +201,7 @@ class AdminStateManagerUiImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage(ExceptionMessage.STATE_ALREADY_EXIST_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Add state: " + ExceptionMessage.STATE_ALREADY_EXIST_MESSAGE.message) }
 
     }
 
@@ -218,7 +218,7 @@ class AdminStateManagerUiImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage(ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Add state: " + ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
     }
 
     @Test
@@ -234,7 +234,7 @@ class AdminStateManagerUiImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage(ExceptionMessage.STATE_NAME_LENGTH_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Add state: " + ExceptionMessage.STATE_NAME_LENGTH_MESSAGE.message) }
     }
 
     @Test
@@ -244,38 +244,15 @@ class AdminStateManagerUiImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
-    }
-
-    @Test
-    fun `showAllStates() should print all states when have data`() {
-        // Given
-        val state = listOf(
-            createState("2", "done"),
-            (createState("3", "in review"))
-        )
-        every { manageStatesUseCase.getAllStates() } returns Result.success(state)
-//        every { stateRepository.addState(state)} returns Result.success(true)
-
-        //When
-        adminStateManagerUi.showAllStates()
-
-        //Then
-        verify { printer.showMessage(state.toString()) } // this change when i implement in ui
-
+        verify { printer.showMessage("Invalid input, Please try again..") }
     }
 
     @Test
     fun `showAllStates() should print empty data message when no data available`() {
-        // Given
-        every { manageStatesUseCase.getAllStates() } returns Result.failure(DataException.EmptyDataException())
-        //When
+        // Given & When
         adminStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.EMPTY_DATA_MESSAGE.message) }
-
+        verify { userStateManagerUi.showAllStates() }
     }
-
-
 }

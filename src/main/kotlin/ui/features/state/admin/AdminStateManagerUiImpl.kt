@@ -45,7 +45,7 @@ class AdminStateManagerUiImpl(
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
                 manageStatesUseCase.addState(stateName = stateName).fold(
-                    onSuccess = { ::showAddStateMessage },
+                    onSuccess = { showAddStateMessage() },
                     onFailure = { showFailure("Failed to Add state: ${it.message}") }
                 )
             } ?: showInvalidInput()
@@ -57,7 +57,7 @@ class AdminStateManagerUiImpl(
             !stateName.isNullOrEmpty()
         }?.let { stateName ->
             manageStatesUseCase.editState(stateName = stateName).fold(
-                onSuccess = { ::showStateUpdatedMessage },
+                onSuccess = { showStateUpdatedMessage() },
                 onFailure = { showFailure("Failed to Update state: ${it.message}") }
             )
         } ?: showInvalidInput()
@@ -85,7 +85,7 @@ class AdminStateManagerUiImpl(
             stateName != null
         }?.let { stateName ->
             manageStatesUseCase.deleteState(stateName = stateName).fold(
-                onSuccess = { ::showStateDeletedMessage },
+                onSuccess = { showStateDeletedMessage() },
                 onFailure = { showFailure("Failed to Delete state: ${it.message}") }
             )
         } ?: showInvalidInput()
