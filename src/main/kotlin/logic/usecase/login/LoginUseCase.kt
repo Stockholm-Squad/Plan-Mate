@@ -1,4 +1,4 @@
-package org.example.logic.usecase.authentication
+package logic.usecase.login
 
 
 import logic.model.entities.User
@@ -6,10 +6,10 @@ import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 import org.example.utils.hashToMd5
 
-class AuthenticateUseCase(
+class LoginUseCase(
     private val userRepository: UserRepository
 ) {
-    fun authUser(username: String, password: String): Result<User> {
+    fun loginUser(username: String, password: String): Result<User> {
         return runCatching {
             validateUserName(username)
             validatePassword(password)
