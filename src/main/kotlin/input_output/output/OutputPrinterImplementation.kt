@@ -33,20 +33,28 @@ class OutputPrinterImplementation : OutputPrinter {
 
         for ((entityType, entries) in groupedByEntityType) {
             println("\n========== $entityType ==========\n")
-            println(String.format("| %-36s | %-12s | %-15s | %-20s | %-30s |",
-                "ID", "Entity ID", "Changed By", "Date", "Change Description"))
+            println(
+                String.format(
+                    "| %-36s | %-12s | %-15s | %-20s | %-30s |",
+                    "ID", "Entity ID", "Changed By", "Date", "Change Description"
+                )
+            )
             println("-".repeat(130))
 
             for (entry in entries) {
-                println(String.format("| %-36s | %-12s | %-15s | %-20s | %-30s |",
-                    entry.id,
-                    entry.entityId,
-                    entry.changedBy,
-                    entry.dateTime,
-                    entry.changeDescription.take(30)
-                ))
+                println(
+                    String.format(
+                        "| %-36s | %-12s | %-15s | %-20s | %-30s |",
+                        entry.id,
+                        entry.entityId,
+                        entry.changedBy,
+                        entry.dateTime,
+                        entry.changeDescription.take(30)
+                    )
+                )
             }
 
             println("-".repeat(130)) // Swimlane separator
         }
+    }
 }

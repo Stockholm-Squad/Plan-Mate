@@ -8,7 +8,7 @@ import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.common.ui_launcher.UiLauncher
-import org.example.ui.features.state.AdminStateManagerUi
+import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 
 class ProjectManagerUi(

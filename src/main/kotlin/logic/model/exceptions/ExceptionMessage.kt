@@ -8,7 +8,7 @@ enum class ExceptionMessage(
     FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
     NO_DATA_IN_THE_FILE("The file is empty"),
     NO_PROJECT_ADDED("No Project Added"),
-    COULD_NOT_UPDATE_PROJECT("Couldn't update project")
+    COULD_NOT_UPDATE_PROJECT("Couldn't update project"),
     NOT_ALLOWED_STATE_NAME_MESSAGE("Only letters are allowed!"),
     EMPTY_DATA_MESSAGE("No data available"),
     STATE_NOT_EXIST_MESSAGE("The state not exist"),
