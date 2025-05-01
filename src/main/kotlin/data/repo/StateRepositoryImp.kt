@@ -10,7 +10,7 @@ class StateRepositoryImp(
 ) : StateRepository {
 
     override fun addState(stateName: String): Result<Boolean> {
-        return stateDataSource.write(listOf(State(name = stateName))).fold(
+        return stateDataSource.overWrite(listOf(State(name = stateName))).fold(
             onSuccess = { value ->
                 Result.success(value)
             },
@@ -22,7 +22,8 @@ class StateRepositoryImp(
     override fun editState(state: State): Result<Boolean> {
         return getAllStates().fold(
             onSuccess = { currentStates ->
-                stateDataSource.write(currentStates + state).fold(
+                currentStates.map { item -> if (item.id == state.id) state else item }
+                stateDataSource.overWrite(currentStates).fold(
                     onSuccess = { Result.success(true) },
                     onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
                 )
@@ -34,7 +35,8 @@ class StateRepositoryImp(
     override fun deleteState(state: State): Result<Boolean> {
         return getAllStates().fold(
             onSuccess = { currentStates ->
-                stateDataSource.write(currentStates - state).fold(
+                currentStates.filterNot { it == state }
+                stateDataSource.overWrite(currentStates).fold(
                     onSuccess = { Result.success(true) },
                     onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
                 )
