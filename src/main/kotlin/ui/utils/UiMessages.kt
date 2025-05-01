@@ -1,56 +1,26 @@
 package org.example.ui.utils
 
+
 enum class UiMessages(val message: String) {
+
     TASK_ID_PROMPT("Enter task ID:"),
-    TASK_ID_EMPTY("Task ID cannot be empty."),
-    TASK_NOT_FOUND("Error: Task with ID %s not found."),
-    TASK_DETAILS("Task Details:"),
-    TASK_CREATED_SUCCESS("Task created successfully!"),
-    TASK_CREATION_ERROR("Error creating task: %s"),
-    TASK_UPDATED_SUCCESS("Task updated successfully!"),
-    TASK_UPDATE_ERROR("Error updating task: %s"),
-    TASK_DELETED_SUCCESS("Task deleted successfully!"),
-    TASK_DELETION_ERROR("Error deleting task: %s"),
-    ENTER_TASK_NAME("Enter task name:"),
-    TASK_NAME_EMPTY("Task name cannot be empty."),
-    ENTER_TASK_DESCRIPTION("Enter task description:"),
-    TASK_DESCRIPTION_EMPTY("Task description cannot be empty."),
-    ENTER_STATE_ID("Enter state ID:"),
-    STATE_ID_EMPTY("State ID cannot be empty."),
-    ENTER_PROJECT_ID("Enter project ID:"),
-    PROJECT_ID_EMPTY("Project ID cannot be empty."),
-    NO_TASKS_FOUND("No tasks found."),
-    ALL_TASKS("All Tasks:"),
-    INVALID_OPTION("😕 Oops! That’s not on the options. Pick a number between 0 and 7!"),
-    GOODBYE("👋 Goodbye"),
-    TASK_ASSIGNMENT_PROMPT("Enter user ID (mate ID):"),
-    TASK_ASSIGNMENT_EMPTY("User ID cannot be empty."),
-    NO_TASKS_FOR_USER("No tasks found for user ID: %s"),
-    TASKS_FOR_USER("Tasks assigned to user ID %s:"),
-    PROJECT_TASKS("Tasks in project '%s':"),
-    NO_PROJECT_TASKS("No tasks found for project '%s'."),
-    STATES_FOR_PROJECT("States for project '%s':"),
-    NO_STATES_FOR_PROJECT("No states found for project '%s'."),
-    CREATE_TASK_INTRO("Let's create a task!"),
-    EDIT_TASK_NAME_PROMPT("Enter new task name (leave blank to keep current):"),
-    EDIT_TASK_DESCRIPTION_PROMPT("Enter new task description (leave blank to keep current):"),
-    EDIT_TASK_STATE_ID_PROMPT("Enter new state ID (leave blank to keep current):"),
-    GENERIC_ERROR("Error: %s"),
-    MENU_HEADER("""
-        ========================= Tasks Option =========================
-        Please Choose an option. Pick a number between 0 and 7!
+    TASK_NAME_PROMPT("Enter task name:"),
+    TASK_DESCRIPTION_PROMPT("Enter task description:"),
+    TASK_STATE_PROMPT("Enter task state name:"),
+    INVALID_TASK_STATE_INPUT("Invalid task state input"),
+    PROJECT_ID_PROMPT("Please enter the project ID:"),
+    EMPTY_PROJECT_ID_INPUT("Project ID cannot be empty."),
+    NO_TASKS_FOUND_IN_PROJECT("No tasks found in the specified project."),
+    USER_NAME_PROMPT(""),
+    NO_TASK_FOUNDED("No Tasks founded"),
+    TASK_DELETE_SUCCESSFULLY("Task deleted successfully."),
+    EMPTY_TASK_ID_INPUT("No task ID was provided."),
+    EMPTY_TASK_NAME_INPUT("Task name cannot be empty."),
+    EMPTY_TASK_DESCRIPTION_INPUT("Task description cannot be empty."),
+    EMPTY_TASK_STATE_INPUT("Task state cannot be empty."),
+    INVALID_STATE_NAME("Invalid state name. No matching state ID found."),
+    INVALID_OPTION("Invalid option. Please choose a valid option from the menu."),
+    GOODBYE("Goodbye! Thank you for using the Task Manager.");
 
-        1. Show all Tasks 
-        2. Get task by id 
-        3. Create task
-        4. Edit task
-        5. Delete Task
-        6. Show all tasks at specific project
-        7. Show all tasks assignment to user
-        0. Exit (Don't gooo! 😢)
-        -----------------------------------------------------
-        Choose an option: 
-    """);
-
-    override fun toString() = message
+    override fun toString(): String = message
 }
