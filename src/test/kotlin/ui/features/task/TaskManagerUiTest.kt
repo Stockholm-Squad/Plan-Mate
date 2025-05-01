@@ -31,7 +31,6 @@ class TaskManagerUiTest {
     private lateinit var manageTasksUseCase: ManageTasksUseCase
     private lateinit var manageStateUseCase: ManageStatesUseCase
     private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
-    private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
     private lateinit var taskManagerUi: TaskManagerUi
 
