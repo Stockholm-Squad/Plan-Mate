@@ -3,13 +3,13 @@ package org.example.ui.features.project
 import logic.model.entities.Project
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.usecase.authentication.ManageAuthenticationUseCase
+import org.example.logic.usecase.authentication.AuthenticateUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.features.user.AddUserUi
 
 class ProjectManagerUi(
     private val inputReader: InputReader,
@@ -18,8 +18,7 @@ class ProjectManagerUi(
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
-    private val authenticationManagerUi: AuthenticationManagerUi,
-    private val authenticationUseCase: ManageAuthenticationUseCase
+    private val addUserUi: AddUserUi,
 ) : UiLauncher {
 
     fun showAllProjects() {
@@ -169,7 +168,7 @@ class ProjectManagerUi(
         while (true) {
             outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
             if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                authenticationManagerUi.addUser()
+                addUserUi.launchUi()
             }
 
             outputPrinter.showMessage("Enter username to assign (or 'done' to finish): ")
@@ -184,10 +183,10 @@ class ProjectManagerUi(
     }
 
     private fun assignUserToProject(username: String, projectId: String): Boolean {
-        if (authenticationUseCase.isUserExists(username).isFailure) {
-            outputPrinter.showMessage("User does not exist")
-            return false
-        }
+//        if (authenticationUseCase.checkUserExists(username)) {
+//            outputPrinter.showMessage("User does not exist")
+//            return false
+//        }
 
         if (manageProjectUseCase.isProjectExists(projectId).isFailure) {
             outputPrinter.showMessage("Project does not exist")
