@@ -11,7 +11,7 @@ class AuditSystemManagerUiImp(
     private val printer: OutputPrinter,
     private val reader: InputReader,
     private val searchUtils: SearchUtils
-) : AuditSystemManagerUII {
+) : AuditSystemManagerUi {
 
     override fun showAuditSystemManagerUI() {
         do {

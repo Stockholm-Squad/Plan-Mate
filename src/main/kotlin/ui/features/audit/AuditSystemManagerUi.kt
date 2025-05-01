@@ -1,5 +1,5 @@
 package org.example.ui.features.audit
 
-interface AuditSystemManagerUII {
+interface AuditSystemManagerUi {
     fun showAuditSystemManagerUI()
 }
