@@ -1,12 +1,35 @@
 package org.example.input_output.output
 
+import logic.model.entities.State
+import logic.model.entities.Task
+import org.example.data.entities.MateTaskAssignment
+import kotlin.collections.forEach
+
 import logic.model.entities.AuditSystem
 import logic.model.entities.State
 
 class OutputPrinterImplementation : OutputPrinter {
+
     override fun showMessage(message: String) {
         println(message)
+    }
 
+    override fun printTask(task: Task) {
+        println("ID: ${task.id} | Name: ${task.name} | Description: ${task.description} | State: ${task.stateId} | Created: ${task.createdDate} | Updated: ${task.updatedDate}")
+    }
+
+    override fun printTaskList(tasks: List<Task>) {
+        tasks.forEach { task -> printTask(task) }
+    }
+
+    override fun printMateTaskAssignments(assignments: List<MateTaskAssignment>) {
+        if (assignments.isEmpty()) return println("No tasks assigned.")
+
+        val userName = assignments.first().userName
+        println("Tasks assigned to: $userName")
+        assignments.forEachIndexed { index, it ->
+            println("${index + 1}. Task ID: ${it.taskId}")
+        }
     }
 
     override fun showStates(states: List<State>) {

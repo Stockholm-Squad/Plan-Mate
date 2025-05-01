@@ -78,20 +78,3 @@ abstract class CsvDataSource<T : Any>(
         }
     }
 }
-
-
-//fun main() {
-//    val dataSource = ProjectCsvDataSource("projects.csv")
-//
-//    val tasks = listOf(
-//        Project("3", "Call mom"," false"),
-//        Project("4", "Clean desk"," true")
-//    )
-//
-//    val result = dataSource.append(tasks)
-//    result.onSuccess { println("Appended tasks successfully") }
-//        .onFailure { it.printStackTrace() }
-//
-//    dataSource.read().onSuccess { println("Current tasks:\n$it") }
-//        .onFailure { it.printStackTrace() }
-//}

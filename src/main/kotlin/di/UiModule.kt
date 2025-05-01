@@ -8,8 +8,11 @@ import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUiImpl
+import org.example.ui.features.state.common.UserStateManagerUi
+import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
+import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.task.admin.TaskManagerUiMateImp
 import org.example.ui.features.task.mate.TaskManagerUiMateMateImp
 import org.example.ui.features.user.AddUserUi
@@ -25,8 +28,8 @@ val uiModule = module {
     factory { ProjectManagerUi(get(),get(),get(),get(),get(),get(),get()) }
     factory { TaskManagerUiMateImp(get()) }
     factory { TaskManagerUiMateMateImp(get()) }
-
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
+    factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get(), get()) }
 }

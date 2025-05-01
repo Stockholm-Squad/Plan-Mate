@@ -89,7 +89,7 @@ class ProjectManagerUi(
                         outputPrinter.showMessage("Project added successfully")
                         outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
                         if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                            taskManagerUi.addTask()
+                            taskManagerUi.createTask()
                         }
                     } else {
                         outputPrinter.showMessage("Failed to add project")

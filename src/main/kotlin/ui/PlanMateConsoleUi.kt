@@ -14,7 +14,7 @@ class PlanMateConsoleUi(
     private val manageProjectUi: ProjectManagerUi,
     private val stateManagerUi: StateManagerUi,
     private val taskManagerUi: TaskManagerUi,
-    private val addUserUi: AddUserUi
+    private val addUserUi: AddUserUi,
 ) {
 
 }

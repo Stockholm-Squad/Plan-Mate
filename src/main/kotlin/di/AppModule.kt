@@ -11,6 +11,7 @@ val appModule = module {
         datasourceModule,
         repositoryModule,
         uiModule,
-        inputOutputModule
+        inputOutputModule,
+        utilsModule
     )
 }

@@ -11,14 +11,16 @@ import org.example.logic.repository.ProjectRepository
 import org.example.logic.repository.TaskRepository
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
+import org.example.logic.usecase.task.ManageTasksUseCase
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
+
 
 class ManageTasksInProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var taskRepository: TaskRepository
     private lateinit var useCase: ManageTasksInProjectUseCase
+    private lateinit var manageTaskUseCase: ManageTasksUseCase
     private val testTask = Task(
         id = "101", name = "Test Task",
         description = "",
@@ -38,15 +40,16 @@ class ManageTasksInProjectUseCaseTest {
     fun setUp() {
         projectRepository = mockk()
         taskRepository = mockk()
-        useCase = ManageTasksInProjectUseCase(projectRepository, taskRepository)
+        manageTaskUseCase = mockk()
+        useCase = ManageTasksInProjectUseCase(projectRepository, manageTaskUseCase)
     }
 
     @Test
     fun `getTasksAssignedToProject should return tasks when successful`() {
         // Given
         every { projectRepository.getTasksInProject("1") } returns Result.success(listOf("101", "102"))
-        every { taskRepository.getTaskById("101") } returns Result.success(testTask)
-        every { taskRepository.getTaskById("102") } returns Result.success(anotherTask)
+        every { manageTaskUseCase.getTaskById("101") } returns Result.success(testTask)
+        every { manageTaskUseCase.getTaskById("102") } returns Result.success(anotherTask)
 
         // When
         val result = useCase.getTasksAssignedToProject("1")
@@ -60,9 +63,9 @@ class ManageTasksInProjectUseCaseTest {
     fun `getTasksAssignedToProject should filter out null tasks`() {
         // Given
         every { projectRepository.getTasksInProject("1") } returns Result.success(listOf("101", "102", "103"))
-        every { taskRepository.getTaskById("101") } returns Result.success(testTask)
-        every { taskRepository.getTaskById("102") } returns Result.failure(RuntimeException())
-        every { taskRepository.getTaskById("103") } returns Result.success(anotherTask)
+        every { manageTaskUseCase.getTaskById("101") } returns Result.success(testTask)
+        every { manageTaskUseCase.getTaskById("102") } returns Result.failure(RuntimeException())
+        every { manageTaskUseCase.getTaskById("103") } returns Result.success(anotherTask)
 
         // When
         val result = useCase.getTasksAssignedToProject("1")

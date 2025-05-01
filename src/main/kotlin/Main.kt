@@ -1,9 +1,17 @@
 package org.example
 
-import logic.model.entities.AuditSystem
-import org.example.data.datasources.AuditSystemCsvDataSource
-import org.example.data.repo.AuditSystemRepositoryImp
+import org.example.di.appModule
+import org.example.ui.features.task.TaskManagerUi
+import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.getKoin
 
 fun main() {
 
+    startKoin {
+        modules(appModule)
+    }
+
+    val taskManagerUi: TaskManagerUi = getKoin().get()
+
+    taskManagerUi.launchUi()
 }
