@@ -23,4 +23,25 @@ object Constant {
     const val PROMPT_TASK_ID = "Enter task ID: "
     const val PROMPT_USERNAMES = "Enter Username: "
     const val PROMPT_AUDIT_SYSTEM_ID = "Enter Audit System ID: "
+
+    val MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN = """
+        |----------- Welcome to planMate System ^_^ -----------|
+        |-------  Please choose what do you want to do  -------|
+        | 1. Mange projects                                    |
+        | 2. Manage tasks                                      |
+        | 3. Manage states                                     |
+        | 4. Add Mate                                          |
+        | 5. Show Audit system                                 |
+        | 6. Log out                                           |
+    """.trimIndent()
+
+    val MAIN_MENU_WELCOME_MESSAGE_FOR_MATE = """
+        |----------- Welcome to planMate System ^_^ -----------|
+        |-------  Please choose what do you want to do  -------|
+        | 1. Manage tasks                                      |
+        | 2. Manage states                                     |
+        | 3. Show Audit system                                 |
+        | 4. Log out                                           |
+    """.trimIndent()
+
 }

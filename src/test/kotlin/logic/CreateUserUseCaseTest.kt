@@ -8,25 +8,25 @@ import logic.model.entities.User
 import logic.usecase.login.getAllUsers
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
-import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.usecase.user.CreateUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
-class AddUserUseCaseTest() {
+class CreateUserUseCaseTest() {
     private lateinit var repository: UserRepository
-    private lateinit var useCase: AddUserUseCase
+    private lateinit var useCase: CreateUserUseCase
 
     @BeforeEach
     fun setUp() {
         repository = mockk(relaxed = true)
-        useCase = AddUserUseCase(repository)
+        useCase = CreateUserUseCase(repository)
     }
 
     @Test
     fun `addUser() should return failure when username is empty`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "",
                 password = "password"
             ).getOrThrow()
@@ -37,7 +37,7 @@ class AddUserUseCaseTest() {
     @Test
     fun `addUser() should return failure when password is empty`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "username",
                 password = ""
             ).getOrThrow()
@@ -48,7 +48,7 @@ class AddUserUseCaseTest() {
     @Test
     fun `addUser() should return failure when username starts with a number`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "1john",
                 password = "password"
             ).getOrThrow()
@@ -59,7 +59,7 @@ class AddUserUseCaseTest() {
     @Test
     fun `addUser() should return failure when username is less than 4 characters`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "abc",
                 password = "password"
             ).getOrThrow()
@@ -70,7 +70,7 @@ class AddUserUseCaseTest() {
     @Test
     fun `addUser() should return failure when username is more than 20 characters`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "averyverylongusernamethatexceeds20",
                 password = "password"
             ).getOrThrow()
@@ -81,7 +81,7 @@ class AddUserUseCaseTest() {
     @Test
     fun `addUser() should return failure when password is less than 8 characters`() {
         assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "validUser",
                 password = "short"
             ).getOrThrow()
@@ -109,7 +109,7 @@ class AddUserUseCaseTest() {
     fun `addUser() should return success when user and password are valid`() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.success(users)
-        val result = useCase.addUser(username = "johnDoe", password = "hashedPass1")
+        val result = useCase.createUser(username = "johnDoe", password = "hashedPass1")
         assertThat(result.getOrThrow()).isEqualTo(true)
         verify(exactly = 1) { repository.getAllUsers() }
     }
@@ -119,7 +119,7 @@ class AddUserUseCaseTest() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.failure(Throwable())
         assertThrows<Throwable> {
-            useCase.addUser(
+            useCase.createUser(
                 username = "johnDoe",
                 password = "password2"
             ).getOrThrow()

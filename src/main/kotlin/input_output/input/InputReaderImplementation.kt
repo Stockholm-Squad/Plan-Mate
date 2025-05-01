@@ -7,12 +7,12 @@ import kotlinx.datetime.toLocalDateTime
 class InputReaderImplementation : InputReader {
 
     override fun readStringOrNull(): String? {
-        val input = readLine()
+        val input = readlnOrNull()
         return input?.takeUnless { it.isBlank() }
     }
 
     override fun readDateOrNull(): LocalDateTime? {
-        val input = readLine()
+        val input = readlnOrNull()
         return try {
             input?.takeUnless { it.isBlank() }?.toLocalDateTime()
         } catch (e: Exception) {
@@ -21,12 +21,12 @@ class InputReaderImplementation : InputReader {
     }
 
     override fun readFloatOrNull(): Float? {
-        val input = readLine()
+        val input = readlnOrNull()
         return input?.toFloatOrNull()
     }
 
     override fun readIntOrNull(): Int? {
-        val input = readLine()
+        val input = readlnOrNull()
         return input?.toIntOrNull()
     }
 }

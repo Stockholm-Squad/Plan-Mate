@@ -5,9 +5,9 @@ import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 import org.example.utils.hashToMd5
 
-class AddUserUseCase(private val userRepository: UserRepository) {
+class CreateUserUseCase(private val userRepository: UserRepository) {
 
-    fun addUser(username: String, password: String): Result<Boolean> {
+    fun createUser(username: String, password: String): Result<Boolean> {
         return runCatching {
             validateUserName(username)
             validatePassword(password)
@@ -15,7 +15,7 @@ class AddUserUseCase(private val userRepository: UserRepository) {
             userRepository.getAllUsers().fold(
                 onSuccess = {
                     handleSuccess(username = username, password = password, users = it).fold(
-                        onSuccess = { userRepository.addUser(it) },
+                        onSuccess = { userRepository.createUser(it) },
                         onFailure = { handleFailure(it as PlanMateExceptions) })
                 },
                 onFailure = { handleFailure(it as PlanMateExceptions.LogicException.UsersIsEmpty) })
