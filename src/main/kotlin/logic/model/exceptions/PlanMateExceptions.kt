@@ -32,10 +32,9 @@ sealed class PlanMateExceptions(
 //            override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_TASK_DATA
 //        ) : LogicException(exceptionMessage)
 //
-//        data class TaskNotFoundException(
-//            override val exceptionMessage: ExceptionMessage = ExceptionMessage.TASK_NOT_FOUND
-//        ) : LogicException(exceptionMessage)
-//    }
-//    }
+        data class TaskNotFoundException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.TASK_NOT_FOUND
+        ) : LogicException(exceptionMessage)
     }
-}
+    }
+

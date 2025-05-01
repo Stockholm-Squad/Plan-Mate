@@ -30,7 +30,7 @@ class TaskManagerUi(
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
            // TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
-            TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
+          //  TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
             TaskOptions.EXIT -> {
                 exit()
                 return true
@@ -159,25 +159,25 @@ class TaskManagerUi(
             }
     }
 
-     fun showAllMateTaskAssignment() {
-        printer.showMessage(UiMessages.TASK_ASSIGNMENT_PROMPT.message)
-        val userId = readStringOrNull()
-            ?: return printer.showMessage(UiMessages.TASK_ASSIGNMENT_EMPTY.message)
-
-        manageTasksUseCase.getAllMateTaskAssignment(userId)
-            .onSuccess { tasks ->
-                tasks.takeUnless { it.isEmpty() }
-                    ?.also { printer.showMessage(UiMessages.TASKS_FOR_USER.message.format(userId)) }
-                    ?.forEachIndexed { index, task ->
-                        printer.showMessage("${index + 1}. Task ID: ${task.taskId}")
-                    }
-                    ?: printer.showMessage(UiMessages.NO_TASKS_FOR_USER.message.format(userId))
-            }
-            .onFailure { exception ->
-                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
-            }
-    }
+//     fun showAllMateTaskAssignment() {
+//        printer.showMessage(UiMessages.TASK_ASSIGNMENT_PROMPT.message)
+//        val userId = readStringOrNull()
+//            ?: return printer.showMessage(UiMessages.TASK_ASSIGNMENT_EMPTY.message)
 //
+//        manageTasksUseCase.getAllMateTaskAssignment(userId)
+//            .onSuccess { tasks ->
+//                tasks.takeUnless { it.isEmpty() }
+//                    ?.also { printer.showMessage(UiMessages.TASKS_FOR_USER.message.format(userId)) }
+//                    ?.forEachIndexed { index, task ->
+//                        printer.showMessage("${index + 1}. Task ID: ${task.taskId}")
+//                    }
+//                    ?: printer.showMessage(UiMessages.NO_TASKS_FOR_USER.message.format(userId))
+//            }
+//            .onFailure { exception ->
+//                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
+//            }
+//    }
+
 //    fun showAllTasksInProject() {
 //        printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
 //        val projectId = readStringOrNull()
@@ -196,7 +196,7 @@ class TaskManagerUi(
 //                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
 //            }
 //    }
-//
+
 //     fun showStateOfProject() {
 //        printer.showMessage(UiMessages.ENTER_PROJECT_ID.message)
 //        val projectId = readStringOrNull()
@@ -214,7 +214,8 @@ class TaskManagerUi(
 //            .onFailure { exception ->
 //                printer.showMessage(UiMessages.GENERIC_ERROR.message.format(exception.message))
 //            }
-//    }
+//
+//         }
 
     private fun readStringOrNull(): String? =
         reader.readStringOrNull()?.takeUnless { it.isBlank() }
@@ -231,5 +232,4 @@ class TaskManagerUi(
 
     private fun printMenu() {
         printer.showMessage(UiMessages.MENU_HEADER.message)
-    }
-}
+    }}
