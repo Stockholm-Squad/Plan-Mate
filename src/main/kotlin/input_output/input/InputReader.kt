@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDateTime
 
 interface InputReader {
     fun readStringOrNull(): String?
-    fun readDateOrNull(): LocalDateTime?
     fun readFloatOrNull(): Float?
+    fun readDateOrNull(): LocalDateTime?
     fun readIntOrNull(): Int?
 }

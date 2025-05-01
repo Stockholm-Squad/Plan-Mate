@@ -17,7 +17,7 @@ enum class ExceptionMessage(
     PROJECT_NOT_FOUND("Project not found"),
     NO_STATES_FOUND("No states found"),
     NO_TASKS_FOUND("No tasks found."),
-    No_Task_Assignment_Found("No task assignments found."),
+    NO_TASK_ASSIGNMENT_FOUND("No task assignments found."),
     NOT_ALLOWED_STATE_NAME_MESSAGE("Only letters are allowed!"),
     EMPTY_DATA_MESSAGE("No data available"),
     STATE_NOT_EXIST_MESSAGE("The state not exist"),
@@ -25,10 +25,11 @@ enum class ExceptionMessage(
     STATE_NAME_LENGTH_MESSAGE("The state name is too long!"),
     NO_STATE_FOUNDED_MESSAGE("There is no states!!"),
     INVALID_STATE_NAME_MESSAGE("Invalid state name!!"),
-    INVALID_INPUT("Invalid input"),
-    FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
-    NO_DATA_IN_THE_FILE("The file is empty"),
-    NO_PROJECT_ADDED("No Project Added"),
     COULD_NOT_UPDATE_PROJECT("Couldn't update project"),
-    USERS_IS_EMPTY("Users is empty");
+    USERS_IS_EMPTY("Users is empty"),
+    NO_PROJECT_ADDED("No Project Added"),
+    NO_DATA_IN_THE_FILE("The file is empty"),
+    FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
+    INVALID_INPUT("Invalid input")
+   ;
 }

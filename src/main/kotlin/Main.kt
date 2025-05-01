@@ -1,17 +1,17 @@
 package org.example
 
 import org.example.di.appModule
-import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.PlanMateConsoleUi
 import org.koin.core.context.startKoin
-import org.koin.java.KoinJavaComponent.getKoin
+import org.koin.core.logger.PrintLogger
+import org.koin.mp.KoinPlatform.getKoin
 
 fun main() {
 
     startKoin {
+        logger(PrintLogger())
         modules(appModule)
     }
-
-    val taskManagerUi: TaskManagerUi = getKoin().get()
-
-    taskManagerUi.launchUi()
+    val planMateConsoleUi: PlanMateConsoleUi = getKoin().get()
+    planMateConsoleUi.invoke()
 }

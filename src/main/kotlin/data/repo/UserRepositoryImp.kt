@@ -2,14 +2,13 @@ package org.example.data.repo
 
 import logic.model.entities.User
 import org.example.data.datasources.PlanMateDataSource
-import org.example.data.datasources.UserCsvDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
 
 class UserRepositoryImp(
     private val userCsvDataSource: PlanMateDataSource<User>
 ) : UserRepository {
-    override fun addUser(user: User): Result<Boolean> {
+    override fun createUser(user: User): Result<Boolean> {
 
         return userCsvDataSource.append(listOf(user)).fold(
             onSuccess = { Result.success(it) },

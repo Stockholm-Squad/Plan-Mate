@@ -20,10 +20,6 @@ sealed class PlanMateExceptions(
         data class FileNotExistException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.FILE_NOT_EXIST_EXCEPTION_MESSAGE
         ) : DataException(exceptionMessage)
-
-        data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
-            DataException(exceptionMessage)
-
     }
 
     sealed class LogicException(
@@ -34,25 +30,6 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
-        data class InvalidPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_PASSWORD) :
-            LogicException(exceptionMessage)
-
-
-        data class NoProjectAdded(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_PROJECT_ADDED) :
-            DataException(exceptionMessage)
-
-              data class UserDoesNotExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_DOES_NOT_EXIST) :
-            LogicException(exceptionMessage)
-
-        data class IncorrectPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INCORRECT_PASSWORD) :
-            LogicException(exceptionMessage)
-
-        data class UserExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_EXIST) :
-            LogicException(exceptionMessage)
-
-
-        data class UsersIsEmpty(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USERS_IS_EMPTY) :
-            LogicException(exceptionMessage)
 
         data class InvalidUserName(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_USER_NAME) :
             LogicException(exceptionMessage)
@@ -69,7 +46,7 @@ sealed class PlanMateExceptions(
         ) : LogicException(exceptionMessage)
 
         data class NoTaskAssignmentFound(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.No_Task_Assignment_Found
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_TASK_ASSIGNMENT_FOUND
         ) : LogicException(exceptionMessage)
 
         data class NoTasksCreated(
@@ -80,10 +57,6 @@ sealed class PlanMateExceptions(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.FAILED_TO_DELETE_TASK
         ) : LogicException(exceptionMessage)
 
-        data class DidNotUpdateProject(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.COULD_NOT_UPDATE_PROJECT
-        ) : LogicException(exceptionMessage)
-
         data class ProjectNotFoundException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.PROJECT_NOT_FOUND
         ) : LogicException(exceptionMessage)
@@ -91,9 +64,6 @@ sealed class PlanMateExceptions(
         data class NoStatesFound(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATES_FOUND
         ) : LogicException(exceptionMessage)
-
-        data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
-            DataException(exceptionMessage)
 
         data class StateNotExistException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_NOT_EXIST_MESSAGE,
@@ -112,7 +82,6 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
-
         data class NoStatesFoundedException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATE_FOUNDED_MESSAGE,
         ) : LogicException(
@@ -124,5 +93,29 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
+
+        data class InvalidPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_PASSWORD) :
+            LogicException(exceptionMessage)
+
+        data class UserDoesNotExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_DOES_NOT_EXIST) :
+            LogicException(exceptionMessage)
+
+        data class IncorrectPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INCORRECT_PASSWORD) :
+            LogicException(exceptionMessage)
+
+        data class UsersIsEmpty(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USERS_IS_EMPTY) :
+            LogicException(exceptionMessage)
+
+        data class UserExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_EXIST) :
+            LogicException(exceptionMessage)
+
+        data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
+            LogicException(exceptionMessage)
+
+        data class NoProjectAdded(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_PROJECT_ADDED) :
+            LogicException(exceptionMessage)
+
+        data class DidNotUpdateProject(override val exceptionMessage: ExceptionMessage = ExceptionMessage.COULD_NOT_UPDATE_PROJECT) :
+            LogicException(exceptionMessage)
     }
 }

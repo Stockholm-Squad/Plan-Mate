@@ -11,7 +11,7 @@ import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.AddUserUi
+import org.example.ui.features.user.CreateUserUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -21,7 +21,7 @@ class ProjectManagerUiTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var stateManagerUi: AdminStateManagerUi
     private lateinit var taskManagerUi: TaskManagerUi
-    private lateinit var AddUserUi: AddUserUi
+    private lateinit var CreateUserUi: CreateUserUi
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
     private lateinit var projectManagerUi: ProjectManagerUi
@@ -33,7 +33,7 @@ class ProjectManagerUiTest {
         manageProjectUseCase = mockk(relaxed = true)
         stateManagerUi = mockk(relaxed = true)
         taskManagerUi = mockk(relaxed = true)
-        AddUserUi = mockk(relaxed = true)
+        CreateUserUi = mockk(relaxed = true)
         inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
         manageUsersAssignedToProjectUseCase = mockk(relaxed = true)
@@ -45,7 +45,7 @@ class ProjectManagerUiTest {
             manageUsersAssignedToProjectUseCase,
             stateManagerUi,
             taskManagerUi,
-            AddUserUi,
+            CreateUserUi,
         )
     }
 
@@ -291,13 +291,13 @@ class ProjectManagerUiTest {
         fun `should prompt to add new user when requested`() {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("6", "yes", "done", "0")
-            every { AddUserUi.launchUi() } returns Unit
+            every { CreateUserUi.launchUi() } returns Unit
 
             // When
             projectManagerUi.launchUi()
 
             // Then
-            verify { AddUserUi.launchUi() }
+            verify { CreateUserUi.launchUi() }
         }
 
 //        @Test
