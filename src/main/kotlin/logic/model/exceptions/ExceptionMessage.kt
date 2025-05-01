@@ -11,5 +11,14 @@ enum class ExceptionMessage(
     USER_EXIST("User is exist"),
     INCORRECT_PASSWORD("Incorrect password"),
     FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
+    NOT_ALLOWED_STATE_NAME_MESSAGE("Only letters are allowed!"),
+    EMPTY_DATA_MESSAGE("No data available"),
+    STATE_NOT_EXIST_MESSAGE("The state not exist"),
+    STATE_ALREADY_EXIST_MESSAGE("The state is already exist!"),
+    STATE_NAME_LENGTH_MESSAGE("The state name is too long!"),
+    INVALID_INPUT("Error Not valid input!"),
+    NO_STATE_FOUNDED_MESSAGE("There is no states!!"),
+    INVALID_STATE_NAME_MESSAGE("Invalid state name!!"),
+
     USERS_IS_EMPTY("Users is empty")
 }

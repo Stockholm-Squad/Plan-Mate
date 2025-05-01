@@ -5,9 +5,9 @@ import java.util.*
 
 data class AuditSystem(
     val id: String = UUID.randomUUID().toString(),
-    val auditSystemType: AuditSystemType,
+    val auditSystemType: String,
     val entityId: String,
     val changeDescription: String,
     val changedBy: String,
-    val dateTime: LocalDateTime
+    val dateTime: String
 )
