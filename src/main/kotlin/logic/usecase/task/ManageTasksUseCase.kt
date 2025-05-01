@@ -15,7 +15,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
         )
 
-    fun getTaskById(taskId: String): Result<Task> =
+    fun getTaskById(taskId: String?): Result<Task> =
         taskRepository.getAllTasks().fold(
             onSuccess = { tasks ->
                 tasks.find { it.id == taskId }
@@ -34,10 +34,10 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
     fun editTask(updatedTask: Task): Result<Boolean> =
         taskRepository.editTask(updatedTask).fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.DidNotUpdateProject()) }
+            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
         )
 
-    fun deleteTask(taskId: String): Result<Boolean> =
+    fun deleteTask(taskId: String?): Result<Boolean> =
         getTaskById(taskId).fold(
             onSuccess = {
                 taskRepository.deleteTask(taskId).fold(
