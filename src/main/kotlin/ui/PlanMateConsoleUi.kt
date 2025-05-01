@@ -57,7 +57,7 @@ class PlanMateConsoleUi(
     private fun handleMateChoice() {
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
-                MateChoice.MANAGE_TASKS.choice -> TODO()
+                MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
                 MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
                 MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
                 MateChoice.LOGOUT.choice -> logout()
@@ -71,7 +71,7 @@ class PlanMateConsoleUi(
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
-                AdminChoice.MANAGE_TASKS.choice -> TODO()
+                AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
                 AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
