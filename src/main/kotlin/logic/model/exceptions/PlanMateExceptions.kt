@@ -33,6 +33,11 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
+        data class InvalidUserName(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_USER_NAME) :
+            LogicException(exceptionMessage)
+
+        data class InvalidPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_PASSWORD) :
+            LogicException(exceptionMessage)
 
         data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
             DataException(exceptionMessage)
@@ -68,5 +73,17 @@ sealed class PlanMateExceptions(
         ) : LogicException(
             exceptionMessage
         )
+        data class UserDoesNotExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_DOES_NOT_EXIST) :
+            LogicException(exceptionMessage)
+
+        data class IncorrectPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INCORRECT_PASSWORD) :
+            LogicException(exceptionMessage)
+
+        data class UsersIsEmpty(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USERS_IS_EMPTY) :
+            LogicException(exceptionMessage)
+
+        data class UserExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_EXIST) :
+            LogicException(exceptionMessage)
+
     }
 }

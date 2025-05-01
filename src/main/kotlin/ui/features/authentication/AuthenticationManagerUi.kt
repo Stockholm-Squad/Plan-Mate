@@ -1,12 +1,12 @@
 package org.example.ui.features.authentication
 
-import org.example.logic.usecase.authentication.ManageAuthenticationUseCase
+import org.example.logic.usecase.authentication.AuthenticateUseCase
 
 class AuthenticationManagerUi(
-    private val getAuthenticationUseCase: ManageAuthenticationUseCase
-) {
-    fun addUser() {
-        TODO("Not yet implemented")
-    }
+    private val getAuthenticationUseCase: AuthenticateUseCase
 
+) {
+    fun authenticateUser(){
+
+    }
 }
