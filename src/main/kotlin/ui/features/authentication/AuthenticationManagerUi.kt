@@ -5,4 +5,8 @@ import org.example.logic.usecase.authentication.ManageAuthenticationUseCase
 class AuthenticationManagerUi(
     private val getAuthenticationUseCase: ManageAuthenticationUseCase
 ) {
+    fun addUser() {
+        TODO("Not yet implemented")
+    }
+
 }

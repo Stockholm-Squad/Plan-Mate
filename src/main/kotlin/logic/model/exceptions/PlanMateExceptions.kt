@@ -16,6 +16,9 @@ sealed class PlanMateExceptions(
         data class FileNotExistException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.FILE_NOT_EXIST_EXCEPTION_MESSAGE
         ) : DataException(exceptionMessage)
+
+        data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
+            DataException(exceptionMessage)
     }
 
     sealed class LogicException(
@@ -55,6 +58,14 @@ sealed class PlanMateExceptions(
         data class NoStatesFound(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATES_FOUND
         ) : LogicException(exceptionMessage)
+        data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
+            DataException(exceptionMessage)
+
+        data class NoProjectAdded(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_PROJECT_ADDED) :
+            DataException(exceptionMessage)
+
+        data class DidNotUpdateProject(override val exceptionMessage: ExceptionMessage = ExceptionMessage.COULD_NOT_UPDATE_PROJECT) :
+            DataException(exceptionMessage)
     }
 
     sealed class UiException(

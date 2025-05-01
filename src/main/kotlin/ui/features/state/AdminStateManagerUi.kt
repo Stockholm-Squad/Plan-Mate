@@ -6,4 +6,5 @@ interface AdminStateManagerUi : UiLauncher {
     fun addState()
     fun editState()
     fun deleteState()
+    fun showAllStates()
 }

@@ -8,6 +8,7 @@ enum class ExceptionMessage(
     NO_PROJECT_ADDED("No Project Added"),
     COULD_NOT_UPDATE_PROJECT("Couldn't update project"),
     FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
+    NO_DATA_IN_THE_FILE("The file is empty"),
     NO_TASKS_FOUNDED("No Tasks founded"),
     FAILED_TO_DELETE_TASK("Failed to delete task"),
     TASK_ALREADY_EXISTS("task is existed"),
