@@ -28,9 +28,24 @@ class StateRepositoryImpTest {
     }
 
     @Test
+    fun `editState() should return success result when the state not found`() {
+        //Given
+        every { stateDataSource.overWrite(any()) } returns Result.success(
+            value = true
+        )
+        every { stateDataSource.read() } returns Result.success(listOf(state))
+
+        //When
+        val result = stateRepository.editState(State("235", ""))
+
+        //Then
+        assertThat(result.getOrNull()).isEqualTo(true)
+    }
+
+    @Test
     fun `editState() should return success result with true when the state updated successfully`() {
         //Given
-        every { stateDataSource.write(any()) } returns Result.success(
+        every { stateDataSource.overWrite(any()) } returns Result.success(
             value = true
         )
         every { stateDataSource.read() } returns Result.success(listOf(state))
@@ -45,7 +60,7 @@ class StateRepositoryImpTest {
     @Test
     fun `editState() should return failure result with empty data when file not found`() {
         //Given
-        every { stateDataSource.write(any()) } returns Result.success(
+        every { stateDataSource.overWrite(any()) } returns Result.success(
             value = true
         )
         every { stateDataSource.read() } returns Result.failure(DataException.FileNotExistException())
@@ -61,7 +76,7 @@ class StateRepositoryImpTest {
     fun `editState() should return failure result with throwable when error happens while write failed`() {
         //Given
         every { stateDataSource.read() } returns Result.success(listOf(state))
-        every { stateDataSource.write(any()) } returns Result.failure(
+        every { stateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
 
@@ -75,7 +90,7 @@ class StateRepositoryImpTest {
     @Test
     fun `deleteState() should return success result with true when state deleted successfully`() {
         //Given
-        every { stateDataSource.write(any()) } returns Result.success(
+        every { stateDataSource.overWrite(any()) } returns Result.success(
             true
         )
         every { stateDataSource.read() } returns Result.success(listOf(state))
@@ -90,7 +105,7 @@ class StateRepositoryImpTest {
     @Test
     fun `deleteState() should return failure result with throwable when error happens while writing or reading from the csv file`() {
         //Given
-        every { stateDataSource.write(any()) } returns Result.failure(
+        every { stateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
         every { stateDataSource.read() } returns Result.success(listOf(state))
@@ -105,7 +120,7 @@ class StateRepositoryImpTest {
     @Test
     fun `deleteState() should return failure result with throwable when state not exist`() {
         //Given
-        every { stateDataSource.write(any()) } returns Result.failure(
+        every { stateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
         every { stateDataSource.read() } returns Result.success(listOf(state))
@@ -133,7 +148,7 @@ class StateRepositoryImpTest {
     fun `addState() should return success result with true when the state add successfully`() {
         //Given
         val state = State(id = "1", name = "Done")
-        every { stateDataSource.write(any()) } returns Result.success(true)
+        every { stateDataSource.overWrite(any()) } returns Result.success(true)
 
         //When
         val result = stateRepository.addState(state.name)
@@ -146,7 +161,7 @@ class StateRepositoryImpTest {
     fun `addState() should return failure result with throwable when error happens while writing into the csv file`() {
         //Given
         val state = State(id = "123", name = "In Review")
-        every { stateDataSource.write(any()) } returns Result.failure(
+        every { stateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
         //When

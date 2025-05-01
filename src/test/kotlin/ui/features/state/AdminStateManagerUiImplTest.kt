@@ -36,8 +36,8 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi = AdminStateManagerUiImpl(
             userStateManagerUi = userStateManagerUi,
             manageStatesUseCase = manageStatesUseCase,
-            inputReader = reader,
-            outputPrinter = printer
+            reader = reader,
+            printer = printer
         )
     }
 

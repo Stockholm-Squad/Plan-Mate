@@ -57,7 +57,6 @@ class UserStateManagerUiImpTest {
         userStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showState(states[0]) }
-        verify { printer.showState(states[1]) }
+        verify { printer.showStates(states) }
     }
 }

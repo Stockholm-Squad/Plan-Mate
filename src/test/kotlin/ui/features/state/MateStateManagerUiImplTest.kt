@@ -11,13 +11,11 @@ import org.junit.jupiter.api.Test
 class MateStateManagerUiImplTest {
     private lateinit var mateStateManagerUi: MateStateManagerUi
     private lateinit var userStateManagerUi: UserStateManagerUi
-    private lateinit var printer: OutputPrinter
 
     @BeforeEach
     fun setUp() {
-        printer = mockk(relaxed = true)
         userStateManagerUi = mockk(relaxed = true)
-        mateStateManagerUi = MateStateManagerUiImpl(userStateManagerUi, printer)
+        mateStateManagerUi = MateStateManagerUiImpl(userStateManagerUi)
 
     }
 
