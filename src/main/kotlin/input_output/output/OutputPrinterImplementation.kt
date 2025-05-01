@@ -1,12 +1,26 @@
 package org.example.input_output.output
 
+import logic.model.entities.State
 import logic.model.entities.AuditSystem
-
 
 class OutputPrinterImplementation : OutputPrinter {
     override fun showMessage(message: String) {
         println(message)
 
+    }
+
+    override fun showStates(states: List<State>) {
+        this.printStateUsingSwimlaneUi(states)
+    }
+
+    private fun printStateUsingSwimlaneUi(states: List<State>) {
+        println("┌──────────────────────────────┐")
+        println("│ State                        │")
+        println("├──────────────────────────────┤")
+        states.forEach {
+            println("│ %-28s │".format(it.name))
+        }
+        println("└──────────────────────────────┘")
     }
 
     override fun showAudits(audits: List<AuditSystem>) {
@@ -35,9 +49,4 @@ class OutputPrinterImplementation : OutputPrinter {
 
             println("-".repeat(130)) // Swimlane separator
         }
-    }
-
-
-
 }
-

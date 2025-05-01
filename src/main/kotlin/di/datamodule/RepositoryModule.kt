@@ -8,7 +8,7 @@ val repositoryModule = module {
     factory<AuditSystemRepository> { AuditSystemRepositoryImp(get()) }
     factory<AuthenticationRepository> { AuthenticationRepositoryImp(get()) }
     factory<ProjectRepository> { ProjectRepositoryImp(get()) }
-    factory<StateRepository> { StateRepositoryImp(get()) }
+    single<StateRepository> { StateRepositoryImp(get()) }
     factory<TaskRepository> { TaskRepositoryImp(get()) }
 
 }
