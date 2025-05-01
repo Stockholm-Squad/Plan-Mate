@@ -1,5 +1,6 @@
 package logic.usecase.task
 
+import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import org.example.data.entities.MateTaskAssignment
@@ -8,8 +9,9 @@ import org.example.logic.repository.TaskRepository
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.assertThrows
+import utils.buildMateTaskAssignment
+
 
 class GetTasksAssignedToUserUseCaseTest {
 
@@ -23,63 +25,129 @@ class GetTasksAssignedToUserUseCaseTest {
     }
 
     @Test
-    fun `getAllMateTaskAssignment() should return tasks when repository succeeds`() {
+    fun `getAllMateTaskAssignment should return success when repository returns valid list`() {
         // Given
-        val userName = "Mate 1"
+        val userName = "Alice"
         val assignments = listOf(
-            MateTaskAssignment(userName, "Task 1"),
-            MateTaskAssignment(userName, "Task 2")
+            buildMateTaskAssignment(userName = "Alice", taskId = "1"),
+            buildMateTaskAssignment(userName = "Alice", taskId = "2")
         )
+
         every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(assignments)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
 
         // Then
-        assertEquals(Result.success(assignments), result)
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(assignments)
     }
 
     @Test
-    fun `getAllMateTaskAssignment() should handle empty list gracefully`() {
+    fun `getAllMateTaskAssignment should return empty list when repository returns empty`() {
         // Given
-        val userName = "Mate 1"
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyList())
+        val userName = "Bob"
+        val emptyAssignments = emptyList<MateTaskAssignment>()
+
+        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyAssignments)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
 
         // Then
-        assertEquals(Result.success(emptyList<MateTaskAssignment>()), result)
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(emptyAssignments)
+        assertThat(result.getOrNull()).isEmpty()
     }
 
     @Test
-    fun `getAllMateTaskAssignment() should throw exception when repository fails`() {
+    fun `getAllMateTaskAssignment should return failure when repository fails with generic error`() {
         // Given
-        val userName = "Mate 1"
-        val exception = RuntimeException("Database error")
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(exception)
+        val userName = "Charlie"
+        val error = Exception("Database connection failed")
+
+        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(error)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
 
         // Then
-        assertFailsWith<PlanMateExceptions.LogicException.NoTasksFound> {
+        assertThat(result.isFailure).isTrue()
+
+        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }
 
     @Test
-    fun `getAllMateTaskAssignment() should handle invalid user name`() {
+    fun `getAllMateTaskAssignment should return failure when repository returns NoTaskAssignmentFound`() {
         // Given
-        val userName = ""
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        val userName = "David"
+        val error = PlanMateExceptions.LogicException.NoTaskAssignmentFound()
+
+        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(error)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
 
         // Then
-        assertFailsWith<PlanMateExceptions.LogicException.NoTasksFound> {
+        assertThat(result.isFailure).isTrue()
+
+        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
             result.getOrThrow()
         }
+    }
+
+    @Test
+    fun `getAllMateTaskAssignment should return failure when repository returns unexpected exception`() {
+        // Given
+        val userName = "Eve"
+        val error = RuntimeException("Unknown error occurred")
+
+        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(error)
+
+        // When
+        val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+
+        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+            result.getOrThrow()
+        }
+    }
+
+    @Test
+    fun `getAllMateTaskAssignment should propagate successful empty list correctly`() {
+        // Given
+        val userName = "Frank"
+        val emptyList = emptyList<MateTaskAssignment>()
+
+        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyList)
+
+        // When
+        val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(emptyList)
+        assertThat(result.getOrNull()).isEmpty()
+    }
+
+    @Test
+    fun `getAllMateTaskAssignment should not transform success into failure for blank list`() {
+        // Given
+        val userName = "Grace"
+        val emptyList = emptyList<MateTaskAssignment>()
+
+        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyList)
+
+        // When
+        val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(emptyList)
+        assertThat(result.getOrNull()).isEmpty()
     }
 }

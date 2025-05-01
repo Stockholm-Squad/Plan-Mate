@@ -3,18 +3,14 @@ package logic.usecase.task
 import com.google.common.truth.Truth.assertThat
 import org.example.logic.usecase.task.ManageTasksUseCase
 import logic.model.entities.Task
-import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
 import org.example.logic.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.datetime.LocalDateTime
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
 
 class ManageTasksUseCaseTest {
 
