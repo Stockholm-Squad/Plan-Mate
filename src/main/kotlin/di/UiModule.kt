@@ -3,11 +3,12 @@ package org.example.di
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.audit.AuditSystemManagerUiImp
 import org.example.ui.features.authentication.AuthenticationManagerUi
-import org.example.ui.features.state.common.UserStateManagerUi
-import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.project.ProjectManagerUi
+import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUiImpl
+import org.example.ui.features.state.common.UserStateManagerUi
+import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.example.ui.features.task.admin.TaskManagerUiMateImp
@@ -18,7 +19,7 @@ import org.koin.dsl.module
 val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
-    factory { AuditSystemManagerUiImp(get(),get(),get(),get()) }
+    factory { AuditSystemManagerUiImp(get(), get(), get(), get()) }
     factory { AuthenticationManagerUi(get()) }
     factory { ProjectManagerUi(get()) }
     factory { TaskManagerUiMateImp(get()) }
@@ -27,4 +28,5 @@ val uiModule = module {
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
+    factory<StateManagerUi> { StateManagerUi(get(), get(), get()) }
 }
