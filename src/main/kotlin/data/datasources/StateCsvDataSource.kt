@@ -6,6 +6,7 @@ import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.toList
 import org.jetbrains.kotlinx.dataframe.io.readCSV
+import java.io.File
 
 class StateCsvDataSource(
     private val filePath: String
@@ -16,6 +17,8 @@ class StateCsvDataSource(
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
             DataFrame.readCSV(filePath).cast<State>().toList().let {
                 Result.success(it)
             }
