@@ -1,5 +1,6 @@
 package ui.features.task
 
+
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,6 +16,7 @@ import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
+import org.example.utils.TaskOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import utils.buildMateTaskAssignment
@@ -577,4 +579,39 @@ class TaskManagerUiTest {
         verify(exactly = 1) { printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTaskAssignmentFound().message}") }
     }
     //endregion
+    @Test
+    fun `launchUi() should print task options menu and exit on valid exit input`() {
+        // Given
+        every { reader.readIntOrNull() } returns TaskOptions.EXIT.option
+        every { uiUtils.getEnteredOption(TaskOptions.EXIT.option) } returns TaskOptions.EXIT
+
+        // When
+        taskManagerUi.launchUi()
+
+        // Then
+        verify { uiUtils.exit() }
+
+
+    }
+    @Test
+    fun `launchUi() should call showAllTasks then exit`() {
+        // Given
+        every { reader.readIntOrNull() } returnsMany listOf(
+            TaskOptions.SHOW_ALL_TASKS.option,
+            TaskOptions.EXIT.option
+        )
+        every { uiUtils.getEnteredOption(TaskOptions.SHOW_ALL_TASKS.option) } returns TaskOptions.SHOW_ALL_TASKS
+        every { uiUtils.getEnteredOption(TaskOptions.EXIT.option) } returns TaskOptions.EXIT
+
+        every { manageTasksUseCase.getAllTasks() } returns Result.success(emptyList())
+
+        // when
+        taskManagerUi.launchUi()
+
+        // Then
+        verify(exactly = 1) { manageTasksUseCase.getAllTasks() }
+        verify { uiUtils.exit() }
+    }
+
+
 }
