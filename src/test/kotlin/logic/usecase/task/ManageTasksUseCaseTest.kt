@@ -109,6 +109,17 @@ class ManageTasksUseCaseTest {
     }
 
     @Test
+    fun `createTask() should return failure when repository returns false`() {
+        val task = buildTask()
+        every { taskRepository.createTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
+
+        val result = manageTasksUseCase.createTask(task)
+
+        assertThrows<PlanMateExceptions.LogicException.NoTasksCreated> { result.getOrThrow() }
+    }
+
+
+    @Test
     fun `editTask() should return success result when the task is successfully updated`() {
         // Given
         val updatedTask = Task(id = "1", name = "Updated Task", description = "Updated Description", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())

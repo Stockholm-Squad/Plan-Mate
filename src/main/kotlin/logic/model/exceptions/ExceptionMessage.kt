@@ -25,5 +25,10 @@ enum class ExceptionMessage(
     STATE_NAME_LENGTH_MESSAGE("The state name is too long!"),
     NO_STATE_FOUNDED_MESSAGE("There is no states!!"),
     INVALID_STATE_NAME_MESSAGE("Invalid state name!!"),
-    INVALID_INPUT("Invalid input");
+    INVALID_INPUT("Invalid input"),
+    FILE_NOT_EXIST_EXCEPTION_MESSAGE("Error file not found!"),
+    NO_DATA_IN_THE_FILE("The file is empty"),
+    NO_PROJECT_ADDED("No Project Added"),
+    COULD_NOT_UPDATE_PROJECT("Couldn't update project"),
+    USERS_IS_EMPTY("Users is empty");
 }

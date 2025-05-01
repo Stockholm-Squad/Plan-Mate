@@ -1,12 +1,9 @@
 package org.example.input_output.output
 
+import logic.model.entities.AuditSystem
 import logic.model.entities.State
 import logic.model.entities.Task
 import org.example.data.entities.MateTaskAssignment
-import kotlin.collections.forEach
-
-import logic.model.entities.AuditSystem
-import logic.model.entities.State
 
 class OutputPrinterImplementation : OutputPrinter {
 

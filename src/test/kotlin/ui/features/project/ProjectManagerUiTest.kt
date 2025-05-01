@@ -170,7 +170,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("3", "New Project", "state 1", "yes", "0")
             every { stateManagerUi.showAllStates() } returns Unit
             every { manageProjectUseCase.addProject(any()) } returns Result.success(true)
-            every { taskManagerUi.addTask() } returns Unit
+            every { taskManagerUi.createTask() } returns Unit
 
             // When
             projectManagerUi.launchUi()
