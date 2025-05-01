@@ -1,19 +1,20 @@
 package org.example.data.datasources
 
 import org.example.data.entities.TaskInProject
-import org.example.logic.model.exceptions.PlanMateExceptions
-import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.api.cast
-import org.jetbrains.kotlinx.dataframe.api.toList
-import org.jetbrains.kotlinx.dataframe.io.readCSV
 
-
-class TaskInProjectCsvDataSource(private val filePath: String) : CsvDataSource<TaskInProject>(filePath) {
+class TaskInProjectCsvDataSource : PlanMateDataSource<TaskInProject> {
     override fun read(): Result<List<TaskInProject>> {
         super.resolveFile().also {
             if (!it.exists()) return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
         }
 
+    override fun append(model: List<TaskInProject>): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
+
+    override fun overWrite(model: List<TaskInProject>): Result<Boolean> {
+        TODO("Not yet implemented")
+    }
         return try {
             DataFrame.readCSV(filePath).cast<TaskInProject>().toList().let {
                 Result.success(it)
@@ -21,5 +22,4 @@ class TaskInProjectCsvDataSource(private val filePath: String) : CsvDataSource<T
         } catch (t: Throwable) {
             Result.failure(PlanMateExceptions.DataException.ReadException())
         }
-    }
 }
