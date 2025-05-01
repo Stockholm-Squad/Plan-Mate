@@ -184,4 +184,23 @@ class ManageTasksUseCaseTest {
         // Then
         assertThrows <PlanMateExceptions.LogicException.TaskNotFoundException>{ result.getOrThrow() }
     }
+    @Test
+    fun `deleteTask() should return failure result when task is not deleted even if repository call succeeds`() {
+        // Given
+        val taskId = "3"
+        val taskList = listOf(
+            Task(id = "3", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+        )
+
+        every { taskRepository.getAllTasks() } returns Result.success(taskList)
+        every { taskRepository.deleteTask(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksDeleted())
+
+        // When
+        val result = manageTasksUseCase.deleteTask(taskId)
+
+        // Then
+        assertThrows<PlanMateExceptions.LogicException.NoTasksDeleted>{result.getOrThrow()}
+    }
+
+
 }
