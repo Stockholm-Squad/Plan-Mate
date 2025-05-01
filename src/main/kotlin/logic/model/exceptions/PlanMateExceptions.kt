@@ -34,5 +34,9 @@ sealed class PlanMateExceptions(
 
         data class UsersIsEmpty(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USERS_IS_EMPTY) :
             LogicException(exceptionMessage)
+
+        data class UserExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_EXIST) :
+            LogicException(exceptionMessage)
+
     }
 }
