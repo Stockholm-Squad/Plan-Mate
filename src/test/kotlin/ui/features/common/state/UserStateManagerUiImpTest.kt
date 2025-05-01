@@ -7,7 +7,6 @@ import logic.model.entities.State
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.model.exceptions.PlanMateExceptions
-import org.example.logic.repository.StateRepository
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.common.UserStateManagerUiImp
@@ -16,16 +15,14 @@ import org.junit.jupiter.api.Test
 
 class UserStateManagerUiImpTest {
 
-    private lateinit var stateRepository: StateRepository
     private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var userStateManagerUi: UserStateManagerUi
     private lateinit var printer: OutputPrinter
 
     @BeforeEach
     fun setUp() {
-        stateRepository = mockk(relaxed = true)
         printer = mockk(relaxed = true)
-        manageStatesUseCase = ManageStatesUseCase(stateRepository)
+        manageStatesUseCase = mockk(relaxed = true)
         userStateManagerUi = UserStateManagerUiImp(manageStatesUseCase, printer)
     }
 
@@ -40,7 +37,8 @@ class UserStateManagerUiImpTest {
         userStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.NO_STATE_FOUNDED_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Load data, " + ExceptionMessage.NO_STATE_FOUNDED_MESSAGE.message) }
+        verify { printer.showMessage("Please try again ^_^") }
 
     }
 
@@ -57,6 +55,6 @@ class UserStateManagerUiImpTest {
         userStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showStates(states) }
+        verify(exactly = 1) { printer.showStates(states) }
     }
 }
