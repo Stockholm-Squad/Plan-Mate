@@ -3,11 +3,9 @@ package data.repo
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.datetime.LocalDateTime
 import logic.model.entities.Task
 import org.example.data.datasources.PlanMateDataSource
 import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
 import org.example.data.repo.TaskRepositoryImp
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
@@ -76,7 +74,7 @@ class TaskRepositoryImpTest {
             Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate =dataHandler.getCurrentDateTime(), updatedDate =dataHandler.getCurrentDateTime())
         )
         every { taskDataSource.read() } returns Result.success(existingTasks)
-        every { taskDataSource.write(any()) } returns Result.success(true)
+        every { taskDataSource.overWrite(any()) } returns Result.success(true)
 
         // When
         val result = taskRepository.createTask(newTask)
@@ -123,7 +121,7 @@ class TaskRepositoryImpTest {
             Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
         )
         every { taskDataSource.read() } returns Result.success(existingTasks)
-        every { taskDataSource.write(any()) } returns Result.success(true)
+        every { taskDataSource.overWrite(any()) } returns Result.success(true)
 
         // When
         val result = taskRepository.editTask(updatedTask)
@@ -160,7 +158,7 @@ class TaskRepositoryImpTest {
             Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
         )
         every { taskDataSource.read() } returns Result.success(existingTasks)
-        every { taskDataSource.write(any()) } returns Result.success(true)
+        every { taskDataSource.overWrite(any()) } returns Result.success(true)
 
         // When
         val result = taskRepository.deleteTask(taskId)
@@ -207,12 +205,9 @@ class TaskRepositoryImpTest {
         val result = taskRepository.getAllMateTaskAssignment(mateName)
 
         // Then
-
        assertThrows<PlanMateExceptions.DataException.ReadException> {
             result.getOrThrow()
         }
     }
-
-
 
 }

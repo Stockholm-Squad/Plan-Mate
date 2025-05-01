@@ -11,8 +11,7 @@ import org.example.logic.usecase.authentication.ManageAuthenticationUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.project.ProjectManagerUi
-import org.example.ui.features.state.AdminStateManagerUi
-import org.example.ui.features.state.StateManagerUi
+import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -173,7 +172,7 @@ class ProjectManagerUiTest {
             projectManagerUi.addProject()
 
             // Then
-            verify { taskManagerUi.addTask() }
+            verify { taskManagerUi.createTask() }
         }
 
         @Test

@@ -26,11 +26,4 @@ class TaskInProjectCsvDataSource(private val filePath: String) : CsvDataSource<T
             Result.failure(PlanMateExceptions.DataException.ReadException())
         }
     }
-        return try {
-            DataFrame.readCSV(filePath).cast<TaskInProject>().toList().let {
-                Result.success(it)
-            }
-        } catch (t: Throwable) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
-        }
 }

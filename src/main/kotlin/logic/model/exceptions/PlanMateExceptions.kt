@@ -19,11 +19,11 @@ sealed class PlanMateExceptions(
 
         data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
             DataException(exceptionMessage)
-    }
-    data class EmptyDataException(
-        override val exceptionMessage: ExceptionMessage = ExceptionMessage.EMPTY_DATA_MESSAGE,
-    ) : DataException(exceptionMessage)
 
+        data class EmptyDataException(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.EMPTY_DATA_MESSAGE,
+        ) : DataException(exceptionMessage)
+    }
 
     sealed class LogicException(
         open val exceptionMessage: ExceptionMessage
@@ -48,6 +48,10 @@ sealed class PlanMateExceptions(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.TASK_ALREADY_EXISTS
         ) : LogicException(exceptionMessage)
 
+        data class  NoTaskAssignmentFound(
+            override val exceptionMessage: ExceptionMessage = ExceptionMessage.No_Task_Assignment_Found
+        ): LogicException(exceptionMessage)
+
         data class NoTasksCreated(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.FAILED_TO_CREATE_TASK
         ) : LogicException(exceptionMessage)
@@ -69,13 +73,7 @@ sealed class PlanMateExceptions(
         ) : LogicException(exceptionMessage)
         data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
             DataException(exceptionMessage)
-
-        data class NoProjectAdded(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_PROJECT_ADDED) :
-            DataException(exceptionMessage)
-
-        data class DidNotUpdateProject(override val exceptionMessage: ExceptionMessage = ExceptionMessage.COULD_NOT_UPDATE_PROJECT) :
-            DataException(exceptionMessage)
-
+        
         data class StateNotExistException(
             override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_NOT_EXIST_MESSAGE,
         ) : LogicException(

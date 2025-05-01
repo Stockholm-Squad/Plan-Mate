@@ -10,7 +10,9 @@ import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
+import org.example.utils.DateHandler
 import org.example.utils.TaskOptions
+import java.util.UUID
 
 
 class TaskManagerUi(
@@ -37,7 +39,7 @@ class TaskManagerUi(
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
-            TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
+//            TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
             TaskOptions.EXIT -> {
                 uiUtils.exit()
@@ -66,42 +68,59 @@ class TaskManagerUi(
         printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
 
         val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
 
-        manageTasksUseCase.getTaskById(taskId as String).fold(
+        manageTasksUseCase.getTaskById(taskId).fold(
             onSuccess = { task -> printer.printTask(task) },
             onFailure = ::handleFailure
         )
     }
 
     fun createTask() {
-        readTaskInput()?.run {
-            val stateId = manageStateUseCase.getStateIdByName(third)
-                ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message)
+        val (name, description, stateName) = readTaskInput()
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message)
 
-            manageTasksUseCase.createTask(first, second, stateId).fold(
-                onSuccess = { task -> printer.printTask(task) },
-                onFailure = ::handleFailure
-            )
-        }
+        val stateId = manageStateUseCase.getStateIdByName(stateName)
+            ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message)
+
+        val task = Task(
+            id = UUID.randomUUID().toString(),
+            name = name,
+            description = description,
+            stateId = stateId,
+            createdDate = DateHandler().getCurrentDateTime(),
+            updatedDate = DateHandler().getCurrentDateTime()
+        )
+
+        manageTasksUseCase.createTask(task).fold(
+            onSuccess = { printer.printTask(task) },
+            onFailure = ::handleFailure
+        )
     }
-
 
     fun editTask() {
         printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
         val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
 
-        val existingTask = manageTasksUseCase.getTaskById(taskId as String).getOrNull()
-            ?: printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
+        val existingTask = manageTasksUseCase.getTaskById(taskId).getOrNull()
+            ?: return printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
 
-        val (name, description, stateName) = readTaskInput()
+        val (newName, newDescription, newStateName) = readTaskInput()
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message)
 
-        val stateId = manageStateUseCase.getStateIdByName(stateName)
-            ?: printer.showMessage(UiMessages.INVALID_STATE_NAME.message)
+        val newStateId = manageStateUseCase.getStateIdByName(newStateName)
+            ?: return printer.showMessage(UiMessages.INVALID_STATE_NAME.message)
 
-        manageTasksUseCase.editTask(taskId, name, description, stateId).fold(
-            onSuccess = { task -> printer.printTask(task) },
+        val updatedTask = existingTask.copy(
+            name = newName,
+            description = newDescription,
+            stateId = newStateId,
+            updatedDate = DateHandler().getCurrentDateTime()
+        )
+
+        manageTasksUseCase.editTask(updatedTask).fold(
+            onSuccess = { printer.printTask(updatedTask) },
             onFailure = ::handleFailure
         )
     }
@@ -110,10 +129,11 @@ class TaskManagerUi(
         printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
 
         val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
 
-        manageTasksUseCase.getTaskById(taskId as String).getOrNull()
-            ?: printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
+        if (manageTasksUseCase.getTaskById(taskId).getOrNull() == null) {
+            return printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
+        }
 
         manageTasksUseCase.deleteTask(taskId).fold(
             onSuccess = { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY.message) },
@@ -121,21 +141,21 @@ class TaskManagerUi(
         )
     }
 
-    private fun showAllTasksInProject() {
-        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
-
-        val projectId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
-
-        manageProjectUseCase.getTasksByProjectId(projectId).fold(
-            onSuccess = { tasks: List<Task> ->
-                tasks.takeUnless { it.isEmpty() }
-                    ?.let { printer.printTaskList(it) }
-                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
-            },
-            onFailure = ::handleFailure
-        )
-    }
+//    private fun showAllTasksInProject() {
+//        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
+//
+//        val projectId = uiUtils.readNonBlankInputOrNull(reader)
+//            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
+//
+//        manageProjectUseCase.getTasksByProjectId(projectId).fold(
+//            onSuccess = { tasks: List<Task> ->
+//                tasks.takeUnless { it.isEmpty() }
+//                    ?.let { printer.printTaskList(it) }
+//                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
+//            },
+//            onFailure = ::handleFailure
+//        )
+//    }
 
     fun showAllMateTaskAssignment() {
         printer.showMessage(UiMessages.USER_NAME_PROMPT.message)
@@ -180,7 +200,7 @@ class TaskManagerUi(
         println("Please Choose an option. Pick a number between 0 and 7!\n")
 
         TaskOptions.entries
-            .forEach { println("${it.option}.") }
+            .forEach { println("${it.option}. ${it.label}") }
 
         println("-----------------------------------------------------")
         print("Choose an option: ")

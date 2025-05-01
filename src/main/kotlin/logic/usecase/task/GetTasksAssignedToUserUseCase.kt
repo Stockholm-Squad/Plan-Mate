@@ -11,6 +11,6 @@ class GetTasksAssignedToUserUseCase(
     fun getAllMateTaskAssignment(userName: String): Result<List<MateTaskAssignment>> =
         taskRepository.getAllMateTaskAssignment(userName).fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
+            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTaskAssignmentFound()) }
         )
 }

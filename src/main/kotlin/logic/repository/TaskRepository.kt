@@ -11,7 +11,3 @@ interface TaskRepository {
     fun deleteTask(id: String?): Result<Boolean>
     fun getAllMateTaskAssignment(mateName: String): Result<List<MateTaskAssignment>>
 }
-
-
-//    fun getAllTasksInProjects(): Result<List<TaskInProject>>
-//    fun linkTaskToProject(taskInProject: TaskInProject): Result<Boolean>

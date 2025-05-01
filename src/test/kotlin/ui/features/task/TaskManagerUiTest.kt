@@ -3,21 +3,22 @@ package ui.features.task
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.Task
+import io.mockk.verifySequence
 import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
-
+import utils.buildMateTaskAssignment
+import utils.buildTask
 
 class TaskManagerUiTest {
 
@@ -25,308 +26,513 @@ class TaskManagerUiTest {
     private lateinit var printer: OutputPrinter
     private lateinit var uiUtils: UiUtils
     private lateinit var manageTasksUseCase: ManageTasksUseCase
+    private lateinit var manageStateUseCase: ManageStatesUseCase
+    private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
     private lateinit var taskManagerUi: TaskManagerUi
-    private val dateHandler = DateHandler()
 
     @BeforeEach
     fun setUp() {
         reader = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         uiUtils = mockk(relaxed = true)
+
         manageTasksUseCase = mockk(relaxed = true)
+        manageStateUseCase = mockk(relaxed = true)
+        manageProjectUseCase = mockk(relaxed = true)
+        getTasksAssignedToUserUseCase = mockk(relaxed = true)
+
         taskManagerUi = TaskManagerUi(
             reader,
             printer,
             uiUtils,
-            manageTasksUseCase
+            manageTasksUseCase,
+            manageStateUseCase,
+            manageProjectUseCase,
+            getTasksAssignedToUserUseCase
         )
     }
 
+    //region showAllTasks
     @Test
     fun `showAllTasks() should print all tasks when use case succeeds`() {
-        // Given
         val sampleTasks = listOf(
-            Task(
-                name = "Task 1",
-                description = "First task",
-                stateId = "1",
-                createdDate = dateHandler.getCurrentDateTime(),
-                updatedDate = dateHandler.getCurrentDateTime()
-            ),
-            Task(
-                name = "Task 2",
-                description = "Second task",
-                stateId = "2",
-                createdDate = dateHandler.getCurrentDateTime(),
-                updatedDate = dateHandler.getCurrentDateTime()
-            )
+            buildTask(name = "Task 1", description = "First task", stateId = "1"),
+            buildTask(name = "Task 2", description = "Second task", stateId = "2")
         )
+
         every { manageTasksUseCase.getAllTasks() } returns Result.success(sampleTasks)
 
-        // When
         taskManagerUi.showAllTasks()
 
-        // Then
-        verify { printer.showMessage("$sampleTasks") }
+        verify(exactly = 1) { printer.printTaskList(sampleTasks) }
+        verify(exactly = 0) { printer.showMessage(UiMessages.NO_TASK_FOUNDED.message) }
+    }
+
+    @Test
+    fun `showAllTasks() should show message when no tasks exist`() {
+        every { manageTasksUseCase.getAllTasks() } returns Result.success(emptyList())
+
+        taskManagerUi.showAllTasks()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUNDED.message) }
     }
 
     @Test
     fun `showAllTasks() should handle failure gracefully`() {
-        // Given
-        every { manageTasksUseCase.getAllTasks() } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        val error = PlanMateExceptions.LogicException.NoTasksFound()
+        every { manageTasksUseCase.getAllTasks() } returns Result.failure(error)
 
-        // When
         taskManagerUi.showAllTasks()
 
-        // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksFound().message}") }
+        verify(exactly = 1) { printer.showMessage("Error: ${error.message}") }
     }
+    //endregion
 
+    //region getTaskById
     @Test
-    fun `showAllTasks() should handle empty list gracefully`() {
+    fun `getTaskById() should print task when found`() {
         // Given
-        every { manageTasksUseCase.getAllTasks() } returns Result.success(emptyList())
+        val taskId = "valid-id"
+        val task = buildTask(id = taskId, name = "Test Task", description = "A sample task")
 
-        // When
-        taskManagerUi.showAllTasks()
-
-        // Then
-        verify { printer.showMessage("${ExceptionMessage.NO_TASKS_FOUNDED}") }
-    }
-
-    @Test
-    fun `getTaskById() should print task when use case succeeds`() {
-        // Given
-        val taskId = "1"
-        val task = Task(
-            id = taskId,
-            name = "Task1",
-            description = "description of task1",
-            stateId = "2",
-            createdDate = dateHandler.getCurrentDateTime(),
-            updatedDate = dateHandler.getCurrentDateTime()
-        )
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
         every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(task)
 
         // When
         taskManagerUi.getTaskById()
 
         // Then
-        verify { printer.showMessage("$task") }
+        verifySequence {
+            printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
+            printer.printTask(task)
+        }
     }
 
     @Test
-    fun `getTaskById() should handle failure gracefully`() {
+    fun `getTaskById() should show error when task not found`() {
         // Given
-        val taskId = "1"
+        val taskId = "invalid"
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
         every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
 
         // When
         taskManagerUi.getTaskById()
 
         // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksFound().message}") }
-    }
-
-    @Test
-    fun `createTask() should print success message when use case succeeds`() {
-        // Given
-        val newTask = Task(
-            name = "Task 2",
-            description = "Second task",
-            stateId = "2",
-            createdDate = dateHandler.getCurrentDateTime(),
-            updatedDate = dateHandler.getCurrentDateTime()
-        )
-        every { manageTasksUseCase.createTask(newTask) } returns Result.success(true)
-
-        // When
-        taskManagerUi.createTask()
-
-        // Then
-        verify { printer.showMessage("${ExceptionMessage.TASK_CREATED_SUCCESSFULLY}") }
-    }
-
-    @Test
-    fun `createTask() should handle failure gracefully`() {
-        // Given
-        val newTask = Task(
-            name = "Task 2",
-            description = "Second task",
-            stateId = "2",
-            createdDate = dateHandler.getCurrentDateTime(),
-            updatedDate = dateHandler.getCurrentDateTime()
-        )
-        every { manageTasksUseCase.createTask(newTask) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
-
-        // When
-        taskManagerUi.createTask()
-
-        // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksCreated().message}") }
-    }
-
-    @Test
-    fun `editTask() should print success message when use case succeeds`() {
-        // Given
-        val updatedTask = Task(
-            name = "New Task",
-            description = "Second task",
-            stateId = "3",
-            createdDate = dateHandler.getCurrentDateTime(),
-            updatedDate = dateHandler.getCurrentDateTime()
-        )
-        every { manageTasksUseCase.editTask(updatedTask) } returns Result.success(true)
-
-        // When
-        taskManagerUi.editTask()
-
-        // Then
-        verify { printer.showMessage("${ExceptionMessage.TASK_EDITED_SUCCESSFULLY}") }
-    }
-
-    @Test
-    fun `editTask() should handle failure gracefully`() {
-        // Given
-        val updatedTask = Task(
-            name = "New Task",
-            description = "Second task",
-            stateId = "3",
-            createdDate = dateHandler.getCurrentDateTime(),
-            updatedDate = dateHandler.getCurrentDateTime()
-        )
-        every { manageTasksUseCase.editTask(updatedTask) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
-
-        // When
-        taskManagerUi.editTask()
-
-        // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksFound().message}") }
-    }
-
-    @Test
-    fun `deleteTask() should print success message when use case succeeds`() {
-        // Given
-        val taskId = "1"
-        every { manageTasksUseCase.deleteTask(taskId) } returns Result.success(true)
-
-        // When
-        taskManagerUi.deleteTask()
-
-        // Then
-        verify { printer.showMessage("${ExceptionMessage.TASK_DELETED_SUCCESSFULLY}") }
-    }
-
-    @Test
-    fun `deleteTask() should handle failure gracefully`() {
-        // Given
-        val taskId = "1"
-        every { manageTasksUseCase.deleteTask(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksDeleted())
-
-        // When
-        taskManagerUi.deleteTask()
-
-        // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksDeleted().message}") }
-    }
-
-    @Test
-    fun `showAllMateTaskAssignment() should print assignments when use case succeeds`() {
-        // Given
-        val tasks = listOf(MateTaskAssignment("Mate 1", "2"))
-        val userName = "Mate 1"
-        every { manageTasksUseCase.getAllMateTaskAssignment(userName) } returns Result.success(tasks)
-
-        // When
-        taskManagerUi.showAllMateTaskAssignment()
-
-        // Then
-        verify { printer.showMessage("$tasks") }
-    }
-
-    @Test
-    fun `showAllMateTaskAssignment() should handle failure gracefully`() {
-        // Given
-        val userName = "Mate 1"
-        every { manageTasksUseCase.getAllMateTaskAssignment(userName) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
-
-        // When
-        taskManagerUi.showAllMateTaskAssignment()
-
-        // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksFound().message}") }
-    }
-
-    @Test
-    fun `showAllTasksInProject() should print tasks when use case succeeds`() {
-        // Given
-        val tasks = listOf(TaskInProject("1", "11", "2"))
-        val projectId = "11"
-        every { manageTasksUseCase.getAllTasksByProjectId(projectId) } returns Result.success(tasks)
-
-        // When
-        taskManagerUi.showAllTasksInProject()
-
-        // Then
-        verify { printer.showMessage("$tasks") }
-    }
-
-    @Test
-    fun `showAllTasksInProject() should handle failure gracefully`() {
-        // Given
-        val projectId = "11"
-        every { manageTasksUseCase.getAllTasksByProjectId(projectId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
-
-        // When
-        taskManagerUi.showAllTasksInProject()
-
-        // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksFound().message}") }
-    }
-
-    @Test
-    fun `showStateOfProject() should print states when use case succeeds`() {
-        // Given
-        val projectId = "11"
-        val states = listOf(
-            "task1" to "state1",
-            "task2" to "state2"
-        )
-        every { manageTasksUseCase.getAllStatesByProjectId(projectId) } returns Result.success(states)
-
-        // When
-        taskManagerUi.showStateOfProject()
-
-        // Then
-        verify {
-            printer.showMessage("1. Task ID: task1, State ID: state1")
-            printer.showMessage("2. Task ID: task2, State ID: state2")
+        verify(exactly = 1) {
+            printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTasksFound().message}")
         }
     }
 
     @Test
-    fun `showStateOfProject() should handle failure gracefully`() {
+    fun `getTaskById() should show error when task ID is empty`() {
         // Given
-        val projectId = "11"
-        every { manageTasksUseCase.getAllStatesByProjectId(projectId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns null
 
         // When
-        taskManagerUi.showStateOfProject()
+        taskManagerUi.getTaskById()
 
         // Then
-        verify { printer.showMessage("${PlanMateExceptions.LogicException.NoTasksFound().message}") }
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message) }
+        verify(exactly = 0) { manageTasksUseCase.getTaskById(any()) }
     }
 
     @Test
-    fun `showStateOfProject() should handle empty state data gracefully`() {
+    fun `getTaskById() should show error when task ID is blank`() {
         // Given
-        val projectId = "11"
-        every { manageTasksUseCase.getAllStatesByProjectId(projectId) } returns Result.success(emptyList())
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns null
 
         // When
-        taskManagerUi.showStateOfProject()
+        taskManagerUi.getTaskById()
 
         // Then
-        verify { printer.showMessage("${ExceptionMessage.NO_STATE_FOUND}") }
+        verify() { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message) }
     }
+
+    //endregion
+
+    //region createTask
+    @Test
+    fun `createTask() should create task when valid input is provided`() {
+        // Given
+        val name = "New Task"
+        val description = "A new task"
+        val stateName = "TODO"
+        val stateId = "1"
+
+        every { reader.readStringOrNull() } returns name andThen description andThen stateName
+        every { manageStateUseCase.getStateIdByName(stateName) } returns stateId
+        every { manageTasksUseCase.createTask(any()) } returns Result.success(true)
+
+        // When
+        taskManagerUi.createTask()
+
+        // Then
+        verify(exactly = 1) { manageStateUseCase.getStateIdByName(stateName) }
+        verify(exactly = 1) { manageTasksUseCase.createTask(any()) }
+        verify(exactly = 1) { printer.printTask(any()) }
+    }
+
+    @Test
+    fun `createTask() should show error when name is empty`() {
+        // Given
+        every { reader.readStringOrNull() } returns "" // Empty name
+
+        // When
+        taskManagerUi.createTask()
+
+        // Then
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
+        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+    }
+
+    @Test
+    fun `createTask() should show error when state name is empty`() {
+        // Given
+        val name = "New Task"
+        val description = "A new task"
+        every { reader.readStringOrNull() } returns name andThen description andThen ""
+
+        // When
+        taskManagerUi.createTask()
+
+        // Then
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
+        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+    }
+
+    @Test
+    fun `createTask() should show error when state name is invalid`() {
+        // Given
+        val name = "New Task"
+        val description = "A new task"
+        val stateName = "Invalid State"
+
+        every { reader.readStringOrNull() } returns name andThen description andThen stateName
+        every { manageStateUseCase.getStateIdByName(stateName) } returns null
+
+        // When
+        taskManagerUi.createTask()
+
+        // Then
+        verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message) }
+        verify(exactly = 1) { manageStateUseCase.getStateIdByName(stateName) }
+        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+    }
+
+    @Test
+    fun `createTask() should show error when description is empty`() {
+        // Given
+        val name = "New Task"
+        every { reader.readStringOrNull() } returns name andThen "" // Empty description
+
+        // When
+        taskManagerUi.createTask()
+
+        // Then
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
+        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+    }
+
+    //endregion
+
+    //region editTask
+    @Test
+    fun `editTask() should update task successfully`() {
+        // Given
+        val taskId = "123"
+        val newName = "Updated"
+        val newDescription = "Updated Desc"
+        val newStateName = "Closed"
+        val newStateId = "2"
+
+        val existingTask = buildTask(
+            id = taskId,
+            name = "Old Name",
+            description = "Old Description",
+            stateId = "1"
+        )
+
+        // Mock input sequence
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId // for task ID
+        every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { manageStateUseCase.getStateIdByName(newStateName) } returns newStateId
+        every { manageTasksUseCase.editTask(any()) } returns Result.success(true)
+
+        // When
+        taskManagerUi.editTask()
+
+        // Then
+        verify(exactly = 1) { manageTasksUseCase.editTask(any()) }
+        verify(exactly = 1) { printer.printTask(any()) }
+    }
+
+    @Test
+    fun `editTask() should show error when task not found`() {
+        val taskId = "invalid"
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUNDED.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when state name is empty`() {
+        // Given
+        val taskId = "123"
+        val newName = "Updated"
+        val newDescription = "Updated Desc"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns newName andThen newDescription andThen null
+
+        // When
+        taskManagerUi.editTask()
+
+        // Then
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when task ID is empty`() {
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns null
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message) }
+        verify(exactly = 0) { reader.readStringOrNull() }
+    }
+
+    @Test
+    fun `editTask() should show error when task ID is blank`() {
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns null
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when new name is empty`() {
+        // Given
+        val taskId = "123"
+        val newState = "Updated"
+        val newDescription = "Updated Desc"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns "" andThen newDescription andThen newState
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when new name is null`() {
+        // Given
+        val taskId = "123"
+        val newState = "Updated"
+        val newDescription = "Updated Desc"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns null andThen newDescription andThen newState
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when new description is empty`() {
+        // Given
+        val taskId = "123"
+        val newName = "Updated"
+        val newState = "Updated"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns newName andThen "" andThen newState
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when new description is null`() {
+        // Given
+        val taskId = "123"
+        val newName = "Updated"
+        val newState = "Updated"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns newName andThen null andThen newState
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when new state name is empty`() {
+        // Given
+        val taskId = "123"
+        val newName = "Updated"
+        val newDescription = "updated"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns newName andThen newDescription andThen ""
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show error when new state name is null`() {
+        // Given
+        val taskId = "123"
+        val newName = "Updated"
+        val newDescription = "updated"
+        val existingTask = buildTask(id = "taskId", name = "Old", description = "Old Desc")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { reader.readStringOrNull() } returns newName andThen newDescription andThen null
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT.message) }
+    }
+
+    @Test
+    fun `editTask() should show EMPTY_TASK_INPUT when any input is empty`() {
+        val taskId = "123"
+        val existingTask = buildTask(taskId, "Old", "Old Desc", "1")
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returnsMany listOf(
+            taskId, "New Name", "New Desc", null
+        )
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+
+        taskManagerUi.editTask()
+
+        verify { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
+    }
+
+
+    @Test
+    fun `editTask() should show error when invalid state name is provided`() {
+        val taskId = "123"
+        val newName = "New Name"
+        val newDescription = "New Description"
+        val newStateName = "Invalid State"
+        val existingTask = buildTask(id = taskId)
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
+        every { manageStateUseCase.getStateIdByName(newStateName) } returns null
+
+        taskManagerUi.editTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_STATE_NAME.message) }
+    }
+
+    //endregion
+
+    //region deleteTask
+    @Test
+    fun `deleteTask should delete task successfully`() {
+        val taskId = "123"
+        val dummyTask = buildTask(id = taskId)
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(dummyTask)
+        every { manageTasksUseCase.deleteTask(taskId) } returns Result.success(true)
+
+        taskManagerUi.deleteTask()
+
+        verify(exactly = 1) { manageTasksUseCase.getTaskById(taskId) }
+        verify(exactly = 1) { manageTasksUseCase.deleteTask(taskId) }
+        verify(exactly = 1) { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY.message) }
+    }
+
+    @Test
+    fun `deleteTask should show error when task ID is empty`() {
+        val id = ""
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns null
+        every { manageTasksUseCase.deleteTask(id) } returns Result.success(false)
+
+        taskManagerUi.deleteTask()
+
+        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message) }
+    }
+
+    //endregion
+
+    //region showAllMateTaskAssignment
+    @Test
+    fun `showAllMateTaskAssignment() should show assignments for valid user`() {
+        val userName = "Alice"
+        val assignments = listOf(
+            buildMateTaskAssignment(userName = "Alice", taskId = "1"),
+            buildMateTaskAssignment(userName = "Alice", taskId = "2")
+        )
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns userName
+        every { getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName) } returns Result.success(assignments)
+
+        taskManagerUi.showAllMateTaskAssignment()
+
+        verify(exactly = 1) { printer.printMateTaskAssignments(assignments) }
+    }
+
+    @Test
+    fun `showAllMateTaskAssignment() should show message when no assignments exist`() {
+        val userName = "Asmaa"
+        val emptyAssignments = emptyList<MateTaskAssignment>()
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns userName
+        every { getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName) } returns Result.success(emptyAssignments)
+
+        taskManagerUi.showAllMateTaskAssignment()
+
+        verify(exactly = 1) { printer.printMateTaskAssignments(emptyAssignments) }
+    }
+
+    @Test
+    fun `showAllMateTaskAssignment() should handle failure gracefully`() {
+        val userName = "Asmaa"
+
+        every { uiUtils.readNonBlankInputOrNull(reader) } returns userName
+        every { getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName) } returns
+                Result.failure(PlanMateExceptions.LogicException.NoTaskAssignmentFound())
+
+        taskManagerUi.showAllMateTaskAssignment()
+
+        verify(exactly = 1) {
+            printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTaskAssignmentFound().message}")
+        }
+    }
+    //endregion
 }
