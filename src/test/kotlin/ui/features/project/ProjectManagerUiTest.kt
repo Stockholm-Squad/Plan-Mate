@@ -9,6 +9,7 @@ import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.authentication.ManageAuthenticationUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.AdminStateManagerUi
@@ -28,6 +29,7 @@ class ProjectManagerUiTest {
     private lateinit var outputPrinter: OutputPrinter
     private lateinit var projectManagerUi: ProjectManagerUi
     private lateinit var manageAuthenticationUseCase: ManageAuthenticationUseCase
+    private lateinit var manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase
 
 
     @BeforeEach
@@ -39,15 +41,17 @@ class ProjectManagerUiTest {
         inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
         manageAuthenticationUseCase = mockk(relaxed = true)
+        manageUsersAssignedToProjectUseCase = mockk(relaxed = true)
 
         projectManagerUi = ProjectManagerUi(
             inputReader,
             outputPrinter,
             manageProjectUseCase,
+            manageUsersAssignedToProjectUseCase,
             stateManagerUi,
             taskManagerUi,
             authenticationManagerUi,
-            manageAuthenticationUseCase
+            manageAuthenticationUseCase,
         )
     }
 
@@ -276,7 +280,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("no", "user1", "1", "done")
             every { manageAuthenticationUseCase.isUserExists("user1") } returns Result.success(true)
             every { manageProjectUseCase.isProjectExists("1") } returns Result.success(true)
-            every { manageProjectUseCase.assignUsersToProject("user1", "1") } returns Result.success(true)
+            every { manageUsersAssignedToProjectUseCase.assignUserToProject("user1", "1") } returns Result.success(true)
 
             // When
             projectManagerUi.assignUsersToProject()
@@ -317,7 +321,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("no", "user1", "999", "done")
             every { manageAuthenticationUseCase.isUserExists("user1") } returns Result.success(true)
             every { manageProjectUseCase.isProjectExists("999") } returns Result.failure(Throwable())
-            every { manageProjectUseCase.assignUsersToProject("user1", "999") } returns Result.success(true)
+            every { manageUsersAssignedToProjectUseCase.assignUserToProject("user1", "999") } returns Result.success(true)
 
             // When
             projectManagerUi.assignUsersToProject()
@@ -332,7 +336,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("no", "user1", "1", "done")
             every { manageAuthenticationUseCase.isUserExists("user1") } returns Result.success(true)
             every { manageProjectUseCase.isProjectExists("1") } returns Result.success(true)
-            every { manageProjectUseCase.assignUsersToProject("user1", "1") } returns Result.failure(Exception("Assignment failed"))
+            every { manageUsersAssignedToProjectUseCase.assignUserToProject("user1", "1") } returns Result.failure(Exception("Assignment failed"))
 
             // When
             projectManagerUi.assignUsersToProject()

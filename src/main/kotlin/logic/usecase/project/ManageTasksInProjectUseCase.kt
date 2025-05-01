@@ -31,8 +31,15 @@ class ManageTasksInProjectUseCase(
     }
 
     fun deleteTaskAssignedToProject(projectId: String, taskId: String): Result<Boolean> {
-        return projectRepository.addTaskInProject(projectId = projectId, taskId = taskId)
-
+        return projectRepository.getTasksInProject(projectId = projectId).fold(
+            onSuccess = { tasksIds ->
+                when (tasksIds.contains(taskId)) {
+                    true -> projectRepository.deleteTaskFromProject(projectId = projectId, taskId = taskId)
+                    false -> Result.success(false)
+                }
+            },
+            onFailure = { throwable -> Result.failure(throwable) }
+        )
     }
 
 }

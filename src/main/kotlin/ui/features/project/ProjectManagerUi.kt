@@ -5,6 +5,7 @@ import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.authentication.ManageAuthenticationUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.authentication.AuthenticationManagerUi
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.state.AdminStateManagerUi
@@ -14,6 +15,7 @@ class ProjectManagerUi(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
+    private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
     private val authenticationManagerUi: AuthenticationManagerUi,
@@ -192,7 +194,7 @@ class ProjectManagerUi(
             return false
         }
 
-        return manageProjectUseCase.assignUsersToProject(username, projectId)
+        return manageUsersAssignedToProjectUseCase.assignUserToProject(username, projectId)
             .fold(
                 onSuccess = { success ->
                     if (success) {
