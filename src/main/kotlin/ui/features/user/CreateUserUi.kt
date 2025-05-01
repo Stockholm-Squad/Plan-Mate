@@ -1,11 +1,10 @@
-// AddUserUi.kt
 package org.example.ui.features.user
 
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.user.CreateUserUseCase
 
-class AddUserUi(
+class CreateUserUi(
     private val createUserUseCase: CreateUserUseCase,
     private val printer: OutputPrinter,
     private val inputReader: InputReader

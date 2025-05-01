@@ -8,7 +8,7 @@ import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.AddUserUi
+import org.example.ui.features.user.CreateUserUi
 
 class ProjectManagerUi(
     private val inputReader: InputReader,
@@ -17,7 +17,7 @@ class ProjectManagerUi(
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
-    private val addUserUi: AddUserUi,
+    private val createUserUi: CreateUserUi,
 ) : UiLauncher {
 
     fun showAllProjects() {
@@ -167,7 +167,7 @@ class ProjectManagerUi(
         while (true) {
             outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
             if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                addUserUi.launchUi()
+                createUserUi.launchUi()
             }
 
             outputPrinter.showMessage("Enter username to assign (or 'done' to finish): ")
