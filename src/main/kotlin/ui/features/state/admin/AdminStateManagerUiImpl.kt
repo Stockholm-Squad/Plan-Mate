@@ -2,6 +2,7 @@ package org.example.ui.features.state.admin
 
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
+import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
@@ -45,7 +46,7 @@ class AdminStateManagerUiImpl(
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
                 manageStatesUseCase.addState(stateName = stateName).fold(
-                    onSuccess = { ::showAddStateMessage },
+                    onSuccess = { showAddStateMessage() },
                     onFailure = { showFailure("Failed to Add state: ${it.message}") }
                 )
             } ?: showInvalidInput()
@@ -57,7 +58,7 @@ class AdminStateManagerUiImpl(
             !stateName.isNullOrEmpty()
         }?.let { stateName ->
             manageStatesUseCase.editState(stateName = stateName).fold(
-                onSuccess = { ::showStateUpdatedMessage },
+                onSuccess = { showStateUpdatedMessage() },
                 onFailure = { showFailure("Failed to Update state: ${it.message}") }
             )
         } ?: showInvalidInput()
@@ -76,7 +77,7 @@ class AdminStateManagerUiImpl(
     }
 
     private fun showInvalidInput() {
-        printer.showMessage("Invalid input, Please try again..")
+        printer.showMessage(ExceptionMessage.INVALID_INPUT.message)
     }
 
     override fun deleteState() {
@@ -85,7 +86,7 @@ class AdminStateManagerUiImpl(
             stateName != null
         }?.let { stateName ->
             manageStatesUseCase.deleteState(stateName = stateName).fold(
-                onSuccess = { ::showStateDeletedMessage },
+                onSuccess = { showStateDeletedMessage() },
                 onFailure = { showFailure("Failed to Delete state: ${it.message}") }
             )
         } ?: showInvalidInput()

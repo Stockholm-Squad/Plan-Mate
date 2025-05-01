@@ -9,24 +9,25 @@ import org.example.logic.repository.AuditSystemRepository
 class AuditSystemRepositoryImp(
     private val auditSystemDataSource: PlanMateDataSource<AuditSystem>
 ) : AuditSystemRepository {
+    override fun recordAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean> =
+        auditSystemDataSource.append(auditSystem).fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(it) }
+        )
 
-    override fun addAuditSystem(auditSystem: AuditSystem): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
 
-    override fun getAuditSystemById(id: String): Result<AuditSystem> {
-        TODO("Not yet implemented")
-    }
+    override fun getAllAuditEntries(): Result<List<AuditSystem>> =
+        auditSystemDataSource.read().fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(it) }
+        )
 
-    override fun getAllAuditSystems(): Result<List<AuditSystem>> {
-        TODO("Not yet implemented")
-    }
+    override fun initializeDataInFile(auditSystem: List<AuditSystem>): Result<Boolean> =
+        auditSystemDataSource.overWrite(auditSystem).fold(
+            onSuccess = { Result.success(it) },
+            onFailure = { Result.failure(it) }
+        )
 
-    override fun getAllAuditSystemsByType(type: AuditSystemType): Result<List<AuditSystem>> {
-        TODO("Not yet implemented")
-    }
 
-    override fun getAllAuditSystemsEntityId(entityId: String): Result<List<AuditSystem>> {
-        TODO("Not yet implemented")
-    }
+
 }

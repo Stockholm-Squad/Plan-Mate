@@ -10,7 +10,7 @@ class ManageStatesUseCase(
     fun addState(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = { validStateName ->
-                validStateName.takeIf { !isStateExist(it) }
+                validStateName.takeIf { state -> !isStateExist(state) }
                     ?.let {
                         stateRepository.addState(it).fold(
                             onSuccess = { Result.success(true) },
@@ -66,12 +66,6 @@ class ManageStatesUseCase(
         )
     }
 
-    private fun handleStateNotExistException(throwable: Throwable): Result<Boolean> {
-        return throwable.takeIf { it is PlanMateExceptions.DataException.FileNotExistException }
-            ?.let { Result.failure(PlanMateExceptions.LogicException.StateNotExistException()) }
-            ?: Result.failure(throwable)
-    }
-
     fun getAllStates(): Result<List<State>> {
         return stateRepository.getAllStates().fold(
             onSuccess = { data ->
@@ -92,9 +86,15 @@ class ManageStatesUseCase(
         )
     }
 
+    private fun handleStateNotExistException(throwable: Throwable): Result<Boolean> {
+        return throwable.takeIf { it is PlanMateExceptions.DataException.FileNotExistException }
+            ?.let { Result.failure(PlanMateExceptions.LogicException.StateNotExistException()) }
+            ?: Result.failure(throwable)
+    }
+
 
     private fun isStateExist(stateName: String): Boolean {
-        return if (getState(stateName) != null) true else false
+        return (getState(stateName) != null)
     }
 
     private fun getState(stateName: String): State? {

@@ -107,7 +107,7 @@ class ManageStatesUseCaseTest {
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
-        val stateName = ""
+        val stateName = "   "
         every { stateRepository.editState(any()) } returns Result.failure(LogicException.NotAllowedStateNameException())
 
         //When
@@ -204,10 +204,14 @@ class ManageStatesUseCaseTest {
     fun `addState() should return success result with true when the name of state is valid`() {
         // Given
         val stateName = "ToDo"
-        val existingStates = listOf(State(name = "Done"))
 
-        every { stateRepository.getAllStates() } returns Result.success(existingStates)
-        every { stateRepository.addState(any()) } returns Result.success(true)
+        every { stateRepository.getAllStates() } returns Result.success(
+            listOf(
+                State(name = "Done"),
+                State(name = "doing")
+            )
+        )
+        every { stateRepository.addState(stateName) } returns Result.success(true)
 
         // When
         val result = manageStatesUseCase.addState(stateName)
@@ -220,14 +224,10 @@ class ManageStatesUseCaseTest {
     fun `addState() should return failure result with throwable when the addState fails`() {
         // Given
         val stateName = "ToDo"
-        val existingStates = listOf(State(name = "Done"))
-
-        every { stateRepository.getAllStates() } returns Result.success(existingStates)
+        every { stateRepository.getAllStates() } returns Result.success(listOf(State(name = "Done")))
         every { stateRepository.addState(any()) } returns Result.failure(Throwable())
-
         // When
         val result = manageStatesUseCase.addState(stateName)
-
         // Then
         assertThrows<Throwable> { result.getOrThrow() }
     }
@@ -236,10 +236,8 @@ class ManageStatesUseCaseTest {
     fun `addState() should return success result with true when the name of state have leading and trailing space`() {
         //Given
         val stateName = "   ToDo    "
-        val existingStates = listOf(State(name = "Done"))
-        every { stateRepository.getAllStates() } returns Result.success(existingStates)
+        every { stateRepository.getAllStates() } returns Result.success(listOf(State(name = "Doing")))
         every { stateRepository.addState(stateName.trim()) } returns Result.success(true)
-
         //When
         val result = manageStatesUseCase.addState(stateName)
 
@@ -251,20 +249,20 @@ class ManageStatesUseCaseTest {
     fun `addState() should return failure result when the state exist`() {
         //Given
         val stateName = "ToDo"
-        every { stateRepository.getAllStates() } returns Result.success(listOf(State("344", stateName)))
+        every { stateRepository.getAllStates() } returns Result.success(listOf(State(name = stateName)))
 
         //When
         val result = manageStatesUseCase.addState(stateName)
 
         //Then
-        assertThrows<Throwable> { result.getOrThrow() }
+        assertThrows<LogicException.StateAlreadyExistException> { result.getOrThrow() }
     }
 
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
         //Given
         val stateName = "#I Review$"
-        every { stateRepository.addState(stateName) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        every { stateRepository.addState(any()) } returns Result.failure(Throwable())
         //When
         val result = manageStatesUseCase.addState(stateName)
         //Then
@@ -286,8 +284,8 @@ class ManageStatesUseCaseTest {
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
-        val stateName = ""
-        every { stateRepository.addState(stateName) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        val stateName = "   "
+        every { stateRepository.addState(any()) } returns Result.success(true)
 
         //When
         val result = manageStatesUseCase.addState(stateName)
