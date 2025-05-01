@@ -16,10 +16,10 @@ fun createAuditSystem(
     ): AuditSystem {
         return AuditSystem(
             id = id,
-            auditSystemType = auditSystemType,
+            auditSystemType = auditSystemType.toString(),
             entityId = entityId,
             changeDescription = changeDescription,
-            dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
             changedBy = changedBy
         )
     }

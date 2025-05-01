@@ -1,6 +1,5 @@
 package org.example.ui.features.audit
 
-import org.example.data.repo.AuditSystemRepositoryImp
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
@@ -8,63 +7,69 @@ import org.example.utils.Constant
 import org.example.utils.SearchUtils
 
 class AuditSystemManagerUi(
-    private val getAuditSystemUseCase: ManageAuditSystemUseCase,
-    private val auditSystemRepositoryImp: AuditSystemRepositoryImp,
-    private val searchUtils: SearchUtils,
+    private val useCase: ManageAuditSystemUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
+    private val searchUtils: SearchUtils
+) : AuditSystemManagerUII {
 
-    ) {
-
-    fun showAuditSystemManagerUI() {
-        var shouldContinue: Boolean
-
+    override fun showAuditSystemManagerUI() {
         do {
-            displayMainMenu()
-            val option = searchUtils.getMainMenuOption()
-
-            when (option) {
+            when (searchUtils.getMainMenuOption()) {
                 1 -> displayAllAuditSystems()
-                2 -> searchAuditSystemById()
-                3 -> searchAuditSystemsByType()
-                4 -> searchAuditSystemsByEntityId()
-                5 -> addNewAuditSystem()
+                2 -> displayAuditLogsByTaskId()
+                3 -> displayAuditLogsByProjectId()
+                4 -> displayAuditByAuditId()
+                5 -> displayAuditByUsername()
                 6 -> printer.showMessage(Constant.EXITING)
                 else -> printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
             }
+        } while (searchUtils.shouldSearchAgain(reader) == true)
+        printer.showMessage(Constant.EXITING)
+    }
 
-            shouldContinue = searchUtils.shouldSearchAgain(reader) == true
-        } while (shouldContinue)
+    private fun displayAllAuditSystems() =
+        useCase.getAllAuditSystems().fold(
+            onSuccess = { audits -> printer.showAudits(audits) },
+            onFailure = { printer.showMessage(it.message.toString()) }
+        )
+
+    private fun displayAuditLogsByProjectId() {
+        reader.readStringOrNull()?.let {
+            useCase.getProjectChangeLogsById(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
+
+    }
+
+    private fun displayAuditLogsByTaskId() {
+        reader.readStringOrNull()?.let {
+            useCase.getTaskChangeLogsById(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
+    }
+
+    private fun displayAuditByAuditId() {
+        reader.readStringOrNull()?.let {
+            useCase.getAuditSystemByID(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
+    }
+
+    private fun displayAuditByUsername() {
+        reader.readStringOrNull()?.let {
+            useCase.getUserChangeLogsByUsername(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
     }
 
 
-    private fun displayMainMenu() {
-        // TODO
-    }
-
-
-    private fun displayAllAuditSystems() {
-        // TODO
-    }
-
-
-    private fun searchAuditSystemById() {
-        // TODO
-    }
-
-
-
-    private fun searchAuditSystemsByType() {
-        // TODO
-    }
-
-
-    private fun searchAuditSystemsByEntityId() {
-        // TODO
-    }
-
-
-    private fun addNewAuditSystem() {
-        // TODO
-    }
 }

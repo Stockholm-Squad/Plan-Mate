@@ -13,15 +13,13 @@ fun main() {
     val data1 = listOf(
         AuditSystem(
             auditSystemType = "TASK",
-            entityId = "3",
-            changeDescription = "SAFAFGA",
+            entityId = "65",
+            changeDescription = "waggw",
             changedBy = "mano",
             dateTime = "15/12/2005"
         )
     )
 
-    data.recordAuditsEntries(data1).fold(
-        onSuccess = { println(it) },
-        onFailure = { println(it.message) }
-    )
+    val result = data.recordAuditsEntries(data1)
+    println(result.isSuccess)
 }

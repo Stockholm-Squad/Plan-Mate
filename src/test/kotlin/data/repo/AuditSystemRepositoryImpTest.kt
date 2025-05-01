@@ -12,122 +12,92 @@ import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AuditSystemRepositoryImpTest{
+class AuditSystemRepositoryImpTest {
 
-  private lateinit var auditSystemRepositoryImp: AuditSystemRepositoryImp
-  private lateinit var auditSystemDataSource: PlanMateDataSource<AuditSystem>
+    private lateinit var auditSystemRepositoryImp: AuditSystemRepositoryImp
+    private lateinit var auditSystemDataSource: PlanMateDataSource<AuditSystem>
 
-  @BeforeEach
-  fun setUp() {
-   auditSystemDataSource = mockk(relaxed = true)
-   auditSystemRepositoryImp = AuditSystemRepositoryImp(auditSystemDataSource)
-  }
+    private val auditList = listOf(
+        createAuditSystem(
+            id = "1",
+            auditSystemType = AuditSystemType.TASK,
+            entityId = "123",
+            changeDescription = "Changed something",
+            changedBy = "Admin"
+        )
+    )
 
- @Test
- fun `addAuditSystem should return true when successfully added audit`() {
-  // Given
-  val auditSystem = createAuditSystem(
-      id = "1",
-      auditSystemType = AuditSystemType.TASK,
-      entityId = "123",
-      changeDescription = "change description",
-      changedBy = "Hamsa")
-
-  every { auditSystemRepositoryImp.addAuditSystem(auditSystem) } returns Result.success(true)
-
-  //When
-  val result = auditSystemRepositoryImp.addAuditSystem(auditSystem)
-
-  //Then
-  assertThat(result).isNotNull()
-  assertThat(result.isSuccess).isTrue()
-  verify(exactly = 1) { auditSystemRepositoryImp.addAuditSystem(auditSystem) }
- }
-
- @Test
- fun `getAuditSystemById should return audit system when found`(){
-     // Given
-     val auditSystem = createAuditSystem(
-     id = "1",
-     auditSystemType = AuditSystemType.TASK,
-     entityId = "123",
-     changeDescription = "change description",
-     changedBy = "Hamsa")
-     every { auditSystemRepositoryImp.getAuditSystemById("1") } returns Result.success(auditSystem)
+    @BeforeEach
+    fun setUp() {
+        auditSystemDataSource = mockk(relaxed = true)
+        auditSystemRepositoryImp = AuditSystemRepositoryImp(auditSystemDataSource)
+    }
 
 
-     // When
-     val result = auditSystemRepositoryImp.getAuditSystemById("1")
+    @Test
+    fun `recordAuditsEntries returns success when append succeeds`() {
+        //given
+        every { auditSystemDataSource.append(auditList) } returns Result.success(true)
+        //when
+        val result = auditSystemRepositoryImp.recordAuditsEntries(auditList)
+        //then
+        assertThat(result.isSuccess).isTrue()
+        verify { auditSystemDataSource.append(auditList) }
+    }
 
-     // Then
-     assertThat(result.isSuccess).isTrue()
-     assertThat(result.getOrNull()).isEqualTo(Result.success(auditSystem))
-     verify(exactly = 1) { auditSystemRepositoryImp.getAuditSystemById("1") }
- }
+    @Test
+    fun `recordAuditsEntries returns failure when append fails`() {
+        //given
+        every { auditSystemDataSource.append(auditList) } returns Result.failure(Exception("Append failed"))
+        //when
+        val result = auditSystemRepositoryImp.recordAuditsEntries(auditList)
+        //then
+        assertThat(result.isFailure).isTrue()
+        verify { auditSystemDataSource.append(auditList) }
+    }
 
-@Test
-fun `getAllAuditSystems should return a list of auditSystem when found`(){
-    // Given
-    val auditSystem = listOf(createAuditSystem(
-        id = "1",
-        auditSystemType = AuditSystemType.TASK,
-        entityId = "123",
-        changeDescription = "change description",
-        changedBy = "Hamsa"))
-    every { auditSystemRepositoryImp.getAllAuditSystems() } returns Result.success(auditSystem)
+    @Test
+    fun `getAllAuditEntries returns success when read succeeds`() {
+        //given
+        every { auditSystemDataSource.read() } returns Result.success(auditList)
+        //when
+        val result = auditSystemRepositoryImp.getAllAuditEntries()
+        //then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(auditList)
+        verify { auditSystemDataSource.read() }
+    }
 
-    //When
-    val result = auditSystemRepositoryImp.getAllAuditSystems()
+    @Test
+    fun `getAllAuditEntries returns failure when read fails`() {
+        //given
+        every { auditSystemDataSource.read() } returns Result.failure(Exception("Read failed"))
+        //when
+        val result = auditSystemRepositoryImp.getAllAuditEntries()
+        //then
+        assertThat(result.isFailure).isTrue()
+        verify { auditSystemDataSource.read() }
+    }
 
-    //Then
-    assertThat(result.isSuccess).isTrue()
-    assertThat(result.getOrNull()).isEqualTo(Result.success(auditSystem))
-    verify(exactly = 1) { auditSystemRepositoryImp.getAllAuditSystems() }
+    @Test
+    fun `initializeDataInFile returns success when overwrite succeeds`() {
+        //given
+        every { auditSystemDataSource.overWrite(auditList) } returns Result.success(true)
+        //when
+        val result = auditSystemRepositoryImp.initializeDataInFile(auditList)
+        //then
+        assertThat(result.isSuccess).isTrue()
+        verify { auditSystemDataSource.overWrite(auditList) }
+    }
 
-
-}
-
-@Test
-fun `getAllAuditSystemsByType should return a list of auditSystem by type when found`(){
-    // Given
-    val auditSystem = listOf(createAuditSystem(
-        id = "1",
-        auditSystemType = AuditSystemType.TASK,
-        entityId = "123",
-        changeDescription = "change description",
-        changedBy = "Hamsa"))
-    val auditSystemType = AuditSystemType.TASK
-    every { auditSystemRepositoryImp.getAllAuditSystemsByType(auditSystemType) } returns Result.success(auditSystem)
-
-    // When
-    val result = auditSystemRepositoryImp.getAllAuditSystemsByType(auditSystemType)
-
-    // Then
-    assertThat(result.isSuccess).isTrue()
-    assertThat(result.getOrNull()).isEqualTo(Result.success(auditSystem))
-    verify(exactly = 1) { auditSystemRepositoryImp.getAllAuditSystemsByType(auditSystemType) }
-}
-
-@Test
-fun `getAllAuditSystemsEntityId should return a list of auditSystem by entityId when found`(){
-
-    // Given
-    val auditSystem = listOf(createAuditSystem(
-        id = "1",
-        auditSystemType = AuditSystemType.TASK,
-        entityId = "123",
-        changeDescription = "change description",
-        changedBy = "Hamsa"))
-    every { auditSystemRepositoryImp.getAllAuditSystemsEntityId("1") } returns Result.success(auditSystem)
-
-    // When
-    val result = auditSystemRepositoryImp.getAllAuditSystemsEntityId("1")
-
-    // Then
-    assertThat(result.isSuccess).isTrue()
-    assertThat(result.getOrNull()).isEqualTo(Result.success(auditSystem))
-    verify(exactly = 1) { auditSystemRepositoryImp.getAllAuditSystemsEntityId("1") }
-}
-
-
+    @Test
+    fun `initializeDataInFile returns failure when overwrite fails`() {
+        //given
+        every { auditSystemDataSource.overWrite(auditList) } returns Result.failure(Exception("Overwrite failed"))
+        //when
+        val result = auditSystemRepositoryImp.initializeDataInFile(auditList)
+        //then
+        assertThat(result.isFailure).isTrue()
+        verify { auditSystemDataSource.overWrite(auditList) }
+    }
 }
