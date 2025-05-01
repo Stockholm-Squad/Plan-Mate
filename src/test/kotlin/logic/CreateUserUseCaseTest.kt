@@ -8,19 +8,19 @@ import logic.model.entities.User
 import logic.usecase.login.getAllUsers
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
-import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.usecase.user.CreateUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
-class AddUserUseCaseTest() {
+class CreateUserUseCaseTest() {
     private lateinit var repository: UserRepository
-    private lateinit var useCase: AddUserUseCase
+    private lateinit var useCase: CreateUserUseCase
 
     @BeforeEach
     fun setUp() {
         repository = mockk(relaxed = true)
-        useCase = AddUserUseCase(repository)
+        useCase = CreateUserUseCase(repository)
     }
 
     @Test

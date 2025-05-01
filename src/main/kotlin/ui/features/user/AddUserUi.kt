@@ -3,10 +3,10 @@ package org.example.ui.features.user
 
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.usecase.user.CreateUserUseCase
 
 class AddUserUi(
-    private val addUserUseCase: AddUserUseCase,
+    private val createUserUseCase: CreateUserUseCase,
     private val printer: OutputPrinter,
     private val inputReader: InputReader
 ) {
@@ -28,7 +28,7 @@ class AddUserUi(
     }
 
     private fun addUser(username: String, password: String) {
-        addUserUseCase.addUser(username, password)
+        createUserUseCase.addUser(username, password)
             .onSuccess { success ->
                 if (success) {
                     printer.showMessage("✅ User ${username} added successfully!")
