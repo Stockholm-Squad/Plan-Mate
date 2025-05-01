@@ -2,7 +2,6 @@ package org.example.ui.features.state.admin
 
 import org.example.input_output.input.InputReader
 import org.example.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
@@ -42,36 +41,34 @@ class AdminStateManagerUiImpl(
 
     override fun addState() {
         printer.showMessage("Please enter name for the state:")
-        reader.readStringOrNull().
-        takeIf {
-            stateName -> stateName != null }?.
-        let { stateName ->
-            manageStatesUseCase.addState(stateName = stateName).
-            fold(
-                onSuccess = ::showAddStateMessage,
-                onFailure = { showFailure("Failed to Add state: ${it.message}") }
-            )
-        } ?: showInvalidInput()
+        reader.readStringOrNull()
+            .takeIf { stateName -> stateName != null }
+            ?.let { stateName ->
+                manageStatesUseCase.addState(stateName = stateName).fold(
+                    onSuccess = { ::showAddStateMessage },
+                    onFailure = { showFailure("Failed to Add state: ${it.message}") }
+                )
+            } ?: showInvalidInput()
     }
 
     override fun editState() {
         printer.showMessage("Please enter the state you want to update: ")
         reader.readStringOrNull().takeIf { stateName ->
-            stateName != null
+            !stateName.isNullOrEmpty()
         }?.let { stateName ->
             manageStatesUseCase.editState(stateName = stateName).fold(
-                onSuccess = ::showStateUpdatedMessage,
+                onSuccess = { ::showStateUpdatedMessage },
                 onFailure = { showFailure("Failed to Update state: ${it.message}") }
             )
         } ?: showInvalidInput()
     }
 
-    private fun showStateUpdatedMessage(isUpdated: Boolean) {
+    private fun showStateUpdatedMessage() {
         printer.showMessage("State updated successfully ^_^")
     }
 
-    private fun showAddStateMessage(isUpdated: Boolean) {
-        printer.showMessage("State updated successfully ^_^")
+    private fun showAddStateMessage() {
+        printer.showMessage("State added successfully ^_^")
     }
 
     private fun showFailure(errorMessage: String) {
@@ -88,21 +85,17 @@ class AdminStateManagerUiImpl(
             stateName != null
         }?.let { stateName ->
             manageStatesUseCase.deleteState(stateName = stateName).fold(
-                onSuccess = ::showStateDeletedMessage,
+                onSuccess = { ::showStateDeletedMessage },
                 onFailure = { showFailure("Failed to Delete state: ${it.message}") }
             )
         } ?: showInvalidInput()
     }
 
-    private fun showStateDeletedMessage(isUpdated: Boolean) {
+    private fun showStateDeletedMessage() {
         printer.showMessage("State deleted successfully ^_^")
     }
+
     override fun showAllStates() {
-        printer.showMessage("this is all state:")
-        manageStatesUseCase.getAllStates().fold(
-            onSuccess = { it.forEach { state -> println(state) } },
-            onFailure = { printer.showMessage("not available state") }
-        )
         userStateManagerUi.showAllStates()
     }
 }
