@@ -1,23 +1,17 @@
 package org.example.input_output.input
 
-import kotlinx.datetime.LocalDate
-
 
 class InputReaderImplementation() : InputReader {
     override fun readStringOrNull(): String? {
-        TODO("Not yet implemented")
-    }
-
-    override fun readDateOrNull(): LocalDate? {
-        TODO("Not yet implemented")
+        return readlnOrNull()
     }
 
     override fun readFloatOrNull(): Float? {
-        TODO("Not yet implemented")
+        return readlnOrNull()?.toFloatOrNull()
     }
 
     override fun readIntOrNull(): Int? {
-        TODO("Not yet implemented")
+        return readlnOrNull()?.toIntOrNull()
     }
 
 }
