@@ -148,20 +148,20 @@ class StateRepositoryImpTest {
     fun `addState() should return success result with true when the state add successfully`() {
         //Given
         val state = State(id = "1", name = "Done")
-        every { stateDataSource.overWrite(any()) } returns Result.success(true)
+        every { stateDataSource.append(any()) } returns Result.success(true)
 
         //When
         val result = stateRepository.addState(state.name)
 
         //Then
-        assertThat(result.getOrThrow()).isEqualTo(true)
+        assertThat(result.getOrNull()).isEqualTo(true)
     }
 
     @Test
     fun `addState() should return failure result with throwable when error happens while writing into the csv file`() {
         //Given
         val state = State(id = "123", name = "In Review")
-        every { stateDataSource.overWrite(any()) } returns Result.failure(
+        every { stateDataSource.append(any()) } returns Result.failure(
             Throwable()
         )
         //When

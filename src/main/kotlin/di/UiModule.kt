@@ -18,7 +18,7 @@ import org.koin.dsl.module
 val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
-    factory { AuditSystemManagerUi(get()) }
+    factory { AuditSystemManagerUi(get(),get(),get(),get()) }
     factory { AuthenticationManagerUi(get()) }
     factory { ProjectManagerUi(get()) }
     factory { TaskManagerUiMateImp(get()) }
