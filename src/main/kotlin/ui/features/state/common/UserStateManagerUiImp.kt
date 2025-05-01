@@ -1,7 +1,7 @@
 package org.example.ui.features.state.common
 
 import logic.model.entities.State
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.state.ManageStatesUseCase
 
 open class UserStateManagerUiImp(

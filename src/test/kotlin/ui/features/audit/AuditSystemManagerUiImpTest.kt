@@ -3,8 +3,8 @@ package ui.features.audit
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.example.input_output.input.InputReader
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.features.audit.AuditSystemManagerUiImp
 import org.example.utils.Constant

@@ -2,8 +2,8 @@ package org.example.ui.features.login
 
 import logic.model.entities.User
 import logic.usecase.login.LoginUseCase
-import org.example.input_output.input.InputReader
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.utils.Constant
 
 

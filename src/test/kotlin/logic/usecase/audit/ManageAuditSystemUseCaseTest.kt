@@ -6,10 +6,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.AuditSystem
-import logic.model.entities.AuditSystemType
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
-import org.example.utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
