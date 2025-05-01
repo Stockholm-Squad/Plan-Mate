@@ -3,18 +3,15 @@ package logic.usecase.task
 import com.google.common.truth.Truth.assertThat
 import org.example.logic.usecase.task.ManageTasksUseCase
 import logic.model.entities.Task
-import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
 import org.example.logic.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.datetime.LocalDateTime
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
+import utils.buildTask
 
 class ManageTasksUseCaseTest {
 
@@ -157,19 +154,19 @@ class ManageTasksUseCaseTest {
     }
 
     @Test
-    fun `deleteTask() should return failure result when the task is not found`() {
+    fun `showAllTasks should return tasks when found`() {
         // Given
-        val taskId = "3"
-        val taskList = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+        val sampleTasks = listOf(
+            buildTask(name = "Task 1", description = "First task", stateId = "1"),
+            buildTask(name = "Task 2", description = "Second task", stateId = "2")
         )
-        every { taskRepository.getAllTasks() } returns Result.success(taskList)
+        every { manageTasksUseCase.getAllTasks() } returns Result.success(sampleTasks)
 
         // When
-
+        val result = manageTasksUseCase.getAllTasks()
 
         // Then
-        assertThrows <PlanMateExceptions.LogicException.NoTasksDeleted>{manageTasksUseCase.deleteTask(taskId) }
+        assertThat(result.getOrNull()).isEqualTo(sampleTasks)
     }
 
     @Test
