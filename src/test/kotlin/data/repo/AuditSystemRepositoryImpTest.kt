@@ -8,7 +8,7 @@ import logic.model.entities.AuditSystem
 import logic.model.entities.AuditSystemType
 import org.example.data.datasources.PlanMateDataSource
 import org.example.data.repo.AuditSystemRepositoryImp
-import org.example.utils.createAuditSystem
+import utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

@@ -1,4 +1,4 @@
-package org.example.input_output.input
+package org.example.ui.input_output.input
 
 import kotlinx.datetime.LocalDateTime
 

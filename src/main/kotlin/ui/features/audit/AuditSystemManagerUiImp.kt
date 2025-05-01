@@ -1,7 +1,7 @@
 package org.example.ui.features.audit
 
-import org.example.input_output.input.InputReader
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.utils.Constant
 import org.example.utils.SearchUtils

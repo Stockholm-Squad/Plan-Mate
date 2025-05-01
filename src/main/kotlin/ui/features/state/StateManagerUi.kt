@@ -1,7 +1,7 @@
 package org.example.ui.features.state
 
 import logic.model.entities.Role
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
 

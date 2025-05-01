@@ -2,8 +2,8 @@ package org.example.ui
 
 import logic.model.entities.Role
 import logic.model.entities.User
-import org.example.input_output.input.InputReader
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi

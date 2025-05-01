@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.State
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.usecase.state.ManageStatesUseCase

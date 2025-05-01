@@ -6,8 +6,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.Role
 import modle.buildUser
-import org.example.input_output.input.InputReader
-import org.example.input_output.output.OutputPrinter
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.PlanMateExceptions
 import logic.usecase.login.LoginUseCase
 import org.example.ui.features.login.LoginUi
