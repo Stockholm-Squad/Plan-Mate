@@ -9,7 +9,7 @@ import org.example.utils.hashToMd5
 fun main() {
     val dataSource = UserCsvDataSource("users.csv")
     val adminUser = listOf(
-        User("rodina", hashToMd5("admin123"), Role.ADMIN),
+        User(username = "rodina", hashedPassword = hashToMd5("admin123"), role = Role.ADMIN),
     )
     val result = dataSource.overWrite(adminUser)
     result.onSuccess { println("Appended tasks successfully") }
