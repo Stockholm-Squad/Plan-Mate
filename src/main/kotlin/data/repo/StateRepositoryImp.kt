@@ -14,7 +14,6 @@ class StateRepositoryImp(
         return stateDataSource.append(listOf(stateMapper.mapToStateModel(State(name = stateName))))
     }
 
-
     override fun editState(state: State): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
