@@ -50,9 +50,10 @@ class ProjectRepositoryImp(
 
 
     override fun getAllProjects(): Result<List<Project>> {
-        return projectDataSource.read()
-            .fold(onSuccess = { list -> Result.success(list.map { it1 -> projectMapper.mapToProjectEntity(it1) }) },
-                onFailure = { Result.failure(it) })
+        return projectDataSource.read().fold(
+            onSuccess = { list -> Result.success(list.map { it1 -> projectMapper.mapToProjectEntity(it1) }) },
+            onFailure = { Result.failure(it) }
+        )
     }
 
     override fun getTasksInProject(projectId: String): Result<List<String>> {
