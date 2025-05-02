@@ -2,7 +2,7 @@ package data.datasources
 
 import org.junit.jupiter.api.Assertions.*
 
-import org.example.data.datasources.TaskInProjectCsvDataSource
+import org.example.data.datasources.relations.task_In_project_data_source.TaskInProjectCsvDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Test

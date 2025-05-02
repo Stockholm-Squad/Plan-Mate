@@ -1,21 +1,20 @@
-package org.example.data.datasources.user_data_source
+package org.example.data.datasources.models.state_data_source
 
-import logic.model.entities.User
+import org.example.data.models.State
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.io.readCSV
-import org.jetbrains.kotlinx.dataframe.io.writeCSV
-import java.io.File
-
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 import org.jetbrains.kotlinx.dataframe.api.toList
+import org.jetbrains.kotlinx.dataframe.io.readCSV
+import org.jetbrains.kotlinx.dataframe.io.writeCSV
+import java.io.File
 
-class UserCsvDataSource(private val filePath: String) : UserDataSource {
+class StateCsvDataSource(private val filePath: String) : IStateDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<User>> {
+    override fun read(): Result<List<State>> {
         val file = resolveFile()
         if (!file.exists()) {
             return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
@@ -23,7 +22,7 @@ class UserCsvDataSource(private val filePath: String) : UserDataSource {
 
         return try {
             val users = DataFrame.readCSV(file)
-                .cast<User>()
+                .cast<State>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -31,7 +30,7 @@ class UserCsvDataSource(private val filePath: String) : UserDataSource {
         }
     }
 
-    override fun overWrite(users: List<User>): Result<Boolean> {
+    override fun overWrite(users: List<State>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -40,13 +39,12 @@ class UserCsvDataSource(private val filePath: String) : UserDataSource {
         }
     }
 
-    override fun append(users: List<User>): Result<Boolean> {
+    override fun append(users: List<State>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                }
-                else emptyList<User>().toDataFrame()
+                } else emptyList<State>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)
