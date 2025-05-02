@@ -92,4 +92,24 @@ class ProjectRepositoryImp(
             }
         }, onFailure = { Result.failure(it) })
     }
+
+    override fun getProjectsAssignedToUser(userName: String): Result<List<Project>> {
+        return userAssignedToProjectDataSource.read().fold(
+            onSuccess = { userAssignments ->
+                projectDataSource.read().fold(
+                    onSuccess = { projects ->
+                        userAssignments.filter { it.userName == userName }
+                            .map { it.projectId }
+                            .let { projectIds ->
+                                projects.filter { project -> projectIds.contains(project.id) }
+                                    .map { projectModel -> projectMapper.mapToProjectEntity(projectModel) }
+                                    .let { Result.success(it) }
+                            }
+                    },
+                    onFailure = { Result.failure(it) }
+                )
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
 }
