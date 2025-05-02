@@ -1,9 +1,8 @@
 package org.example.data.repo
 
-import logic.model.entities.AuditSystem
-import logic.model.entities.AuditSystemType
-
+import data.mapper.toDomainAuditSystemEntity
 import org.example.data.datasources.PlanMateDataSource
+import org.example.data.models.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(
@@ -16,9 +15,9 @@ class AuditSystemRepositoryImp(
         )
 
 
-    override fun getAllAuditEntries(): Result<List<AuditSystem>> =
+    override fun getAllAuditEntries(): Result<List<logic.model.entities.AuditSystem>> =
         auditSystemDataSource.read().fold(
-            onSuccess = { Result.success(it) },
+            onSuccess = { Result.success(it.map { it.toDomainAuditSystemEntity() }) },
             onFailure = { Result.failure(it) }
         )
 

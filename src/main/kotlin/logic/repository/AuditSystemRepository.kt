@@ -1,10 +1,8 @@
 package org.example.logic.repository
-
-import logic.model.entities.AuditSystem
-import logic.model.entities.AuditSystemType
+import org.example.data.models.AuditSystem
 
 interface AuditSystemRepository {
     fun recordAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean>
-    fun getAllAuditEntries(): Result<List<AuditSystem>>
+    fun getAllAuditEntries(): Result<List<logic.model.entities.AuditSystem>>
     fun initializeDataInFile(auditSystem: List<AuditSystem>) : Result<Boolean>
 }
