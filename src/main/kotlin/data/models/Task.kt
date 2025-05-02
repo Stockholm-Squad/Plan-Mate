@@ -9,5 +9,5 @@ data class Task(
     val description: String,
     val stateId: String,
     val createdDate: String,
-    val updatedDate: LocalDateTime
+    val updatedDate: String
 )
