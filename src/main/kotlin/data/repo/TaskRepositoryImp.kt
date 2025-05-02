@@ -133,7 +133,7 @@ class TaskRepositoryImp(
                     it.userName == mateName && it.taskId == taskId
                 }
                 when (newAssignments.size == assignments.size) {
-                    true -> Result.success(false) // No assignment was found to delete
+                    true -> Result.success(false)
                     false -> mateTaskAssignment.overWrite(newAssignments)
                 }
             },
@@ -144,12 +144,7 @@ class TaskRepositoryImp(
     private fun readTasks(): Result<List<Task>> {
         return taskDataSource.read().fold(
             onSuccess = { list -> Result.success(list.map { it1 -> taskMapper.mapToTaskEntity(it1) }) },
-            onFailure = { throwable ->
-                when (throwable) {
-                    is PlanMateExceptions.DataException.FileNotExistException -> Result.success(emptyList())
-                    else -> Result.failure(PlanMateExceptions.DataException.ReadException())
-                }
-            }
+            onFailure = { throwable -> Result.failure(throwable) }
         )
     }
 

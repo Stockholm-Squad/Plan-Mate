@@ -1,6 +1,5 @@
 package org.example.data.datasources.user_data_source
 
-import logic.model.entities.User
 import org.example.data.models.UserModel
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame

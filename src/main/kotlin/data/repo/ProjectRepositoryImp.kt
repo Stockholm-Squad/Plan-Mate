@@ -39,7 +39,8 @@ class ProjectRepositoryImp(
 
     override fun deleteProject(projectToDelete: Project): Result<Boolean> {
         return projectDataSource.read()
-            .fold(onFailure = { Result.failure(it) },
+            .fold(
+                onFailure = { Result.failure(it) },
                 onSuccess = { projects ->
                     projects.filterNot { project -> project.id == projectToDelete.id.toString() }
                         .let { projectList -> projectDataSource.overWrite(projectList) }
@@ -54,7 +55,8 @@ class ProjectRepositoryImp(
         )
     }
 
-
+    //TODO: move to User Repo
+    //TODO: separate into clean functions
     override fun getUsersAssignedToProject(projectId: String): Result<List<User>> {
         return userAssignedToProjectDataSource.read().fold(
             onSuccess = { userAssignedToProject ->
@@ -77,12 +79,14 @@ class ProjectRepositoryImp(
             }, onFailure = { Result.failure(it) })
     }
 
+    //TODO: move to User Repo
     override fun addUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {
         return userAssignedToProjectDataSource.append(
             listOf(UserAssignedToProject(projectId = projectId, userName = userName))
         )
     }
 
+    //TODO: move to User Repo
     override fun deleteUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {
         return userAssignedToProjectDataSource.read().fold(onSuccess = { usersAssignedToProject ->
             usersAssignedToProject.filterNot { userAssignedToProject ->
@@ -93,6 +97,7 @@ class ProjectRepositoryImp(
         }, onFailure = { Result.failure(it) })
     }
 
+    //TODO: separate into clean functions
     override fun getProjectsAssignedToUser(userName: String): Result<List<Project>> {
         return userAssignedToProjectDataSource.read().fold(
             onSuccess = { userAssignments ->

@@ -11,15 +11,12 @@ class UserRepositoryImp(
     private val userMapper: UserMapper,
 ) : UserRepository {
     override fun createUser(user: User): Result<Boolean> {
-
-        return userCsvDataSource.append(listOf(userMapper.mapToUserModel(user))).fold(
-            onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(exception = it) })
+        return userCsvDataSource.append(listOf(userMapper.mapToUserModel(user)))
     }
 
     override fun getAllUsers(): Result<List<User>> {
         return userCsvDataSource.read().fold(
             onSuccess = { userModels -> Result.success(userModels.map { userMapper.mapToUserEntity(it) }) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.UsersIsEmpty()) })
+            onFailure = { Result.failure(it) })
     }
 }
