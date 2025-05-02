@@ -1,9 +1,8 @@
 package org.example.data.mapper
 
-import logic.model.entities.AuditSystemType
 import logic.model.entities.Role
-import org.example.data.models.Task
 import org.example.data.models.User
+import org.example.data.extention.toSafeUUID
 
 class UserMapper {
     fun mapToUserEntity(user: User): logic.model.entities.User = logic.model.entities.User(

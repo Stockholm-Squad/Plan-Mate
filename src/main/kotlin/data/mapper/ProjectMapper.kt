@@ -1,6 +1,7 @@
 package org.example.data.mapper
 
 import logic.model.entities.Project
+import org.example.data.extention.toSafeUUID
 
 class ProjectMapper {
     fun mapToProjectEntity(project: org.example.data.models.Project): Project =

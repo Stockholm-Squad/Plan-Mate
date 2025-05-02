@@ -1,6 +1,8 @@
 package org.example.data.mapper
 
 import org.example.data.models.Task
+import org.example.data.extention.toLocalDateTime
+import org.example.data.extention.toSafeUUID
 
 class TaskMapper {
     fun mapToTaskEntity(task: Task): logic.model.entities.Task = logic.model.entities.Task(

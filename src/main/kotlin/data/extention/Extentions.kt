@@ -1,4 +1,4 @@
-package org.example.data.mapper
+package org.example.data.extention
 
 import kotlinx.datetime.LocalDateTime
 import java.util.*

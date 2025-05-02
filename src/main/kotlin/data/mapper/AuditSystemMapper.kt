@@ -1,8 +1,8 @@
 package data.mapper
 
 import logic.model.entities.AuditSystemType
-import org.example.data.mapper.toLocalDateTime
-import org.example.data.mapper.toSafeUUID
+import org.example.data.extention.toLocalDateTime
+import org.example.data.extention.toSafeUUID
 import org.example.data.models.AuditSystem
 
 fun AuditSystem.toDomainAuditSystemEntity(): logic.model.entities.AuditSystem {

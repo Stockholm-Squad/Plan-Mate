@@ -1,6 +1,7 @@
 package org.example.data.mapper
 
 import org.example.data.models.State
+import org.example.data.extention.toSafeUUID
 
 class StateMapper {
     fun mapToStateEntity(state: State): logic.model.entities.State =
