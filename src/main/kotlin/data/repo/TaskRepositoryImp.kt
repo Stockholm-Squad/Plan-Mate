@@ -3,12 +3,14 @@ package org.example.data.repo
 import logic.model.entities.Task
 import org.example.data.datasources.PlanMateDataSource
 import data.models.MateTaskAssignment
+import org.example.data.datasources.models.task_data_source.ITaskDataSource
+import org.example.data.datasources.relations.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
 
 class TaskRepositoryImp(
-    private val taskDataSource: PlanMateDataSource<Task>,
-    private val mateTaskAssignment: PlanMateDataSource<MateTaskAssignment>
+    private val taskDataSource: ITaskDataSource,
+    private val mateTaskAssignment: IMateTaskAssignmentDataSource
 ) : TaskRepository {
 
     override fun getAllTasks(): Result<List<Task>> = readTasks()
