@@ -13,7 +13,6 @@ import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
     private val projectDataSource: IProjectDataSource,
-    private val taskInProjectDataSource: ITaskInProjectDataSource,
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
     private val projectMapper: ProjectMapper
 ) : ProjectRepository {
@@ -21,8 +20,6 @@ class ProjectRepositoryImp(
 
     override fun addProject(project: Project): Result<Boolean> {
         return projectDataSource.append(listOf(projectMapper.mapToProjectModel(project)))
-            .fold(onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) },
-                onSuccess = { Result.success(true) })
     }
 
     override fun editProject(updatedProject: Project): Result<Boolean> {
@@ -37,17 +34,15 @@ class ProjectRepositoryImp(
             })
     }
 
-
     override fun deleteProject(projectToDelete: Project): Result<Boolean> {
         return projectDataSource.read()
-            .fold(onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) },
+            .fold(onFailure = { Result.failure(it) },
                 onSuccess = { projects ->
                     projects.filterNot { project -> project.id == projectToDelete.id.toString() }
                         .let { projectList -> projectDataSource.overWrite(projectList) }
 
                 })
     }
-
 
     override fun getAllProjects(): Result<List<Project>> {
         return projectDataSource.read().fold(
@@ -56,27 +51,6 @@ class ProjectRepositoryImp(
         )
     }
 
-    override fun getTasksInProject(projectId: String): Result<List<String>> {
-        return taskInProjectDataSource.read().fold(onSuccess = { taskInProject ->
-            taskInProject.filter {
-                projectId == it.projectId
-            }.map { it.taskId }.let {
-                Result.success(it)
-            }
-        }, onFailure = { throwable -> Result.failure(throwable) })
-    }
-
-    override fun addTaskInProject(projectId: String, taskId: String): Result<Boolean> {
-        return taskInProjectDataSource.append(listOf(TaskInProject(projectId = projectId, taskId = taskId)))
-    }
-
-    override fun deleteTaskFromProject(projectId: String, taskId: String): Result<Boolean> {
-        return taskInProjectDataSource.read().fold(onSuccess = { tasksInProject ->
-            tasksInProject.filterNot { taskInProject ->
-                (taskInProject.projectId == projectId) && (taskInProject.taskId == taskId)
-            }.let { newTasksInProject -> taskInProjectDataSource.overWrite(newTasksInProject) }
-        }, onFailure = { throwable -> Result.failure(throwable) })
-    }
 
     override fun getUsersAssignedToProject(projectId: String): Result<List<String>> {
         return userAssignedToProjectDataSource.read().fold(onSuccess = { userAssignedToProject ->
@@ -85,7 +59,7 @@ class ProjectRepositoryImp(
             }.map { it.userName }.let {
                 Result.success(it)
             }
-        }, onFailure = { throwable -> Result.failure(throwable) })
+        }, onFailure = { Result.failure(it) })
     }
 
     override fun addUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {
@@ -101,6 +75,6 @@ class ProjectRepositoryImp(
             }.let { newUsersAssignedToProject ->
                 userAssignedToProjectDataSource.overWrite(newUsersAssignedToProject)
             }
-        }, onFailure = { throwable -> Result.failure(throwable) })
+        }, onFailure = { Result.failure(it) })
     }
 }

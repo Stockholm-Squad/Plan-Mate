@@ -20,6 +20,4 @@ class UserRepositoryImp(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(PlanMateExceptions.LogicException.UsersIsEmpty()) })
     }
-
-
 }
