@@ -1,16 +1,19 @@
 package org.example.data.repo
 
-import logic.model.entities.Project
-import org.example.data.datasources.PlanMateDataSource
+
 import data.models.TaskInProject
 import data.models.UserAssignedToProject
+import logic.model.entities.Project
+import org.example.data.datasources.models.project_data_source.IProjectDataSource
+import org.example.data.datasources.relations.task_In_project_data_source.ITaskInProjectDataSource
+import org.example.data.datasources.relations.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
-    private val projectDataSource: PlanMateDataSource<Project>,
-    private val taskInProjectDataSource: PlanMateDataSource<TaskInProject>,
-    private val userAssignedToProjectDataSource: PlanMateDataSource<UserAssignedToProject>
+    private val projectDataSource: IProjectDataSource,
+    private val taskInProjectDataSource: ITaskInProjectDataSource,
+    private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource
 ) : ProjectRepository {
 
 
