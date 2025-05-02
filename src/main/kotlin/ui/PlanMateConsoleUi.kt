@@ -83,7 +83,9 @@ class PlanMateConsoleUi(
 
     private fun manageAuthenticationUI(): User? {
         if (user != null) return user
-        return loginUi.authenticateUser()
+        return loginUi.authenticateUser().also {
+            user = it
+        }
     }
 
     companion object {

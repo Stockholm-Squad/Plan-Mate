@@ -5,11 +5,13 @@ import org.example.data.datasources.*
 import data.models.MateTaskAssignment
 import data.models.TaskInProject
 import data.models.UserAssignedToProject
+import org.example.data.datasources.user_data_source.UserCsvDataSource
+import org.example.data.datasources.user_data_source.UserDataSource
 import org.koin.dsl.module
 
 val datasourceModule = module {
     factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource(filePath = "audits.csv") }
-    factory<PlanMateDataSource<User>> { UserCsvDataSource(filePath = "users.csv") }
+    factory<UserDataSource> { UserCsvDataSource(filePath = "users.csv") }
     factory<PlanMateDataSource<Project>> { ProjectCsvDataSource(filePath = "projects.csv") }
     factory<PlanMateDataSource<TaskInProject>> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
     factory<PlanMateDataSource<UserAssignedToProject>> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
