@@ -1,7 +1,7 @@
 package data.datasources
 
-import logic.model.entities.State
-import org.example.data.datasources.StateCsvDataSource
+import org.example.data.datasources.models.state_data_source.StateCsvDataSource
+import org.example.data.models.State
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.*
 import java.io.File
