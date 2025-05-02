@@ -5,15 +5,19 @@ import data.models.UserAssignedToProject
 import logic.model.entities.Project
 import logic.model.entities.User
 import org.example.data.datasources.models.project_data_source.IProjectDataSource
+import org.example.data.datasources.models.user_data_source.IUserDataSource
 import org.example.data.datasources.relations.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.ProjectMapper
+import org.example.data.mapper.UserMapper
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
     private val projectDataSource: IProjectDataSource,
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
-    private val projectMapper: ProjectMapper
+    private val userDataSource: IUserDataSource,
+    private val projectMapper: ProjectMapper,
+    private val userMapper: UserMapper
 ) : ProjectRepository {
 
 
@@ -52,13 +56,25 @@ class ProjectRepositoryImp(
 
 
     override fun getUsersAssignedToProject(projectId: String): Result<List<User>> {
-        return userAssignedToProjectDataSource.read().fold(onSuccess = { userAssignedToProject ->
-            userAssignedToProject.filter {
-                projectId == it.projectId
-            }.map { it.userName }.let {
-                Result.success(it)
-            }
-        }, onFailure = { Result.failure(it) })
+        return userAssignedToProjectDataSource.read().fold(
+            onSuccess = { userAssignedToProject ->
+                userDataSource.read().fold(
+                    onSuccess = { users ->
+                        userAssignedToProject.filter {
+                            projectId == it.projectId
+                        }.map { it.userName }
+                            .let { userNames ->
+                                users.filter { user -> userNames.contains(user.username) }.map { userModel ->
+                                    userMapper.mapToUserEntity(userModel)
+                                }.let {
+                                    Result.success(it)
+                                }
+                            }
+                    },
+                    onFailure = { Result.failure(it) }
+                )
+
+            }, onFailure = { Result.failure(it) })
     }
 
     override fun addUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {

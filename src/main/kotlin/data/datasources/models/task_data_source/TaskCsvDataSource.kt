@@ -1,6 +1,6 @@
 package org.example.data.datasources.models.task_data_source
 
-import org.example.data.models.Task
+import org.example.data.models.TaskModel
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -14,7 +14,7 @@ import java.io.File
 class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<Task>> {
+    override fun read(): Result<List<TaskModel>> {
         val file = resolveFile()
         if (!file.exists()) {
             return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
@@ -22,7 +22,7 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
 
         return try {
             val users = DataFrame.readCSV(file)
-                .cast<Task>()
+                .cast<TaskModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -30,7 +30,7 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
         }
     }
 
-    override fun overWrite(users: List<Task>): Result<Boolean> {
+    override fun overWrite(users: List<TaskModel>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -39,12 +39,12 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
         }
     }
 
-    override fun append(users: List<Task>): Result<Boolean> {
+    override fun append(users: List<TaskModel>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                } else emptyList<Task>().toDataFrame()
+                } else emptyList<TaskModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)

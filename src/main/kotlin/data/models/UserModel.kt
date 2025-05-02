@@ -1,8 +1,6 @@
 package org.example.data.models
 
-import java.util.*
-
-data class User(
+data class UserModel(
     val id: String,
     val username: String,
     val hashedPassword: String,

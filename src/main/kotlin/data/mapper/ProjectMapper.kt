@@ -2,12 +2,13 @@ package org.example.data.mapper
 
 import logic.model.entities.Project
 import org.example.data.extention.toSafeUUID
+import org.example.data.models.ProjectModel
 
 class ProjectMapper {
-    fun mapToProjectEntity(project: org.example.data.models.Project): Project =
-        Project(project.id.toSafeUUID(), project.name, project.stateId.toSafeUUID())
+    fun mapToProjectEntity(projectModel: ProjectModel): Project =
+        Project(projectModel.id.toSafeUUID(), projectModel.name, projectModel.stateId.toSafeUUID())
 
-    fun mapToProjectModel(project: Project): org.example.data.models.Project =
-        org.example.data.models.Project(project.id.toString(), project.name, project.stateId.toString())
+    fun mapToProjectModel(project: Project): ProjectModel =
+        ProjectModel(project.id.toString(), project.name, project.stateId.toString())
 
 }

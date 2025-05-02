@@ -1,20 +1,21 @@
 package org.example.data.mapper
 
-import org.example.data.models.Task
+import logic.model.entities.Task
+import org.example.data.models.TaskModel
 import org.example.data.extention.toLocalDateTime
 import org.example.data.extention.toSafeUUID
 
 class TaskMapper {
-    fun mapToTaskEntity(task: Task): logic.model.entities.Task = logic.model.entities.Task(
-        task.id.toSafeUUID(),
-        task.name,
-        task.description,
-        task.stateId.toSafeUUID(),
-        task.createdDate.toLocalDateTime(),
-        task.updatedDate.toLocalDateTime()
+    fun mapToTaskEntity(taskModel: TaskModel): Task = Task(
+        taskModel.id.toSafeUUID(),
+        taskModel.name,
+        taskModel.description,
+        taskModel.stateId.toSafeUUID(),
+        taskModel.createdDate.toLocalDateTime(),
+        taskModel.updatedDate.toLocalDateTime()
     )
 
-    fun mapToTaskModel(task: logic.model.entities.Task): Task = Task(
+    fun mapToTaskModel(task: Task): TaskModel = TaskModel(
         task.id.toString(),
         task.name,
         task.description,

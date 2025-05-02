@@ -1,6 +1,6 @@
 package org.example.data.models
 
-data class AuditSystem(
+data class AuditSystemModel(
     val id: String,
     val auditSystemType: String,
     val entityTypeId: String,

@@ -1,6 +1,7 @@
 package org.example.logic.repository
 
 import logic.model.entities.Project
+import logic.model.entities.User
 
 interface ProjectRepository {
 
@@ -9,7 +10,7 @@ interface ProjectRepository {
     fun deleteProject(projectToDelete: Project): Result<Boolean>
     fun getAllProjects(): Result<List<Project>>
 
-    fun getUsersAssignedToProject(projectId: String): Result<List<String>>
+    fun getUsersAssignedToProject(projectId: String): Result<List<User>>
     fun addUserAssignedToProject(projectId: String, userName: String): Result<Boolean>
     fun deleteUserAssignedToProject(projectId: String, userName: String): Result<Boolean>
 }

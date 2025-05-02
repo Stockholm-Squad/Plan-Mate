@@ -1,9 +1,6 @@
 package org.example.data.models
 
-import kotlinx.datetime.LocalDateTime
-import java.util.*
-
-data class Task(
+data class TaskModel(
     val id: String ,
     val name: String,
     val description: String,

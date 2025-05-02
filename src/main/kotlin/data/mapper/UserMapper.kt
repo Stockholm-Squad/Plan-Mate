@@ -1,18 +1,18 @@
 package org.example.data.mapper
 
 import logic.model.entities.Role
-import org.example.data.models.User
+import org.example.data.models.UserModel
 import org.example.data.extention.toSafeUUID
 
 class UserMapper {
-    fun mapToUserEntity(user: User): logic.model.entities.User = logic.model.entities.User(
-       user.id.toSafeUUID(),
-        user.username,
-        user.hashedPassword,
-        getRoleType(user.role)
+    fun mapToUserEntity(userModel: UserModel): logic.model.entities.User = logic.model.entities.User(
+       userModel.id.toSafeUUID(),
+        userModel.username,
+        userModel.hashedPassword,
+        getRoleType(userModel.role)
     )
 
-    fun mapToUserModel(user: logic.model.entities.User): User = User(
+    fun mapToUserModel(user: logic.model.entities.User): UserModel = UserModel(
         user.id.toString(),
         user.username,
         user.hashedPassword,
