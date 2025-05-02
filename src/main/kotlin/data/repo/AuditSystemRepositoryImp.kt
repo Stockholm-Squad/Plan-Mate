@@ -1,8 +1,8 @@
 package org.example.data.repo
 
 import data.mapper.toDomainAuditSystemEntity
+import logic.model.entities.AuditSystem
 import org.example.data.datasources.models.audit_system_data_source.IAuditSystemDataSource
-import org.example.data.models.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(
