@@ -3,8 +3,8 @@ package org.example.data.models
 data class AuditSystem(
     val id: String,
     val auditSystemType: String,
-    val entityId: String,
+    val entityTypeId: String,
     val description: String,
-    val changedBy: String,
+    val userId: String,
     val dateTime: String
 )
