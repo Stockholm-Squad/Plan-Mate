@@ -7,18 +7,20 @@ import logic.model.entities.Project
 import org.example.data.datasources.models.project_data_source.IProjectDataSource
 import org.example.data.datasources.relations.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.relations.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
+import org.example.data.mapper.ProjectMapper
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
     private val projectDataSource: IProjectDataSource,
     private val taskInProjectDataSource: ITaskInProjectDataSource,
-    private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource
+    private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
+    private val projectMapper: ProjectMapper
 ) : ProjectRepository {
 
 
     override fun addProject(project: Project): Result<Boolean> {
-        return projectDataSource.append(listOf(project)).fold(
+        return projectDataSource.append(listOf(projectMapper.mapToProjectModel(project))).fold(
             onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) },
             onSuccess = { Result.success(true) }
         )
@@ -29,7 +31,7 @@ class ProjectRepositoryImp(
             onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) },
             onSuccess = {
                 it.map {
-                    if (it.id == project.id) {
+                    if (it.id == project.id.toString()) {
                         project
                     } else
                         it
@@ -44,7 +46,7 @@ class ProjectRepositoryImp(
         return projectDataSource.read().fold(
             onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) },
             onSuccess = {
-                it.filterNot { it.id == project.id }.let { projectList -> projectDataSource.overWrite(projectList) }
+                it.filterNot { it.id == project.id.toString() }.let { projectList -> projectDataSource.overWrite(projectList) }
 
             }
         )
@@ -52,7 +54,9 @@ class ProjectRepositoryImp(
 
 
     override fun getAllProjects(): Result<List<Project>> {
-        return projectDataSource.read()
+        return projectDataSource.read().fold(
+            onSuccess ={ list -> Result.success(list.map { it1-> projectMapper.mapToProjectEntity(it1)}) }
+            , onFailure = { Result.failure(it) } )
     }
 
     override fun getTasksInProject(projectId: String): Result<List<String>> {
