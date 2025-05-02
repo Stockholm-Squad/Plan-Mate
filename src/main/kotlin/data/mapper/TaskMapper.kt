@@ -1,6 +1,5 @@
 package org.example.data.mapper
 
-import org.example.data.models.State
 import org.example.data.models.Task
 
 class TaskMapper {
@@ -13,6 +12,13 @@ class TaskMapper {
         task.updatedDate.toLocalDateTime()
     )
 
-    fun mapToTaskModel(task: logic.model.entities.Task): Task = Task(task.id.toString(),task.name.toString(),task.description.toString(),task.stateId.toString(),task.createdDate.toString(),task.updatedDate.toString(),)
+    fun mapToTaskModel(task: logic.model.entities.Task): Task = Task(
+        task.id.toString(),
+        task.name,
+        task.description,
+        task.stateId.toString(),
+        task.createdDate.toString(),
+        task.updatedDate.toString(),
+    )
 
 }
