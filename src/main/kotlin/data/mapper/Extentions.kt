@@ -13,12 +13,6 @@ fun String.toSafeUUID(): UUID = try {
     throw Exception("Invalid UUID format: $this")
 }
 
-fun String.toUser(): User = try {
-    Json.decodeFromString<User>(this)
-} catch (ex: SerializationException) {
-    throw Exception("Failed to parse user data: ${ex.message}")
-}
-
 fun String.toLocalDateTime(): LocalDateTime = try {
     LocalDateTime.parse(this)
 } catch (ex: IllegalArgumentException) {

@@ -8,7 +8,7 @@ class TaskMapper {
         task.id.toSafeUUID(),
         task.name,
         task.description,
-        task.stateId,
+        task.stateId.toSafeUUID(),
         task.createdDate.toLocalDateTime(),
         task.updatedDate.toLocalDateTime()
     )
