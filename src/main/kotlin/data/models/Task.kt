@@ -5,9 +5,9 @@ import java.util.*
 
 data class Task(
     val id: String ,
-    val name: String?,
-    val description: String?,
-    val stateId: String?,
-    val createdDate: LocalDateTime,
+    val name: String,
+    val description: String,
+    val stateId: String,
+    val createdDate: String,
     val updatedDate: LocalDateTime
 )
