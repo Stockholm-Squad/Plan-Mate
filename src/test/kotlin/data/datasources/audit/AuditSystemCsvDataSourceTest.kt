@@ -1,5 +1,5 @@
 import com.google.common.truth.Truth.assertThat
-import org.example.data.datasources.AuditSystemCsvDataSource
+import org.example.data.datasources.models.audit_system_data_source.AuditSystemCsvDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

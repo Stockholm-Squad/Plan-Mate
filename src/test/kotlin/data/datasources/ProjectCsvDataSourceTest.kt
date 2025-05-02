@@ -1,7 +1,7 @@
 package data.datasources
 
 import logic.model.entities.Project
-import org.example.data.datasources.ProjectCsvDataSource
+import data.datasources.models.project_data_source.ProjectCsvDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Test
