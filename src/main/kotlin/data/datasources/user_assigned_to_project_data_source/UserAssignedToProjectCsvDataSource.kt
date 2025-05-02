@@ -22,6 +22,9 @@ class UserAssignedToProjectCsvDataSource(private val filePath: String) : IUserAs
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<UserAssignedToProject>()
                 .toList()

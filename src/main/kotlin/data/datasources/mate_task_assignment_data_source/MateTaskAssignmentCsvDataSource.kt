@@ -24,6 +24,9 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<MateTaskAssignment>()
                 .toList()

@@ -21,6 +21,9 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<AuditSystemModel>()
                 .toList()

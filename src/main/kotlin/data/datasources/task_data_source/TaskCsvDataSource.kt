@@ -21,6 +21,9 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<TaskModel>()
                 .toList()

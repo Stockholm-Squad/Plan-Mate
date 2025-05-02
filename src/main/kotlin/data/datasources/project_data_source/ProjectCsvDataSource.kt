@@ -22,6 +22,9 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<ProjectModel>()
                 .toList()
