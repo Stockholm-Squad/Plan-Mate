@@ -1,7 +1,7 @@
 package org.example.data.repo
 
-import logic.model.entities.Task
 import data.models.MateTaskAssignment
+import logic.model.entities.Task
 import data.models.TaskInProject
 import org.example.data.datasources.models.task_data_source.ITaskDataSource
 import org.example.data.datasources.relations.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
@@ -49,10 +49,7 @@ class TaskRepositoryImp(
                     projectId == it.projectId
                 }.map { it.taskId }.let { tasksIds ->
                     tasksIds.mapNotNull {
-                        manageTasksUseCase.getTaskById(it).fold(
-                            onSuccess = { task -> task },
-                            onFailure = { null }
-                        )
+                        manageTasksUseCase.getTaskById(it).getOrNull()
                     }.let {
                         Result.success(it)
                     }
@@ -79,8 +76,70 @@ class TaskRepositoryImp(
     }
 
 
-    override fun getAllMateTaskAssignment(mateName: String): Result<List<MateTaskAssignment>> =
-        mateTaskAssignment.read()
+    override fun getAllMateTaskAssignment(mateName: String): Result<List<Task>> =
+        mateTaskAssignment.read().fold(
+            onSuccess = { taskToMate ->
+                taskToMate.filter {
+                    mateName == it.userName
+                }.map { it.taskId }.let { tasksIds ->
+                    tasksIds.mapNotNull {
+                        manageTasksUseCase.getTaskById(it).getOrNull()
+                    }.let {
+                        Result.success(it)
+                    }
+                }
+            }, onFailure = { Result.failure(it) }
+        )
+
+    override fun getAllTaskByMateId(mateId: String): Result<List<Task>> {
+        return mateTaskAssignment.read().fold(
+            onSuccess = { assignments ->
+                assignments.filter { it.userName == mateId }
+                    .map { it.taskId }
+                    .let { taskIds ->
+                        taskIds.mapNotNull { taskId ->
+                            manageTasksUseCase.getTaskById(taskId).getOrNull()
+                        }.let { tasks ->
+                            Result.success(tasks)
+                        }
+                    }
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    override fun getAllMateByTaskId(taskId: String): Result<List<String>> {
+        return mateTaskAssignment.read().fold(
+            onSuccess = { assignments ->
+                Result.success(
+                    assignments.filter { it.taskId == taskId }
+                        .map { it.userName }
+                )
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    override fun addMateTaskAssignment(mateName: String, taskId: String): Result<Boolean> {
+        return mateTaskAssignment.append(
+            listOf(MateTaskAssignment(userName = mateName, taskId = taskId))
+        )
+    }
+
+    override fun deleteMateTaskAssignment(mateName: String, taskId: String): Result<Boolean> {
+        return mateTaskAssignment.read().fold(
+            onSuccess = { assignments ->
+                val newAssignments = assignments.filterNot {
+                    it.userName == mateName && it.taskId == taskId
+                }
+                when (newAssignments.size == assignments.size) {
+                    true -> Result.success(false) // No assignment was found to delete
+                    false -> mateTaskAssignment.overWrite(newAssignments)
+                }
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
 
     private fun readTasks(): Result<List<Task>> {
         return taskDataSource.read().fold(

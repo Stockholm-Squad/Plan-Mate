@@ -1,7 +1,6 @@
 package org.example.logic.repository
 
 import logic.model.entities.Task
-import data.models.MateTaskAssignment
 
 interface TaskRepository {
     fun getAllTasks(): Result<List<Task>>
@@ -15,5 +14,9 @@ interface TaskRepository {
     fun deleteTaskFromProject(projectId: String, taskId: String): Result<Boolean>
 
 
-    fun getAllMateTaskAssignment(mateName: String): Result<List<MateTaskAssignment>>
+    fun getAllMateTaskAssignment(mateName: String): Result<List<Task>>
+    fun getAllTaskByMateId(mateId: String): Result<List<Task>>
+    fun getAllMateByTaskId(taskId: String): Result<List<String>>
+    fun addMateTaskAssignment(mateName: String, taskId: String): Result<Boolean>
+    fun deleteMateTaskAssignment(mateName: String, taskId: String): Result<Boolean>
 }
