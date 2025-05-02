@@ -10,7 +10,7 @@ fun AuditSystem.toDomainAuditSystemEntity(): logic.model.entities.AuditSystem {
     return logic.model.entities.AuditSystem(
         id = id.toSafeUUID(),
         auditSystemType = getAuditSystemType( auditSystemType),
-        entityId = entityId.toSafeUUID(),
+        entityId = entityId,
         description = description,
         changedBy = changedBy.toUser(),
         dateTime = dateTime.toLocalDateTime()

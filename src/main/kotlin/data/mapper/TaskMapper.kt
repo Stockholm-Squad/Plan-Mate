@@ -13,6 +13,6 @@ class TaskMapper {
         task.updatedDate.toLocalDateTime()
     )
 
-    fun mapToTaskModel(state: logic.model.entities.State): State = State(state.id.toString(), state.name)
+    fun mapToTaskModel(task: logic.model.entities.Task): Task = Task(task.id.toString(),task.name.toString(),task.description.toString(),task.stateId.toString(),task.createdDate.toString(),task.updatedDate.toString(),)
 
 }
