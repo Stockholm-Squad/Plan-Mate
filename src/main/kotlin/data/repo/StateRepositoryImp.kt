@@ -12,12 +12,7 @@ class StateRepositoryImp(
 ) : StateRepository {
 
     override fun addState(stateName: String): Result<Boolean> {
-        return stateDataSource.append(listOf(stateMapper.mapToStateModel(State(name = stateName)))).fold(
-            onSuccess = { value ->
-                Result.success(value)
-            },
-            onFailure = { exception -> Result.failure(Throwable(exception)) }
-        )
+        return stateDataSource.append(listOf(stateMapper.mapToStateModel(State(name = stateName))))
     }
 
 
@@ -25,10 +20,7 @@ class StateRepositoryImp(
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
                 currentStates.map { item -> if (item.id == state.id.toString()) state else item }
-                stateDataSource.overWrite(currentStates).fold(
-                    onSuccess = { Result.success(true) },
-                    onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
-                )
+                stateDataSource.overWrite(currentStates)
             },
             onFailure = { exception -> Result.failure(exception) }
         )
@@ -38,10 +30,7 @@ class StateRepositoryImp(
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
                 currentStates.filterNot { it == stateMapper.mapToStateModel(state) }
-                stateDataSource.overWrite(currentStates).fold(
-                    onSuccess = { Result.success(true) },
-                    onFailure = { Result.failure(PlanMateExceptions.DataException.WriteException()) }
-                )
+                stateDataSource.overWrite(currentStates)
             },
             onFailure = { exception -> Result.failure(exception) }
         )

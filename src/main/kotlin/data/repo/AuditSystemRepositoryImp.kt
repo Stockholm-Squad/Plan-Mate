@@ -9,11 +9,7 @@ class AuditSystemRepositoryImp(
     private val auditSystemDataSource: IAuditSystemDataSource
 ) : AuditSystemRepository {
     override fun recordAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean> =
-        auditSystemDataSource.append(auditSystem).fold(
-            onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(it) }
-        )
-
+        auditSystemDataSource.append(auditSystem)
 
     override fun getAllAuditEntries(): Result<List<logic.model.entities.AuditSystem>> =
         auditSystemDataSource.read().fold(
@@ -22,11 +18,5 @@ class AuditSystemRepositoryImp(
         )
 
     override fun initializeDataInFile(auditSystem: List<AuditSystem>): Result<Boolean> =
-        auditSystemDataSource.overWrite(auditSystem).fold(
-            onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(it) }
-        )
-
-
-
+        auditSystemDataSource.overWrite(auditSystem)
 }
