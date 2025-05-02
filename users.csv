@@ -1,2 +1,2 @@
-id,name,email
+username,hashedPassword,role
 rodina,0192023a7bbd73250516f069df18b500,ADMIN
