@@ -1,4 +1,4 @@
-package org.example.data.datasources.models.user_data_source
+package org.example.data.datasources.user_data_source
 
 import org.example.data.models.UserModel
 

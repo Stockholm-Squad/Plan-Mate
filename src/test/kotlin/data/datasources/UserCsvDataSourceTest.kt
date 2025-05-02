@@ -2,7 +2,7 @@ package data.datasources
 
 import com.google.common.truth.Truth.assertThat
 import org.example.data.models.UserModel
-import org.example.data.datasources.models.user_data_source.UserCsvDataSource
+import org.example.data.datasources.user_data_source.UserCsvDataSource
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.*
 import java.io.File

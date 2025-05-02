@@ -1,4 +1,4 @@
-package org.example.data.datasources.relations.user_assigned_to_project_data_source
+package org.example.data.datasources.user_assigned_to_project_data_source
 
 import data.models.UserAssignedToProject
 

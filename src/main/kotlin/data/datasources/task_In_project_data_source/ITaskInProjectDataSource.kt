@@ -1,4 +1,4 @@
-package org.example.data.datasources.relations.task_In_project_data_source
+package org.example.data.datasources.task_In_project_data_source
 
 import data.models.TaskInProject
 

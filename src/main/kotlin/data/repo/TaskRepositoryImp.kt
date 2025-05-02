@@ -3,9 +3,9 @@ package org.example.data.repo
 import data.models.MateTaskAssignment
 import logic.model.entities.Task
 import data.models.TaskInProject
-import org.example.data.datasources.models.task_data_source.ITaskDataSource
-import org.example.data.datasources.relations.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
-import org.example.data.datasources.relations.task_In_project_data_source.ITaskInProjectDataSource
+import org.example.data.datasources.task_data_source.ITaskDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.mapper.TaskMapper
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository

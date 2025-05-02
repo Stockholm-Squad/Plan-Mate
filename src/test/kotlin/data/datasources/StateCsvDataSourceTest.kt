@@ -1,6 +1,6 @@
 package data.datasources
 
-import org.example.data.datasources.models.state_data_source.StateCsvDataSource
+import org.example.data.datasources.state_data_source.StateCsvDataSource
 import org.example.data.models.State
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.*

@@ -1,4 +1,4 @@
-package org.example.data.datasources.models.state_data_source
+package org.example.data.datasources.state_data_source
 
 import org.example.data.models.State
 

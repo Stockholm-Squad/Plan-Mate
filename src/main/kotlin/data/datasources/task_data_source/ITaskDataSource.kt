@@ -1,4 +1,4 @@
-package org.example.data.datasources.models.task_data_source
+package org.example.data.datasources.task_data_source
 
 import org.example.data.models.TaskModel
 

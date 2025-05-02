@@ -1,7 +1,7 @@
 package org.example.data.repo
 
 import logic.model.entities.State
-import org.example.data.datasources.models.state_data_source.IStateDataSource
+import org.example.data.datasources.state_data_source.IStateDataSource
 import org.example.data.mapper.StateMapper
 import org.example.logic.repository.StateRepository
 

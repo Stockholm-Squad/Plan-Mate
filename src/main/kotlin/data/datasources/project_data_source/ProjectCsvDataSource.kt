@@ -1,22 +1,21 @@
-package org.example.data.datasources.models.user_data_source
+package org.example.data.datasources.project_data_source
 
-import logic.model.entities.User
-import org.example.data.models.UserModel
+import org.example.data.datasources.project_data_source.IProjectDataSource
+import org.example.data.models.ProjectModel
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.io.readCSV
-import org.jetbrains.kotlinx.dataframe.io.writeCSV
-import java.io.File
-
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 import org.jetbrains.kotlinx.dataframe.api.toList
+import org.jetbrains.kotlinx.dataframe.io.readCSV
+import org.jetbrains.kotlinx.dataframe.io.writeCSV
+import java.io.File
 
-class UserCsvDataSource(private val filePath: String) : IUserDataSource {
+class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<UserModel>> {
+    override fun read(): Result<List<ProjectModel>> {
         val file = resolveFile()
         if (!file.exists()) {
             return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
@@ -24,7 +23,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
 
         return try {
             val users = DataFrame.readCSV(file)
-                .cast<UserModel>()
+                .cast<ProjectModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -32,7 +31,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
         }
     }
 
-    override fun overWrite(users: List<UserModel>): Result<Boolean> {
+    override fun overWrite(users: List<ProjectModel>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -41,13 +40,12 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
         }
     }
 
-    override fun append(users: List<UserModel>): Result<Boolean> {
+    override fun append(users: List<ProjectModel>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                }
-                else emptyList<UserModel>().toDataFrame()
+                } else emptyList<ProjectModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)

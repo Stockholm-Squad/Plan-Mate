@@ -1,4 +1,4 @@
-package org.example.data.datasources.relations.mate_task_assignment_data_source
+package org.example.data.datasources.mate_task_assignment_data_source
 
 import data.models.MateTaskAssignment
 

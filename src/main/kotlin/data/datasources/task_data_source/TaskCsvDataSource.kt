@@ -1,7 +1,6 @@
-package data.datasources.models.project_data_source
+package org.example.data.datasources.task_data_source
 
-import org.example.data.datasources.models.project_data_source.IProjectDataSource
-import org.example.data.models.ProjectModel
+import org.example.data.models.TaskModel
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -12,10 +11,10 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
+class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<ProjectModel>> {
+    override fun read(): Result<List<TaskModel>> {
         val file = resolveFile()
         if (!file.exists()) {
             return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
@@ -23,7 +22,7 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
 
         return try {
             val users = DataFrame.readCSV(file)
-                .cast<ProjectModel>()
+                .cast<TaskModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -31,7 +30,7 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
         }
     }
 
-    override fun overWrite(users: List<ProjectModel>): Result<Boolean> {
+    override fun overWrite(users: List<TaskModel>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -40,12 +39,12 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
         }
     }
 
-    override fun append(users: List<ProjectModel>): Result<Boolean> {
+    override fun append(users: List<TaskModel>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                } else emptyList<ProjectModel>().toDataFrame()
+                } else emptyList<TaskModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)

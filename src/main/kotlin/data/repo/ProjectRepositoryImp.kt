@@ -4,9 +4,9 @@ package org.example.data.repo
 import data.models.UserAssignedToProject
 import logic.model.entities.Project
 import logic.model.entities.User
-import org.example.data.datasources.models.project_data_source.IProjectDataSource
-import org.example.data.datasources.models.user_data_source.IUserDataSource
-import org.example.data.datasources.relations.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
+import org.example.data.datasources.project_data_source.IProjectDataSource
+import org.example.data.datasources.user_data_source.IUserDataSource
+import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.ProjectMapper
 import org.example.data.mapper.UserMapper
 import org.example.logic.model.exceptions.PlanMateExceptions

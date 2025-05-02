@@ -1,4 +1,4 @@
-package org.example.data.datasources.models.audit_system_data_source
+package org.example.data.datasources.audit_system_data_source
 
 import org.example.data.models.AuditSystemModel
 

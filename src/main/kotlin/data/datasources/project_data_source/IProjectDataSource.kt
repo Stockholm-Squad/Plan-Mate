@@ -1,4 +1,4 @@
-package org.example.data.datasources.models.project_data_source
+package org.example.data.datasources.project_data_source
 
 import org.example.data.models.ProjectModel
 

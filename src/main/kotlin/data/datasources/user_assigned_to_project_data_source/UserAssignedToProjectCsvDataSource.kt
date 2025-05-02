@@ -1,6 +1,7 @@
-package org.example.data.datasources.models.audit_system_data_source
+package org.example.data.datasources.user_assigned_to_project_data_source
 
-import org.example.data.models.AuditSystemModel
+import data.models.UserAssignedToProject
+
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -11,10 +12,10 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataSource {
+class UserAssignedToProjectCsvDataSource(private val filePath: String) : IUserAssignedToProjectDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<AuditSystemModel>> {
+    override fun read(): Result<List<UserAssignedToProject>> {
         val file = resolveFile()
         if (!file.exists()) {
             return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
@@ -22,7 +23,7 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
 
         return try {
             val users = DataFrame.readCSV(file)
-                .cast<AuditSystemModel>()
+                .cast<UserAssignedToProject>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -30,7 +31,7 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
         }
     }
 
-    override fun overWrite(users: List<AuditSystemModel>): Result<Boolean> {
+    override fun overWrite(users: List<UserAssignedToProject>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -39,12 +40,12 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
         }
     }
 
-    override fun append(users: List<AuditSystemModel>): Result<Boolean> {
+    override fun append(users: List<UserAssignedToProject>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                } else emptyList<AuditSystemModel>().toDataFrame()
+                } else emptyList<UserAssignedToProject>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)
