@@ -1,7 +1,9 @@
 package org.example.data.datasources.user_data_source
 
 import org.example.data.models.UserModel
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.example.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.io.readCSV
@@ -20,7 +22,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     override fun read(): Result<List<UserModel>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+            return Result.failure(FileNotExistException())
         }
 
         return try {
@@ -36,7 +38,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
+            Result.failure(ReadDataException())
         }
     }
 
@@ -45,7 +47,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 
@@ -62,7 +64,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
             }
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 }

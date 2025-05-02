@@ -3,11 +3,11 @@ package ui.features.state
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.State
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.ExceptionMessage
-import org.example.logic.model.exceptions.PlanMateExceptions.LogicException
+import org.example.logic.model.exceptions.NotAllowedStateNameException
+import org.example.logic.model.exceptions.StateAlreadyExistException
+import org.example.logic.model.exceptions.StateNotExistException
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.admin.AdminStateManagerUiImpl
 import org.example.ui.features.state.common.UserStateManagerUi
@@ -69,14 +69,14 @@ class AdminStateManagerUiImplTest {
 
         every { reader.readStringOrNull() } returns stateName
         every { manageStatesUseCase.editState(any()) } returns Result.failure(
-            LogicException.NotAllowedStateNameException()
+           NotAllowedStateNameException()
         )
 
         //When
         adminStateManagerUi.editState()
 
         //Then
-        verify { printer.showMessage("Failed to Update state: " + ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Update state: " + NotAllowedStateNameException().message) }
     }
 
     @Test
@@ -88,7 +88,7 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi.editState()
 
         //Then
-        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+        verify { printer.showMessage("Invalid input") }
     }
 
     @Test
@@ -97,7 +97,7 @@ class AdminStateManagerUiImplTest {
 
         adminStateManagerUi.editState()
 
-        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+        verify { printer.showMessage("Invalid input") }
     }
 
     @Test
@@ -126,7 +126,7 @@ class AdminStateManagerUiImplTest {
         adminStateManagerUi.deleteState()
 
         verify {         printer.showMessage("Please enter the state you want to delete: ")
-            printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+            printer.showMessage("Invalid input") }
     }
 
 
@@ -151,14 +151,14 @@ class AdminStateManagerUiImplTest {
         val stateName = "In-Progress"
         every { reader.readStringOrNull() } returns stateName andThen "yes"
         every { manageStatesUseCase.deleteState(any()) } returns Result.failure(
-            LogicException.StateNotExistException()
+            StateNotExistException()
         )
 
         //When
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessage("Failed to Delete state: " + ExceptionMessage.STATE_NOT_EXIST_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Delete state: " + StateNotExistException().message) }
     }
     @Test
     fun `addState should succeed with valid input`() {
@@ -177,7 +177,7 @@ class AdminStateManagerUiImplTest {
 
         adminStateManagerUi.addState()
 
-        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+        verify { printer.showMessage("Invalid input") }
     }
     @Test
     fun `addState() should add success when enter valid state`() {
@@ -200,14 +200,12 @@ class AdminStateManagerUiImplTest {
         val stateName = "do"
         every { reader.readStringOrNull() } returns stateName
         every { manageStatesUseCase.addState(stateName) } returns Result.failure(
-            LogicException.StateAlreadyExistException(
-                ExceptionMessage.STATE_ALREADY_EXIST_MESSAGE
-            )
+          StateAlreadyExistException()
         )
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Failed to Add state: " + ExceptionMessage.STATE_ALREADY_EXIST_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Add state: The state is already exist!") }
 
     }
 
@@ -217,14 +215,12 @@ class AdminStateManagerUiImplTest {
         val stateName = "1in review!"
         every { reader.readStringOrNull() } returns stateName
         every { manageStatesUseCase.addState(stateName) } returns Result.failure(
-            LogicException.StateAlreadyExistException(
-                ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE
-            )
+            StateAlreadyExistException()
         )
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Failed to Add state: " + ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Add state: Only letters are allowed!") }
     }
 
     @Test
@@ -233,14 +229,12 @@ class AdminStateManagerUiImplTest {
         val stateName = "hi in this state this is too long state"
         every { reader.readStringOrNull() } returns stateName
         every { manageStatesUseCase.addState(stateName) } returns Result.failure(
-            LogicException.StateAlreadyExistException(
-                ExceptionMessage.STATE_NAME_LENGTH_MESSAGE
-            )
+            StateAlreadyExistException()
         )
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Failed to Add state: " + ExceptionMessage.STATE_NAME_LENGTH_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Add state: The state name is too long!") }
     }
 
     @Test
@@ -250,7 +244,7 @@ class AdminStateManagerUiImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage(ExceptionMessage.INVALID_INPUT.message) }
+        verify { printer.showMessage("Invalid input") }
     }
 
     @Test

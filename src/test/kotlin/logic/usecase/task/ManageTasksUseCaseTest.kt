@@ -6,7 +6,10 @@ import logic.model.entities.Task
 import org.example.logic.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.NoTasksCreated
+import org.example.logic.model.exceptions.NoTasksFound
+import org.example.logic.model.exceptions.TaskNotFoundException
+import org.example.logic.model.exceptions.NoTasksDeleted
 import org.example.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,15 +26,29 @@ class ManageTasksUseCaseTest {
     fun setUp() {
         taskRepository = mockk(relaxed = true)
         manageTasksUseCase = ManageTasksUseCase(taskRepository)
-        dataHandler= DateHandler()
+        dataHandler = DateHandler()
     }
 
     @Test
     fun `getAllTasks() should return success result with a list of tasks when the file has data`() {
         // Given
         val taskList = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime()),
-            Task(id = "2", name = "Task 2", description = "Description 2", stateId = "state2", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+            Task(
+                id = "1",
+                name = "Task 1",
+                description = "Description 1",
+                stateId = "state1",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            ),
+            Task(
+                id = "2",
+                name = "Task 2",
+                description = "Description 2",
+                stateId = "state2",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            )
         )
         every { taskRepository.getAllTasks() } returns Result.success(taskList)
 
@@ -45,13 +62,13 @@ class ManageTasksUseCaseTest {
     @Test
     fun `getAllTasks() should return failure result when no tasks are found`() {
         // Given
-        every { taskRepository.getAllTasks() } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        every { taskRepository.getAllTasks() } returns Result.failure(NoTasksFound())
 
         // When
         val result = manageTasksUseCase.getAllTasks()
 
         // Then
-        assertThrows<PlanMateExceptions.LogicException.NoTasksFound> { result.getOrThrow() }
+        assertThrows<NoTasksFound> { result.getOrThrow() }
     }
 
     @Test
@@ -59,8 +76,22 @@ class ManageTasksUseCaseTest {
         // Given
         val taskId = "1"
         val taskList = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime()),
-            Task(id = "2", name = "Task 2", description = "Description 2", stateId = "state2", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+            Task(
+                id = "1",
+                name = "Task 1",
+                description = "Description 1",
+                stateId = "state1",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            ),
+            Task(
+                id = "2",
+                name = "Task 2",
+                description = "Description 2",
+                stateId = "state2",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            )
         )
         every { taskRepository.getAllTasks() } returns Result.success(taskList)
 
@@ -75,17 +106,24 @@ class ManageTasksUseCaseTest {
     fun `getTaskById() should return failure result when the task is not found`() {
         // Given
         val taskId = "3"
-        every { taskRepository.getAllTasks() } returns Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException())
+        every { taskRepository.getAllTasks() } returns Result.failure(TaskNotFoundException())
         // When
-        val result=manageTasksUseCase.getTaskById(taskId)
+        val result = manageTasksUseCase.getTaskById(taskId)
         // Then
-        assertThrows <PlanMateExceptions.LogicException.TaskNotFoundException>{ result.getOrThrow() }
+        assertThrows<TaskNotFoundException> { result.getOrThrow() }
     }
 
     @Test
     fun `createTask() should return true result when the task created`() {
         // Given
-        val task = Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+        val task = Task(
+            id = "1",
+            name = "Task 1",
+            description = "Description 1",
+            stateId = "state1",
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
+        )
         every { taskRepository.createTask(task) } returns Result.success(true)
         // When
         val result = manageTasksUseCase.createTask(task)
@@ -97,13 +135,20 @@ class ManageTasksUseCaseTest {
     @Test
     fun `createTask() should return failure result when the task already exists`() {
         // Given
-        val task = Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
-        every { taskRepository.createTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
+        val task = Task(
+            id = "1",
+            name = "Task 1",
+            description = "Description 1",
+            stateId = "state1",
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
+        )
+        every { taskRepository.createTask(task) } returns Result.failure(NoTasksCreated())
         // When
         val result = manageTasksUseCase.createTask(task)
 
         // Then
-        assertThrows <PlanMateExceptions.LogicException.NoTasksCreated>{
+        assertThrows<NoTasksCreated> {
             result.getOrThrow()
         }
     }
@@ -111,18 +156,25 @@ class ManageTasksUseCaseTest {
     @Test
     fun `createTask() should return failure when repository returns false`() {
         val task = buildTask()
-        every { taskRepository.createTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
+        every { taskRepository.createTask(task) } returns Result.failure(NoTasksCreated())
 
         val result = manageTasksUseCase.createTask(task)
 
-        assertThrows<PlanMateExceptions.LogicException.NoTasksCreated> { result.getOrThrow() }
+        assertThrows<NoTasksCreated> { result.getOrThrow() }
     }
 
 
     @Test
     fun `editTask() should return success result when the task is successfully updated`() {
         // Given
-        val updatedTask = Task(id = "1", name = "Updated Task", description = "Updated Description", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+        val updatedTask = Task(
+            id = "1",
+            name = "Updated Task",
+            description = "Updated Description",
+            stateId = "state1",
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
+        )
         every { taskRepository.editTask(updatedTask) } returns Result.success(true)
 
         // When
@@ -135,14 +187,21 @@ class ManageTasksUseCaseTest {
     @Test
     fun `editTask() should return failure result when the task cannot be updated`() {
         // Given
-        val updatedTask = Task(id = "1", name = "Updated Task", description = "Updated Description", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
-        every { taskRepository.editTask(updatedTask) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        val updatedTask = Task(
+            id = "1",
+            name = "Updated Task",
+            description = "Updated Description",
+            stateId = "state1",
+            createdDate = dataHandler.getCurrentDateTime(),
+            updatedDate = dataHandler.getCurrentDateTime()
+        )
+        every { taskRepository.editTask(updatedTask) } returns Result.failure(NoTasksFound())
 
         // When
         val result = manageTasksUseCase.editTask(updatedTask)
 
         // Then
-        assertThrows<PlanMateExceptions.LogicException.NoTasksFound> {
+        assertThrows<NoTasksFound> {
             result.getOrThrow()
         }
     }
@@ -152,7 +211,14 @@ class ManageTasksUseCaseTest {
         // Given
         val taskId = "1"
         val taskList = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+            Task(
+                id = "1",
+                name = "Task 1",
+                description = "Description 1",
+                stateId = "state1",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            )
         )
         every { taskRepository.getAllTasks() } returns Result.success(taskList)
         every { taskRepository.deleteTask(taskId) } returns Result.success(true)
@@ -185,32 +251,48 @@ class ManageTasksUseCaseTest {
         // Given
         val taskId = "3"
         val taskList = listOf(
-            Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+            Task(
+                id = "1",
+                name = "Task 1",
+                description = "Description 1",
+                stateId = "state1",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            )
         )
-        every { taskRepository.getAllTasks() } returns Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException())
+        every { taskRepository.getAllTasks() } returns Result.failure(TaskNotFoundException())
 
         // When
         val result = manageTasksUseCase.deleteTask(taskId)
 
         // Then
-        assertThrows <PlanMateExceptions.LogicException.TaskNotFoundException>{ result.getOrThrow() }
+        assertThrows<TaskNotFoundException> { result.getOrThrow() }
     }
+
     @Test
     fun `deleteTask() should return failure result when task is not deleted even if repository call succeeds`() {
         // Given
         val taskId = "3"
         val taskList = listOf(
-            Task(id = "3", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
+            Task(
+                id = "3",
+                name = "Task 1",
+                description = "Description 1",
+                stateId = "state1",
+                createdDate = dataHandler.getCurrentDateTime(),
+                updatedDate = dataHandler.getCurrentDateTime()
+            )
         )
 
         every { taskRepository.getAllTasks() } returns Result.success(taskList)
-        every { taskRepository.deleteTask(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksDeleted())
+        every { taskRepository.deleteTask(taskId) } returns Result.failure(NoTasksDeleted())
+
 
         // When
         val result = manageTasksUseCase.deleteTask(taskId)
 
         // Then
-        assertThrows<PlanMateExceptions.LogicException.NoTasksDeleted>{result.getOrThrow()}
+        assertThrows<NoTasksDeleted> { result.getOrThrow() }
     }
 
 

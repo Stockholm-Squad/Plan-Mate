@@ -4,12 +4,11 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.Project
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.NoObjectFound
+import org.example.logic.model.exceptions.NoProjectAdded
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertThrows
 import utils.buildProject
 import kotlin.random.Random
 
@@ -46,7 +45,7 @@ class ManageProjectUseCaseTest {
         @Test
         fun `should return failure when repository fails`() {
             // Given
-            val expectedException = PlanMateExceptions.LogicException.NoObjectFound()
+            val expectedException = NoObjectFound()
             every { projectRepository.getAllProjects() } returns Result.failure(expectedException)
 
             // When
@@ -54,7 +53,7 @@ class ManageProjectUseCaseTest {
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
             verify { projectRepository.getAllProjects() }
         }
     }
@@ -96,7 +95,7 @@ class ManageProjectUseCaseTest {
             val result = manageProjectUseCase.getProjectById(projectId)
 
             // Then
-            assertThrows<PlanMateExceptions.LogicException.NoObjectFound> { result.getOrThrow() }
+            assertThrows<NoObjectFound> { result.getOrThrow() }
         }
 
         @Test
@@ -104,14 +103,14 @@ class ManageProjectUseCaseTest {
             // Given
             val projectId = "123"
 
-            every { projectRepository.getAllProjects() } returns Result.failure(PlanMateExceptions.LogicException.NoProjectAdded())
+            every { projectRepository.getAllProjects() } returns Result.failure(NoProjectAdded())
 
             // When
             val result = manageProjectUseCase.getProjectById(projectId)
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
             verify { projectRepository.getAllProjects() }
         }
     }
@@ -145,7 +144,7 @@ class ManageProjectUseCaseTest {
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoProjectAdded::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectAdded::class.java)
             verify { projectRepository.addProject(project) }
         }
     }
@@ -173,14 +172,14 @@ class ManageProjectUseCaseTest {
             // Given
             val projectId = "non-existent"
             val existingProject = buildProject(id = projectId, name = "Existing Project")
-            every { projectRepository.editProject(existingProject) } returns Result.failure(PlanMateExceptions.LogicException.NoObjectFound())
+            every { projectRepository.editProject(existingProject) } returns Result.failure(NoObjectFound())
 
             // When
             val result = manageProjectUseCase.updateProject(existingProject)
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
 
 
         }
@@ -219,7 +218,7 @@ class ManageProjectUseCaseTest {
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
             verify { projectRepository.getAllProjects() }
             verify(exactly = 0) { projectRepository.deleteProject(any()) }
         }
@@ -236,7 +235,7 @@ class ManageProjectUseCaseTest {
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.LogicException.NoObjectFound::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
             verify { projectRepository.getAllProjects() }
             verify(exactly = 0) { projectRepository.deleteProject(any()) }
         }

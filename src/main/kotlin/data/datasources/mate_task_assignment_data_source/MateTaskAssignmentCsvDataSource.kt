@@ -1,8 +1,9 @@
 package org.example.data.datasources.mate_task_assignment_data_source
 
 import data.models.MateTaskAssignment
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
@@ -20,7 +21,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
     override fun read(): Result<List<MateTaskAssignment>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+            return Result.failure(FileNotExistException())
         }
 
         return try {
@@ -32,7 +33,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
+            Result.failure(ReadDataException())
         }
     }
 
@@ -41,7 +42,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 
@@ -57,7 +58,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
             }
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 }

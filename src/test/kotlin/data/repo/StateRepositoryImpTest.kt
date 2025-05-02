@@ -7,7 +7,7 @@ import io.mockk.mockk
 import logic.model.entities.State
 import org.example.data.datasources.PlanMateDataSource
 import org.example.data.repo.StateRepositoryImp
-import org.example.logic.model.exceptions.PlanMateExceptions.DataException
+import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.repository.StateRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,7 +63,7 @@ class StateRepositoryImpTest {
         every { stateDataSource.overWrite(any()) } returns Result.success(
             value = true
         )
-        every { stateDataSource.read() } returns Result.failure(DataException.FileNotExistException())
+        every { stateDataSource.read() } returns Result.failure(FileNotExistException())
 
         //When
         val result = stateRepository.editState(state)

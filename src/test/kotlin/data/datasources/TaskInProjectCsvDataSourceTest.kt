@@ -3,7 +3,9 @@ package data.datasources
 import org.junit.jupiter.api.Assertions.*
 
 import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
+import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -33,7 +35,7 @@ class TaskInProjectCsvDataSourceTest {
 
         val result = dataSource.read()
 
-        assertThrows<PlanMateExceptions.DataException.FileNotExistException> { result.getOrThrow() }
+        assertThrows<FileNotExistException> { result.getOrThrow() }
     }
 
     @Test
@@ -76,6 +78,6 @@ class TaskInProjectCsvDataSourceTest {
         tempFile.writeText("invalid\nbad,data\n123")
         val result = dataSource.read()
         assertTrue(result.isFailure)
-        assertFailsWith<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertFailsWith<ReadDataException> { result.getOrThrow() }
     }
 }

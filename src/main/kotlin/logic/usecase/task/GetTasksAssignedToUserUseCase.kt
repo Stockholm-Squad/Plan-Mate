@@ -1,7 +1,7 @@
 package org.example.logic.usecase.task
 
 import data.models.MateTaskAssignment
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.repository.TaskRepository
 
 class GetTasksAssignedToUserUseCase(
@@ -11,6 +11,6 @@ class GetTasksAssignedToUserUseCase(
     fun getAllMateTaskAssignment(userName: String): Result<List<MateTaskAssignment>> =
         taskRepository.getAllMateTaskAssignment(userName).fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTaskAssignmentFound()) }
+            onFailure = { Result.failure(NoTaskAssignmentFound()) }
         )
 }

@@ -1,7 +1,7 @@
 package org.example.logic.usecase.state
 
 import logic.model.entities.State
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.*
 import org.example.logic.repository.StateRepository
 
 class ManageStatesUseCase(
@@ -17,9 +17,9 @@ class ManageStatesUseCase(
                             onFailure = { exception -> Result.failure(exception) }
                         )
 
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateAlreadyExistException())
+                    } ?: Result.failure(StateAlreadyExistException())
             },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) }
+            onFailure = { Result.failure(NotAllowedStateNameException()) }
         )
     }
 
@@ -34,7 +34,7 @@ class ManageStatesUseCase(
                             onSuccess = { Result.success(it) },
                             onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
                         )
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+                    } ?: Result.failure(StateNotExistException())
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
@@ -47,7 +47,7 @@ class ManageStatesUseCase(
                     isValidLength(it) &&
                     isLetterAndWhiteSpace(it)
         }?.let { Result.success(it) }
-            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException())
+            ?: Result.failure(NotAllowedStateNameException())
     }
 
     fun deleteState(stateName: String): Result<Boolean> {
@@ -60,7 +60,7 @@ class ManageStatesUseCase(
                             onSuccess = { Result.success(it) },
                             onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
                         )
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+                    } ?: Result.failure(StateNotExistException())
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
@@ -71,7 +71,7 @@ class ManageStatesUseCase(
             onSuccess = { data ->
                 data.takeIf { data.isNotEmpty() }?.let {
                     Result.success(data)
-                } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+                } ?: Result.failure(EmptyDataException())
             },
             onFailure = { exception -> Result.failure(exception) }
         )
@@ -87,8 +87,8 @@ class ManageStatesUseCase(
     }
 
     private fun handleStateNotExistException(throwable: Throwable): Result<Boolean> {
-        return throwable.takeIf { it is PlanMateExceptions.DataException.FileNotExistException }
-            ?.let { Result.failure(PlanMateExceptions.LogicException.StateNotExistException()) }
+        return throwable.takeIf { it is FileNotExistException }
+            ?.let { Result.failure(StateNotExistException()) }
             ?: Result.failure(throwable)
     }
 
