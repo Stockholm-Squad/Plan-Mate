@@ -1,11 +1,10 @@
 package org.example.data.repo
 
 
-import data.models.TaskInProject
 import data.models.UserAssignedToProject
 import logic.model.entities.Project
+import logic.model.entities.User
 import org.example.data.datasources.models.project_data_source.IProjectDataSource
-import org.example.data.datasources.relations.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.relations.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.ProjectMapper
 import org.example.logic.model.exceptions.PlanMateExceptions
@@ -52,7 +51,7 @@ class ProjectRepositoryImp(
     }
 
 
-    override fun getUsersAssignedToProject(projectId: String): Result<List<String>> {
+    override fun getUsersAssignedToProject(projectId: String): Result<List<User>> {
         return userAssignedToProjectDataSource.read().fold(onSuccess = { userAssignedToProject ->
             userAssignedToProject.filter {
                 projectId == it.projectId

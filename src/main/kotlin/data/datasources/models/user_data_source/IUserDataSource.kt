@@ -1,6 +1,7 @@
 package org.example.data.datasources.models.user_data_source
 
-import logic.model.entities.User
+import org.example.data.models.User
+
 
 interface IUserDataSource {
     fun read(): Result<List<User>>
