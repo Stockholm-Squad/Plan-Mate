@@ -12,14 +12,14 @@ fun createAuditSystem(
     entityType: EntityType,
     entityId: String,
     changeDescription: String,
-    changedBy: String
+    userId: String
     ): AuditSystem {
         return AuditSystem(
             id = id,
             entityType = entityType.toString(),
-            entityId = entityId,
-            changeDescription = changeDescription,
+            entityTypeId = entityId,
+            description = changeDescription,
             dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
-            changedBy = changedBy
+            userId = userId
         )
     }

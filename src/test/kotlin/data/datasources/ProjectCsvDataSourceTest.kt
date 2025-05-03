@@ -3,13 +3,12 @@ package data.datasources
 import org.example.data.datasources.project_data_source.ProjectCsvDataSource
 import org.example.data.models.ProjectModel
 import org.example.logic.model.exceptions.FileNotExistException
-import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.model.exceptions.ReadDataException
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class ProjectCsvDataSourceTest {
@@ -40,7 +39,7 @@ class ProjectCsvDataSourceTest {
             val result = dataSource.read()
 
             assertTrue(result.isFailure)
-            assertThrows<FileNotExistException> { result.getOrThrow()}
+            assertThrows<FileNotExistException> { result.getOrThrow() }
         }
 
         @Test

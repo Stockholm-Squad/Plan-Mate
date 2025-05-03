@@ -1,12 +1,14 @@
 package data.datasources
 
 import com.google.common.truth.Truth.assertThat
-import org.example.data.models.UserModel
 import org.example.data.datasources.user_data_source.UserCsvDataSource
+import org.example.data.models.UserModel
 import org.example.logic.model.exceptions.FileNotExistException
-import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.model.exceptions.ReadDataException
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.assertThrows
 import java.io.File
 import java.nio.file.Files
 import java.util.*
@@ -41,7 +43,7 @@ class UserCsvDataSourceTest {
     """.trimIndent()
             File(testFilePath).writeText(invalidCsvContent)
 
-            assertThrows<ReadDataException> {dataSource.read().getOrThrow()  }
+            assertThrows<ReadDataException> { dataSource.read().getOrThrow() }
         }
 
         @Test
@@ -101,8 +103,22 @@ class UserCsvDataSourceTest {
             assertTrue(result.isSuccess)
             val users = result.getOrThrow()
             assertThat(users).hasSize(2)
-            assertThat(users[0]).isEqualTo(UserModel(UUID.randomUUID().toString(),"rodina", "5f4dcc3b5aa765d61d8327deb882cf99", "Role.MATE"))
-            assertThat(users[1]).isEqualTo(UserModel(UUID.randomUUID().toString(),"admin", "e99a18c428cb38d5f260853678922e03"," Role.ADMIN"))
+            assertThat(users[0]).isEqualTo(
+                UserModel(
+                    UUID.randomUUID().toString(),
+                    "rodina",
+                    "5f4dcc3b5aa765d61d8327deb882cf99",
+                    "Role.MATE"
+                )
+            )
+            assertThat(users[1]).isEqualTo(
+                UserModel(
+                    UUID.randomUUID().toString(),
+                    "admin",
+                    "e99a18c428cb38d5f260853678922e03",
+                    " Role.ADMIN"
+                )
+            )
         }
     }
 
@@ -111,8 +127,18 @@ class UserCsvDataSourceTest {
         @Test
         fun `write should create file with correct content`() {
             val users = listOf(
-                UserModel(id = UUID.randomUUID().toString(), username = "rodina", hashedPassword = "123md5hash", role = "Role.MATE"),
-                UserModel(id = UUID.randomUUID().toString(), username = "admin", hashedPassword = "adminmd5hash", role = "Role.ADMIN")
+                UserModel(
+                    id = UUID.randomUUID().toString(),
+                    username = "rodina",
+                    hashedPassword = "123md5hash",
+                    role = "Role.MATE"
+                ),
+                UserModel(
+                    id = UUID.randomUUID().toString(),
+                    username = "admin",
+                    hashedPassword = "adminmd5hash",
+                    role = "Role.ADMIN"
+                )
             )
 
             val result = dataSource.append(users)

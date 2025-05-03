@@ -1,12 +1,17 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.Project
+
 import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAdded
 import org.example.logic.repository.ProjectRepository
+import org.example.logic.usecase.state.ManageStatesUseCase
 import java.util.*
 
-class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
+class ManageProjectUseCase(
+    private val projectRepository: ProjectRepository,
+    private val manageProjectState: ManageStatesUseCase
+) {
 
     fun getAllProjects(): Result<List<Project>> {
         return projectRepository.getAllProjects().fold(
@@ -15,23 +20,19 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
         )
     }
 
-    fun getProjectById(id: UUID): Result<Project> {
-        return kotlin.runCatching { id }.fold(
+    fun getProjectByName(projectName: String): Result<Project> {
+        return kotlin.runCatching { projectName }.fold(
             onSuccess = {
                 projectRepository.getAllProjects().fold(
                     onFailure = { Result.failure(NoObjectFound()) },
-                    onSuccess = { allProjects -> findProject(id, allProjects) }
+                    onSuccess = { allProjects -> findProject(projectName, allProjects) }
                 )
             },
             onFailure = { Result.failure(it) }
         )
     }
 
-    private fun findProject(id: UUID, allProjects: List<Project>): Result<Project> {
-        return allProjects.find { it.id == id }?.let { Result.success(it) }
-            ?: Result.failure(NoObjectFound())
 
-    }
 
     fun addProject(project: Project): Result<Boolean> {
         return projectRepository.addProject(project).fold(
@@ -48,17 +49,23 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
         )
     }
 
-    fun removeProjectById(projectId: UUID): Result<Boolean> {
-        return getProjectById(projectId).fold(
+    fun removeProjectById(projectName: String): Result<Boolean> {
+        return getProjectByName(projectName).fold(
             onFailure = { Result.failure(NoObjectFound()) },
             onSuccess = { project -> Result.success(true).let { projectRepository.deleteProject(project) } }
         )
     }
 
-    fun isProjectExists(projectId: UUID): Result<Boolean> {
-        return getProjectById(projectId).fold(
+    fun isProjectExists(projectName: String): Result<Boolean> {
+        return getProjectByName(projectName).fold(
             onSuccess = { Result.success(true) },
             onFailure = { exception -> Result.failure(exception) }
         )
+    }
+
+    private fun findProject(projectName: String, allProjects: List<Project>): Result<Project> {
+        return allProjects.find { it.name == projectName }?.let { Result.success(it) }
+            ?: Result.failure(NoObjectFound())
+
     }
 }
