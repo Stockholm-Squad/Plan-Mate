@@ -1,11 +1,13 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
-import logic.model.entities.Project
-import org.example.data.datasources.PlanMateDataSource
 import data.models.TaskInProject
 import data.models.UserAssignedToProject
+import io.mockk.*
+import org.example.data.datasources.project_data_source.IProjectDataSource
+import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
+import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
+import org.example.data.models.ProjectModel
 import org.example.data.repo.ProjectRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.WriteDataException
@@ -15,31 +17,32 @@ import kotlin.test.Test
 
 class ProjectRepositoryImpTest {
 
-    private lateinit var projectDataSource: PlanMateDataSource<Project>
-    private lateinit var taskInProjectDataSource: PlanMateDataSource<TaskInProject>
-    private lateinit var userAssignedToProjectDataSource: PlanMateDataSource<UserAssignedToProject>
+    private lateinit var projectDataSource: IProjectDataSource
+    private lateinit var taskInProjectDataSource: TaskInProjectCsvDataSource
+    private lateinit var userAssignedToProjectDataSource: IUserAssignedToProjectDataSource
     private lateinit var repository: ProjectRepositoryImp
-    private val testProject = buildProject(id = "1", name = "Test Project", stateId = "")
-    private val anotherProject = buildProject(id = "2", name = "Another Project", stateId = "")
+    private val testProject = buildProject(name = "Test Project")
+    private val anotherProject = buildProject(name = "Another Project")
     private val testTaskInProject = TaskInProject(projectId = "1", taskId = "101")
     private val taskInProjectWithDifferentTaskId = TaskInProject(projectId = "1", taskId = "102")
     private val taskInProjectWithDifferentProjectId = TaskInProject(projectId = "2", taskId = "101")
     private val testUserAssigned = UserAssignedToProject(projectId = "1", userName = "user1")
     private val userAssignedWithDifferentUserName = UserAssignedToProject(projectId = "1", userName = "user2")
     private val userAssignedWithDifferentProjectId = UserAssignedToProject(projectId = "2", userName = "user1")
+    private val projectModel = ProjectModel("1", "name", "12")
 
     @BeforeEach
     fun setUp() {
         projectDataSource = mockk(relaxed = true)
         taskInProjectDataSource = mockk(relaxed = true)
         userAssignedToProjectDataSource = mockk(relaxed = true)
-        repository = ProjectRepositoryImp(projectDataSource, taskInProjectDataSource, userAssignedToProjectDataSource)
+        repository = ProjectRepositoryImp(projectDataSource, userAssignedToProjectDataSource)
     }
 
 
     @Test
     fun `getAllProjects() should read from data source if cache is empty`() {
-        every { projectDataSource.read() } returns Result.success(listOf(testProject))
+        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
 
         val result = repository.getAllProjects()
 
@@ -59,7 +62,7 @@ class ProjectRepositoryImpTest {
     @Test
     fun `addProject() should write project to data source and return success`() {
         //Given
-        every { projectDataSource.append(listOf(testProject)) } returns Result.success(true)
+        every { projectDataSource.append(listOf()) } returns Result.success(true)
         //When
         val result = repository.addProject(testProject)
         //Then
@@ -70,21 +73,21 @@ class ProjectRepositoryImpTest {
     @Test
     fun `addProject() should return failure when write fails`() {
         //Given
-        every { projectDataSource.append(listOf(testProject)) } returns Result.failure(
+        every { projectDataSource.append(listOf(projectModel)) } returns Result.failure(
             WriteDataException()
         )
 
         val result = repository.addProject(testProject)
 
-            assertThrows<WriteDataException> { result.getOrThrow() }
+        assertThrows<WriteDataException> { result.getOrThrow() }
 
     }
 
     @Test
     fun `editProject() should update existing project and write to data source`() {
         //Given
-        every { projectDataSource.read() } returns Result.success(listOf(testProject, anotherProject))
-        every { projectDataSource.overWrite(listOf(testProject, anotherProject)) } returns Result.success(true)
+        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
+        every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.success(true)
 
         //When
         val updated = testProject.copy(name = "Updated")
@@ -110,8 +113,8 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `editProject() should return failure when write fails`() {
-        every { projectDataSource.read() } returns Result.success(listOf(testProject))
-        every { projectDataSource.overWrite(listOf(testProject)) } returns Result.failure(WriteDataException())
+        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
+        every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.failure(WriteDataException())
 
         val result = repository.editProject(testProject)
 
@@ -120,8 +123,8 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `deleteProject() should remove from list and write to data source`() {
-        every { projectDataSource.read() } returns Result.success(listOf(testProject))
-        every { projectDataSource.overWrite(listOf(testProject, anotherProject)) } returns Result.success(true)
+        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
+        every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.success(true)
 
 
         val result = repository.deleteProject(testProject)
@@ -141,7 +144,7 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `getAllProjects() should return cached list if not empty`() {
-        every { projectDataSource.read() } returns Result.success(listOf(testProject, anotherProject))
+        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
 
         val result = repository.getAllProjects()
 
@@ -181,7 +184,7 @@ class ProjectRepositoryImpTest {
 
             val result = repository.getTasksInProject("1")
 
-            assertThrows<ReadDataException() > { result.getOrThrow() }
+            assertThrows < ReadDataException() > { result.getOrThrow() }
         }
 
         @Test
@@ -266,7 +269,7 @@ class ProjectRepositoryImpTest {
 
             val result = repository.deleteTaskFromProject("1", "101")
 
-            assertThrows<WriteDataException() > { result.getOrThrow() }
+            assertThrows < WriteDataException() > { result.getOrThrow() }
         }
     }
 
