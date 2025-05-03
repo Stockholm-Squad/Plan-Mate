@@ -10,7 +10,7 @@ import org.example.logic.usecase.extention.toSafeUUID
 fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem {
     return AuditSystem(
         id.toSafeUUID(),
-        entityType = getAuditSystemType(auditSystemType),
+        entityType = getAuditSystemType(entityType),
         entityTypeId = entityTypeId.toSafeUUID(),
         description = description,
         userId = userId.toSafeUUID(),
@@ -21,7 +21,7 @@ fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem {
 fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
     return AuditSystemModel(
         id.toString(),
-        auditSystemType = entityTypeId.toString(),
+        entityType = entityType.toString(),
         entityTypeId = entityTypeId.toString(),
         description = description,
         userId = userId.toString(),
@@ -30,7 +30,7 @@ fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
 }
 
 fun getAuditSystemType(auditSystem: String): EntityType = when {
-    auditSystem.equals("AuditSystemType.TASK", ignoreCase = true) -> EntityType.TASK
-    auditSystem.equals("AuditSystemType.PROJECT", ignoreCase = true) -> EntityType.PROJECT
+    auditSystem.equals("EntityType.TASK", ignoreCase = true) -> EntityType.TASK
+    auditSystem.equals("EntityType.PROJECT", ignoreCase = true) -> EntityType.PROJECT
     else -> throw Exception("Unknown AuditSystemType: $auditSystem")
 }
