@@ -73,7 +73,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.success(allProjects)
 
             // When
-            val result = manageProjectUseCase.getProjectById(projectId)
+            val result = manageProjectUseCase.getProjectByName(projectId)
 
             // Then
             assertThat(result.isSuccess).isTrue()
@@ -92,7 +92,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.success(allProjects)
 
             // When
-            val result = manageProjectUseCase.getProjectById(projectId)
+            val result = manageProjectUseCase.getProjectByName(projectId)
 
             // Then
             assertThrows<NoObjectFound> { result.getOrThrow() }
@@ -106,7 +106,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.failure(NoProjectAdded())
 
             // When
-            val result = manageProjectUseCase.getProjectById(projectId)
+            val result = manageProjectUseCase.getProjectByName(projectId)
 
             // Then
             assertThat(result.isFailure).isTrue()
