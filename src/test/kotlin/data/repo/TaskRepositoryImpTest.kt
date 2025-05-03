@@ -8,7 +8,7 @@ import data.models.MateTaskAssignment
 import org.example.data.repo.TaskRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.repository.TaskRepository
-import org.example.utils.DateHandler
+import org.example.ui.utils.DateHandlerImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -18,7 +18,7 @@ class TaskRepositoryImpTest {
     private lateinit var taskDataSource: PlanMateDataSource<Task>
     private lateinit var mateTaskAssignmentCsvDataSource: PlanMateDataSource<MateTaskAssignment>
     private lateinit var taskRepository: TaskRepository
-    private lateinit var dataHandler: DateHandler
+    private lateinit var dataHandler: DateHandlerImp
 
     @BeforeEach
     fun setUp() {
@@ -27,7 +27,7 @@ class TaskRepositoryImpTest {
         taskRepository = TaskRepositoryImp(
             taskDataSource,
             mateTaskAssignmentCsvDataSource)
-        dataHandler= DateHandler()
+        dataHandler= DateHandlerImp()
     }
 
     @Test

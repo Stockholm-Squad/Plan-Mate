@@ -6,9 +6,9 @@ import logic.model.entities.User
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_data_source.IUserDataSource
-import org.example.data.extention.toSafeUUID
 import org.example.data.mapper.UserMapper
 import org.example.logic.repository.UserRepository
+import org.example.logic.usecase.extention.toSafeUUID
 import java.util.*
 
 class UserRepositoryImp(

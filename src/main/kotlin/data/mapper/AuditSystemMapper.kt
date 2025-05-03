@@ -3,8 +3,8 @@ package data.mapper
 import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
 import org.example.data.extention.toLocalDateTime
-import org.example.data.extention.toSafeUUID
 import org.example.data.models.AuditSystemModel
+import org.example.logic.usecase.extention.toSafeUUID
 
 class AuditSystemMapper {
 
@@ -19,7 +19,7 @@ class AuditSystemMapper {
         )
     }
 
-    fun mapToAuditSystemModel(auditSystem: AuditSystem): AuditSystemModel  {
+    fun mapToAuditSystemModel(auditSystem: AuditSystem): AuditSystemModel {
         return AuditSystemModel(
             auditSystem.id.toString(),
             auditSystemType = auditSystem.entityType.toString(),

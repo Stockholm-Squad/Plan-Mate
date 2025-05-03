@@ -4,7 +4,7 @@ import org.example.data.models.UserModel
 import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.WriteDataException
-import org.example.utils.hashToMd5
+import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV

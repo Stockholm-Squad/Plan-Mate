@@ -1,4 +1,4 @@
-package org.example.utils
+package org.example.ui.utils
 
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter

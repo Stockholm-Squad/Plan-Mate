@@ -16,7 +16,7 @@ import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.utils.TaskOptions
+import org.example.ui.utils.TaskOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import utils.buildMateTaskAssignment

@@ -5,7 +5,7 @@ import logic.model.entities.User
 import org.example.logic.model.exceptions.*
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.common.ValidateUserDataUseCase
-import org.example.utils.hashToMd5
+import org.example.logic.utils.hashToMd5
 
 class LoginUseCase(
     private val userRepository: UserRepository,

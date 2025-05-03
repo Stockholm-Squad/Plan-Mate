@@ -2,11 +2,11 @@ package org.example.data.mapper
 
 import logic.model.entities.UserRole
 import org.example.data.models.UserModel
-import org.example.data.extention.toSafeUUID
+import org.example.logic.usecase.extention.toSafeUUID
 
 class UserMapper {
     fun mapToUserEntity(userModel: UserModel): logic.model.entities.User = logic.model.entities.User(
-       userModel.id.toSafeUUID(),
+        userModel.id.toSafeUUID(),
         userModel.username,
         userModel.hashedPassword,
         getRoleType(userModel.role)

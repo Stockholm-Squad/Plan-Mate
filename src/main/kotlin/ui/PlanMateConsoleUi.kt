@@ -10,7 +10,7 @@ import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
-import org.example.utils.Constant
+import org.example.ui.utils.Constant
 
 
 class PlanMateConsoleUi(
