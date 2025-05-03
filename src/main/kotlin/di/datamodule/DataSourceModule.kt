@@ -1,19 +1,31 @@
 package di.datamodule
 
-import logic.model.entities.*
-import org.example.data.datasources.*
-import org.example.data.entities.MateTaskAssignment
-import org.example.data.entities.TaskInProject
-import org.example.data.entities.UserAssignedToProject
+import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentCsvDataSource
+import org.example.data.datasources.project_data_source.ProjectCsvDataSource
+import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
+import org.example.data.datasources.project_data_source.IProjectDataSource
+import org.example.data.datasources.state_data_source.IStateDataSource
+import org.example.data.datasources.state_data_source.StateCsvDataSource
+import org.example.data.datasources.task_data_source.ITaskDataSource
+import org.example.data.datasources.task_data_source.TaskCsvDataSource
+import org.example.data.datasources.user_data_source.UserCsvDataSource
+import org.example.data.datasources.user_data_source.IUserDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
+import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
+import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
+import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectCsvDataSource
 import org.koin.dsl.module
 
 val datasourceModule = module {
-    factory<PlanMateDataSource<AuditSystem>> { AuditSystemCsvDataSource(filePath = "audits.csv") }
-    factory<PlanMateDataSource<User>> { UserCsvDataSource(filePath = "users.csv") }
-    factory<PlanMateDataSource<Project>> { ProjectCsvDataSource(filePath = "projects.csv") }
-    factory<PlanMateDataSource<TaskInProject>> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
-    factory<PlanMateDataSource<UserAssignedToProject>> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
-    factory<PlanMateDataSource<State>> { StateCsvDataSource(filePath = "state.csv") }
-    factory<PlanMateDataSource<Task>> { TaskCsvDataSource(filePath = "task.csv") }
-    factory<PlanMateDataSource<MateTaskAssignment>> { MateTaskAssignmentCsvDataSource(filePath = "mate_task_assignment.csv") }
+    factory<IAuditSystemDataSource> { AuditSystemCsvDataSource(filePath = "audits.csv") }
+    factory<IProjectDataSource> { ProjectCsvDataSource(filePath = "projects.csv") }
+    factory<IStateDataSource> { StateCsvDataSource(filePath = "state.csv") }
+    factory<ITaskDataSource> { TaskCsvDataSource(filePath = "task.csv") }
+    factory<IUserDataSource> { UserCsvDataSource(filePath = "users.csv") }
+
+    factory<ITaskInProjectDataSource> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
+    factory<IUserAssignedToProjectDataSource> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
+    factory<IMateTaskAssignmentDataSource> { MateTaskAssignmentCsvDataSource(filePath = "mate_task_assignment.csv") }
 }

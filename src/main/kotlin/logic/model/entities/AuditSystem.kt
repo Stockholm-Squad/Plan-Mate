@@ -4,10 +4,11 @@ import kotlinx.datetime.LocalDateTime
 import java.util.*
 
 data class AuditSystem(
-    val id: String = UUID.randomUUID().toString(),
-    val auditSystemType: String,
-    val entityId: String,
-    val changeDescription: String,
-    val changedBy: String,
-    val dateTime: String
+    val id: UUID = UUID.randomUUID(),
+    val entityType: EntityType,
+    val entityTypeId: UUID,
+    val description: String,
+    val userId: UUID,
+    val dateTime: LocalDateTime
 )
+//TODO Kotlin UUid

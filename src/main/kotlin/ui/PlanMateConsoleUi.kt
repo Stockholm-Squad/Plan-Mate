@@ -1,45 +1,45 @@
 package org.example.ui
 
-import logic.model.entities.Role
 import logic.model.entities.User
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
+import logic.model.entities.UserRole
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
-import org.example.ui.features.state.StateManagerUi
+import org.example.ui.features.state.StateManageUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
-import org.example.utils.Constant
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
+import org.example.ui.utils.UiMessages
 
 
 class PlanMateConsoleUi(
     private val loginUi: LoginUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
-    private val stateManagerUi: StateManagerUi,
+    private val stateManagerUiImp: StateManageUi,
     private val taskManagerUi: TaskManagerUi,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val createUserUi: CreateUserUi
+    private val createUserUiImp: CreateUserUi
 ) {
     fun invoke() {
         while (true) {
-            this.manageAuthenticationUI()
+            user = manageAuthenticationUI()
             this.handleBasedOnRole()
         }
     }
 
     private fun handleBasedOnRole() {
-        when (user?.role) {
-            Role.ADMIN -> handleAdminUi()
-            Role.MATE -> handleMateUi()
+        when (user?.userRole) {
+            UserRole.ADMIN -> handleAdminUi()
+            UserRole.MATE -> handleMateUi()
             null -> return
         }
     }
 
     private fun handleMateUi() {
-        printer.showMessage(Constant.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
+        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
         handleMateChoice()
     }
 
@@ -57,9 +57,9 @@ class PlanMateConsoleUi(
     private fun handleMateChoice() {
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
-                MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
-                MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
-                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
+                MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
+                MateChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
+                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 MateChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
@@ -67,14 +67,14 @@ class PlanMateConsoleUi(
     }
 
     private fun handleAdminUi() {
-        printer.showMessage(Constant.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
+        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
-                AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
-                AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
-                AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
-                AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
-                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
+                AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi(user)
+                AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
+                AdminChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
+                AdminChoice.ADD_MATE.choice -> createUserUiImp.launchUi(user)
+                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
@@ -83,7 +83,9 @@ class PlanMateConsoleUi(
 
     private fun manageAuthenticationUI(): User? {
         if (user != null) return user
-        return loginUi.authenticateUser()
+        return loginUi.authenticateUser().also {
+            user = it
+        }
     }
 
     companion object {

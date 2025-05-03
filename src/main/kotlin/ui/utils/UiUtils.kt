@@ -3,7 +3,6 @@ package org.example.ui.utils
 
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.utils.TaskOptions
 
 class UiUtils(
     private val printer: OutputPrinter,
@@ -16,11 +15,11 @@ class UiUtils(
     fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
 
     fun invalidChoice() {
-        printer.showMessage(UiMessages.INVALID_OPTION.message)
+        printer.showMessage(UiMessages.INVALID_OPTION)
     }
 
     fun exit() {
-        printer.showMessage(UiMessages.GOODBYE.message)
+        printer.showMessage(UiMessages.GOODBYE)
     }
 
 }

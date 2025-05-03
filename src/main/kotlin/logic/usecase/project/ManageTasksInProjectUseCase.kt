@@ -1,45 +1,47 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.Task
-import org.example.logic.repository.ProjectRepository
+import org.example.logic.repository.TaskRepository
 import org.example.logic.usecase.task.ManageTasksUseCase
+import java.util.UUID
 
 class ManageTasksInProjectUseCase(
-    private val projectRepository: ProjectRepository,
-    private val taskUseCase: ManageTasksUseCase
+    private val taskUseCase: ManageTasksUseCase,
+    private val projectUseCase: ManageProjectUseCase,
+    private val taskRepository: TaskRepository
+
 ) {
 
-    fun getTasksAssignedToProject(projectId: String): Result<List<Task>> {
-        return projectRepository.getTasksInProject(projectId = projectId).fold(
-            onSuccess = { tasksIds ->
-                tasksIds.mapNotNull {
-                    taskUseCase.getTaskById(it).fold(
-                        onSuccess = { task -> task },
-                        onFailure = { null }
-                    )
-                }.let {
-                    Result.success(it)
-                }
+    fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
+        return projectUseCase.getProjectByName(projectName).fold(
+            onSuccess = { project ->
+                taskRepository.getTasksInProject(project.id).fold(
+                    onSuccess = { taskRefs ->
+                        taskRefs.mapNotNull { taskRef ->
+                            taskUseCase.getTaskByName(taskRef.name).getOrNull()
+                        }.let { Result.success(it) }
+                    },
+                    onFailure = { throwable -> Result.failure(throwable) }
+                )
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
-
     }
 
-    fun addTaskAssignedToProject(projectId: String, taskId: String): Result<Boolean> {
-        return projectRepository.addTaskInProject(projectId = projectId, taskId = taskId)
+    fun getTasksInProject(projectId: UUID): Result<List<Task>> {
+        return taskRepository.getTasksInProject(projectId)
     }
 
-    fun deleteTaskAssignedToProject(projectId: String, taskId: String): Result<Boolean> {
-        return projectRepository.getTasksInProject(projectId = projectId).fold(
-            onSuccess = { tasksIds ->
-                when (tasksIds.contains(taskId)) {
-                    true -> projectRepository.deleteTaskFromProject(projectId = projectId, taskId = taskId)
-                    false -> Result.success(false)
-                }
-            },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
+    fun addTaskToProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+        return taskRepository.addTaskInProject(projectId = projectId, taskId = taskId)
+    }
+
+    fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+        return taskRepository.deleteTaskFromProject(projectId, taskId)
+    }
+
+    fun getAllTasksByUserName(userName: String): Result<List<Task>> {
+        return taskRepository.getAllTasksByUserName(userName)
     }
 
 }

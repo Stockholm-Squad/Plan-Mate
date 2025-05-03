@@ -1,6 +1,7 @@
 import com.google.common.truth.Truth.assertThat
-import org.example.data.datasources.AuditSystemCsvDataSource
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,7 +33,7 @@ class AuditSystemCsvDataSourceTest {
         val result = ds.read()
         //then
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.DataException.FileNotExistException::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(FileNotExistException::class.java)
     }
 
     @Test
@@ -46,7 +47,6 @@ class AuditSystemCsvDataSourceTest {
     }
 
 
-
     @Test
     fun `read should return failure when CSV is malformed`() {
         //given
@@ -55,6 +55,6 @@ class AuditSystemCsvDataSourceTest {
         val result = dataSource.read()
         //then
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(PlanMateExceptions.DataException.ReadException::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(ReadDataException::class.java)
     }
 }

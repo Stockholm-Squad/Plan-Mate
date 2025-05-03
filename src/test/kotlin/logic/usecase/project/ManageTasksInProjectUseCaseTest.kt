@@ -9,7 +9,8 @@ import kotlinx.datetime.LocalTime
 import logic.model.entities.Task
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.repository.TaskRepository
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.junit.jupiter.api.*
@@ -78,7 +79,7 @@ class ManageTasksInProjectUseCaseTest {
     @Test
     fun `getTasksAssignedToProject should propagate project repository failure`() {
         // Given
-        val expectedException = PlanMateExceptions.DataException.ReadException()
+        val expectedException = ReadDataException()
         every { projectRepository.getTasksInProject("1") } returns Result.failure(expectedException)
 
         // When
@@ -86,7 +87,7 @@ class ManageTasksInProjectUseCaseTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -95,7 +96,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.addTaskInProject("1", "101") } returns Result.success(true)
 
         // When
-        val result = useCase.addTaskAssignedToProject("1", "101")
+        val result = useCase.addTaskToProject("1", "101")
 
         // Then
         assertTrue(result.isSuccess)
@@ -105,15 +106,15 @@ class ManageTasksInProjectUseCaseTest {
     @Test
     fun `addTaskAssignedToProject should propagate failure`() {
         // Given
-        val expectedException = PlanMateExceptions.DataException.WriteException()
+        val expectedException = WriteDataException()
         every { projectRepository.addTaskInProject("1", "101") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.addTaskAssignedToProject("1", "101")
+        val result = useCase.addTaskToProject("1", "101")
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+        assertThrows<WriteDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -123,7 +124,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.deleteTaskFromProject("1", "101") } returns Result.success(true)
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isSuccess)
@@ -136,7 +137,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.getTasksInProject("1") } returns Result.success(listOf("102"))
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isSuccess)
@@ -146,29 +147,29 @@ class ManageTasksInProjectUseCaseTest {
     @Test
     fun `deleteTaskAssignedToProject should propagate read failure`() {
         // Given
-        val expectedException = PlanMateExceptions.DataException.ReadException()
+        val expectedException = ReadDataException()
         every { projectRepository.getTasksInProject("1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
     fun `deleteTaskAssignedToProject should propagate delete failure`() {
         // Given
         every { projectRepository.getTasksInProject("1") } returns Result.success(listOf("101"))
-        val expectedException = PlanMateExceptions.DataException.WriteException()
+        val expectedException = WriteDataException()
         every { projectRepository.deleteTaskFromProject("1", "101") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+        assertThrows<WriteDataException> { result.getOrThrow() }
     }
 }

@@ -1,40 +1,47 @@
 package org.example.logic.usecase.state
 
-import logic.model.entities.State
-import org.example.logic.model.exceptions.PlanMateExceptions
-import org.example.logic.repository.StateRepository
+import logic.model.entities.ProjectState
+import org.example.logic.model.exceptions.*
+import org.example.logic.repository.ProjectStateRepository
+import org.example.logic.usecase.extention.isLetterOrWhiteSpace
+import org.example.logic.usecase.extention.isValidLength
+import java.util.*
 
 class ManageStatesUseCase(
-    private val stateRepository: StateRepository,
+    private val projectStateRepository: ProjectStateRepository,
 ) {
-    fun addState(stateName: String): Result<Boolean> {
+    fun addProjectState(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = { validStateName ->
-                validStateName.takeIf { state -> !isStateExist(state) }
+                validStateName.takeIf { state -> !isProjectStateExist(state) }
                     ?.let {
-                        stateRepository.addState(it).fold(
+                        projectStateRepository.addProjectState(it).fold(
                             onSuccess = { Result.success(true) },
                             onFailure = { exception -> Result.failure(exception) }
                         )
 
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateAlreadyExistException())
+                    } ?: Result.failure(StateAlreadyExistException())
             },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) }
+            onFailure = { Result.failure(NotAllowedStateNameException()) }
         )
     }
 
 
-    fun editState(stateName: String): Result<Boolean> {
+    fun editProjectStateByName(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = { validStateName ->
-                getState(validStateName)
+                getProjectState(validStateName)
                     .takeIf { it != null }
                     ?.let { state ->
-                        stateRepository.editState(state).fold(
+                        projectStateRepository.editProjectState(state).fold(
                             onSuccess = { Result.success(it) },
-                            onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
+                            onFailure = { throwable ->
+                                this@ManageStatesUseCase.handleProjectStateNotExistException(
+                                    throwable
+                                )
+                            }
                         )
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+                    } ?: Result.failure(StateNotExistException())
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
@@ -44,61 +51,65 @@ class ManageStatesUseCase(
     private fun isStateNameValid(stateName: String): Result<String> {
         return stateName.trim().takeIf {
             it.isNotBlank() &&
-                    isValidLength(it) &&
-                    isLetterAndWhiteSpace(it)
+                    it.isValidLength(30) &&
+                    it.isLetterOrWhiteSpace()
         }?.let { Result.success(it) }
-            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException())
+            ?: Result.failure(NotAllowedStateNameException())
     }
 
-    fun deleteState(stateName: String): Result<Boolean> {
+    fun deleteProjectState(stateName: String): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = {
-                getState(stateName)
+                getProjectState(stateName)
                     .takeIf { it != null }
                     ?.let { state ->
-                        stateRepository.deleteState(state).fold(
+                        projectStateRepository.deleteProjectState(state).fold(
                             onSuccess = { Result.success(it) },
-                            onFailure = { throwable -> this@ManageStatesUseCase.handleStateNotExistException(throwable) }
+                            onFailure = { throwable ->
+                                this@ManageStatesUseCase.handleProjectStateNotExistException(
+                                    throwable
+                                )
+                            }
                         )
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+                    } ?: Result.failure(StateNotExistException())
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
     }
 
-    fun getAllStates(): Result<List<State>> {
-        return stateRepository.getAllStates().fold(
+    fun getAllProjectStates(): Result<List<ProjectState>> {
+        return projectStateRepository.getAllProjectStates().fold(
             onSuccess = { data ->
                 data.takeIf { data.isNotEmpty() }?.let {
                     Result.success(data)
-                } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+                } ?: Result.failure(EmptyDataException())
             },
             onFailure = { exception -> Result.failure(exception) }
         )
     }
 
-    fun getStateIdByName(stateName: String): String? {
+    fun getProjectStateIdByName(stateName: String): UUID? {
         return isStateNameValid(stateName).fold(
             onSuccess = {
-                getState(stateName).takeIf { it != null }?.id
+                getProjectState(stateName).takeIf { it != null }?.id
             },
             onFailure = { null }
         )
     }
 
-    private fun handleStateNotExistException(throwable: Throwable): Result<Boolean> {
-        return throwable.takeIf { it is PlanMateExceptions.DataException.FileNotExistException }
-            ?.let { Result.failure(PlanMateExceptions.LogicException.StateNotExistException()) }
+    private fun handleProjectStateNotExistException(throwable: Throwable): Result<Boolean> {
+        return throwable.takeIf { it is FileNotExistException }
+            ?.let { Result.failure(StateNotExistException()) }
             ?: Result.failure(throwable)
     }
 
 
-    private fun isStateExist(stateName: String): Boolean {
-        return (getState(stateName) != null)
+    private fun isProjectStateExist(stateName: String): Boolean {
+        return (getProjectState(stateName) != null)
     }
 
-    private fun getState(stateName: String): State? {
-        return this.getAllStates().fold(
+    private fun getProjectState(stateName: String): ProjectState? {
+        return this.getAllProjectStates().fold(
             onSuccess = { allStates ->
                 allStates.firstOrNull { state -> state.name.equals(stateName, ignoreCase = true) }
             },
@@ -106,13 +117,5 @@ class ManageStatesUseCase(
         )
     }
 
-
-    private fun isValidLength(stateName: String): Boolean {
-        return stateName.length <= 30
-    }
-
-    private fun isLetterAndWhiteSpace(stateName: String): Boolean {
-        return stateName.all { char -> char.isLetter() || char.isWhitespace() }
-    }
 
 }

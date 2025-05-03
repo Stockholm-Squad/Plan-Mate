@@ -1,8 +1,8 @@
 package org.example.ui.features.state.admin
 
+import logic.model.entities.User
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
@@ -14,7 +14,7 @@ class AdminStateManagerUiImpl(
     private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
 
-    override fun launchUi() {
+    override fun launchUi(user: User?) {
         while (true) {
             showMenu()
             if (handleMenuChoice()) break
@@ -45,7 +45,7 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
-                manageStatesUseCase.addState(stateName = stateName).fold(
+                manageStatesUseCase.addProjectState(stateName = stateName).fold(
                     onSuccess = { showAddStateMessage() },
                     onFailure = { showFailure("Failed to Add state: ${it.message}") }
                 )
@@ -57,7 +57,7 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             !stateName.isNullOrEmpty()
         }?.let { stateName ->
-            manageStatesUseCase.editState(stateName = stateName).fold(
+            manageStatesUseCase.editProjectStateByName(stateName = stateName).fold(
                 onSuccess = { showStateUpdatedMessage() },
                 onFailure = { showFailure("Failed to Update state: ${it.message}") }
             )
@@ -77,7 +77,7 @@ class AdminStateManagerUiImpl(
     }
 
     private fun showInvalidInput() {
-        printer.showMessage(ExceptionMessage.INVALID_INPUT.message)
+        printer.showMessage("Invalid input")
     }
 
     override fun deleteState() {
@@ -85,7 +85,7 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
-            manageStatesUseCase.deleteState(stateName = stateName).fold(
+            manageStatesUseCase.deleteProjectState(stateName = stateName).fold(
                 onSuccess = { showStateDeletedMessage() },
                 onFailure = { showFailure("Failed to Delete state: ${it.message}") }
             )

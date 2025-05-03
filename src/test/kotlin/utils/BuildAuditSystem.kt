@@ -4,22 +4,36 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import logic.model.entities.AuditSystem
-import logic.model.entities.AuditSystemType
+import logic.model.entities.EntityType
+import org.example.data.models.AuditSystemModel
+import java.util.UUID
 
 
-fun createAuditSystem(
-    id: String ,
-    auditSystemType: AuditSystemType,
+fun createAuditSystemModel(
+    id: String,
+    entityType: EntityType,
     entityId: String,
     changeDescription: String,
-    changedBy: String
+    userId: String
+): AuditSystemModel {
+    return AuditSystemModel(
+        id = id,
+        entityType = entityType.toString(),
+        entityTypeId = entityId,
+        description = changeDescription,
+        dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
+        userId = userId
+    )
+
+}
+    fun createAuditSystemEntity(
+        entityType: EntityType,
+        changeDescription: String,
     ): AuditSystem {
         return AuditSystem(
-            id = id,
-            auditSystemType = auditSystemType.toString(),
-            entityId = entityId,
-            changeDescription = changeDescription,
-            dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
-            changedBy = changedBy
-        )
-    }
+            entityType = entityType,
+            entityTypeId = UUID.randomUUID(),
+            description = changeDescription,
+            dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
+            userId =UUID.randomUUID(),
+        )}

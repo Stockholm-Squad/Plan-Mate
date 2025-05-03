@@ -1,13 +1,17 @@
 package data.datasources
 
 import com.google.common.truth.Truth.assertThat
-import logic.model.entities.Role
-import logic.model.entities.User
-import org.example.data.datasources.UserCsvDataSource
-import org.example.logic.model.exceptions.PlanMateExceptions
-import org.junit.jupiter.api.*
+import org.example.data.datasources.user_data_source.UserCsvDataSource
+import org.example.data.models.UserModel
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.assertThrows
 import java.io.File
 import java.nio.file.Files
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
@@ -39,7 +43,7 @@ class UserCsvDataSourceTest {
     """.trimIndent()
             File(testFilePath).writeText(invalidCsvContent)
 
-            assertThrows<PlanMateExceptions.DataException.ReadException> {dataSource.read().getOrThrow()  }
+            assertThrows<ReadDataException> { dataSource.read().getOrThrow() }
         }
 
         @Test
@@ -49,7 +53,7 @@ class UserCsvDataSourceTest {
             val result = dataSource.read()
 
             assertTrue(result.isFailure)
-            assertFailsWith<PlanMateExceptions.DataException.FileNotExistException> {
+            assertFailsWith<FileNotExistException> {
                 result.getOrThrow()
             }
         }
@@ -66,7 +70,7 @@ class UserCsvDataSourceTest {
 
         @Test
         fun `read should return empty list when file is empty`() {
-            File(testFilePath).writeText("username,hashedPassword,role")
+            File(testFilePath).writeText("id,username,hashedPassword,role")
 
             val result = dataSource.read()
 
@@ -76,7 +80,7 @@ class UserCsvDataSourceTest {
 
         @Test
         fun `read should return empty list when file has only header`() {
-            File(testFilePath).writeText("username,hashedPassword,role")
+            File(testFilePath).writeText("id,username,hashedPassword,role")
 
             val result = dataSource.read()
 
@@ -88,9 +92,9 @@ class UserCsvDataSourceTest {
         fun `read should return users when file contains valid data`() {
             File(testFilePath).writeText(
                 """
-                username,hashedPassword,role
-                rodina,5f4dcc3b5aa765d61d8327deb882cf99,MATE
-                admin,e99a18c428cb38d5f260853678922e03,ADMIN
+                id,username,hashedPassword,role
+               3a3e6a1a-5e9e-4f0c-9b3d-8c1e6f2a7b1c, rodina,5f4dcc3b5aa765d61d8327deb882cf99,MATE
+                3a3e6a1a-5e9e-4f0c-9b3d-8c1e6f2a7b1c,admin,e99a18c428cb38d5f260853678922e03,ADMIN
                 """.trimIndent()
             )
 
@@ -99,8 +103,22 @@ class UserCsvDataSourceTest {
             assertTrue(result.isSuccess)
             val users = result.getOrThrow()
             assertThat(users).hasSize(2)
-            assertThat(users[0]).isEqualTo(User("rodina", "5f4dcc3b5aa765d61d8327deb882cf99", Role.MATE))
-            assertThat(users[1]).isEqualTo(User("admin", "e99a18c428cb38d5f260853678922e03", Role.ADMIN))
+            assertThat(users[0]).isEqualTo(
+                UserModel(
+                    UUID.randomUUID().toString(),
+                    "rodina",
+                    "5f4dcc3b5aa765d61d8327deb882cf99",
+                    "Role.MATE"
+                )
+            )
+            assertThat(users[1]).isEqualTo(
+                UserModel(
+                    UUID.randomUUID().toString(),
+                    "admin",
+                    "e99a18c428cb38d5f260853678922e03",
+                    " Role.ADMIN"
+                )
+            )
         }
     }
 
@@ -109,8 +127,18 @@ class UserCsvDataSourceTest {
         @Test
         fun `write should create file with correct content`() {
             val users = listOf(
-                User(username = "rodina", hashedPassword = "123md5hash", role = Role.MATE),
-                User(username = "admin", hashedPassword = "adminmd5hash", role = Role.ADMIN)
+                UserModel(
+                    id = UUID.randomUUID().toString(),
+                    username = "rodina",
+                    hashedPassword = "123md5hash",
+                    role = "Role.MATE"
+                ),
+                UserModel(
+                    id = UUID.randomUUID().toString(),
+                    username = "admin",
+                    hashedPassword = "adminmd5hash",
+                    role = "Role.ADMIN"
+                )
             )
 
             val result = dataSource.append(users)

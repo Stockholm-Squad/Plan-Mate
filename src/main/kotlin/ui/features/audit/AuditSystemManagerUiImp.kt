@@ -1,80 +1,74 @@
 package org.example.ui.features.audit
 
+import logic.model.entities.User
+import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.usecase.audit.ManageAuditSystemUseCase
-import org.example.utils.Constant
-import org.example.utils.SearchUtils
+import org.example.ui.utils.UiMessages
 
 class AuditSystemManagerUiImp(
     private val useCase: ManageAuditSystemUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val searchUtils: SearchUtils
 ) : AuditSystemManagerUi {
 
-    override fun showAuditSystemManagerUI() {
+    private var user: User? = null
+
+    override fun invoke(user: User?) {
+        this.user = user
         do {
-            printer.showMessage(Constant.SHOW_AUDIT_SYSTEM_OPTIONS)
-            when (searchUtils.getMainMenuOption()) {
-                1 -> displayAllAuditSystems()
-                2 -> displayAuditLogsByTaskId()
-                3 -> displayAuditLogsByProjectId()
-                4 -> displayAuditByAuditId()
-                5 -> displayAuditByUsername()
-                6 -> printer.showMessage(Constant.EXITING)
-                else -> printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
+            printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
+            when (getMainMenuOption()) {
+                1 -> displayAuditsByProjectName()
+                2 -> displayAuditsByTaskName()
+                3 -> displayAllAudits()
+                4 -> printer.showMessage(UiMessages.EXITING)
+                else -> printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
             }
-        } while (searchUtils.shouldSearchAgain(reader) == true)
-        printer.showMessage(Constant.EXITING)
+        } while (shouldSearchAgain(reader) == true)
+        printer.showMessage(UiMessages.EXITING)
     }
 
-    private fun displayAllAuditSystems() =
-        useCase.getAllAuditSystems().fold(
+
+    private fun displayAuditsByProjectName() {
+        printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
+        reader.readStringOrNull()?.let {
+            useCase.getProjectAuditsByName(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
+    }
+
+    private fun displayAuditsByTaskName() {
+        printer.showMessage(UiMessages.PROMPT_TASK_NAME)
+        reader.readStringOrNull()?.let {
+            useCase.getTaskAuditsByName(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
+
+    }
+
+
+    private fun displayAllAudits() {
+        user?.id ?: return
+        useCase.getAuditsByUserId(user?.id!!).fold(
             onSuccess = { audits -> printer.showAudits(audits) },
             onFailure = { printer.showMessage(it.message.toString()) }
         )
-
-    private fun displayAuditLogsByProjectId() {
-        printer.showMessage(Constant.PROMPT_PROJECT_ID)
-        reader.readStringOrNull()?.let {
-            useCase.getProjectChangeLogsById(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
-        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
-
     }
 
-    private fun displayAuditLogsByTaskId() {
-        printer.showMessage(Constant.PROMPT_TASK_ID)
-        reader.readStringOrNull()?.let {
-            useCase.getTaskChangeLogsById(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
-        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
+    fun shouldSearchAgain(reader: InputReader): Boolean? {
+        printer.showMessage(UiMessages.SEARCH_AGAIN_PROMPT)
+        val input = reader.readStringOrNull()?.trim()?.lowercase()?.takeIf { it.isNotBlank() }
+        return if (input?.trim()?.lowercase() == UiMessages.Y) true else null
     }
 
-    private fun displayAuditByAuditId() {
-        printer.showMessage(Constant.PROMPT_AUDIT_SYSTEM_ID)
-        reader.readStringOrNull()?.let {
-            useCase.getAuditSystemByID(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
-        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
+    fun getMainMenuOption(): Int {
+        printer.showMessage(UiMessages.PLEASE_SELECT_OPTION)
+        return reader.readStringOrNull()?.toIntOrNull() ?: 0
     }
-
-    private fun displayAuditByUsername() {
-        printer.showMessage(Constant.PROMPT_USERNAMES)
-        reader.readStringOrNull()?.let {
-            useCase.getUserChangeLogsByUsername(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
-        } ?: printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
-    }
-
 
 }

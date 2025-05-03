@@ -1,10 +1,10 @@
 package org.example.logic.usecase.task
 
 import logic.model.entities.Task
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.*
 import org.example.logic.repository.TaskRepository
+import java.util.UUID
 import kotlin.Result
-import kotlin.String
 
 
 class ManageTasksUseCase(private val taskRepository: TaskRepository) {
@@ -12,40 +12,53 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
     fun getAllTasks(): Result<List<Task>> =
         taskRepository.getAllTasks().fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFound()) }
         )
 
-    fun getTaskById(taskId: String?): Result<Task> =
-        taskRepository.getAllTasks().fold(
-            onSuccess = { tasks ->
-                tasks.find { it.id == taskId }
-                    ?.let { Result.success(it) }
-                    ?: Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException())
+    fun getTaskByName(taskName: String): Result<Task> {
+        return runCatching {
+            taskRepository.getAllTasks()
+        }.fold(
+            onSuccess = { result ->
+                result.fold(
+                    onSuccess = { tasks ->
+                        tasks.find { it.name == taskName }
+                            ?.let { Result.success(it) }
+                            ?: Result.failure(TaskNotFoundException())
+                    },
+                    onFailure = { Result.failure(TaskNotFoundException()) }
+                )
             },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException()) }
+            onFailure = { Result.failure(TaskNotFoundException()) }
         )
+    }
+
+    fun getTaskIdByName(taskName: String): Result<UUID> {
+        return getTaskByName(taskName).map { it.id }
+    }
 
     fun createTask(task: Task): Result<Boolean> =
-        taskRepository.createTask(task).fold(
+        taskRepository.addTask(task).fold(
             onSuccess = { Result.success(true) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksCreated()) }
+            onFailure = { Result.failure(NoTasksCreated()) }
         )
 
     fun editTask(updatedTask: Task): Result<Boolean> =
         taskRepository.editTask(updatedTask).fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFound()) }
         )
 
-    fun deleteTask(taskId: String?): Result<Boolean> =
-        getTaskById(taskId).fold(
-            onSuccess = {
-                taskRepository.deleteTask(taskId).fold(
+    fun deleteTaskByName(taskName: String): Result<Boolean> {
+        return getTaskIdByName(taskName).fold(
+            onSuccess = { uuid ->
+                taskRepository.deleteTask(uuid).fold(
                     onSuccess = { Result.success(it) },
-                    onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksDeleted()) }
+                    onFailure = { Result.failure(NoTasksDeleted()) }
                 )
             },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException()) }
+            onFailure = { Result.failure(TaskNotFoundException()) }
         )
+    }
 
 }

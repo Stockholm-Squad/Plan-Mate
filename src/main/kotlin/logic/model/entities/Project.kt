@@ -1,10 +1,9 @@
 package logic.model.entities
-
-
 import java.util.*
 
+
 data class Project(
-    val id: String = UUID.randomUUID().toString(),
+    val id: UUID = UUID.randomUUID(),
     val name: String,
-    val stateId: String
+    val stateId: UUID
 )

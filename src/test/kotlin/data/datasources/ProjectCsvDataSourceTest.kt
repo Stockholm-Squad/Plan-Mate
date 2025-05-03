@@ -1,13 +1,14 @@
 package data.datasources
 
-import logic.model.entities.Project
-import org.example.data.datasources.ProjectCsvDataSource
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.data.datasources.project_data_source.ProjectCsvDataSource
+import org.example.data.models.ProjectModel
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Test
 import java.io.File
 import java.nio.file.Files
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class ProjectCsvDataSourceTest {
@@ -38,7 +39,7 @@ class ProjectCsvDataSourceTest {
             val result = dataSource.read()
 
             assertTrue(result.isFailure)
-            assertThrows<PlanMateExceptions.DataException.FileNotExistException> { result.getOrThrow()}
+            assertThrows<FileNotExistException> { result.getOrThrow() }
         }
 
         @Test
@@ -85,8 +86,8 @@ class ProjectCsvDataSourceTest {
         @Test
         fun `write should create file with correct content`() {
             val projects = listOf(
-                Project(id = "1", name = "Project A", stateId = "State A"),
-                Project(id = "2", name = "Project B", stateId = "State B")
+                ProjectModel(id = "1", name = "Project A", stateId = "State A"),
+                ProjectModel(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.overWrite(projects)
@@ -118,7 +119,7 @@ class ProjectCsvDataSourceTest {
             val result = dataSource.read()
 
             assertTrue(result.isFailure)
-            assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+            assertThrows<ReadDataException> { result.getOrThrow() }
         }
 
     }
@@ -129,8 +130,8 @@ class ProjectCsvDataSourceTest {
         @Test
         fun `append should add records to empty file`() {
             val projects = listOf(
-                Project(id = "1", name = "Project A", stateId = "State A"),
-                Project(id = "2", name = "Project B", stateId = "State B")
+                ProjectModel(id = "1", name = "Project A", stateId = "State A"),
+                ProjectModel(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.append(projects)
@@ -146,12 +147,12 @@ class ProjectCsvDataSourceTest {
         @Test
         fun `append should add records to existing file`() {
             val initialProjects = listOf(
-                Project(id = "1", name = "Project A", stateId = "State A")
+                ProjectModel(id = "1", name = "Project A", stateId = "State A")
             )
             dataSource.overWrite(initialProjects)
 
             val newProjects = listOf(
-                Project(id = "2", name = "Project B", stateId = "State B")
+                ProjectModel(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.append(newProjects)

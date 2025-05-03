@@ -6,8 +6,8 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
     factory<AuditSystemRepository> { AuditSystemRepositoryImp(get()) }
-    factory<ProjectRepository> { ProjectRepositoryImp(get(),get(),get()) }
-    factory<StateRepository> { StateRepositoryImp(get()) }
-    factory<TaskRepository> { TaskRepositoryImp(get(), get()) }
-    factory<UserRepository> { UserRepositoryImp(get()) }
+    factory<ProjectRepository> { ProjectRepositoryImp(get(), get()) }
+    factory<ProjectStateRepository> { ProjectStateRepositoryImp(get()) }
+    factory<TaskRepository> { TaskRepositoryImp(get(), get(), get()) }
+    factory<UserRepository> { UserRepositoryImp(get(), get(), get()) }
 }

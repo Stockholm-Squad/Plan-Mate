@@ -5,19 +5,18 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import org.example.data.entities.MateTaskAssignment
+import data.models.MateTaskAssignment
+import org.example.logic.model.exceptions.NoTasksFound
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.PlanMateExceptions
-import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.utils.TaskOptions
+import org.example.ui.utils.TaskOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import utils.buildMateTaskAssignment
@@ -31,7 +30,6 @@ class TaskManagerUiTest {
     private lateinit var manageTasksUseCase: ManageTasksUseCase
     private lateinit var manageStateUseCase: ManageStatesUseCase
     private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
-    private lateinit var getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
     private lateinit var taskManagerUi: TaskManagerUi
 
     @BeforeEach
@@ -43,7 +41,6 @@ class TaskManagerUiTest {
         manageTasksUseCase = mockk(relaxed = true)
         manageStateUseCase = mockk(relaxed = true)
         manageTasksInProjectUseCase = mockk(relaxed = true)
-        getTasksAssignedToUserUseCase = mockk(relaxed = true)
 
         taskManagerUi = TaskManagerUi(
             reader,
@@ -51,8 +48,7 @@ class TaskManagerUiTest {
             uiUtils,
             manageTasksUseCase,
             manageStateUseCase,
-            manageTasksInProjectUseCase,
-            getTasksAssignedToUserUseCase
+            manageTasksInProjectUseCase
         )
     }
 
@@ -89,7 +85,7 @@ class TaskManagerUiTest {
     @Test
     fun `showAllTasks() should handle failure gracefully`() {
         // Given
-        val error = PlanMateExceptions.LogicException.NoTasksFound()
+        val error = NoTasksFound()
         every { manageTasksUseCase.getAllTasks() } returns Result.failure(error)
 
         // When
@@ -127,14 +123,14 @@ class TaskManagerUiTest {
         val taskId = "invalid"
 
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
-        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(NoTasksFound())
 
         // When
         taskManagerUi.getTaskById()
 
         // Then
         verify(exactly = 1) {
-            printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTasksFound().message}")
+            printer.showMessage("Error: ${NoTasksFound().message}")
         }
     }
 
@@ -175,14 +171,14 @@ class TaskManagerUiTest {
         val stateId = "1"
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
-        every { manageStateUseCase.getStateIdByName(stateName) } returns stateId
+        every { manageStateUseCase.getProjectStateIdByName(stateName) } returns stateId
         every { manageTasksUseCase.createTask(any()) } returns Result.success(true)
 
         // When
         taskManagerUi.createTask()
 
         // Then
-        verify(exactly = 1) { manageStateUseCase.getStateIdByName(stateName) }
+        verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
         verify(exactly = 1) { manageTasksUseCase.createTask(any()) }
         verify(exactly = 1) { printer.printTask(any()) }
     }
@@ -197,7 +193,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
-        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -213,7 +209,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
-        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -225,14 +221,14 @@ class TaskManagerUiTest {
         val stateName = "Invalid State"
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
-        every { manageStateUseCase.getStateIdByName(stateName) } returns null
+        every { manageStateUseCase.getProjectStateIdByName(stateName) } returns null
 
         // When
         taskManagerUi.createTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message) }
-        verify(exactly = 1) { manageStateUseCase.getStateIdByName(stateName) }
+        verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -247,7 +243,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
-        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -273,7 +269,7 @@ class TaskManagerUiTest {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
-        every { manageStateUseCase.getStateIdByName(newStateName) } returns newStateId
+        every { manageStateUseCase.getProjectStateIdByName(newStateName) } returns newStateId
         every { manageTasksUseCase.editTask(any()) } returns Result.success(true)
 
         // When
@@ -288,7 +284,7 @@ class TaskManagerUiTest {
     fun `editTask() should show error when task not found`() {
         val taskId = "invalid"
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
-        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(NoTasksFound())
 
         taskManagerUi.editTask()
 
@@ -481,7 +477,7 @@ class TaskManagerUiTest {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
-        every { manageStateUseCase.getStateIdByName(newStateName) } returns null
+        every { manageStateUseCase.getProjectStateIdByName(newStateName) } returns null
 
         // When
         taskManagerUi.editTask()
@@ -571,13 +567,13 @@ class TaskManagerUiTest {
 
         every { uiUtils.readNonBlankInputOrNull(reader) } returns userName
         every { getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName) } returns
-                Result.failure(PlanMateExceptions.LogicException.NoTaskAssignmentFound())
+                Result.failure(NoTaskAssignmentFound())
 
         // When
         taskManagerUi.showAllMateTaskAssignment()
 
         // Then
-        verify(exactly = 1) { printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTaskAssignmentFound().message}") }
+        verify(exactly = 1) { printer.showMessage("Error: ${NoTaskAssignmentFound().message}") }
     }
     //endregion
 
@@ -634,7 +630,7 @@ class TaskManagerUiTest {
     fun `showAllTasksInProject() should handle failure from use case gracefully`() {
         // Given
         val projectId = "proj-3"
-        val exception = PlanMateExceptions.LogicException.NoTaskAssignmentFound()
+        val exception = NoTaskAssignmentFound()
         every { uiUtils.readNonBlankInputOrNull(reader) } returns projectId
         every { manageTasksInProjectUseCase.getTasksAssignedToProject(projectId) } returns Result.failure(exception)
 

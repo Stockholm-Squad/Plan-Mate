@@ -1,58 +1,77 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.Project
-import org.example.logic.model.exceptions.PlanMateExceptions
-import org.example.logic.repository.ProjectRepository
 
-class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
+import org.example.logic.model.exceptions.NoObjectFound
+import org.example.logic.model.exceptions.NoProjectAdded
+import org.example.logic.model.exceptions.StateNotExistException
+import org.example.logic.repository.ProjectRepository
+import org.example.logic.usecase.state.ManageStatesUseCase
+import java.util.*
+
+class ManageProjectUseCase(
+    private val projectRepository: ProjectRepository,
+    private val manageProjectState: ManageStatesUseCase
+) {
 
     fun getAllProjects(): Result<List<Project>> {
         return projectRepository.getAllProjects().fold(
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
+            onFailure = { Result.failure(NoObjectFound()) },
             onSuccess = { Result.success(it) }
         )
     }
 
-    fun getProjectById(id: String): Result<Project> {
-        return projectRepository.getAllProjects().fold(
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
-            onSuccess = { allProjects -> getProject(id, allProjects) }
+    fun getProjectByName(projectName: String): Result<Project> {
+        return kotlin.runCatching { projectName }.fold(
+            onSuccess = {
+                projectRepository.getAllProjects().fold(
+                    onFailure = { Result.failure(NoObjectFound()) },
+                    onSuccess = { allProjects -> findProject(projectName, allProjects) }
+                )
+            },
+            onFailure = { Result.failure(it) }
         )
     }
 
-    private fun getProject(id: String, allProjects: List<Project>): Result<Project> {
-        return allProjects.find { it.id == id }?.let { Result.success(it) }
-            ?: Result.failure(PlanMateExceptions.LogicException.NoObjectFound())
 
-    }
+    fun addProject(projectName: String, stateName: String): Result<Boolean> {
+        val projectStateId = manageProjectState.getProjectStateIdByName(stateName)
+            ?: return Result.failure(StateNotExistException())
 
-    //ToDO add task, add state
-    fun addProject(project: Project): Result<Boolean> {
-        return projectRepository.addProject(project).fold(
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoProjectAdded()) },
+        return projectRepository.addProject(Project(id = UUID.randomUUID(), projectName, projectStateId)).fold(
+            onFailure = { Result.failure(NoProjectAdded()) },
             onSuccess = { Result.success(true) }
         )
     }
 
 
-    fun updateProject(project: Project): Result<Boolean> {
-        return projectRepository.editProject(project).fold(
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
+    fun updateProject(projectName: String, newProjectStateName: String): Result<Boolean> {
+        val newProjectStateId =
+            manageProjectState.getProjectStateIdByName(newProjectStateName)
+                ?: return Result.failure(StateNotExistException())
+        return projectRepository.editProject(Project(name = projectName, stateId = newProjectStateId)).fold(
+            onFailure = { Result.failure(NoObjectFound()) },
             onSuccess = { Result.success(true) }
         )
     }
 
-    fun removeProjectById(id: String): Result<Boolean> {
-        return getProjectById(id).fold(
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
+    fun removeProjectById(projectName: String): Result<Boolean> {
+        return getProjectByName(projectName).fold(
+            onFailure = { Result.failure(NoObjectFound()) },
             onSuccess = { project -> Result.success(true).let { projectRepository.deleteProject(project) } }
         )
     }
 
-    fun isProjectExists(projectId: String): Result<Boolean> {
-        return getProjectById(projectId).fold(
+    fun isProjectExists(projectName: String): Result<Boolean> {
+        return getProjectByName(projectName).fold(
             onSuccess = { Result.success(true) },
-            onFailure = { throwable -> Result.failure(throwable) }
+            onFailure = { exception -> Result.failure(exception) }
         )
+    }
+
+    private fun findProject(projectName: String, allProjects: List<Project>): Result<Project> {
+        return allProjects.find { it.name == projectName }?.let { Result.success(it) }
+            ?: Result.failure(NoObjectFound())
+
     }
 }

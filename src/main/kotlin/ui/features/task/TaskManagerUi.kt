@@ -1,19 +1,18 @@
 package org.example.ui.features.task
 
 import logic.model.entities.Task
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.usecase.project.ManageProjectUseCase
+import logic.model.entities.User
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.utils.DateHandler
-import org.example.utils.TaskOptions
-import java.util.UUID
+import org.example.data.utils.DateHandlerImp
+import org.example.ui.utils.TaskOptions
+import java.util.*
 
 
 class TaskManagerUi(
@@ -23,10 +22,9 @@ class TaskManagerUi(
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageStatesUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
 ) : UiLauncher {
 
-    override fun launchUi() {
+    override fun launchUi(user: User?) {
         while (true) {
             printTaskOptionsMenu()
             if (enteredTaskOption(uiUtils.getEnteredOption(reader.readIntOrNull()))) break
@@ -36,7 +34,7 @@ class TaskManagerUi(
     private fun enteredTaskOption(option: TaskOptions?): Boolean {
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
-            TaskOptions.SHOW_TASK_BY_ID -> getTaskById()
+            TaskOptions.SHOW_TASK_BY_ID -> getTaskByName()
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
@@ -62,16 +60,16 @@ class TaskManagerUi(
     private fun handleGetAllTasksSuccess(tasks: List<Task>) {
         tasks.takeIf { it.isNotEmpty() }
             ?.let { printer.printTaskList(it) }
-            ?: printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
+            ?: printer.showMessage(UiMessages.NO_TASK_FOUNDED)
     }
 
-    fun getTaskById() {
-        printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
+    fun getTaskByName() {
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
 
-        val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+        val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
 
-        manageTasksUseCase.getTaskById(taskId).fold(
+        manageTasksUseCase.getTaskByName(taskName).fold(
             onSuccess = { task -> printer.printTask(task) },
             onFailure = ::handleFailure
         )
@@ -79,18 +77,17 @@ class TaskManagerUi(
 
     fun createTask() {
         val (name, description, stateName) = readTaskInput()
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
 
-        val stateId = manageStateUseCase.getStateIdByName(stateName)
-            ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message)
+        val stateId = manageStateUseCase.getProjectStateIdByName(stateName)
+            ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT)
 
         val task = Task(
-            id = UUID.randomUUID().toString(),
             name = name,
             description = description,
             stateId = stateId,
-            createdDate = DateHandler().getCurrentDateTime(),
-            updatedDate = DateHandler().getCurrentDateTime()
+            createdDate = DateHandlerImp().getCurrentDateTime(),
+            updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
         manageTasksUseCase.createTask(task).fold(
@@ -100,24 +97,24 @@ class TaskManagerUi(
     }
 
     fun editTask() {
-        printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
-        val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
+        val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
 
-        val existingTask = manageTasksUseCase.getTaskById(taskId).getOrNull()
-            ?: return printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
+        val existingTask = manageTasksUseCase.getTaskByName(taskName).getOrNull()
+            ?: return printer.showMessage(UiMessages.NO_TASK_FOUNDED)
 
         val (newName, newDescription, newStateName) = readTaskInput()
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
 
-        val newStateId = manageStateUseCase.getStateIdByName(newStateName)
-            ?: return printer.showMessage(UiMessages.INVALID_STATE_NAME.message)
+        val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
+            ?: return printer.showMessage(UiMessages.INVALID_STATE_NAME)
 
         val updatedTask = existingTask.copy(
             name = newName,
             description = newDescription,
             stateId = newStateId,
-            updatedDate = DateHandler().getCurrentDateTime()
+            updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
         manageTasksUseCase.editTask(updatedTask).fold(
@@ -127,65 +124,66 @@ class TaskManagerUi(
     }
 
     fun deleteTask() {
-        printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
 
-        val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+        val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
 
-        if (manageTasksUseCase.getTaskById(taskId).getOrNull() == null) {
-            return printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
+        if (manageTasksUseCase.getTaskByName(taskName).getOrNull() == null) {
+            return printer.showMessage(UiMessages.NO_TASK_FOUNDED)
         }
 
-        manageTasksUseCase.deleteTask(taskId).fold(
-            onSuccess = { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY.message) },
+        manageTasksUseCase.deleteTaskByName(taskName).fold(
+            onSuccess = { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY) },
             onFailure = ::handleFailure
         )
     }
 
     fun showAllTasksInProject() {
-        printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
+        printer.showMessage(UiMessages.PROJECT_NAME_PROMPT)
 
-        val projectId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
+        val projectName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_NAME_INPUT)
 
-        manageTasksInProjectUseCase.getTasksAssignedToProject(projectId).fold(
+        manageTasksInProjectUseCase.getTasksInProjectByName(projectName).fold(
             onSuccess = { tasks: List<Task> ->
                 tasks.takeUnless { it.isEmpty() }
                     ?.let { printer.printTaskList(it) }
-                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT.message)
+                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT)
             },
             onFailure = ::handleFailure
         )
     }
 
     fun showAllMateTaskAssignment() {
-        printer.showMessage(UiMessages.USER_NAME_PROMPT.message)
+        printer.showMessage(UiMessages.USER_NAME_PROMPT)
 
         val userName = uiUtils.readNonBlankInputOrNull(reader)
-            ?: printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message)
+            ?: printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
 
-        getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName as String).fold(
+        manageTasksInProjectUseCase.getAllTasksByUserName(userName as String).fold(
             onSuccess = { assignments -> printer.printMateTaskAssignments(assignments) },
             onFailure = ::handleFailure
         )
     }
 
+
     private fun readTaskInput(): Triple<String, String, String>? {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT.message)
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
         val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() } ?: run {
-            printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message)
+            printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
             return null
         }
 
-        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT.message)
+        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
         val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() } ?: run {
-            printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT.message)
+            printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT)
             return null
         }
 
-        printer.showMessage(UiMessages.TASK_STATE_PROMPT.message)
+        printer.showMessage(UiMessages.TASK_STATE_PROMPT)
         val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() } ?: run {
-            printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT.message)
+            printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT)
             return null
         }
 
@@ -198,12 +196,12 @@ class TaskManagerUi(
 
     private fun printTaskOptionsMenu() {
         printer.showMessage("========================= Tasks Option =========================")
-       printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
+        printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
 
         TaskOptions.entries
             .forEach { println("${it.option}. ${it.label}") }
 
         printer.showMessage("-----------------------------------------------------")
-       printer.showMessage("Choose an option: ")
+        printer.showMessage("Choose an option: ")
     }
 }

@@ -1,2 +1,2 @@
-hashedPassword,role,username
-0192023a7bbd73250516f069df18b500,ADMIN,rodina
+id,username,hashedPassword,role
+de25ea95-fca4-4f87-90e8-fd9c6aa0a716,rodina,0192023a7bbd73250516f069df18b500,ADMIN

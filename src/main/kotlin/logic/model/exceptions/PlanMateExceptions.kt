@@ -1,121 +1,25 @@
 package org.example.logic.model.exceptions
 
-sealed class PlanMateExceptions(
-    exceptionMessage: ExceptionMessage,
-) : Throwable(message = exceptionMessage.message) {
-    sealed class DataException(open val exceptionMessage: ExceptionMessage) : PlanMateExceptions(exceptionMessage) {
-
-        data class ReadException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.READ_EXCEPTION_MESSAGE,
-        ) : DataException(exceptionMessage)
-
-        data class WriteException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.WRITE_EXCEPTION_MESSAGE,
-        ) : DataException(exceptionMessage)
-
-        data class EmptyDataException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.EMPTY_DATA_MESSAGE,
-        ) : DataException(exceptionMessage)
-
-        data class FileNotExistException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.FILE_NOT_EXIST_EXCEPTION_MESSAGE
-        ) : DataException(exceptionMessage)
-    }
-
-    sealed class LogicException(
-        open val exceptionMessage: ExceptionMessage,
-    ) : PlanMateExceptions(exceptionMessage) {
-        data class NotAllowedStateNameException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NOT_ALLOWED_STATE_NAME_MESSAGE,
-        ) : LogicException(
-            exceptionMessage
-        )
-
-        data class InvalidUserName(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_USER_NAME) :
-            LogicException(exceptionMessage)
-
-        data class NoTasksFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_TASKS_FOUNDED) :
-            LogicException(exceptionMessage)
-
-        data class TaskNotFoundException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_TASKS_FOUND
-        ) : LogicException(exceptionMessage)
-
-        data class TaskAlreadyExistsException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.TASK_ALREADY_EXISTS
-        ) : LogicException(exceptionMessage)
-
-        data class NoTaskAssignmentFound(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_TASK_ASSIGNMENT_FOUND
-        ) : LogicException(exceptionMessage)
-
-        data class NoTasksCreated(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.FAILED_TO_CREATE_TASK
-        ) : LogicException(exceptionMessage)
-
-        data class NoTasksDeleted(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.FAILED_TO_DELETE_TASK
-        ) : LogicException(exceptionMessage)
-
-        data class ProjectNotFoundException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.PROJECT_NOT_FOUND
-        ) : LogicException(exceptionMessage)
-
-        data class NoStatesFound(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATES_FOUND
-        ) : LogicException(exceptionMessage)
-
-        data class StateNotExistException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_NOT_EXIST_MESSAGE,
-        ) : LogicException(
-            exceptionMessage
-        )
-
-        data class StateAlreadyExistException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_ALREADY_EXIST_MESSAGE,
-        ) : LogicException(
-            exceptionMessage
-        )
-
-        data class StateNameLengthException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.STATE_NAME_LENGTH_MESSAGE,
-        ) : LogicException(
-            exceptionMessage
-        )
-        data class NoStatesFoundedException(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_STATE_FOUNDED_MESSAGE,
-        ) : LogicException(
-            exceptionMessage
-        )
-
-        data class InvalidStateName(
-            override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_STATE_NAME_MESSAGE,
-        ) : LogicException(
-            exceptionMessage
-        )
-
-        data class InvalidPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INVALID_PASSWORD) :
-            LogicException(exceptionMessage)
-
-        data class UserDoesNotExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_DOES_NOT_EXIST) :
-            LogicException(exceptionMessage)
-
-        data class IncorrectPassword(override val exceptionMessage: ExceptionMessage = ExceptionMessage.INCORRECT_PASSWORD) :
-            LogicException(exceptionMessage)
-
-        data class UsersIsEmpty(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USERS_IS_EMPTY) :
-            LogicException(exceptionMessage)
-
-        data class UserExist(override val exceptionMessage: ExceptionMessage = ExceptionMessage.USER_EXIST) :
-            LogicException(exceptionMessage)
-
-        data class NoObjectFound(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_DATA_IN_THE_FILE) :
-            LogicException(exceptionMessage)
-
-        data class NoProjectAdded(override val exceptionMessage: ExceptionMessage = ExceptionMessage.NO_PROJECT_ADDED) :
-            LogicException(exceptionMessage)
-
-        data class DidNotUpdateProject(override val exceptionMessage: ExceptionMessage = ExceptionMessage.COULD_NOT_UPDATE_PROJECT) :
-            LogicException(exceptionMessage)
-    }
-}
+class ReadDataException : Exception("Error while reading data!")
+class WriteDataException : Exception("Error while writing data!")
+class EmptyDataException : Exception("No data available")
+class FileNotExistException : Exception("Error file not found!")
+class NotAllowedStateNameException : Exception("Only letters are allowed!")
+class InvalidUserName : Exception("Invalid userName")
+class NoTasksFound : Exception("No Tasks found")
+class TaskNotFoundException : Exception("No tasks found.")
+class NoTaskAssignmentFound : Exception("No task assignments found.")
+class NoTasksCreated : Exception("Failed to create task")
+class NoTasksDeleted : Exception("Failed to delete task")
+class StateNotExistException : Exception("The state does not exist")
+class StateAlreadyExistException : Exception("The state already exists!")
+class StateNameLengthException : Exception("The state name is too long!")
+class NoStatesFoundedException : Exception("There are no states!")
+class InvalidPassword : Exception("Invalid password")
+class UserDoesNotExist : Exception("User does not exist")
+class IncorrectPassword : Exception("Incorrect password")
+class UsersDataAreEmpty : Exception("Users data are empty")
+class UserExist : Exception("User already exists")
+class NoObjectFound : Exception("The file is empty")
+class NoProjectAdded : Exception("No Project Added")
+class InvalidUuid : Exception("Invalid Uuid")

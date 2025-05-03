@@ -1,11 +1,8 @@
 package org.example.ui.input_output.output
 
-import logic.model.entities.State
-import logic.model.entities.Task
-import org.example.data.entities.MateTaskAssignment
-import kotlin.collections.forEach
-
 import logic.model.entities.AuditSystem
+import logic.model.entities.ProjectState
+import logic.model.entities.Task
 
 class OutputPrinterImplementation : OutputPrinter {
 
@@ -21,25 +18,25 @@ class OutputPrinterImplementation : OutputPrinter {
         tasks.forEach { task -> printTask(task) }
     }
 
-    override fun printMateTaskAssignments(assignments: List<MateTaskAssignment>) {
+    override fun printMateTaskAssignments(assignments: List<Task>) {
         if (assignments.isEmpty()) return println("No tasks assigned.")
 
-        val userName = assignments.first().userName
+        val userName = assignments.first().name
         println("Tasks assigned to: $userName")
         assignments.forEachIndexed { index, it ->
-            println("${index + 1}. Task ID: ${it.taskId}")
+            println("${index + 1}. Task ID: ${it.id}")
         }
     }
 
-    override fun showStates(states: List<State>) {
-        this.printStateUsingSwimlaneUi(states)
+    override fun showStates(projectStates: List<ProjectState>) {
+        this.printStateUsingSwimlaneUi(projectStates)
     }
 
-    private fun printStateUsingSwimlaneUi(states: List<State>) {
+    private fun printStateUsingSwimlaneUi(projectStates: List<ProjectState>) {
         println("┌──────────────────────────────┐")
         println("│ State                        │")
         println("├──────────────────────────────┤")
-        states.forEach {
+        projectStates.forEach {
             println("│ %-28s │".format(it.name))
         }
         println("└──────────────────────────────┘")
@@ -51,7 +48,7 @@ class OutputPrinterImplementation : OutputPrinter {
             return
         }
 
-        val groupedByEntityType = audits.groupBy { it.auditSystemType }
+        val groupedByEntityType = audits.groupBy { it.entityType }
 
         for ((entityType, entries) in groupedByEntityType) {
             println("\n========== $entityType ==========\n")
@@ -68,10 +65,10 @@ class OutputPrinterImplementation : OutputPrinter {
                     String.format(
                         "| %-36s | %-12s | %-15s | %-20s | %-30s |",
                         entry.id,
-                        entry.entityId,
-                        entry.changedBy,
+                        entry.entityTypeId,
+                        entry.userId,
                         entry.dateTime,
-                        entry.changeDescription.take(30)
+                        entry.description.take(30)
                     )
                 )
             }

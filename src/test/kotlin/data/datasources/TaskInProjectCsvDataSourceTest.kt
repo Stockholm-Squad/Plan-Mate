@@ -1,14 +1,14 @@
 package data.datasources
 
-import org.junit.jupiter.api.Assertions.*
-
-import org.example.data.datasources.TaskInProjectCsvDataSource
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File
 import java.nio.file.Files
-import kotlin.test.*
+import kotlin.test.assertFailsWith
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TaskInProjectCsvDataSourceTest {
@@ -33,7 +33,7 @@ class TaskInProjectCsvDataSourceTest {
 
         val result = dataSource.read()
 
-        assertThrows<PlanMateExceptions.DataException.FileNotExistException> { result.getOrThrow() }
+        assertThrows<FileNotExistException> { result.getOrThrow() }
     }
 
     @Test
@@ -56,11 +56,13 @@ class TaskInProjectCsvDataSourceTest {
 
     @Test
     fun `read should return records when file contains valid data`() {
-        tempFile.writeText("""
+        tempFile.writeText(
+            """
             taskId,projectId
             T1,P1
             T2,P2
-        """.trimIndent())
+        """.trimIndent()
+        )
 
         val result = dataSource.read()
 
@@ -76,6 +78,6 @@ class TaskInProjectCsvDataSourceTest {
         tempFile.writeText("invalid\nbad,data\n123")
         val result = dataSource.read()
         assertTrue(result.isFailure)
-        assertFailsWith<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertFailsWith<ReadDataException> { result.getOrThrow() }
     }
 }

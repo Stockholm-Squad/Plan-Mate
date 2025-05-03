@@ -1,8 +1,8 @@
-import logic.model.entities.State
+import logic.model.entities.ProjectState
 
 fun createState(
     id: String,
     name: String,
-):State{
-return State(id=id,name=name)
+):ProjectState{
+return ProjectState(id=id,name=name)
 }

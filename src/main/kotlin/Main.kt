@@ -7,7 +7,6 @@ import org.koin.core.logger.PrintLogger
 import org.koin.mp.KoinPlatform.getKoin
 
 fun main() {
-
     startKoin {
         logger(PrintLogger())
         modules(appModule)
@@ -15,4 +14,3 @@ fun main() {
     val planMateConsoleUi: PlanMateConsoleUi = getKoin().get()
     planMateConsoleUi.invoke()
 }
-

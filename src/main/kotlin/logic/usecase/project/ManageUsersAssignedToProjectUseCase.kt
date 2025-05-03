@@ -1,45 +1,25 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.User
-import org.example.logic.repository.ProjectRepository
 import org.example.logic.repository.UserRepository
+import java.util.*
 
 class ManageUsersAssignedToProjectUseCase(
-    private val projectRepository: ProjectRepository,
     private val userRepository: UserRepository,
 ) {
-    fun getUsersAssignedToProject(projectId: String): Result<List<User>> {
 
-        return userRepository.getAllUsers().fold(
-            onSuccess = { allUsers ->
-                projectRepository.getUsersAssignedToProject(projectId = projectId).fold(
-                    onSuccess = { userNames ->
-                        userNames.mapNotNull { userName ->
-                            allUsers.find { it.username == userName }
-                        }.let {
-                            Result.success(it)
-                        }
-                    },
-                    onFailure = { throwable -> Result.failure(throwable) }
-                )
-            },
-            onFailure = { Result.failure(Throwable()) })
+    fun getUsersByProjectId(projectId: UUID): Result<List<User>> {
+        return userRepository.getUsersByProjectId(projectId = projectId)
     }
 
-    fun assignUserToProject(projectId: String, userName: String): Result<Boolean> {
-        return projectRepository.addUserAssignedToProject(projectId = projectId, userName = userName)
+
+    fun addUserToProject(projectId: String, userName: String): Result<Boolean> {
+        //return userRepository.addUserToProject(projectId = projectId, userName = userName)
+        return Result.success(true)
     }
 
-    fun deleteUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {
-        return projectRepository.getUsersAssignedToProject(projectId = projectId).fold(
-            onSuccess = { userNames ->
-                when (userNames.contains(userName)) {
-                    true -> projectRepository.deleteUserAssignedToProject(projectId = projectId, userName = userName)
-                    false -> Result.success(false)
-                }
-            },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
+    fun deleteUserFromProject(projectId: UUID, userName: String): Result<Boolean> {
+        return userRepository.deleteUserFromProject(projectId = projectId, userName = userName)
     }
 
 }

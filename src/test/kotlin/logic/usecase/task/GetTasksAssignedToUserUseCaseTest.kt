@@ -3,10 +3,9 @@ package logic.usecase.task
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import org.example.data.entities.MateTaskAssignment
-import org.example.logic.model.exceptions.PlanMateExceptions
+import data.models.MateTaskAssignment
+import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.repository.TaskRepository
-import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -33,7 +32,7 @@ class GetTasksAssignedToUserUseCaseTest {
             buildMateTaskAssignment(userName = "Alice", taskId = "2")
         )
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(assignments)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.success(assignments)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
@@ -49,7 +48,7 @@ class GetTasksAssignedToUserUseCaseTest {
         val userName = "Bob"
         val emptyAssignments = emptyList<MateTaskAssignment>()
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyAssignments)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.success(emptyAssignments)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
@@ -66,7 +65,7 @@ class GetTasksAssignedToUserUseCaseTest {
         val userName = "Charlie"
         val error = Exception("Database connection failed")
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(error)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.failure(error)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
@@ -74,7 +73,7 @@ class GetTasksAssignedToUserUseCaseTest {
         // Then
         assertThat(result.isFailure).isTrue()
 
-        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+        assertThrows<NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }
@@ -83,9 +82,9 @@ class GetTasksAssignedToUserUseCaseTest {
     fun `getAllMateTaskAssignment should return failure when repository returns NoTaskAssignmentFound`() {
         // Given
         val userName = "David"
-        val error = PlanMateExceptions.LogicException.NoTaskAssignmentFound()
+        val error = NoTaskAssignmentFound()
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(error)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.failure(error)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
@@ -93,7 +92,7 @@ class GetTasksAssignedToUserUseCaseTest {
         // Then
         assertThat(result.isFailure).isTrue()
 
-        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+        assertThrows<NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }
@@ -104,7 +103,7 @@ class GetTasksAssignedToUserUseCaseTest {
         val userName = "Eve"
         val error = RuntimeException("Unknown error occurred")
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.failure(error)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.failure(error)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
@@ -112,7 +111,7 @@ class GetTasksAssignedToUserUseCaseTest {
         // Then
         assertThat(result.isFailure).isTrue()
 
-        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+        assertThrows<NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }
@@ -123,7 +122,7 @@ class GetTasksAssignedToUserUseCaseTest {
         val userName = "Frank"
         val emptyList = emptyList<MateTaskAssignment>()
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyList)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.success(emptyList)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
@@ -140,7 +139,7 @@ class GetTasksAssignedToUserUseCaseTest {
         val userName = "Grace"
         val emptyList = emptyList<MateTaskAssignment>()
 
-        every { taskRepository.getAllMateTaskAssignment(userName) } returns Result.success(emptyList)
+        every { taskRepository.getAllTasksByUserName(userName) } returns Result.success(emptyList)
 
         // When
         val result = getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName)
