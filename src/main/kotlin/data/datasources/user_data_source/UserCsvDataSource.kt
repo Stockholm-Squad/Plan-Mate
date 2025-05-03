@@ -1,20 +1,18 @@
 package org.example.data.datasources.user_data_source
 
 import org.example.data.models.UserModel
-import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.WriteDataException
 import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.io.readCSV
-import org.jetbrains.kotlinx.dataframe.io.writeCSV
-import java.io.File
-
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 import org.jetbrains.kotlinx.dataframe.api.toList
-import java.util.UUID
+import org.jetbrains.kotlinx.dataframe.io.readCSV
+import org.jetbrains.kotlinx.dataframe.io.writeCSV
+import java.io.File
+import java.util.*
 
 class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     private fun resolveFile(): File = File(filePath)
@@ -22,17 +20,11 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     override fun read(): Result<List<UserModel>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(FileNotExistException())
+            createAdminIfNotExist()
         }
 
         return try {
-            if (File(filePath).readLines().size < 2) {
-                val adminUser = listOf(
-                    UserModel(id = UUID.randomUUID().toString(), username = "rodina", hashedPassword = hashToMd5("admin123"), role = "ADMIN"),
-                )
-                overWrite(adminUser).onFailure { return Result.failure(it) }
-            }
-
+            createAdminIfNotExist()
             val users = DataFrame.readCSV(file)
                 .cast<UserModel>()
                 .toList()
@@ -40,6 +32,21 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
         } catch (e: Exception) {
             Result.failure(ReadDataException())
         }
+    }
+
+    private fun createAdminIfNotExist(): Result<Boolean> {
+        if (File(filePath).readLines().size < 2) {
+            val adminUser = listOf(
+                UserModel(
+                    id = UUID.randomUUID().toString(),
+                    username = "rodina",
+                    hashedPassword = hashToMd5("admin123"),
+                    role = "ADMIN"
+                ),
+            )
+            overWrite(adminUser).onFailure { return Result.failure(it) }
+        }
+        return Result.success(true)
     }
 
     override fun overWrite(users: List<UserModel>): Result<Boolean> {
@@ -56,8 +63,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                }
-                else emptyList<UserModel>().toDataFrame()
+                } else emptyList<UserModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)

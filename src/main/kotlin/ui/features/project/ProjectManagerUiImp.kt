@@ -1,14 +1,13 @@
 package org.example.ui.features.project
 
-import logic.model.entities.Project
 import logic.model.entities.User
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.CreateUserUiImp
+import org.example.ui.features.user.CreateUserUi
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 
 class ProjectManagerUiImp(
     private val inputReader: InputReader,
@@ -17,7 +16,7 @@ class ProjectManagerUiImp(
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
-    private val createUserUiImp: CreateUserUiImp,
+    private val createUserUiImp: CreateUserUi,
 ) : ProjectManagerUi {
 
     override fun showAllProjects() {
@@ -38,7 +37,7 @@ class ProjectManagerUiImp(
             )
     }
 
-    override  fun showProjectByName() {
+    override fun showProjectByName() {
         outputPrinter.showMessage("Enter project Name: ")
         val projectName = inputReader.readStringOrNull() ?: run {
             outputPrinter.showMessage("Invalid project Name")
@@ -61,11 +60,10 @@ class ProjectManagerUiImp(
 
     override fun addProject() {
         outputPrinter.showMessage("Enter project name: ")
-        val name = inputReader.readStringOrNull() ?: run {
+        val projectName = inputReader.readStringOrNull() ?: run {
             outputPrinter.showMessage("Invalid project name")
             return
         }
-
         outputPrinter.showMessage("Available states:")
         stateManagerUi.showAllStates()
 
@@ -82,18 +80,10 @@ class ProjectManagerUiImp(
             }
         }
 
-        manageProjectUseCase.addProject(Project(name = name, stateId = stateName))
+        manageProjectUseCase.addProject(projectName, stateName)
             .fold(
                 onSuccess = { success ->
-                    if (success) {
-                        outputPrinter.showMessage("Project added successfully")
-                        outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
-                        if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                            taskManagerUi.createTask()
-                        }
-                    } else {
-                        outputPrinter.showMessage("Failed to add project")
-                    }
+                    extractedAddingProjectResult(success)
                 },
                 onFailure = { e ->
                     outputPrinter.showMessage("error: ${e.message ?: "Failed to add project"}")
@@ -101,27 +91,48 @@ class ProjectManagerUiImp(
             )
     }
 
+    private fun extractedAddingProjectResult(success: Boolean) {
+        if (success) {
+            outputPrinter.showMessage("Project added successfully")
+            outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
+            if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
+                taskManagerUi.createTask()
+            }
+        } else {
+            outputPrinter.showMessage("Failed to add project")
+        }
+    }
+
     override fun editProject() {
-        outputPrinter.showMessage("Enter project ID to edit: ")
-        val id = inputReader.readStringOrNull() ?: run {
-            outputPrinter.showMessage("Invalid project ID")
+        outputPrinter.showMessage("Enter project Name to edit: ")
+        val projectName = inputReader.readStringOrNull() ?: run {
+            outputPrinter.showMessage("Invalid project Name")
             return
         }
 
-        manageProjectUseCase.getProjectByName(id)
+        manageProjectUseCase.getProjectByName(projectName)
             .fold(
                 onSuccess = { project ->
                     outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
-                    val newName = inputReader.readStringOrNull() ?: project.name
 
+                    val newName = inputReader.readStringOrNull()
+                    if (newName == null) {
+                        outputPrinter.showMessage("Invalid project Name")
+                        return
+                    }
                     outputPrinter.showMessage("Current state: ${project.stateId}")
                     outputPrinter.showMessage("Available states:")
+
                     stateManagerUi.showAllStates()
 
-                    outputPrinter.showMessage("Enter new state ID (leave blank to keep '${project.stateId}'): ")
-                    val newStateId = inputReader.readStringOrNull() ?: project.stateId
+                    outputPrinter.showMessage("Enter new state Name (leave blank to keep '${project.stateId}'): ")
 
-                    manageProjectUseCase.updateProject(Project(id, newName, newStateId))
+                    val newProjectStateName = inputReader.readStringOrNull()
+                    if (newProjectStateName == null) {
+                        outputPrinter.showMessage("Invalid Project State Name")
+                        return
+                    }
+                    manageProjectUseCase.updateProject(projectName, newProjectStateName)
                         .fold(
                             onSuccess = { success ->
                                 if (success) {
@@ -134,6 +145,7 @@ class ProjectManagerUiImp(
                                 outputPrinter.showMessage("error: ${e.message ?: "Failed to update project"}")
                             }
                         )
+
                 },
                 onFailure = { e ->
                     outputPrinter.showMessage("error: ${e.message ?: "Project not found"}")
@@ -163,11 +175,12 @@ class ProjectManagerUiImp(
             )
     }
 
+
     override fun assignUsersToProject() {
         while (true) {
             outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
             if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                createUserUiImp.launchUi()
+                //createUserUiImp.launchUi()
             }
 
             outputPrinter.showMessage("Enter username to assign (or 'done' to finish): ")
@@ -181,7 +194,7 @@ class ProjectManagerUiImp(
         }
     }
 
-     private fun assignUserToProject(username: String, projectId: String): Boolean {
+    private fun assignUserToProject(username: String, projectId: String): Boolean {
 //        if (authenticationUseCase.checkUserExists(username)) {
 //            outputPrinter.showMessage("User does not exist")
 //            return false
@@ -192,7 +205,7 @@ class ProjectManagerUiImp(
             return false
         }
 
-        return manageUsersAssignedToProjectUseCase.addUserToProject(username, projectId)
+        return manageUsersAssignedToProjectUseCase.addUserToProject(projectId, username)
             .fold(
                 onSuccess = { success ->
                     if (success) {
@@ -209,6 +222,7 @@ class ProjectManagerUiImp(
                 }
             )
     }
+
 
     override fun launchUi(user: User?) {
         while (true) {

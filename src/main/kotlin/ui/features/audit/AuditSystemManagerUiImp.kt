@@ -10,10 +10,12 @@ class AuditSystemManagerUiImp(
     private val useCase: ManageAuditSystemUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val user: User
 ) : AuditSystemManagerUi {
 
-    override fun invoke() {
+    private var user: User? = null
+
+    override fun invoke(user: User?) {
+        this.user = user
         do {
             printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
             when (getMainMenuOption()) {
@@ -51,7 +53,8 @@ class AuditSystemManagerUiImp(
 
 
     private fun displayAllAudits() {
-        useCase.getAuditsByUserId(user.id).fold(
+        user?.id ?: return
+        useCase.getAuditsByUserId(user?.id!!).fold(
             onSuccess = { audits -> printer.showAudits(audits) },
             onFailure = { printer.showMessage(it.message.toString()) }
         )

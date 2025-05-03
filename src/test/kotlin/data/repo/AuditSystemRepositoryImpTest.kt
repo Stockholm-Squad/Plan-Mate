@@ -6,24 +6,32 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
-import org.example.data.datasources.PlanMateDataSource
+import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
 import org.example.data.repo.AuditSystemRepositoryImp
-import utils.createAuditSystem
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import utils.createAuditSystemEntity
+import utils.createAuditSystemModel
+import java.util.*
 
 class AuditSystemRepositoryImpTest {
 
     private lateinit var auditSystemRepositoryImp: AuditSystemRepositoryImp
-    private lateinit var auditSystemDataSource: PlanMateDataSource<AuditSystem>
+    private lateinit var auditSystemDataSource: AuditSystemCsvDataSource
 
-    private val auditList = listOf(
-        createAuditSystem(
+    private val auditListModel = listOf(
+        createAuditSystemModel(
             id = "1",
             entityType = EntityType.TASK,
             entityId = "123",
             changeDescription = "Changed something",
-            changedBy = "Admin"
+            userId = "12"
+        )
+    )
+    private val auditListEntity = listOf(
+        createAuditSystemEntity(
+            entityType = EntityType.TASK,
+            changeDescription = "Changed something",
         )
     )
 
@@ -37,34 +45,34 @@ class AuditSystemRepositoryImpTest {
     @Test
     fun `recordAuditsEntries returns success when append succeeds`() {
         //given
-        every { auditSystemDataSource.append(auditList) } returns Result.success(true)
+        every { auditSystemDataSource.append(auditListModel) } returns Result.success(true)
         //when
-        val result = auditSystemRepositoryImp.addAuditsEntries(auditList)
+        val result = auditSystemRepositoryImp.addAuditsEntries(auditListEntity)
         //then
         assertThat(result.isSuccess).isTrue()
-        verify { auditSystemDataSource.append(auditList) }
+        verify { auditSystemDataSource.append(auditListModel) }
     }
 
     @Test
     fun `recordAuditsEntries returns failure when append fails`() {
         //given
-        every { auditSystemDataSource.append(auditList) } returns Result.failure(Exception("Append failed"))
+        every { auditSystemDataSource.append(auditListModel) } returns Result.failure(Exception("Append failed"))
         //when
-        val result = auditSystemRepositoryImp.addAuditsEntries(auditList)
+        val result = auditSystemRepositoryImp.addAuditsEntries(auditListEntity)
         //then
         assertThat(result.isFailure).isTrue()
-        verify { auditSystemDataSource.append(auditList) }
+        verify { auditSystemDataSource.append(auditListModel) }
     }
 
     @Test
     fun `getAllAuditEntries returns success when read succeeds`() {
         //given
-        every { auditSystemDataSource.read() } returns Result.success(auditList)
+        every { auditSystemDataSource.read() } returns Result.success(auditListModel)
         //when
         val result = auditSystemRepositoryImp.getAllAuditEntries()
         //then
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(auditList)
+        assertThat(result.getOrNull()).isEqualTo(auditListModel)
         verify { auditSystemDataSource.read() }
     }
 
@@ -82,22 +90,22 @@ class AuditSystemRepositoryImpTest {
     @Test
     fun `initializeDataInFile returns success when overwrite succeeds`() {
         //given
-        every { auditSystemDataSource.overWrite(auditList) } returns Result.success(true)
+        every { auditSystemDataSource.overWrite(auditListModel) } returns Result.success(true)
         //when
-        val result = auditSystemRepositoryImp.initializeDataInFile(auditList)
+        val result = auditSystemRepositoryImp.initializeDataInFile(auditListEntity)
         //then
         assertThat(result.isSuccess).isTrue()
-        verify { auditSystemDataSource.overWrite(auditList) }
+        verify { auditSystemDataSource.overWrite(auditListModel) }
     }
 
     @Test
     fun `initializeDataInFile returns failure when overwrite fails`() {
         //given
-        every { auditSystemDataSource.overWrite(auditList) } returns Result.failure(Exception("Overwrite failed"))
+        every { auditSystemDataSource.overWrite(auditListModel) } returns Result.failure(Exception("Overwrite failed"))
         //when
-        val result = auditSystemRepositoryImp.initializeDataInFile(auditList)
+        val result = auditSystemRepositoryImp.initializeDataInFile(auditListEntity)
         //then
         assertThat(result.isFailure).isTrue()
-        verify { auditSystemDataSource.overWrite(auditList) }
+        verify { auditSystemDataSource.overWrite(auditListModel) }
     }
 }

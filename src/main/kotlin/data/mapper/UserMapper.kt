@@ -21,8 +21,8 @@ fun User.mapToUserModel(): UserModel = UserModel(
 )
 
 fun getRoleType(role: String): UserRole = when {
-    role.equals("Role.MATE", ignoreCase = true) -> UserRole.MATE
-    role.equals("Role.ADMIN", ignoreCase = true) -> UserRole.ADMIN
+    role.equals("MATE", ignoreCase = true) -> UserRole.MATE
+    role.equals("ADMIN", ignoreCase = true) -> UserRole.ADMIN
     else -> throw Exception("Unknown role type: $role")
 }
 

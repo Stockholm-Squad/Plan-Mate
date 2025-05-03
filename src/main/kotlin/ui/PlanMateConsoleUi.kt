@@ -59,7 +59,7 @@ class PlanMateConsoleUi(
             when (choice) {
                 MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
                 MateChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
-                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke()
+                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 MateChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
@@ -74,7 +74,7 @@ class PlanMateConsoleUi(
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
                 AdminChoice.ADD_MATE.choice -> createUserUiImp.launchUi(user)
-                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke()
+                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }

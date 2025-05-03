@@ -1,11 +1,11 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import createState
 import io.mockk.every
 import io.mockk.mockk
 import logic.model.entities.ProjectState
-import org.example.data.datasources.PlanMateDataSource
+import org.example.data.datasources.state_data_source.IStateDataSource
+import org.example.data.models.State
 import org.example.data.repo.ProjectStateRepositoryImp
 import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.repository.ProjectStateRepository
@@ -15,14 +15,16 @@ import org.junit.jupiter.api.assertThrows
 
 class ProjectProjectStateRepositoryImpTest {
 
-    private lateinit var projectStateDataSource: PlanMateDataSource<ProjectState>
+    private lateinit var projectStateDataSource: IStateDataSource
     private lateinit var stateRepository: ProjectStateRepository
     private lateinit var projectState: ProjectState
+    private lateinit var projectStateModel: State
+
 
     @BeforeEach
     fun setUp() {
         projectStateDataSource = mockk(relaxed = true)
-        projectState = ProjectState(id = "123", name = "In-Progress")
+        projectState = ProjectState(name = "In-Progress")
         every { projectStateDataSource.read() } returns Result.success(listOf())
         stateRepository = ProjectStateRepositoryImp(projectStateDataSource)
     }
@@ -33,10 +35,10 @@ class ProjectProjectStateRepositoryImpTest {
         every { projectStateDataSource.overWrite(any()) } returns Result.success(
             value = true
         )
-        every { projectStateDataSource.read() } returns Result.success(listOf(projectState))
+        every { projectStateDataSource.read() } returns Result.success(listOf(projectStateModel))
 
         //When
-        val result = stateRepository.editProjectState(ProjectState("235", ""))
+        val result = stateRepository.editProjectState(ProjectState(name = "In-Progress"))
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -48,7 +50,7 @@ class ProjectProjectStateRepositoryImpTest {
         every { projectStateDataSource.overWrite(any()) } returns Result.success(
             value = true
         )
-        every { projectStateDataSource.read() } returns Result.success(listOf(projectState))
+        every { projectStateDataSource.read() } returns Result.success(listOf(projectStateModel))
 
         //When
         val result = stateRepository.editProjectState(projectState)
@@ -75,7 +77,7 @@ class ProjectProjectStateRepositoryImpTest {
     @Test
     fun `editState() should return failure result with throwable when error happens while write failed`() {
         //Given
-        every { projectStateDataSource.read() } returns Result.success(listOf(projectState))
+        every { projectStateDataSource.read() } returns Result.success(listOf(projectStateModel))
         every { projectStateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
@@ -93,7 +95,7 @@ class ProjectProjectStateRepositoryImpTest {
         every { projectStateDataSource.overWrite(any()) } returns Result.success(
             true
         )
-        every { projectStateDataSource.read() } returns Result.success(listOf(projectState))
+        every { projectStateDataSource.read() } returns Result.success(listOf(projectStateModel))
 
         //When
         val result = stateRepository.deleteProjectState(projectState)
@@ -108,7 +110,7 @@ class ProjectProjectStateRepositoryImpTest {
         every { projectStateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
-        every { projectStateDataSource.read() } returns Result.success(listOf(projectState))
+        every { projectStateDataSource.read() } returns Result.success(listOf(projectStateModel))
 
         //When
         val result = stateRepository.deleteProjectState(projectState)
@@ -123,7 +125,7 @@ class ProjectProjectStateRepositoryImpTest {
         every { projectStateDataSource.overWrite(any()) } returns Result.failure(
             Throwable()
         )
-        every { projectStateDataSource.read() } returns Result.success(listOf(projectState))
+        every { projectStateDataSource.read() } returns Result.success(listOf(projectStateModel))
 
         //When
         val result = stateRepository.deleteProjectState(projectState)
@@ -147,7 +149,7 @@ class ProjectProjectStateRepositoryImpTest {
     @Test
     fun `addState() should return success result with true when the state add successfully`() {
         //Given
-        val projectState = ProjectState(id = "1", name = "Done")
+        val projectState = ProjectState(name = "Done")
         every { projectStateDataSource.append(any()) } returns Result.success(true)
 
         //When
@@ -160,7 +162,7 @@ class ProjectProjectStateRepositoryImpTest {
     @Test
     fun `addState() should return failure result with throwable when error happens while writing into the csv file`() {
         //Given
-        val projectState = ProjectState(id = "123", name = "In Review")
+        val projectState = ProjectState(name = "In Review")
         every { projectStateDataSource.append(any()) } returns Result.failure(
             Throwable()
         )
@@ -175,9 +177,7 @@ class ProjectProjectStateRepositoryImpTest {
     fun `getAllStates() should return success result with list of state when the file have data`() {
         //Given
         val stateList = listOf(
-            createState(id = "123", name = "In-progress"),
-            createState(id = "13", name = "done"),
-            createState(id = "10", name = "in review")
+            State(id = "12", name = "In-Progress"),
         )
         every { projectStateDataSource.read() } returns Result.success(
             stateList

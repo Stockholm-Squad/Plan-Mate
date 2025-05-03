@@ -1,6 +1,5 @@
 package org.example.ui.input_output.output
 
-import data.models.MateTaskAssignment
 import logic.model.entities.AuditSystem
 import logic.model.entities.ProjectState
 import logic.model.entities.Task
@@ -19,13 +18,13 @@ class OutputPrinterImplementation : OutputPrinter {
         tasks.forEach { task -> printTask(task) }
     }
 
-    override fun printMateTaskAssignments(assignments: List<MateTaskAssignment>) {
+    override fun printMateTaskAssignments(assignments: List<Task>) {
         if (assignments.isEmpty()) return println("No tasks assigned.")
 
-        val userName = assignments.first().userName
+        val userName = assignments.first().name
         println("Tasks assigned to: $userName")
         assignments.forEachIndexed { index, it ->
-            println("${index + 1}. Task ID: ${it.taskId}")
+            println("${index + 1}. Task ID: ${it.id}")
         }
     }
 

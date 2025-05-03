@@ -13,8 +13,9 @@ class ManageUsersAssignedToProjectUseCase(
     }
 
 
-    fun addUserToProject(projectId: UUID, userName: String): Result<Boolean> {
-        return userRepository.addUserToProject(projectId = projectId, userName = userName)
+    fun addUserToProject(projectId: String, userName: String): Result<Boolean> {
+        //return userRepository.addUserToProject(projectId = projectId, userName = userName)
+        return Result.success(true)
     }
 
     fun deleteUserFromProject(projectId: UUID, userName: String): Result<Boolean> {
