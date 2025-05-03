@@ -16,6 +16,7 @@ class TaskRepositoryImp(
     private val mateTaskAssignment: IMateTaskAssignmentDataSource,
     private val taskInProjectDataSource: ITaskInProjectDataSource,
     private val taskMapper: TaskMapper,
+    private val manageTasksUseCase: ManageTasksUseCase,
 ) : TaskRepository {
 
     override fun getAllTasks(): Result<List<Task>> = readTasks()
@@ -45,22 +46,17 @@ class TaskRepositoryImp(
         return taskInProjectDataSource.read().fold(
             onSuccess = { taskInProject ->
                 taskInProject.filter {
-                    projectId.toString() == it.projectId
+                    projectId == it.projectId.toSafeUUID()
                 }.map { it.taskId }.let { tasksIds ->
-                    getTasks(tasksIds).let {
-                        Result.success(it)
+                    getTasks(tasksIds).let { tasks ->
+                        Result.success(tasks as List<Task>)
                     }
                 }
             }, onFailure = { Result.failure(it) })
     }
 
     private fun getTasks(tasksIds: List<String>) = tasksIds.mapNotNull {
-        this.getAllTasks().fold(
-            onSuccess = { tasks ->
-                tasks.filter { it }
-            },
-            onFailure = { Result.failure(it) }
-        )
+        this.getAllTasks().getOrNull()?.filter { true }
     }
 
     override fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean> {

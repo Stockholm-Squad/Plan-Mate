@@ -19,8 +19,8 @@ class CreateUserUseCase(
             userRepository.getAllUsers().fold(
                 onSuccess = {
                     handleSuccess(username = username, password = password, users = it).fold(
-                        onSuccess = { userRepository.addUser(it) },
-                        onFailure = { handleFailure(it) })
+                        onSuccess = { user ->  userRepository.addUser(user) },
+                        onFailure = {exception ->  handleFailure(exception) })
                 },
                 onFailure = { handleFailure(it as UsersDataAreEmpty) })
         }.fold(
@@ -47,12 +47,12 @@ class CreateUserUseCase(
         return runCatching {
             checkUserExists(users, username)
         }.fold(
-            onSuccess = { Result.success(User(username, hashedPassword = hashToMd5(password))) },
+            onSuccess = { Result.success(User(username = username, hashedPassword = hashToMd5(password))) },
             onFailure = { Result.failure(it) })
 
     }
 
-    private fun handleFailure(exceptions: Exception): Result<Boolean> {
+    private fun handleFailure(exceptions: Throwable): Result<Boolean> {
         return Result.failure(exceptions)
     }
 
