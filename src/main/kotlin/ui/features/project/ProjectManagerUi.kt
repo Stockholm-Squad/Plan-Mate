@@ -4,7 +4,7 @@ import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface ProjectManagerUi: UiLauncher{
     fun showAllProjects()
-    fun showProjectById()
+    fun showProjectByName()
     fun addProject()
     fun editProject()
     fun deleteProject()
