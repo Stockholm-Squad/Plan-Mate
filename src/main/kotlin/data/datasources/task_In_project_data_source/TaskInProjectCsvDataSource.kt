@@ -20,7 +20,11 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
     override fun read(): Result<List<TaskInProject>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(FileNotExistException())
+            try {
+                file.createNewFile()
+            } catch (throwable: Throwable) {
+                return Result.failure(FileNotExistException())
+            }
         }
 
         return try {
