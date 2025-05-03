@@ -1,7 +1,10 @@
 package org.example.logic.usecase.user
 
 import logic.model.entities.User
-import org.example.logic.model.exceptions.*
+import org.example.logic.model.exceptions.InvalidPassword
+import org.example.logic.model.exceptions.InvalidUserName
+import org.example.logic.model.exceptions.UserExist
+import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.common.ValidateUserDataUseCase
 import org.example.utils.hashToMd5
@@ -19,24 +22,13 @@ class CreateUserUseCase(
             userRepository.getAllUsers().fold(
                 onSuccess = {
                     handleSuccess(username = username, password = password, users = it).fold(
-                        onSuccess = { user ->  userRepository.addUser(user) },
-                        onFailure = {exception ->  handleFailure(exception) })
+                        onSuccess = { user -> userRepository.addUser(user) },
+                        onFailure = { throwable -> handleFailure(throwable) })
                 },
                 onFailure = { handleFailure(it as UsersDataAreEmpty) })
         }.fold(
             onSuccess = { Result.success(true) },
             onFailure = { Result.failure(exception = it) })
-    }
-
-
-    private fun validateUserName(username: String) {
-        if (username.isBlank() || username.length > 20 || username.length < 4 || username.first()
-                .isDigit()
-        ) throw InvalidUserName()
-    }
-
-    private fun validatePassword(password: String) {
-        if (password.isBlank() || password.length < 8) throw InvalidPassword()
     }
 
     private fun handleSuccess(
@@ -52,8 +44,8 @@ class CreateUserUseCase(
 
     }
 
-    private fun handleFailure(exceptions: Throwable): Result<Boolean> {
-        return Result.failure(exceptions)
+    private fun handleFailure(throwable: Throwable): Result<Boolean> {
+        return Result.failure(throwable)
     }
 
     fun checkUserExists(users: List<User>, username: String) {

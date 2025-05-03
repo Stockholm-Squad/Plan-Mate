@@ -1,10 +1,12 @@
 package org.example.logic.usecase.task
 
 import logic.model.entities.Task
-import org.example.logic.model.exceptions.*
+import org.example.logic.model.exceptions.NoTasksCreated
+import org.example.logic.model.exceptions.NoTasksDeleted
+import org.example.logic.model.exceptions.NoTasksFound
+import org.example.logic.model.exceptions.TaskNotFoundException
 import org.example.logic.repository.TaskRepository
-import java.util.UUID
-import kotlin.Result
+import java.util.*
 
 
 class ManageTasksUseCase(private val taskRepository: TaskRepository) {
@@ -48,6 +50,22 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { Result.failure(TaskNotFoundException()) }
         )
 
+    fun getTasksInProject(projectId: UUID): Result<List<Task>> {
+        return taskRepository.getTasksInProject(projectId)
+    }
+
+    fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+        return taskRepository.addTaskInProject(projectId, taskId)
+    }
+
+    fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+        return taskRepository.deleteTaskFromProject(projectId, taskId)
+    }
+
+
+    fun getAllTasksByUserName(userName: String): Result<List<Task>> {
+        return taskRepository.getAllTasksByUserName(userName)
+    }
 
 
 }

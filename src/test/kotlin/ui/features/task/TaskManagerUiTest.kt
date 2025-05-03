@@ -12,7 +12,6 @@ import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.utils.UiMessages
@@ -31,7 +30,6 @@ class TaskManagerUiTest {
     private lateinit var manageTasksUseCase: ManageTasksUseCase
     private lateinit var manageStateUseCase: ManageStatesUseCase
     private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
-    private lateinit var getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
     private lateinit var taskManagerUi: TaskManagerUi
 
     @BeforeEach
@@ -43,7 +41,6 @@ class TaskManagerUiTest {
         manageTasksUseCase = mockk(relaxed = true)
         manageStateUseCase = mockk(relaxed = true)
         manageTasksInProjectUseCase = mockk(relaxed = true)
-        getTasksAssignedToUserUseCase = mockk(relaxed = true)
 
         taskManagerUi = TaskManagerUi(
             reader,
@@ -51,8 +48,7 @@ class TaskManagerUiTest {
             uiUtils,
             manageTasksUseCase,
             manageStateUseCase,
-            manageTasksInProjectUseCase,
-            getTasksAssignedToUserUseCase
+            manageTasksInProjectUseCase
         )
     }
 
