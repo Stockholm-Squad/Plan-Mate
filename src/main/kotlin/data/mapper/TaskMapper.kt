@@ -3,7 +3,7 @@ package org.example.data.mapper
 import logic.model.entities.Task
 import org.example.data.models.TaskModel
 import org.example.data.extention.toLocalDateTime
-import org.example.data.extention.toSafeUUID
+import org.example.logic.usecase.extention.toSafeUUID
 
 class TaskMapper {
     fun mapToTaskEntity(taskModel: TaskModel): Task = Task(

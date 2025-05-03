@@ -10,8 +10,8 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.utils.DateHandler
-import org.example.utils.TaskOptions
+import org.example.ui.utils.DateHandlerImp
+import org.example.ui.utils.TaskOptions
 import java.util.*
 
 
@@ -87,8 +87,8 @@ class TaskManagerUi(
             name = name,
             description = description,
             stateId = stateId,
-            createdDate = DateHandler().getCurrentDateTime(),
-            updatedDate = DateHandler().getCurrentDateTime()
+            createdDate = DateHandlerImp().getCurrentDateTime(),
+            updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
         manageTasksUseCase.createTask(task).fold(
@@ -115,7 +115,7 @@ class TaskManagerUi(
             name = newName,
             description = newDescription,
             stateId = newStateId,
-            updatedDate = DateHandler().getCurrentDateTime()
+            updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
         manageTasksUseCase.editTask(updatedTask).fold(

@@ -7,8 +7,8 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.features.audit.AuditSystemManagerUiImp
-import org.example.utils.Constant
-import org.example.utils.SearchUtils
+import org.example.ui.utils.Constant
+import org.example.ui.utils.SearchUtils
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

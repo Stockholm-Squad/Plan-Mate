@@ -13,7 +13,9 @@ import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.CreateUserUiImp
+import org.example.ui.features.user.CreateUserUi
+import org.example.ui.utils.SearchUtils
+import org.example.ui.utils.UiUtils
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -30,4 +32,7 @@ val uiModule = module {
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
     factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get()) }
     factory<StateManagerUi> { StateManagerUi(get(), get(), get()) }
+
+    factory { UiUtils(get()) }
+    factory { SearchUtils(get(), get()) }
 }

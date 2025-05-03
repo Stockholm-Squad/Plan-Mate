@@ -1,4 +1,4 @@
-package org.example.utils
+package org.example.ui.utils
 
 object Constant {
     const val PLEASE_SELECT_OPTION = "Please select an option:"
