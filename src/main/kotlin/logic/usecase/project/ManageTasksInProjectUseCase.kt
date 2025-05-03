@@ -7,13 +7,13 @@ import java.util.UUID
 
 class ManageTasksInProjectUseCase(
     private val taskUseCase: ManageTasksUseCase,
-    private val projectUseCase: ManageProjectUseCase,
+    private val manageProjectUseCase: ManageProjectUseCase,
     private val taskRepository: TaskRepository
 
 ) {
 
     fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
-        return projectUseCase.getProjectByName(projectName).fold(
+        return manageProjectUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 taskRepository.getTasksInProject(project.id).fold(
                     onSuccess = { taskRefs ->
@@ -28,7 +28,7 @@ class ManageTasksInProjectUseCase(
         )
     }
 
-    fun getTasksInProject(projectId: UUID): Result<List<Task>> {
+    fun getTasksInProjectById(projectId: UUID): Result<List<Task>> {
         return taskRepository.getTasksInProject(projectId)
     }
 

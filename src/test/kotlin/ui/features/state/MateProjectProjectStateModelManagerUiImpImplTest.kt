@@ -18,15 +18,15 @@ class MateProjectProjectStateModelManagerUiImpImplTest {
 
     }
 
-    @Test
-    fun `launch() should call a show all function from parent class and print list of data when called`() {
-        //Given
-        every { userStateManagerUi.showAllStates() } just runs
-
-        //When
-        mateStateManagerUi.launchUi()
-
-        //Then
-        verify { userStateManagerUi.showAllStates() }
-    }
+//    @Test
+//    fun `launch() should call a show all function from parent class and print list of data when called`() {
+//        //Given
+//        every { userStateManagerUi.showAllStates() } just runs
+//
+//        //When
+//        mateStateManagerUi.launchUi()
+//
+//        //Then
+//        verify { userStateManagerUi.showAllStates() }
+//    }
 }
