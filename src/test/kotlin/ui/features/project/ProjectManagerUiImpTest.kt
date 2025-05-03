@@ -103,7 +103,7 @@ class ProjectManagerUiImpTest {
         fun `should display project details when project exists`() {
             // Given
             val project = buildProject(id = "1", name = "Project A")
-            every { manageProjectUseCase.getProjectById("1") } returns Result.success(project)
+            every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
             every { inputReader.readStringOrNull() } returnsMany listOf("2", "1", "0")
 
             // When
@@ -118,7 +118,7 @@ class ProjectManagerUiImpTest {
         @Test
         fun `should display error message when project does not exist`() {
             // Given
-            every { manageProjectUseCase.getProjectById("999") } returns Result.failure(NoSuchElementException("Project not found"))
+            every { manageProjectUseCase.getProjectByName("999") } returns Result.failure(NoSuchElementException("Project not found"))
             every { inputReader.readStringOrNull() } returnsMany listOf("2", "999", "0")
 
             // When
@@ -201,7 +201,7 @@ class ProjectManagerUiImpTest {
             // Given
             val project = buildProject(id = "1", name = "Old Name")
             val updatedProject = buildProject(id = "1", name = "New Name", stateId = project.stateId)
-            every { manageProjectUseCase.getProjectById("1") } returns Result.success(project)
+            every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
             every { inputReader.readStringOrNull() } returnsMany listOf("4", "1", "New Name", "", "no", "0")
             every { manageProjectUseCase.updateProject(updatedProject) } returns Result.success(true)
 
@@ -216,7 +216,7 @@ class ProjectManagerUiImpTest {
         fun `should show error when editing non-existent project`() {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("4", "999", "0")
-            every { manageProjectUseCase.getProjectById("999") } returns Result.failure(NoSuchElementException())
+            every { manageProjectUseCase.getProjectByName("999") } returns Result.failure(NoSuchElementException())
 
             // When
             projectManagerUiImp.launchUi()
@@ -230,7 +230,7 @@ class ProjectManagerUiImpTest {
             // Given
             val project = buildProject(id = "1")
             val updatedProject = buildProject(id = "1", name = "New Name")
-            every { manageProjectUseCase.getProjectById("1") } returns Result.success(project)
+            every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
             every { inputReader.readStringOrNull() } returnsMany listOf("4", "1", "New Name", "", "no", "0")
             every { manageProjectUseCase.updateProject(updatedProject) } returns Result.failure(Exception("Update failed"))
 

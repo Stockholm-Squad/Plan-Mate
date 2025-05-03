@@ -38,14 +38,14 @@ class ProjectManagerUiImp(
             )
     }
 
-    override  fun showProjectById() {
-        outputPrinter.showMessage("Enter project ID: ")
-        val id = inputReader.readStringOrNull() ?: run {
-            outputPrinter.showMessage("Invalid project ID")
+    override  fun showProjectByName() {
+        outputPrinter.showMessage("Enter project Name: ")
+        val projectName = inputReader.readStringOrNull() ?: run {
+            outputPrinter.showMessage("Invalid project Name")
             return
         }
 
-        manageProjectUseCase.getProjectById(id)
+        manageProjectUseCase.getProjectByName(projectName)
             .fold(
                 onSuccess = { project ->
                     outputPrinter.showMessage("Project Details:")
@@ -69,20 +69,20 @@ class ProjectManagerUiImp(
         outputPrinter.showMessage("Available states:")
         stateManagerUi.showAllStates()
 
-        var stateId = ""
+        var stateName = ""
         while (true) {
             outputPrinter.showMessage("Enter state ID (or 'new' to create a new state): ")
             when (val input = inputReader.readStringOrNull()) {
                 "new" -> stateManagerUi.addState()
                 null -> continue
                 else -> {
-                    stateId = input
+                    stateName = input
                     break
                 }
             }
         }
 
-        manageProjectUseCase.addProject(Project(name = name, stateId = stateId))
+        manageProjectUseCase.addProject(Project(name = name, stateId = stateName))
             .fold(
                 onSuccess = { success ->
                     if (success) {
@@ -108,7 +108,7 @@ class ProjectManagerUiImp(
             return
         }
 
-        manageProjectUseCase.getProjectById(id)
+        manageProjectUseCase.getProjectByName(id)
             .fold(
                 onSuccess = { project ->
                     outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
@@ -224,7 +224,7 @@ class ProjectManagerUiImp(
 
             when (inputReader.readStringOrNull()) {
                 "1" -> showAllProjects()
-                "2" -> showProjectById()
+                "2" -> showProjectByName()
                 "3" -> addProject()
                 "4" -> editProject()
                 "5" -> deleteProject()
