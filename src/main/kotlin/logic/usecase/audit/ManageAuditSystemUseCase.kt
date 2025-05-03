@@ -2,17 +2,22 @@ package org.example.logic.usecase.audit
 
 import logic.model.entities.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
+import org.example.logic.usecase.extention.toSafeUUID
 import java.util.*
 
 class ManageAuditSystemUseCase(
     private val auditSystemRepository: AuditSystemRepository
 ) : IManageAuditSystemUseCase {
 
-    override fun getAuditsByEntityTypeId(entityId: UUID): Result<List<AuditSystem>> =
+    override fun getAuditsByEntityTypeId(entityId: String): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = {
-                val result = it.filter { it.entityTypeId == entityId }
-                Result.success(result)
+                try {
+                    val result = it.filter { it.entityTypeId == entityId.toSafeUUID() }
+                    Result.success(result)
+                }catch (e: Exception){
+                    return Result.failure(e)
+                }
             },
             onFailure = { Result.failure(it) }
         )
