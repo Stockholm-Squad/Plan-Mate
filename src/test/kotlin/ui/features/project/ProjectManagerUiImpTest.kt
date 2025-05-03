@@ -203,7 +203,7 @@ class ProjectManagerUiImpTest {
             val updatedProject = buildProject(id = "1", name = "New Name", stateId = project.stateId)
             every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
             every { inputReader.readStringOrNull() } returnsMany listOf("4", "1", "New Name", "", "no", "0")
-            every { manageProjectUseCase.updateProject(updatedProject) } returns Result.success(true)
+            every { manageProjectUseCase.updateProjectState(updatedProject) } returns Result.success(true)
 
             // When
             projectManagerUiImp.launchUi()
@@ -232,7 +232,7 @@ class ProjectManagerUiImpTest {
             val updatedProject = buildProject(id = "1", name = "New Name")
             every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
             every { inputReader.readStringOrNull() } returnsMany listOf("4", "1", "New Name", "", "no", "0")
-            every { manageProjectUseCase.updateProject(updatedProject) } returns Result.failure(Exception("Update failed"))
+            every { manageProjectUseCase.updateProjectState(updatedProject) } returns Result.failure(Exception("Update failed"))
 
             // When
             projectManagerUiImp.launchUi()

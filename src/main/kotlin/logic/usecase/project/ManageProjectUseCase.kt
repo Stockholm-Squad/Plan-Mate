@@ -45,7 +45,7 @@ class ManageProjectUseCase(
     }
 
 
-    fun updateProject(projectName: String, newProjectStateName: String): Result<Boolean> {
+    fun updateProjectState(projectName: String, newProjectStateName: String): Result<Boolean> {
         val newProjectStateId =
             manageProjectState.getProjectStateIdByName(newProjectStateName)
                 ?: return Result.failure(StateNotExistException())

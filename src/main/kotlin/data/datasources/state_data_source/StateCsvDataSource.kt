@@ -1,6 +1,6 @@
 package org.example.data.datasources.state_data_source
 
-import org.example.data.models.State
+import org.example.data.models.ProjectStateModel
 import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.WriteDataException
@@ -16,7 +16,7 @@ import java.io.File
 class StateCsvDataSource(private val filePath: String) : IStateDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<State>> {
+    override fun read(): Result<List<ProjectStateModel>> {
         val file = resolveFile()
         if (!file.exists()) {
             try {
@@ -31,7 +31,7 @@ class StateCsvDataSource(private val filePath: String) : IStateDataSource {
                 return Result.success(emptyList())
 
             val users = DataFrame.readCSV(file)
-                .cast<State>()
+                .cast<ProjectStateModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -39,7 +39,7 @@ class StateCsvDataSource(private val filePath: String) : IStateDataSource {
         }
     }
 
-    override fun overWrite(users: List<State>): Result<Boolean> {
+    override fun overWrite(users: List<ProjectStateModel>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -48,12 +48,12 @@ class StateCsvDataSource(private val filePath: String) : IStateDataSource {
         }
     }
 
-    override fun append(users: List<State>): Result<Boolean> {
+    override fun append(users: List<ProjectStateModel>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                } else emptyList<State>().toDataFrame()
+                } else emptyList<ProjectStateModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)
