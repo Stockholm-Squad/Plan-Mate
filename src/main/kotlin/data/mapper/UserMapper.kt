@@ -1,6 +1,6 @@
 package org.example.data.mapper
 
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import org.example.data.models.UserModel
 import org.example.data.extention.toSafeUUID
 
@@ -16,12 +16,12 @@ class UserMapper {
         user.id.toString(),
         user.username,
         user.hashedPassword,
-        user.role.toString()
+        user.userRole.toString()
     )
 
-    fun getRoleType(role: String): Role = when {
-        role.equals("Role.MATE", ignoreCase = true) -> Role.MATE
-        role.equals("Role.ADMIN", ignoreCase = true) -> Role.ADMIN
+    fun getRoleType(role: String): UserRole = when {
+        role.equals("Role.MATE", ignoreCase = true) -> UserRole.MATE
+        role.equals("Role.ADMIN", ignoreCase = true) -> UserRole.ADMIN
         else -> throw Exception("Unknown role type: $role")
     }
 }

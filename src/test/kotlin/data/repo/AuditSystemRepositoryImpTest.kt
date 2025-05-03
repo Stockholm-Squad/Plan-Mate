@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.AuditSystem
-import logic.model.entities.AuditSystemType
+import logic.model.entities.EntityType
 import org.example.data.datasources.PlanMateDataSource
 import org.example.data.repo.AuditSystemRepositoryImp
 import utils.createAuditSystem
@@ -20,7 +20,7 @@ class AuditSystemRepositoryImpTest {
     private val auditList = listOf(
         createAuditSystem(
             id = "1",
-            auditSystemType = AuditSystemType.TASK,
+            entityType = EntityType.TASK,
             entityId = "123",
             changeDescription = "Changed something",
             changedBy = "Admin"
@@ -39,7 +39,7 @@ class AuditSystemRepositoryImpTest {
         //given
         every { auditSystemDataSource.append(auditList) } returns Result.success(true)
         //when
-        val result = auditSystemRepositoryImp.recordAuditsEntries(auditList)
+        val result = auditSystemRepositoryImp.addAuditsEntries(auditList)
         //then
         assertThat(result.isSuccess).isTrue()
         verify { auditSystemDataSource.append(auditList) }
@@ -50,7 +50,7 @@ class AuditSystemRepositoryImpTest {
         //given
         every { auditSystemDataSource.append(auditList) } returns Result.failure(Exception("Append failed"))
         //when
-        val result = auditSystemRepositoryImp.recordAuditsEntries(auditList)
+        val result = auditSystemRepositoryImp.addAuditsEntries(auditList)
         //then
         assertThat(result.isFailure).isTrue()
         verify { auditSystemDataSource.append(auditList) }

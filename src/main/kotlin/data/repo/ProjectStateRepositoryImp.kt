@@ -1,40 +1,40 @@
 package org.example.data.repo
 
-import logic.model.entities.State
+import logic.model.entities.ProjectState
 import org.example.data.datasources.state_data_source.IStateDataSource
 import org.example.data.mapper.StateMapper
-import org.example.logic.repository.StateRepository
+import org.example.logic.repository.ProjectStateRepository
 
-class StateRepositoryImp(
+class ProjectStateRepositoryImp(
     private val stateDataSource: IStateDataSource,
     private val stateMapper: StateMapper,
-) : StateRepository {
+) : ProjectStateRepository {
 
-    override fun addState(stateName: String): Result<Boolean> {
-        return stateDataSource.append(listOf(stateMapper.mapToStateModel(State(name = stateName))))
+    override fun addProjectState(stateName: String): Result<Boolean> {
+        return stateDataSource.append(listOf(stateMapper.mapToStateModel(ProjectState(name = stateName))))
     }
 
-    override fun editState(state: State): Result<Boolean> {
+    override fun editProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.map { item -> if (item.id == state.id.toString()) state else item }
+                currentStates.map { item -> if (item.id == projectState.id.toString()) projectState else item }
                 stateDataSource.overWrite(currentStates)
             },
             onFailure = { exception -> Result.failure(exception) }
         )
     }
 
-    override fun deleteState(state: State): Result<Boolean> {
+    override fun deleteProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.filterNot { it == stateMapper.mapToStateModel(state) }
+                currentStates.filterNot { it == stateMapper.mapToStateModel(projectState) }
                 stateDataSource.overWrite(currentStates)
             },
             onFailure = { exception -> Result.failure(exception) }
         )
     }
 
-    override fun getAllStates(): Result<List<State>> {
+    override fun getAllProjectStates(): Result<List<ProjectState>> {
         return stateDataSource.read().fold(
             onSuccess = { allStates ->
                 Result.success(allStates.map { it1 -> stateMapper.mapToStateEntity(it1) })

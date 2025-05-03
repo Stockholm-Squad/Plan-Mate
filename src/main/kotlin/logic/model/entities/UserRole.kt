@@ -1,5 +1,5 @@
 package logic.model.entities
 
-enum class Role {
+enum class UserRole {
     ADMIN, MATE
 }

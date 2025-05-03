@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import modle.buildUser
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -106,7 +106,7 @@ class LoginUiTest {
         val user = buildUser(
             username = "adminusername",
             hashedPassword = "011a5aee585278f6be5352cd762203df",
-            role = Role.MATE
+            userRole = UserRole.MATE
         )
         every { reader.readStringOrNull() } returnsMany listOf("userName", "userNamePassword")
         every {

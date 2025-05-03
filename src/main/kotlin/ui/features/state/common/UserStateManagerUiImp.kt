@@ -1,6 +1,6 @@
 package org.example.ui.features.state.common
 
-import logic.model.entities.State
+import logic.model.entities.ProjectState
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.state.ManageStatesUseCase
 
@@ -9,7 +9,7 @@ open class UserStateManagerUiImp(
     private val printer: OutputPrinter
 ) : UserStateManagerUi {
     override fun showAllStates() {
-        manageStatesUseCase.getAllStates().fold(
+        manageStatesUseCase.getAllProjectStates().fold(
             onSuccess = ::handleSuccess,
             onFailure = ::handleFailure
         )
@@ -20,7 +20,7 @@ open class UserStateManagerUiImp(
         printer.showMessage("Please try again ^_^")
     }
 
-    private fun handleSuccess(states: List<State>) {
-        printer.showStates(states)
+    private fun handleSuccess(projectStates: List<ProjectState>) {
+        printer.showStates(projectStates)
     }
 }

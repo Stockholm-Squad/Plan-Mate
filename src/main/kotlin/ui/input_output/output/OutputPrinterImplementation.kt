@@ -1,6 +1,6 @@
 package org.example.ui.input_output.output
 
-import logic.model.entities.State
+import logic.model.entities.ProjectState
 import logic.model.entities.Task
 import data.models.MateTaskAssignment
 import kotlin.collections.forEach
@@ -31,15 +31,15 @@ class OutputPrinterImplementation : OutputPrinter {
         }
     }
 
-    override fun showStates(states: List<State>) {
-        this.printStateUsingSwimlaneUi(states)
+    override fun showStates(projectStates: List<ProjectState>) {
+        this.printStateUsingSwimlaneUi(projectStates)
     }
 
-    private fun printStateUsingSwimlaneUi(states: List<State>) {
+    private fun printStateUsingSwimlaneUi(projectStates: List<ProjectState>) {
         println("┌──────────────────────────────┐")
         println("│ State                        │")
         println("├──────────────────────────────┤")
-        states.forEach {
+        projectStates.forEach {
             println("│ %-28s │".format(it.name))
         }
         println("└──────────────────────────────┘")
@@ -51,7 +51,7 @@ class OutputPrinterImplementation : OutputPrinter {
             return
         }
 
-        val groupedByEntityType = audits.groupBy { it.auditSystemType }
+        val groupedByEntityType = audits.groupBy { it.entityType }
 
         for ((entityType, entries) in groupedByEntityType) {
             println("\n========== $entityType ==========\n")

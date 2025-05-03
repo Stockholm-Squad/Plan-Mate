@@ -3,7 +3,6 @@ package org.example.ui.features.task
 import logic.model.entities.Task
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
@@ -81,7 +80,7 @@ class TaskManagerUi(
         val (name, description, stateName) = readTaskInput()
             ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message)
 
-        val stateId = manageStateUseCase.getStateIdByName(stateName)
+        val stateId = manageStateUseCase.getProjectStateIdByName(stateName)
             ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message)
 
         val task = Task(
@@ -110,7 +109,7 @@ class TaskManagerUi(
         val (newName, newDescription, newStateName) = readTaskInput()
             ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message)
 
-        val newStateId = manageStateUseCase.getStateIdByName(newStateName)
+        val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
             ?: return printer.showMessage(UiMessages.INVALID_STATE_NAME.message)
 
         val updatedTask = existingTask.copy(

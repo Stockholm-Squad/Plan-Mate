@@ -192,7 +192,7 @@ class ProjectManagerUi(
             return false
         }
 
-        return manageUsersAssignedToProjectUseCase.assignUserToProject(username, projectId)
+        return manageUsersAssignedToProjectUseCase.addUserToProject(username, projectId)
             .fold(
                 onSuccess = { success ->
                     if (success) {

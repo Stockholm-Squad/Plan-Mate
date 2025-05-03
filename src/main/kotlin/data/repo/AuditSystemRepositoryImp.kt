@@ -9,7 +9,7 @@ class AuditSystemRepositoryImp(
     private val auditSystemDataSource: IAuditSystemDataSource,
     private val auditSystemMapper: AuditSystemMapper
 ) : AuditSystemRepository {
-    override fun recordAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean> =
+    override fun addAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean> =
         auditSystemDataSource.append(auditSystem.map(auditSystemMapper::mapToAuditSystemModel))
 
     override fun getAllAuditEntries(): Result<List<AuditSystem>> =

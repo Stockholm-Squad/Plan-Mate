@@ -45,7 +45,7 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
-                manageStatesUseCase.addState(stateName = stateName).fold(
+                manageStatesUseCase.addProjectState(stateName = stateName).fold(
                     onSuccess = { showAddStateMessage() },
                     onFailure = { showFailure("Failed to Add state: ${it.message}") }
                 )
@@ -57,7 +57,7 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             !stateName.isNullOrEmpty()
         }?.let { stateName ->
-            manageStatesUseCase.editState(stateName = stateName).fold(
+            manageStatesUseCase.editProjectStateByName(stateName = stateName).fold(
                 onSuccess = { showStateUpdatedMessage() },
                 onFailure = { showFailure("Failed to Update state: ${it.message}") }
             )
@@ -85,7 +85,7 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
-            manageStatesUseCase.deleteState(stateName = stateName).fold(
+            manageStatesUseCase.deleteProjectState(stateName = stateName).fold(
                 onSuccess = { showStateDeletedMessage() },
                 onFailure = { showFailure("Failed to Delete state: ${it.message}") }
             )

@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import modle.buildUser
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.UserRepository
@@ -119,7 +119,7 @@ class LoginUseCaseTest() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.success(users)
         val user =
-            buildUser(username = "johnDoe", hashedPassword = "6c6b8a98fc1503009200747f9ca0420e", role = Role.MATE)
+            buildUser(username = "johnDoe", hashedPassword = "6c6b8a98fc1503009200747f9ca0420e", userRole = UserRole.MATE)
         val result = useCase.loginUser(username = "johnDoe", password = "hashedPass1")
         assertThat(result.getOrThrow()).isEqualTo(user)
         verify(exactly = 1) { repository.getAllUsers() }

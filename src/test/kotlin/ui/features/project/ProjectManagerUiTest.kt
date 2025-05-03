@@ -278,7 +278,7 @@ class ProjectManagerUiTest {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("6", "no", "user1", "1", "no", "done", "0")
             every { manageProjectUseCase.isProjectExists("1") } returns Result.success(true)
-            every { manageUsersAssignedToProjectUseCase.assignUserToProject(any(), any()) } returns Result.success(true)
+            every { manageUsersAssignedToProjectUseCase.addUserToProject(any(), any()) } returns Result.success(true)
 
             // When
             projectManagerUi.launchUi()
@@ -318,7 +318,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("6", "no", "user1", "999", "no", "done", "0")
 //            every { manageAuthenticationUseCase.isUserExists("user1") } returns Result.success(true)
             every { manageProjectUseCase.isProjectExists("999") } returns Result.failure(Throwable())
-            every { manageUsersAssignedToProjectUseCase.assignUserToProject("user1", "999") } returns Result.success(
+            every { manageUsersAssignedToProjectUseCase.addUserToProject("user1", "999") } returns Result.success(
                 true
             )
 
@@ -335,7 +335,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("6", "no", "user1", "1", "no", "done", "0")
 //            every { manageAuthenticationUseCase.isUserExists("user1") } returns Result.success(true)
             every { manageProjectUseCase.isProjectExists("1") } returns Result.success(true)
-            every { manageUsersAssignedToProjectUseCase.assignUserToProject("user1", "1") } returns Result.failure(
+            every { manageUsersAssignedToProjectUseCase.addUserToProject("user1", "1") } returns Result.failure(
                 Exception("Assignment failed")
             )
 

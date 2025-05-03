@@ -1,5 +1,5 @@
 package logic.model.entities
 
-enum class AuditSystemType {
+enum class EntityType {
     TASK, PROJECT
 }

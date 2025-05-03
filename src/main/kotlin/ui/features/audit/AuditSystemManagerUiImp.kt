@@ -38,7 +38,7 @@ class AuditSystemManagerUiImp(
     private fun displayAuditLogsByProjectId() {
         printer.showMessage(Constant.PROMPT_PROJECT_ID)
         reader.readStringOrNull()?.let {
-            useCase.getProjectChangeLogsById(it).fold(
+            useCase.getAuditsByEntityTypeId(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
                 onFailure = { printer.showMessage(it.message.toString()) }
             )
@@ -69,7 +69,7 @@ class AuditSystemManagerUiImp(
     private fun displayAuditByUsername() {
         printer.showMessage(Constant.PROMPT_USERNAMES)
         reader.readStringOrNull()?.let {
-            useCase.getUserChangeLogsByUsername(it).fold(
+            useCase.getAuditsByUserId(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
                 onFailure = { printer.showMessage(it.message.toString()) }
             )

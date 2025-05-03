@@ -174,14 +174,14 @@ class TaskManagerUiTest {
         val stateId = "1"
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
-        every { manageStateUseCase.getStateIdByName(stateName) } returns stateId
+        every { manageStateUseCase.getProjectStateIdByName(stateName) } returns stateId
         every { manageTasksUseCase.createTask(any()) } returns Result.success(true)
 
         // When
         taskManagerUi.createTask()
 
         // Then
-        verify(exactly = 1) { manageStateUseCase.getStateIdByName(stateName) }
+        verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
         verify(exactly = 1) { manageTasksUseCase.createTask(any()) }
         verify(exactly = 1) { printer.printTask(any()) }
     }
@@ -196,7 +196,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
-        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -212,7 +212,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
-        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -224,14 +224,14 @@ class TaskManagerUiTest {
         val stateName = "Invalid State"
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
-        every { manageStateUseCase.getStateIdByName(stateName) } returns null
+        every { manageStateUseCase.getProjectStateIdByName(stateName) } returns null
 
         // When
         taskManagerUi.createTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message) }
-        verify(exactly = 1) { manageStateUseCase.getStateIdByName(stateName) }
+        verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -246,7 +246,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT.message) }
-        verify(exactly = 0) { manageStateUseCase.getStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
     }
 
@@ -272,7 +272,7 @@ class TaskManagerUiTest {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
-        every { manageStateUseCase.getStateIdByName(newStateName) } returns newStateId
+        every { manageStateUseCase.getProjectStateIdByName(newStateName) } returns newStateId
         every { manageTasksUseCase.editTask(any()) } returns Result.success(true)
 
         // When
@@ -480,7 +480,7 @@ class TaskManagerUiTest {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskById(taskId) } returns Result.success(existingTask)
-        every { manageStateUseCase.getStateIdByName(newStateName) } returns null
+        every { manageStateUseCase.getProjectStateIdByName(newStateName) } returns null
 
         // When
         taskManagerUi.editTask()

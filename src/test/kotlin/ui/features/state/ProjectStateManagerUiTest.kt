@@ -1,7 +1,7 @@
 package ui.features.state
 
 import io.mockk.*
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.state.StateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUi
@@ -9,7 +9,7 @@ import org.example.ui.features.state.mate.MateStateManagerUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class StateManagerUiTest {
+class ProjectStateManagerUiTest {
     private lateinit var adminStateManagerUi: AdminStateManagerUi
     private lateinit var mateStateManagerUi: MateStateManagerUi
     private lateinit var stateManagerUi: StateManagerUi
@@ -26,11 +26,11 @@ class StateManagerUiTest {
     @Test
     fun `launchStateManagerUi() should launch adminStateManagerUi when role is ADMIN`() {
         //Given
-        val role = Role.ADMIN
+        val userRole = UserRole.ADMIN
         every { adminStateManagerUi.launchUi() } just runs
 
         //When
-        stateManagerUi.launchStateManagerUi(role)
+        stateManagerUi.launchStateManagerUi(userRole)
 
         //Then
         verify { adminStateManagerUi.launchUi() }
@@ -39,11 +39,11 @@ class StateManagerUiTest {
     @Test
     fun `launchStateManagerUi() should launch mateStateManagerUi when role is MATE`() {
         //Given
-        val role = Role.MATE
+        val userRole = UserRole.MATE
         every { mateStateManagerUi.launchUi() } just runs
 
         //When
-        stateManagerUi.launchStateManagerUi(role)
+        stateManagerUi.launchStateManagerUi(userRole)
 
         //Then
         verify { mateStateManagerUi.launchUi() }

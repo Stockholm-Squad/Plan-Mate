@@ -3,8 +3,8 @@ package org.example.logic.usecase.task
 import logic.model.entities.Task
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
+import java.util.UUID
 import kotlin.Result
-import kotlin.String
 
 
 class ManageTasksUseCase(private val taskRepository: TaskRepository) {
@@ -15,7 +15,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
         )
 
-    fun getTaskById(taskId: String?): Result<Task> =
+    fun getTaskById(taskId: UUID?): Result<Task> =
         taskRepository.getAllTasks().fold(
             onSuccess = { tasks ->
                 tasks.find { it.id == taskId }
@@ -26,7 +26,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
         )
 
     fun createTask(task: Task): Result<Boolean> =
-        taskRepository.createTask(task).fold(
+        taskRepository.addTask(task).fold(
             onSuccess = { Result.success(true) },
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksCreated()) }
         )
@@ -37,7 +37,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoTasksFound()) }
         )
 
-    fun deleteTask(taskId: String?): Result<Boolean> =
+    fun deleteTask(taskId: UUID?): Result<Boolean> =
         getTaskById(taskId).fold(
             onSuccess = {
                 taskRepository.deleteTask(taskId).fold(
@@ -47,5 +47,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             },
             onFailure = { Result.failure(PlanMateExceptions.LogicException.TaskNotFoundException()) }
         )
+
+
 
 }

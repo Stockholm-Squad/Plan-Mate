@@ -1,6 +1,4 @@
 package logic.model.entities
-
-
 import java.util.*
 
 

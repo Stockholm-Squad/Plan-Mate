@@ -1,6 +1,6 @@
 package org.example.ui.features.state
 
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
@@ -10,10 +10,10 @@ class StateManagerUi(
     private val mateStateManagerUi: MateStateManagerUi,
     private val printer: OutputPrinter
 ) {
-    fun launchStateManagerUi(userRole: Role?) {
+    fun launchStateManagerUi(userRole: UserRole?) {
         when (userRole) {
-            Role.ADMIN -> adminStateManagerUi.launchUi()
-            Role.MATE -> mateStateManagerUi.launchUi()
+            UserRole.ADMIN -> adminStateManagerUi.launchUi()
+            UserRole.MATE -> mateStateManagerUi.launchUi()
             else -> printer.showMessage("Invalid user")
         }
     }

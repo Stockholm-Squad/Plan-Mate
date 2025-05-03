@@ -1,6 +1,6 @@
 package org.example.ui
 
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import logic.model.entities.User
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -31,9 +31,9 @@ class PlanMateConsoleUi(
     }
 
     private fun handleBasedOnRole() {
-        when (user?.role) {
-            Role.ADMIN -> handleAdminUi()
-            Role.MATE -> handleMateUi()
+        when (user?.userRole) {
+            UserRole.ADMIN -> handleAdminUi()
+            UserRole.MATE -> handleMateUi()
             null -> return
         }
     }
@@ -58,7 +58,7 @@ class PlanMateConsoleUi(
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
                 MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
-                MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
+                MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.userRole)
                 MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
                 MateChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
@@ -72,7 +72,7 @@ class PlanMateConsoleUi(
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
-                AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.role)
+                AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchStateManagerUi(user?.userRole)
                 AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
                 AdminChoice.LOGOUT.choice -> logout()

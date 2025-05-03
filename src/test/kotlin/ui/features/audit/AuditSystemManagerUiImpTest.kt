@@ -78,11 +78,11 @@ class AuditSystemManagerUiImpTest {
         every { searchUtils.getMainMenuOption() } returns 3 andThen 6
         every { reader.readStringOrNull() } returns "projId"
         every { searchUtils.shouldSearchAgain(reader) } returns false
-        every { useCase.getProjectChangeLogsById("projId") } returns Result.success(emptyList())
+        every { useCase.getAuditsByEntityTypeId("projId") } returns Result.success(emptyList())
         //when
         auditSystemUi.showAuditSystemManagerUI()
         //then
-        verify { useCase.getProjectChangeLogsById("projId") }
+        verify { useCase.getAuditsByEntityTypeId("projId") }
     }
 
     @Test
@@ -129,11 +129,11 @@ class AuditSystemManagerUiImpTest {
         every { searchUtils.getMainMenuOption() } returns 5 andThen 6
         every { reader.readStringOrNull() } returns "user"
         every { searchUtils.shouldSearchAgain(reader) } returns false
-        every { useCase.getUserChangeLogsByUsername("user") } returns Result.success(emptyList())
+        every { useCase.getAuditsByUserId("user") } returns Result.success(emptyList())
         //when
         auditSystemUi.showAuditSystemManagerUI()
         //then
-        verify { useCase.getUserChangeLogsByUsername("user") }
+        verify { useCase.getAuditsByUserId("user") }
     }
 
     @Test
@@ -201,7 +201,7 @@ class AuditSystemManagerUiImpTest {
         every { searchUtils.getMainMenuOption() } returns 3 andThen 6
         every { searchUtils.shouldSearchAgain(reader) } returns false
         every { reader.readStringOrNull() } returns "456"
-        every { useCase.getProjectChangeLogsById("456") } returns Result.failure(Exception("Project fetch failed"))
+        every { useCase.getAuditsByEntityTypeId("456") } returns Result.failure(Exception("Project fetch failed"))
         //when
         auditSystemUi.showAuditSystemManagerUI()
         //then
@@ -227,7 +227,7 @@ class AuditSystemManagerUiImpTest {
         every { searchUtils.getMainMenuOption() } returns 5 andThen 6
         every { searchUtils.shouldSearchAgain(reader) } returns false
         every { reader.readStringOrNull() } returns "userX"
-        every { useCase.getUserChangeLogsByUsername("userX") } returns Result.failure(Exception("User fetch failed"))
+        every { useCase.getAuditsByUserId("userX") } returns Result.failure(Exception("User fetch failed"))
         //when
         auditSystemUi.showAuditSystemManagerUI()
         //then

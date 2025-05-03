@@ -77,7 +77,7 @@ class TaskRepositoryImpTest {
         every { taskDataSource.overWrite(any()) } returns Result.success(true)
 
         // When
-        val result = taskRepository.createTask(newTask)
+        val result = taskRepository.addTask(newTask)
 
         // Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -100,7 +100,7 @@ class TaskRepositoryImpTest {
         every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
-        val result = taskRepository.createTask(newTask)
+        val result = taskRepository.addTask(newTask)
 
         // Then
         assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
@@ -190,7 +190,7 @@ class TaskRepositoryImpTest {
         every {mateTaskAssignmentCsvDataSource.read() } returns Result.success(assignments)
 
         // When
-        val result = taskRepository.getAllMateTaskAssignment(mateName)
+        val result = taskRepository.getAllTasksByUserName(mateName)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(assignments)
@@ -202,7 +202,7 @@ class TaskRepositoryImpTest {
         every { mateTaskAssignmentCsvDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
 
         // When
-        val result = taskRepository.getAllMateTaskAssignment(mateName)
+        val result = taskRepository.getAllTasksByUserName(mateName)
 
         // Then
        assertThrows<PlanMateExceptions.DataException.ReadException> {

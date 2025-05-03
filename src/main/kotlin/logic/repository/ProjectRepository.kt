@@ -9,9 +9,5 @@ interface ProjectRepository {
     fun editProject(updatedProject: Project): Result<Boolean>
     fun deleteProject(projectToDelete: Project): Result<Boolean>
     fun getAllProjects(): Result<List<Project>>
-
-    fun getUsersAssignedToProject(projectId: String): Result<List<User>>
-    fun addUserAssignedToProject(projectId: String, userName: String): Result<Boolean>
-    fun deleteUserAssignedToProject(projectId: String, userName: String): Result<Boolean>
     fun getProjectsAssignedToUser(userName: String): Result<List<Project>>
 }

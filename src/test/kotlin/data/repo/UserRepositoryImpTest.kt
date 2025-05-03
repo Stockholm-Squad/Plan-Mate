@@ -30,7 +30,7 @@ class UserRepositoryImpTest {
   every { mockDataSource.append(listOf(user)) } returns Result.success(true)
 
   // When
-  val result = userRepository.createUser(user)
+  val result = userRepository.addUser(user)
 
   // Then
   assertTrue(result.isSuccess)
@@ -46,7 +46,7 @@ class UserRepositoryImpTest {
   every { mockDataSource.append(listOf(user)) } returns Result.failure(expectedException)
 
   // When
-  val result = userRepository.createUser(user)
+  val result = userRepository.addUser(user)
 
   // Then
   assertTrue(result.isFailure)
@@ -108,7 +108,7 @@ class UserRepositoryImpTest {
   every { mockDataSource.append(listOf(user)) } returns Result.success(false)
 
   // When
-  val result = userRepository.createUser(user)
+  val result = userRepository.addUser(user)
 
   // Then
   assertTrue(result.isSuccess)

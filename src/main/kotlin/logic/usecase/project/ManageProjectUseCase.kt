@@ -3,6 +3,7 @@ package org.example.logic.usecase.project
 import logic.model.entities.Project
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.ProjectRepository
+import java.util.*
 
 class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
 
@@ -13,19 +14,18 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
         )
     }
 
-    fun getProjectById(id: String): Result<Project> {
+    fun getProjectById(id: UUID): Result<Project> {
         return projectRepository.getAllProjects().fold(
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
-            onSuccess = { allProjects -> getProject(id, allProjects) }
+            onSuccess = { allProjects -> findProject(id, allProjects) }
         )
     }
 
-    private fun getProject(id: String, allProjects: List<Project>): Result<Project> {
+    private fun findProject(id: UUID, allProjects: List<Project>): Result<Project> {
         return allProjects.find { it.id == id }?.let { Result.success(it) }
             ?: Result.failure(PlanMateExceptions.LogicException.NoObjectFound())
 
     }
-
     //ToDO add task, add state
     fun addProject(project: Project): Result<Boolean> {
         return projectRepository.addProject(project).fold(
@@ -42,17 +42,17 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
         )
     }
 
-    fun removeProjectById(id: String): Result<Boolean> {
-        return getProjectById(id).fold(
+    fun removeProjectById(projectId: UUID): Result<Boolean> {
+        return getProjectById(projectId).fold(
             onFailure = { Result.failure(PlanMateExceptions.LogicException.NoObjectFound()) },
             onSuccess = { project -> Result.success(true).let { projectRepository.deleteProject(project) } }
         )
     }
 
-    fun isProjectExists(projectId: String): Result<Boolean> {
+    fun isProjectExists(projectId: UUID): Result<Boolean> {
         return getProjectById(projectId).fold(
             onSuccess = { Result.success(true) },
-            onFailure = { throwable -> Result.failure(throwable) }
+            onFailure = { exception -> Result.failure(exception) }
         )
     }
 }

@@ -1,7 +1,7 @@
 package logic.usecase.project
 
 import io.mockk.*
-import logic.model.entities.Role
+import logic.model.entities.UserRole
 import logic.model.entities.User
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.model.exceptions.PlanMateExceptions
@@ -41,7 +41,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         )
 
         // When
-        val result = useCase.getUsersAssignedToProject("1")
+        val result = useCase.getUsersByProjectId("1")
 
         // Then
         assertTrue(result.isSuccess)
@@ -67,7 +67,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
 
 
         // When
-        val result = useCase.getUsersAssignedToProject("1")
+        val result = useCase.getUsersByProjectId("1")
 
         // Then
         assertTrue(result.isSuccess)
@@ -84,24 +84,24 @@ class ManageUsersAssignedToProjectUseCaseTest {
                 User(
                     username = "user1",
                     hashedPassword = "",
-                    role = Role.MATE
+                    userRole = UserRole.MATE
                 ),
                 User(
                     username = "user2",
                     hashedPassword = "",
-                    role = Role.MATE
+                    userRole = UserRole.MATE
                 ),
                 User(
                     username = "user3",
                     hashedPassword = "",
-                    role = Role.MATE
+                    userRole = UserRole.MATE
                 ),
             )
         )
 
 
         // When
-        val result = useCase.getUsersAssignedToProject("1")
+        val result = useCase.getUsersByProjectId("1")
 
         // Then
         assertTrue(result.isFailure)
@@ -114,7 +114,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         every { projectRepository.addUserAssignedToProject("1", "user1") } returns Result.success(true)
 
         // When
-        val result = useCase.assignUserToProject("1", "user1")
+        val result = useCase.addUserToProject("1", "user1")
 
         // Then
         assertTrue(result.isSuccess)
@@ -128,7 +128,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         every { projectRepository.addUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.assignUserToProject("1", "user1")
+        val result = useCase.addUserToProject("1", "user1")
 
         // Then
         assertTrue(result.isFailure)
@@ -142,7 +142,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         every { projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.success(true)
 
         // When
-        val result = useCase.deleteUserAssignedToProject("1", "user1")
+        val result = useCase.deleteUserFromProject("1", "user1")
 
         // Then
         assertTrue(result.isSuccess)
@@ -155,7 +155,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user2"))
 
         // When
-        val result = useCase.deleteUserAssignedToProject("1", "user1")
+        val result = useCase.deleteUserFromProject("1", "user1")
 
         // Then
         assertTrue(result.isSuccess)
@@ -169,7 +169,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteUserAssignedToProject("1", "user1")
+        val result = useCase.deleteUserFromProject("1", "user1")
 
         // Then
         assertTrue(result.isFailure)
@@ -184,7 +184,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
         every { projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteUserAssignedToProject("1", "user1")
+        val result = useCase.deleteUserFromProject("1", "user1")
 
         // Then
         assertTrue(result.isFailure)

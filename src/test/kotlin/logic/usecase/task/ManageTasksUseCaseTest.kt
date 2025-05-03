@@ -86,7 +86,7 @@ class ManageTasksUseCaseTest {
     fun `createTask() should return true result when the task created`() {
         // Given
         val task = Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
-        every { taskRepository.createTask(task) } returns Result.success(true)
+        every { taskRepository.addTask(task) } returns Result.success(true)
         // When
         val result = manageTasksUseCase.createTask(task)
 
@@ -98,7 +98,7 @@ class ManageTasksUseCaseTest {
     fun `createTask() should return failure result when the task already exists`() {
         // Given
         val task = Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
-        every { taskRepository.createTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
+        every { taskRepository.addTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
         // When
         val result = manageTasksUseCase.createTask(task)
 
@@ -111,7 +111,7 @@ class ManageTasksUseCaseTest {
     @Test
     fun `createTask() should return failure when repository returns false`() {
         val task = buildTask()
-        every { taskRepository.createTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
+        every { taskRepository.addTask(task) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksCreated())
 
         val result = manageTasksUseCase.createTask(task)
 

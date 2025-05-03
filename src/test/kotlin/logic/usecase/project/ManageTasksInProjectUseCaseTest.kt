@@ -95,7 +95,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.addTaskInProject("1", "101") } returns Result.success(true)
 
         // When
-        val result = useCase.addTaskAssignedToProject("1", "101")
+        val result = useCase.addTaskToProject("1", "101")
 
         // Then
         assertTrue(result.isSuccess)
@@ -109,7 +109,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.addTaskInProject("1", "101") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.addTaskAssignedToProject("1", "101")
+        val result = useCase.addTaskToProject("1", "101")
 
         // Then
         assertTrue(result.isFailure)
@@ -123,7 +123,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.deleteTaskFromProject("1", "101") } returns Result.success(true)
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isSuccess)
@@ -136,7 +136,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.getTasksInProject("1") } returns Result.success(listOf("102"))
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isSuccess)
@@ -150,7 +150,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.getTasksInProject("1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isFailure)
@@ -165,7 +165,7 @@ class ManageTasksInProjectUseCaseTest {
         every { projectRepository.deleteTaskFromProject("1", "101") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteTaskAssignedToProject("1", "101")
+        val result = useCase.deleteTaskFromProject("1", "101")
 
         // Then
         assertTrue(result.isFailure)

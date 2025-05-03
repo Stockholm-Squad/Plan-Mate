@@ -7,7 +7,6 @@ import org.example.data.datasources.task_data_source.ITaskDataSource
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.mapper.TaskMapper
-import org.example.logic.model.exceptions.PlanMateExceptions
 import org.example.logic.repository.TaskRepository
 import org.example.logic.usecase.task.ManageTasksUseCase
 
@@ -21,7 +20,7 @@ class TaskRepositoryImp(
 
     override fun getAllTasks(): Result<List<Task>> = readTasks()
 
-    override fun createTask(task: Task): Result<Boolean> {
+    override fun addTask(task: Task): Result<Boolean> {
         return taskDataSource.append(listOf(taskMapper.mapToTaskModel(task)))
     }
 
@@ -76,11 +75,11 @@ class TaskRepositoryImp(
     }
 
 
-    override fun getAllMateTaskAssignment(mateName: String): Result<List<Task>> =
+    override fun getAllTasksByUserName(userName: String): Result<List<Task>> =
         mateTaskAssignment.read().fold(
             onSuccess = { taskToMate ->
                 taskToMate.filter {
-                    mateName == it.userName
+                    userName == it.userName
                 }.map { it.taskId }.let { tasksIds ->
                     tasksIds.mapNotNull {
                         manageTasksUseCase.getTaskById(it).getOrNull()
@@ -91,10 +90,10 @@ class TaskRepositoryImp(
             }, onFailure = { Result.failure(it) }
         )
 
-    override fun getAllTaskByMateId(mateId: String): Result<List<Task>> {
+    override fun getAllTasksByUserId(userId: String): Result<List<Task>> {
         return mateTaskAssignment.read().fold(
             onSuccess = { assignments ->
-                assignments.filter { it.userName == mateId }
+                assignments.filter { it.userName == userId }
                     .map { it.taskId }
                     .let { taskIds ->
                         taskIds.mapNotNull { taskId ->
@@ -108,7 +107,7 @@ class TaskRepositoryImp(
         )
     }
 
-    override fun getAllMateByTaskId(taskId: String): Result<List<String>> {
+    override fun getAllUsersByTaskId(taskId: String): Result<List<String>> {
         return mateTaskAssignment.read().fold(
             onSuccess = { assignments ->
                 Result.success(
@@ -120,13 +119,13 @@ class TaskRepositoryImp(
         )
     }
 
-    override fun addMateTaskAssignment(mateName: String, taskId: String): Result<Boolean> {
+    override fun addUserToTask(mateName: String, taskId: String): Result<Boolean> {
         return mateTaskAssignment.append(
             listOf(MateTaskAssignment(userName = mateName, taskId = taskId))
         )
     }
 
-    override fun deleteMateTaskAssignment(mateName: String, taskId: String): Result<Boolean> {
+    override fun deleteUserFromTask(mateName: String, taskId: String): Result<Boolean> {
         return mateTaskAssignment.read().fold(
             onSuccess = { assignments ->
                 val newAssignments = assignments.filterNot {

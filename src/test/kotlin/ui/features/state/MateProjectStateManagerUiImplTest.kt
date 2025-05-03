@@ -8,7 +8,7 @@ import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class MateStateManagerUiImplTest {
+class MateProjectStateManagerUiImplTest {
     private lateinit var mateStateManagerUi: MateStateManagerUi
     private lateinit var userStateManagerUi: UserStateManagerUi
 

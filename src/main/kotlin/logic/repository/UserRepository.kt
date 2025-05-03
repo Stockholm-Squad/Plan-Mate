@@ -1,8 +1,17 @@
 package org.example.logic.repository
 
 import logic.model.entities.User
+import java.util.*
 
 interface UserRepository {
-    fun createUser(user: User): Result<Boolean>
+    fun addUser(user: User): Result<Boolean>
     fun getAllUsers(): Result<List<User>>
+
+    fun getUsersByProjectId(projectId: UUID): Result<List<User>>
+    fun addUserToProject(projectId: UUID, userName: String): Result<Boolean>
+    fun deleteUserFromProject(projectId: UUID, userName: String): Result<Boolean>
+
+    fun getAllUsersByTaskId(taskId: UUID): Result<List<User>>
+    fun addUserToTask(mateName: String, taskId: UUID): Result<Boolean>
+    fun deleteUserFromTask(mateName: String, taskId: UUID): Result<Boolean>
 }
