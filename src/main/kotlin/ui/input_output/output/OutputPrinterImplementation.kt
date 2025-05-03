@@ -21,10 +21,10 @@ class OutputPrinterImplementation : OutputPrinter {
     override fun printMateTaskAssignments(assignments: List<Task>) {
         if (assignments.isEmpty()) return println("No tasks assigned.")
 
-        val userName = assignments.first().userName
+        val userName = assignments.first().name
         println("Tasks assigned to: $userName")
         assignments.forEachIndexed { index, it ->
-            println("${index + 1}. Task ID: ${it.taskId}")
+            println("${index + 1}. Task ID: ${it.id}")
         }
     }
 

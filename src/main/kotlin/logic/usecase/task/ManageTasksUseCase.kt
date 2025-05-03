@@ -33,7 +33,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
         )
     }
 
-    private fun getTaskIdByName(taskName: String): Result<UUID> {
+    fun getTaskIdByName(taskName: String): Result<UUID> {
         return getTaskByName(taskName).map { it.id }
     }
 

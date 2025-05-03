@@ -1,4 +1,4 @@
-package org.example.logic.usecase.common
+package logic.usecase.validation
 
 import org.example.logic.model.exceptions.InvalidPassword
 import org.example.logic.model.exceptions.InvalidUserName

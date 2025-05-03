@@ -44,10 +44,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") // JSON serialization
 
-    implementation("app.softwork:kotlinx-uuid-core:0.1.5")
-    implementation("org.jetbrains.kotlinx:kotlinx-uuid:0.0.5")
-
-
 }
 
 tasks.test {

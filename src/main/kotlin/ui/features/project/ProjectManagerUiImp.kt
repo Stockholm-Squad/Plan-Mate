@@ -1,13 +1,13 @@
 package org.example.ui.features.project
 
 import logic.model.entities.User
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.CreateUserUiImp
+import org.example.ui.features.user.CreateUserUi
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 
 class ProjectManagerUiImp(
     private val inputReader: InputReader,
@@ -16,7 +16,7 @@ class ProjectManagerUiImp(
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
-    private val createUserUiImp: CreateUserUiImp,
+    private val createUserUiImp: CreateUserUi,
 ) : ProjectManagerUi {
 
     override fun showAllProjects() {
@@ -176,12 +176,11 @@ class ProjectManagerUiImp(
     }
 
 
-
     override fun assignUsersToProject() {
         while (true) {
             outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
             if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                createUserUiImp.launchUi()
+                //createUserUiImp.launchUi()
             }
 
             outputPrinter.showMessage("Enter username to assign (or 'done' to finish): ")
@@ -206,7 +205,7 @@ class ProjectManagerUiImp(
             return false
         }
 
-        return manageUsersAssignedToProjectUseCase.addUserToProject(username, projectId)
+        return manageUsersAssignedToProjectUseCase.addUserToProject(projectId, username)
             .fold(
                 onSuccess = { success ->
                     if (success) {
@@ -223,7 +222,6 @@ class ProjectManagerUiImp(
                 }
             )
     }
-
 
 
     override fun launchUi(user: User?) {

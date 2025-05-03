@@ -4,7 +4,7 @@ package logic.usecase.login
 import logic.model.entities.User
 import org.example.logic.model.exceptions.*
 import org.example.logic.repository.UserRepository
-import org.example.logic.usecase.common.ValidateUserDataUseCase
+import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.utils.hashToMd5
 
 class LoginUseCase(
