@@ -7,16 +7,16 @@ import org.example.data.utils.DateHandlerImp
 import java.util.UUID
 
 fun buildTask(
-    id: UUID= UUID.randomUUID(),
+    id: UUID = UUID.randomUUID(),
     name: String = "",
     description: String = "",
-    stateId: UUID,
+    stateId: UUID = UUID.randomUUID(),
     createdDate: LocalDateTime = DateHandlerImp().getCurrentDateTime(),
     updatedDate: LocalDateTime = DateHandlerImp().getCurrentDateTime()
 
 ): Task {
     return Task(
-        id, name, description,stateId, createdDate, updatedDate
+        id, name, description, stateId, createdDate, updatedDate
     )
 }
 
