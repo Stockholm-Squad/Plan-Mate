@@ -1,6 +1,7 @@
 package org.example.ui.features.task
 
 import logic.model.entities.Task
+import logic.model.entities.User
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
@@ -23,7 +24,7 @@ class TaskManagerUi(
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
 ) : UiLauncher {
 
-    override fun launchUi() {
+    override fun launchUi(user: User?) {
         while (true) {
             printTaskOptionsMenu()
             if (enteredTaskOption(uiUtils.getEnteredOption(reader.readIntOrNull()))) break

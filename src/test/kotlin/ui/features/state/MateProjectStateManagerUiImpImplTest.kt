@@ -1,14 +1,13 @@
 package ui.features.state
 
 import io.mockk.*
-import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class MateProjectStateManagerUiImplTest {
+class MateProjectStateManagerUiImpImplTest {
     private lateinit var mateStateManagerUi: MateStateManagerUi
     private lateinit var userStateManagerUi: UserStateManagerUi
 

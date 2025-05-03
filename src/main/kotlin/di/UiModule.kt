@@ -3,9 +3,9 @@ package org.example.di
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.audit.AuditSystemManagerUiImp
-import org.example.ui.features.login.LoginUi
-import org.example.ui.features.project.ProjectManagerUi
-import org.example.ui.features.state.StateManagerUi
+import org.example.ui.features.login.LoginUiImp
+import org.example.ui.features.project.ProjectManagerUiImp
+import org.example.ui.features.state.StateManagerUiImp
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.admin.AdminStateManagerUiImpl
 import org.example.ui.features.state.common.UserStateManagerUi
