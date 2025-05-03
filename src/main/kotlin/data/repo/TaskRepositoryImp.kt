@@ -90,7 +90,7 @@ class TaskRepositoryImp(
         return taskDataSource.read().fold(
             onSuccess = { tasks ->
                 tasks.filter { tasksIds.contains(it.id) }
-                    .map { it.mapToTaskEntity() }
+                    .mapNotNull { it.mapToTaskEntity() }
                     .let { Result.success(it) }
             },
             onFailure = { Result.failure(it) }
@@ -108,7 +108,7 @@ class TaskRepositoryImp(
 
     private fun readTasks(): Result<List<Task>> {
         return taskDataSource.read().fold(
-            onSuccess = { list -> Result.success(list.map { it.mapToTaskEntity() }) },
+            onSuccess = { list -> Result.success(list.mapNotNull { it.mapToTaskEntity() }) },
             onFailure = { throwable -> Result.failure(throwable) }
         )
     }

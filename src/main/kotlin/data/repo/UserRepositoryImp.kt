@@ -23,7 +23,7 @@ class UserRepositoryImp(
 
     override fun getAllUsers(): Result<List<User>> {
         return userDataSource.read().fold(
-            onSuccess = { userModels -> Result.success(userModels.map { it.mapToUserEntity() }) },
+            onSuccess = { userModels -> Result.success(userModels.mapNotNull { it.mapToUserEntity() }) },
             onFailure = { Result.failure(it) })
     }
 
@@ -36,7 +36,7 @@ class UserRepositoryImp(
                             projectId == it.projectId.toSafeUUID()
                         }.map { it.userName }
                             .let { userNames ->
-                                users.filter { user -> userNames.contains(user.username) }.map { userModel ->
+                                users.filter { user -> userNames.contains(user.username) }.mapNotNull { userModel ->
                                     userModel.mapToUserEntity()
                                 }.let {
                                     Result.success(it)

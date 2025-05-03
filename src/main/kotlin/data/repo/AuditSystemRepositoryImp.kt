@@ -14,7 +14,7 @@ class AuditSystemRepositoryImp(
 
     override fun getAllAuditEntries(): Result<List<AuditSystem>> =
         auditSystemDataSource.read().fold(
-            onSuccess = { Result.success(it.map { it.mapToAuditSystemEntity() }) },
+            onSuccess = { Result.success(it.mapNotNull { it.mapToAuditSystemEntity() }) },
             onFailure = { Result.failure(it) }
         )
 

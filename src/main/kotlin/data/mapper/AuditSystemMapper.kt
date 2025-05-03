@@ -2,21 +2,27 @@ package data.mapper
 
 import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
+import logic.model.entities.Project
 import org.example.data.models.AuditSystemModel
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 
 
-fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem {
-    return AuditSystem(
-        id.toSafeUUID(),
-        entityType = getAuditSystemType(entityType),
-        entityTypeId = entityTypeId.toSafeUUID(),
-        description = description,
-        userId = userId.toSafeUUID(),
-        dateTime = DateHandlerImp().getLocalDateTimeFromString(dateTime)
-    )
+fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem? {
+    return try {
+        AuditSystem(
+            id.toSafeUUID(),
+            entityType = getAuditSystemType(entityType),
+            entityTypeId = entityTypeId.toSafeUUID(),
+            description = description,
+            userId = userId.toSafeUUID(),
+            dateTime = DateHandlerImp().getLocalDateTimeFromString(dateTime)
+        )
+    } catch (throwable: Throwable) {
+        null
+    }
 }
+
 
 fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
     return AuditSystemModel(

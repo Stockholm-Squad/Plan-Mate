@@ -44,7 +44,7 @@ class ProjectRepositoryImp(
 
     override fun getAllProjects(): Result<List<Project>> {
         return projectDataSource.read().fold(
-            onSuccess = { list -> Result.success(list.map { it.mapToProjectEntity() }) },
+            onSuccess = { list -> Result.success(list.mapNotNull { it.mapToProjectEntity() }) },
             onFailure = { Result.failure(it) }
         )
     }
@@ -58,7 +58,7 @@ class ProjectRepositoryImp(
                             .map { it.projectId }
                             .let { projectIds ->
                                 projects.filter { project -> projectIds.contains(project.id) }
-                                    .map { it.mapToProjectEntity() }
+                                    .mapNotNull { it.mapToProjectEntity() }
                                     .let { Result.success(it) }
                             }
                     },
