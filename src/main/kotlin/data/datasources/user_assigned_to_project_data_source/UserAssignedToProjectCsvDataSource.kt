@@ -20,7 +20,11 @@ class UserAssignedToProjectCsvDataSource(private val filePath: String) : IUserAs
     override fun read(): Result<List<UserAssignedToProject>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(FileNotExistException())
+            try {
+                file.createNewFile()
+            } catch (throwable: Throwable) {
+                return Result.failure(FileNotExistException())
+            }
         }
 
         return try {

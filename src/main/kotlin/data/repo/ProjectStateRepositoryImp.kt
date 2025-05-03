@@ -38,7 +38,7 @@ class ProjectStateRepositoryImp(
     override fun getAllProjectStates(): Result<List<ProjectState>> {
         return stateDataSource.read().fold(
             onSuccess = { allStates ->
-                Result.success(allStates.map { it.mapToStateEntity() })
+                Result.success(allStates.mapNotNull { it.mapToStateEntity() })
             },
             onFailure = { exception -> Result.failure(exception) }
         )

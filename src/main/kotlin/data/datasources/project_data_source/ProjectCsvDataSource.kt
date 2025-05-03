@@ -19,7 +19,11 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
     override fun read(): Result<List<ProjectModel>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(FileNotExistException())
+            try {
+                file.createNewFile()
+            } catch (throwable: Throwable) {
+                return Result.failure(FileNotExistException())
+            }
         }
 
         return try {
