@@ -15,11 +15,11 @@ class UiUtils(
     fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
 
     fun invalidChoice() {
-        printer.showMessage(UiMessages.INVALID_OPTION.message)
+        printer.showMessage(UiMessages.INVALID_OPTION)
     }
 
     fun exit() {
-        printer.showMessage(UiMessages.GOODBYE.message)
+        printer.showMessage(UiMessages.GOODBYE)
     }
 
 }
