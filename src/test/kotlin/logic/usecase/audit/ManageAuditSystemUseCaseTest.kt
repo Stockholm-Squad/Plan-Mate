@@ -5,11 +5,14 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.datetime.LocalDateTime
 import logic.model.entities.AuditSystem
+import logic.model.entities.EntityType
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class ManageAuditSystemUseCaseTest {
 
@@ -27,11 +30,11 @@ class ManageAuditSystemUseCaseTest {
         //given
         val data = listOf(
             AuditSystem(
-                entityType = "TASK",
-                entityId = "2",
-                changeDescription = "change from 'Open' to 'In Progress'",
-                changedBy = "mano",
-                dateTime = "19\\12\\2025"
+                entityType = EntityType.TASK,
+                entityTypeId = UUID.fromString("2"),
+                description = "change from 'Open' to 'In Progress'",
+                userId = UUID.fromString("00000000-0000-0000-0000-00000000abcd"),
+                dateTime = LocalDateTime(2025, 12, 19, 12, 0)
             )
         )
         every { auditSystemRepository.addAuditsEntries(data) } returns Result.success(true)
@@ -48,12 +51,11 @@ class ManageAuditSystemUseCaseTest {
         //given
         val data = listOf(
             AuditSystem(
-                id = "",
-                entityType = "TASK",
-                entityId = "2",
-                changeDescription = "change from 'Open' to 'In Progress'",
-                changedBy = "mano",
-                dateTime = "19\\12\\2025"
+                entityType = EntityType.TASK,
+                entityTypeId = UUID.fromString(""),
+                description = "change from 'Open' to 'In Progress'",
+                userId = UUID.fromString("00000000-0000-0000-0000-00000000abcd"),
+                dateTime = LocalDateTime(2025, 12, 19, 12, 0)
             )
         )
         every { auditSystemRepository.addAuditsEntries(data) } returns Result.failure(Exception("error"))
@@ -156,7 +158,7 @@ class ManageAuditSystemUseCaseTest {
         )
         every { auditSystemRepository.getAllAuditEntries() } returns Result.success(data)
         // when
-        val result = manageAuditSystemUseCase.getAuditsByEntityTypeId("3")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName("3")
 
         // then
         Truth.assertThat(result.getOrNull()).hasSize(1)
@@ -176,7 +178,7 @@ class ManageAuditSystemUseCaseTest {
         )
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
         // when
-        val result = manageAuditSystemUseCase.getAuditsByEntityTypeId("4")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName("4")
 
         // then
         Truth.assertThat(result.isFailure).isTrue()

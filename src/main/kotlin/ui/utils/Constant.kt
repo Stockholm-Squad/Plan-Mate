@@ -1,28 +1,6 @@
 package org.example.ui.utils
 
-object UiMessages {
-    const val TASK_ID_PROMPT = "Enter task ID:"
-    const val TASK_NAME_PROMPT = "Enter task name:"
-    const val TASK_DESCRIPTION_PROMPT = "Enter task description:"
-    const val TASK_STATE_PROMPT = "Enter task state name:"
-    const val INVALID_TASK_STATE_INPUT = "Invalid task state input"
-    const val TASK_CREATE_SUCCESSFULLY = "Task created successfully."
-    const val TASK_EDIT_SUCCESSFULLY = "Task updated successfully."
-    const val EMPTY_TASK_INPUT = "Inputs are empty"
-    const val USER_NAME_PROMPT = ""
-    const val NO_TASK_FOUNDED = "No Tasks founded"
-    const val TASK_DELETE_SUCCESSFULLY = "Task deleted successfully."
-    const val EMPTY_TASK_ID_INPUT = "No task ID was provided."
-    const val EMPTY_TASK_NAME_INPUT = "Task name cannot be empty."
-    const val EMPTY_TASK_DESCRIPTION_INPUT = "Task description cannot be empty."
-    const val EMPTY_TASK_STATE_INPUT = "Task state cannot be empty."
-    const val INVALID_STATE_NAME = "Invalid state name. No matching state ID found."
-    const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
-    const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
-    const val NO_TASKS_FOUND_IN_PROJECT = "No task found in project"
-    const val EMPTY_PROJECT_ID_INPUT = "Empty project input"
-    const val PROJECT_NAME_PROMPT = "Enter project name:"
-    const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
+object Constant {
     const val PLEASE_SELECT_OPTION = "Please select an option:"
     const val Y = "yes"
     const val N = "no"
@@ -40,7 +18,6 @@ object UiMessages {
     """.trimIndent()
     const val PROMPT_TASK_NAME = "Enter Task name: "
     const val PROMPT_PROJECT_NAME = "Enter Project Name: "
-
 
 
     val MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN = """
@@ -62,4 +39,5 @@ object UiMessages {
         | 3. Show Audit system                                 |
         | 4. Log out                                           |
     """.trimIndent()
+
 }

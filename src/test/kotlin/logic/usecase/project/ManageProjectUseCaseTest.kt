@@ -4,10 +4,12 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.example.data.models.State
 import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAdded
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.state.ManageStatesUseCase
 import org.junit.jupiter.api.*
 import utils.buildProject
 import kotlin.random.Random
@@ -15,11 +17,13 @@ import kotlin.random.Random
 class ManageProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var manageStatesUseCase : ManageStatesUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
-        manageProjectUseCase = ManageProjectUseCase(projectRepository)
+        manageStatesUseCase = mockk(relaxed = true)
+        manageProjectUseCase = ManageProjectUseCase(projectRepository,manageStatesUseCase)
     }
 
     @Nested
@@ -121,7 +125,8 @@ class ManageProjectUseCaseTest {
         fun `should return success when project is added successfully`() {
             // Given
             val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
-            every { projectRepository.addProject(project) } returns Result.success(true)
+            val state = State(project.stateId, "todo")
+            every { projectRepository.addProject(project.name, state.name) } returns Result.success(true)
 
             // When
             val result = manageProjectUseCase.addProject(project)
@@ -129,15 +134,16 @@ class ManageProjectUseCaseTest {
             // Then
             assertThat(result.isSuccess).isTrue()
             assertThat(result.getOrNull()).isTrue()
-            verify { projectRepository.addProject(project) }
+            verify { projectRepository.addProject(project.name, state.name) }
         }
 
         @Test
         fun `should return failure when project addition fails`() {
             // Given
-            val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
             val expectedException = Exception("Database error")
-            every { projectRepository.addProject(project) } returns Result.failure(expectedException)
+            val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
+            val state = State(project.stateId, "todo")
+            every { projectRepository.addProject(project.name, state.name) } returns Result.failure(expectedException)
 
             // When
             val result = manageProjectUseCase.addProject(project)
@@ -145,7 +151,7 @@ class ManageProjectUseCaseTest {
             // Then
             assertThat(result.isFailure).isTrue()
             assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectAdded::class.java)
-            verify { projectRepository.addProject(project) }
+            verify { projectRepository.addProject(project.name, state.name) }
         }
     }
 

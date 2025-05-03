@@ -17,9 +17,10 @@ class AuditSystemManagerUiImp(
         do {
             printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
             when (getMainMenuOption()) {
-                1 -> displayAuditsByEntityID()
-                2 -> displayAllAudits()
-                3 -> printer.showMessage(UiMessages.EXITING)
+                1 -> displayAuditsByProjectName()
+                2 -> displayAuditsByTaskName()
+                3 -> displayAllAudits()
+                4 -> printer.showMessage(UiMessages.EXITING)
                 else -> printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
             }
         } while (shouldSearchAgain(reader) == true)
@@ -27,10 +28,20 @@ class AuditSystemManagerUiImp(
     }
 
 
-    private fun displayAuditsByEntityID() {
-        printer.showMessage(UiMessages.PROMPT_ENTITY_ID)
+    private fun displayAuditsByProjectName() {
+        printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
         reader.readStringOrNull()?.let {
-            useCase.getAuditsByEntityTypeId(it).fold(
+            useCase.getProjectAuditsByName(it).fold(
+                onSuccess = { audits -> printer.showAudits(audits) },
+                onFailure = { printer.showMessage(it.message.toString()) }
+            )
+        } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
+    }
+
+    private fun displayAuditsByTaskName() {
+        printer.showMessage(UiMessages.PROMPT_TASK_NAME)
+        reader.readStringOrNull()?.let {
+            useCase.getTaskAuditsByName(it).fold(
                 onSuccess = { audits -> printer.showAudits(audits) },
                 onFailure = { printer.showMessage(it.message.toString()) }
             )
