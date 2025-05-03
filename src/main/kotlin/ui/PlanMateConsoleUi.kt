@@ -9,8 +9,10 @@ import org.example.ui.features.login.LoginUi
 import org.example.ui.features.login.LoginUiImp
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.project.ProjectManagerUiImp
+import org.example.ui.features.state.StateManageUi
 import org.example.ui.features.state.StateManagerUiImp
 import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.features.user.CreateUserUi
 import org.example.ui.features.user.CreateUserUiImp
 import org.example.utils.Constant
 
@@ -19,7 +21,7 @@ class PlanMateConsoleUi(
     private val loginUi: LoginUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
-    private val stateManagerUiImp: StateManagerUi,
+    private val stateManagerUiImp: StateManageUi,
     private val taskManagerUi: TaskManagerUi,
     private val printer: OutputPrinter,
     private val reader: InputReader,
@@ -61,7 +63,7 @@ class PlanMateConsoleUi(
             when (choice) {
                 MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
                 MateChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
-                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
+                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke()
                 MateChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
@@ -76,7 +78,7 @@ class PlanMateConsoleUi(
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
                 AdminChoice.ADD_MATE.choice -> createUserUiImp.launchUi(user)
-                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.showAuditSystemManagerUI()
+                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke()
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
