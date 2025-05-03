@@ -6,7 +6,8 @@ import logic.model.entities.Task
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.ITaskDataSource
-import org.example.data.mapper.TaskMapper
+import org.example.data.mapper.mapToTaskEntity
+import org.example.data.mapper.mapToTaskModel
 import org.example.logic.repository.TaskRepository
 import java.util.*
 
@@ -14,13 +15,12 @@ class TaskRepositoryImp(
     private val taskDataSource: ITaskDataSource,
     private val mateTaskAssignment: IMateTaskAssignmentDataSource,
     private val taskInProjectDataSource: ITaskInProjectDataSource,
-    private val taskMapper: TaskMapper,
 ) : TaskRepository {
 
     override fun getAllTasks(): Result<List<Task>> = readTasks()
 
     override fun addTask(task: Task): Result<Boolean> {
-        return taskDataSource.append(listOf(taskMapper.mapToTaskModel(task)))
+        return taskDataSource.append(listOf(task.mapToTaskModel()))
     }
 
     override fun editTask(task: Task): Result<Boolean> =
@@ -90,7 +90,7 @@ class TaskRepositoryImp(
         return taskDataSource.read().fold(
             onSuccess = { tasks ->
                 tasks.filter { tasksIds.contains(it.id) }
-                    .map { taskMapper.mapToTaskEntity(it) }
+                    .map { it.mapToTaskEntity() }
                     .let { Result.success(it) }
             },
             onFailure = { Result.failure(it) }
@@ -108,13 +108,13 @@ class TaskRepositoryImp(
 
     private fun readTasks(): Result<List<Task>> {
         return taskDataSource.read().fold(
-            onSuccess = { list -> Result.success(list.map { it1 -> taskMapper.mapToTaskEntity(it1) }) },
+            onSuccess = { list -> Result.success(list.map { it.mapToTaskEntity() }) },
             onFailure = { throwable -> Result.failure(throwable) }
         )
     }
 
     private fun writeTasks(tasks: List<Task>): Result<Boolean> {
-        return tasks.map { task -> taskMapper.mapToTaskModel(task) }.let {
+        return tasks.map { task -> task.mapToTaskModel() }.let {
             taskDataSource.overWrite(it)
         }
     }

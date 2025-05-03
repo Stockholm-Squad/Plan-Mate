@@ -1,12 +1,13 @@
 package org.example.data.mapper
 
+import logic.model.entities.ProjectState
 import org.example.data.models.State
-import org.example.data.extention.toSafeUUID
+import org.example.logic.usecase.extention.toSafeUUID
 
-class StateMapper {
-    fun mapToStateEntity(state: State): logic.model.entities.ProjectState =
-        logic.model.entities.ProjectState(state.id.toSafeUUID(), state.name)
+fun State.mapToStateEntity(): logic.model.entities.ProjectState =
+    logic.model.entities.ProjectState(id.toSafeUUID(), name)
 
-    fun mapToStateModel(projectState: logic.model.entities.ProjectState): State = State(projectState.id.toString(), projectState.name)
+fun ProjectState.mapToStateModel(): State =
+    State(id.toString(), name)
 
-}
+

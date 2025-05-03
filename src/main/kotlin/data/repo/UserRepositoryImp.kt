@@ -6,24 +6,24 @@ import logic.model.entities.User
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_data_source.IUserDataSource
-import org.example.data.extention.toSafeUUID
-import org.example.data.mapper.UserMapper
+import org.example.data.mapper.mapToUserEntity
+import org.example.data.mapper.mapToUserModel
 import org.example.logic.repository.UserRepository
+import org.example.logic.usecase.extention.toSafeUUID
 import java.util.*
 
 class UserRepositoryImp(
     private val userDataSource: IUserDataSource,
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
     private val mateTaskAssignment: IMateTaskAssignmentDataSource,
-    private val userMapper: UserMapper,
 ) : UserRepository {
     override fun addUser(user: User): Result<Boolean> {
-        return userDataSource.append(listOf(userMapper.mapToUserModel(user)))
+        return userDataSource.append(listOf(user.mapToUserModel()))
     }
 
     override fun getAllUsers(): Result<List<User>> {
         return userDataSource.read().fold(
-            onSuccess = { userModels -> Result.success(userModels.map { userMapper.mapToUserEntity(it) }) },
+            onSuccess = { userModels -> Result.success(userModels.map { it.mapToUserEntity() }) },
             onFailure = { Result.failure(it) })
     }
 
@@ -37,7 +37,7 @@ class UserRepositoryImp(
                         }.map { it.userName }
                             .let { userNames ->
                                 users.filter { user -> userNames.contains(user.username) }.map { userModel ->
-                                    userMapper.mapToUserEntity(userModel)
+                                    userModel.mapToUserEntity()
                                 }.let {
                                     Result.success(it)
                                 }
