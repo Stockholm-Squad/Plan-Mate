@@ -11,6 +11,7 @@ import java.util.*
 class ManageAuditSystemUseCase(
     private val auditSystemRepository: AuditSystemRepository,
     private val manageProjectUseCase: ManageProjectUseCase,
+    private val manageTasksUseCase: ManageTasksUseCase
 ) : IManageAuditSystemUseCase {
 
     override fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>> =
@@ -29,9 +30,22 @@ class ManageAuditSystemUseCase(
             onFailure = { Result.failure(it) }
         )
 
-    override fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> {
-        TODO("Not yet implemented")
-    }
+    override fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> =
+        auditSystemRepository.getAllAuditEntries().fold(
+            onSuccess = { audits ->
+                manageTasksUseCase.getTaskIdByName(taskName).fold(
+                    onSuccess = { taskId ->
+                        val result = audits.filter { audit ->
+                            audit.entityTypeId == taskId
+                        }
+                        Result.success(result)
+                    },
+                    onFailure = {Result.failure(it)}
+                )
+            },
+            onFailure = {Result.failure(it)}
+        )
+
 
 
     override fun getAuditsByUserId(userId: UUID): Result<List<AuditSystem>> =
