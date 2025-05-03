@@ -13,21 +13,21 @@ class CreateUserUseCase(
 ) {
 
     fun createUser(username: String, password: String): Result<Boolean> {
-        return runCatching {
-            validateUserDataUseCase.validateUserName(username)
-            validateUserDataUseCase.validatePassword(password)
+            try {
+                validateUserDataUseCase.validateUserName(username)
+                validateUserDataUseCase.validatePassword(password)
 
-            userRepository.getAllUsers().fold(
-                onSuccess = {
-                    handleSuccess(username = username, password = password, users = it).fold(
-                        onSuccess = { user -> userRepository.addUser(user) },
-                        onFailure = { throwable -> handleFailure(throwable) })
-                },
-                onFailure = { handleFailure(it as UsersDataAreEmpty) })
-        }.fold(
-            onSuccess = { Result.success(true) },
-            onFailure = { Result.failure(exception = it) })
-    }
+                return userRepository.getAllUsers().fold(
+                    onSuccess = {
+                        handleSuccess(username = username, password = password, users = it).fold(
+                            onSuccess = { user -> userRepository.addUser(user) },
+                            onFailure = { throwable -> handleFailure(throwable) })
+                    },
+                    onFailure = { handleFailure(it as UsersDataAreEmpty) })
+            } catch (e: Exception) {
+                return Result.failure(e)
+            }
+        }
 
     private fun handleSuccess(
         username: String,
@@ -47,7 +47,9 @@ class CreateUserUseCase(
     }
 
     fun checkUserExists(users: List<User>, username: String) {
-        users.find { it.username == username }.let { throw UserExist() }
+        users.forEach {
+            if (it.username == username) throw UserExist()
+        }
 
     }
 
