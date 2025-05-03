@@ -10,6 +10,8 @@ import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
+import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.task.ManageTasksUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -18,11 +20,15 @@ class ManageAuditSystemUseCaseTest {
 
     private lateinit var manageAuditSystemUseCase: ManageAuditSystemUseCase
     private lateinit var auditSystemRepository: AuditSystemRepository
+    private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var manageTasksUseCase: ManageTasksUseCase
 
     @BeforeEach
     fun setUp() {
         auditSystemRepository = mockk(relaxed = true)
-        manageAuditSystemUseCase = ManageAuditSystemUseCase(auditSystemRepository)
+        manageProjectUseCase = mockk(relaxed = true)
+        manageTasksUseCase = mockk(relaxed = true)
+        manageAuditSystemUseCase = ManageAuditSystemUseCase(auditSystemRepository, manageProjectUseCase, manageTasksUseCase)
     }
 
     @Test
@@ -74,9 +80,9 @@ class ManageAuditSystemUseCaseTest {
         val data = listOf(
             AuditSystem(
                 entityType = "TASK",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "3",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
@@ -94,9 +100,9 @@ class ManageAuditSystemUseCaseTest {
         val data = listOf(
             AuditSystem(
                 entityType = "TASK",
-                entityId = "4",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "4",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
@@ -116,9 +122,9 @@ class ManageAuditSystemUseCaseTest {
             AuditSystem(
                 id = "test",
                 entityType = "TASK",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "3",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
@@ -150,9 +156,9 @@ class ManageAuditSystemUseCaseTest {
         val data = listOf(
             AuditSystem(
                 entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "3",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
@@ -170,9 +176,9 @@ class ManageAuditSystemUseCaseTest {
         val data = listOf(
             AuditSystem(
                 entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "3",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
@@ -190,9 +196,9 @@ class ManageAuditSystemUseCaseTest {
         val data = listOf(
             AuditSystem(
                 entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "3",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
@@ -210,9 +216,9 @@ class ManageAuditSystemUseCaseTest {
         val data = listOf(
             AuditSystem(
                 entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
+                entityTypeId = "3",
+                description = "SAFAFGA",
+                userId = "mano",
                 dateTime = "15/12/2005"
             )
         )
