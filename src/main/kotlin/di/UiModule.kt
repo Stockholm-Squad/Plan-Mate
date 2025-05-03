@@ -20,14 +20,14 @@ import org.koin.dsl.module
 val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
-    factory<AuditSystemManagerUi> { AuditSystemManagerUiImp(get(), get(), get(), get()) }
-    factory { LoginUiImp(get(), get(), get()) }
-    factory { CreateUserUiImp(get(), get(), get()) }
-    factory { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get()) }
+    factory<AuditSystemManagerUi> { AuditSystemManagerUiImp(get(), get(), get(), get(), get()) }
+    factory { LoginUi(get(), get(), get()) }
+    factory { CreateUserUi(get(), get(), get()) }
+    factory { ProjectManagerUi(get(), get(), get(), get(), get(), get(), get()) }
 
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
     factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get()) }
-    factory<StateManagerUiImp> { StateManagerUiImp(get(), get(), get()) }
+    factory<StateManagerUi> { StateManagerUi(get(), get(), get()) }
 }

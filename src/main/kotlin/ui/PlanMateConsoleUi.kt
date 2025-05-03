@@ -5,7 +5,9 @@ import logic.model.entities.User
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.audit.AuditSystemManagerUi
+import org.example.ui.features.login.LoginUi
 import org.example.ui.features.login.LoginUiImp
+import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.project.ProjectManagerUiImp
 import org.example.ui.features.state.StateManagerUiImp
 import org.example.ui.features.task.TaskManagerUi
@@ -14,14 +16,14 @@ import org.example.utils.Constant
 
 
 class PlanMateConsoleUi(
-    private val loginUiImp: LoginUiImp,
+    private val loginUi: LoginUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
-    private val manageProjectUi: ProjectManagerUiImp,
-    private val stateManagerUiImp: StateManagerUiImp,
+    private val manageProjectUi: ProjectManagerUi,
+    private val stateManagerUiImp: StateManagerUi,
     private val taskManagerUi: TaskManagerUi,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val createUserUiImp: CreateUserUiImp
+    private val createUserUiImp: CreateUserUi
 ) {
     fun invoke() {
         while (true) {
@@ -83,7 +85,7 @@ class PlanMateConsoleUi(
 
     private fun manageAuthenticationUI(): User? {
         if (user != null) return user
-        return loginUiImp.authenticateUser().also {
+        return loginUi.authenticateUser().also {
             user = it
         }
     }
