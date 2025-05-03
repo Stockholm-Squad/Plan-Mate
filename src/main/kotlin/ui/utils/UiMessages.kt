@@ -21,11 +21,8 @@ object UiMessages {
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
     const val NO_TASKS_FOUND_IN_PROJECT = "No task found in project"
     const val EMPTY_PROJECT_ID_INPUT = "Empty project input"
-    const val PROJECT_ID_PROMPT = "Enter Project id:"
-
-
-
-
+    const val PROJECT_NAME_PROMPT = "Enter project name:"
+    const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
     const val PLEASE_SELECT_OPTION = "Please select an option:"
     const val Y = "yes"
     const val N = "no"
