@@ -67,5 +67,4 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
         return taskRepository.getAllTasksByUserName(userName)
     }
 
-
 }

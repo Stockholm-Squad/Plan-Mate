@@ -1,12 +1,9 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.Project
-import org.example.data.extention.toSafeUUID
-import org.example.logic.model.exceptions.InvalidPassword
 import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAdded
 import org.example.logic.repository.ProjectRepository
-import java.awt.dnd.InvalidDnDOperationException
 import java.util.*
 
 class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
@@ -26,7 +23,7 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
                     onSuccess = { allProjects -> findProject(id, allProjects) }
                 )
             },
-            onFailure = {Result.failure(it)}
+            onFailure = { Result.failure(it) }
         )
     }
 
