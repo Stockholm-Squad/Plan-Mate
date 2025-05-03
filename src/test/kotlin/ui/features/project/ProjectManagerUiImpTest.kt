@@ -8,23 +8,23 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.example.ui.features.project.ProjectManagerUi
+import org.example.ui.features.project.ProjectManagerUiImp
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.CreateUserUi
+import org.example.ui.features.user.CreateUserUiImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import utils.buildProject
 
-class ProjectManagerUiTest {
+class ProjectManagerUiImpTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var stateManagerUi: AdminStateManagerUi
     private lateinit var taskManagerUi: TaskManagerUi
-    private lateinit var CreateUserUi: CreateUserUi
+    private lateinit var CreateUserUiImp: CreateUserUiImp
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
-    private lateinit var projectManagerUi: ProjectManagerUi
+    private lateinit var projectManagerUiImp: ProjectManagerUiImp
     private lateinit var manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase
 
 
@@ -33,19 +33,19 @@ class ProjectManagerUiTest {
         manageProjectUseCase = mockk(relaxed = true)
         stateManagerUi = mockk(relaxed = true)
         taskManagerUi = mockk(relaxed = true)
-        CreateUserUi = mockk(relaxed = true)
+        CreateUserUiImp = mockk(relaxed = true)
         inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
         manageUsersAssignedToProjectUseCase = mockk(relaxed = true)
 
-        projectManagerUi = ProjectManagerUi(
+        projectManagerUiImp = ProjectManagerUiImp(
             inputReader,
             outputPrinter,
             manageProjectUseCase,
             manageUsersAssignedToProjectUseCase,
             stateManagerUi,
             taskManagerUi,
-            CreateUserUi,
+            CreateUserUiImp,
         )
     }
 
@@ -63,7 +63,7 @@ class ProjectManagerUiTest {
 
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("1 -> Project A") }
@@ -77,7 +77,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("1", "0")
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Database error") }
@@ -90,7 +90,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("1", "0")
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("No projects found") }
@@ -107,7 +107,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("2", "1", "0")
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("Project Details:") }
@@ -122,7 +122,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("2", "999", "0")
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Project not found") }
@@ -139,7 +139,7 @@ class ProjectManagerUiTest {
             every { manageProjectUseCase.addProject(any()) } returns Result.success(true)
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("Project added successfully") }
@@ -157,7 +157,7 @@ class ProjectManagerUiTest {
             every { manageProjectUseCase.addProject(any<Project>()) } returns Result.success(true)
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { stateManagerUi.addState() }
@@ -173,7 +173,7 @@ class ProjectManagerUiTest {
             every { taskManagerUi.createTask() } returns Unit
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { taskManagerUi.createTask() }
@@ -187,7 +187,7 @@ class ProjectManagerUiTest {
             every { manageProjectUseCase.addProject(any<Project>()) } returns Result.failure(Exception("Creation failed"))
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Creation failed") }
@@ -206,7 +206,7 @@ class ProjectManagerUiTest {
             every { manageProjectUseCase.updateProject(updatedProject) } returns Result.success(true)
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("Project updated successfully") }
@@ -219,7 +219,7 @@ class ProjectManagerUiTest {
             every { manageProjectUseCase.getProjectById("999") } returns Result.failure(NoSuchElementException())
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Project not found") }
@@ -235,7 +235,7 @@ class ProjectManagerUiTest {
             every { manageProjectUseCase.updateProject(updatedProject) } returns Result.failure(Exception("Update failed"))
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Update failed") }
@@ -251,7 +251,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("5", "1", "0")
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("Project deleted successfully") }
@@ -264,7 +264,7 @@ class ProjectManagerUiTest {
             every { inputReader.readStringOrNull() } returnsMany listOf("5", "1", "0")
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Deletion failed") }
@@ -281,7 +281,7 @@ class ProjectManagerUiTest {
             every { manageUsersAssignedToProjectUseCase.addUserToProject(any(), any()) } returns Result.success(true)
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("User assigned successfully") }
@@ -291,13 +291,13 @@ class ProjectManagerUiTest {
         fun `should prompt to add new user when requested`() {
             // Given
             every { inputReader.readStringOrNull() } returnsMany listOf("6", "yes", "done", "0")
-            every { CreateUserUi.launchUi() } returns Unit
+            every { CreateUserUiImp.launchUi() } returns Unit
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
-            verify { CreateUserUi.launchUi() }
+            verify { CreateUserUiImp.launchUi() }
         }
 
 //        @Test
@@ -323,7 +323,7 @@ class ProjectManagerUiTest {
             )
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("Project does not exist") }
@@ -340,7 +340,7 @@ class ProjectManagerUiTest {
             )
 
             // When
-            projectManagerUi.launchUi()
+            projectManagerUiImp.launchUi()
 
             // Then
             verify { outputPrinter.showMessage("error: Assignment failed") }

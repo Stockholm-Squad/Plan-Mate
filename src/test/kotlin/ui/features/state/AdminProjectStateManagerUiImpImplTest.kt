@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
-class AdminProjectStateManagerUiImplTest {
+class AdminProjectStateManagerUiImpImplTest {
     private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var adminStateManagerUi: AdminStateManagerUiImpl
     private lateinit var userStateManagerUi: UserStateManagerUi
@@ -53,7 +53,7 @@ class AdminProjectStateManagerUiImplTest {
         //Given
         val stateName = "TODO"
         every { reader.readStringOrNull() } returns stateName
-        every { this@AdminProjectStateManagerUiImplTest.manageStatesUseCase.editProjectStateByName(stateName) } returns Result.success(true)
+        every { this@AdminProjectStateManagerUiImpImplTest.manageStatesUseCase.editProjectStateByName(stateName) } returns Result.success(true)
 
         //When
         adminStateManagerUi.editState()

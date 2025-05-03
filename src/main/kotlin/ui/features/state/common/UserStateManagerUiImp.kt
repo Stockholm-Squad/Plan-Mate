@@ -4,7 +4,7 @@ import logic.model.entities.ProjectState
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.state.ManageStatesUseCase
 
-open class UserStateManagerUiImp(
+class UserStateManagerUiImp(
     private val manageStatesUseCase: ManageStatesUseCase,
     private val printer: OutputPrinter
 ) : UserStateManagerUi {

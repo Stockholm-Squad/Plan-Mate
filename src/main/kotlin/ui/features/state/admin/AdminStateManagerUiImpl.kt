@@ -1,5 +1,6 @@
 package org.example.ui.features.state.admin
 
+import logic.model.entities.User
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -13,7 +14,7 @@ class AdminStateManagerUiImpl(
     private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
 
-    override fun launchUi() {
+    override fun launchUi(user: User?) {
         while (true) {
             showMenu()
             if (handleMenuChoice()) break

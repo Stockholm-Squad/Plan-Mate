@@ -13,15 +13,15 @@ import org.example.logic.model.exceptions.UserDoesNotExist
 import logic.usecase.login.LoginUseCase
 import org.example.logic.model.exceptions.InvalidUserName
 import org.example.logic.model.exceptions.InvalidPassword
-import org.example.ui.features.login.LoginUi
+import org.example.ui.features.login.LoginUiImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.Test
 
-class LoginUiTest {
+class LoginUiImpTest {
     private lateinit var useCase: LoginUseCase
-    private lateinit var ui: LoginUi
+    private lateinit var ui: LoginUiImp
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
 
@@ -30,7 +30,7 @@ class LoginUiTest {
         reader = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         useCase = mockk(relaxed = true)
-        ui = LoginUi(getAuthenticationUseCase = useCase, reader = reader, printer = printer)
+        ui = LoginUiImp(getAuthenticationUseCase = useCase, reader = reader, printer = printer)
     }
 
     @ParameterizedTest
