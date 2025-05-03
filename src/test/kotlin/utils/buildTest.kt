@@ -2,7 +2,7 @@ package utils
 
 import kotlinx.datetime.LocalDateTime
 import logic.model.entities.Task
-import org.example.ui.utils.DateHandlerImp
+import org.example.data.utils.DateHandlerImp
 import java.util.UUID
 
 fun buildTask(

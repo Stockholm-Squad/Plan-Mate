@@ -8,7 +8,7 @@ import data.models.MateTaskAssignment
 import org.example.data.repo.TaskRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.repository.TaskRepository
-import org.example.ui.utils.DateHandlerImp
+import org.example.data.utils.DateHandlerImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

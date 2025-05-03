@@ -10,7 +10,7 @@ import org.example.logic.model.exceptions.NoTasksCreated
 import org.example.logic.model.exceptions.NoTasksFound
 import org.example.logic.model.exceptions.TaskNotFoundException
 import org.example.logic.model.exceptions.NoTasksDeleted
-import org.example.ui.utils.DateHandlerImp
+import org.example.data.utils.DateHandlerImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

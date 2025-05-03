@@ -1,4 +1,4 @@
-package org.example.ui.utils
+package org.example.data.utils
 
 import kotlinx.datetime.LocalDateTime
 
