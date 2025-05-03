@@ -11,11 +11,13 @@ object Constant {
     //audit system constants
     val SHOW_AUDIT_SYSTEM_OPTIONS = """
         |----------- Audit System Menu -----------|
-        | 1. Show All Audit Entries               |
-        | 2. Show Audit Logs by Entity ID         |
-        | 3. Exit                                 |
+        | 1. Show Project Audits                  |
+        | 2. Show Task Audits                     |
+        | 3. Show Audit Logs by Entity ID         |
+        | 4. Exit                                 |
     """.trimIndent()
-    const val PROMPT_ENTITY_ID = "Enter entity ( project - task ) ID: "
+    const val PROMPT_TASK_NAME = "Enter Task name: "
+    const val PROMPT_PROJECT_NAME = "Enter Project Name: "
 
 
     val MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN = """

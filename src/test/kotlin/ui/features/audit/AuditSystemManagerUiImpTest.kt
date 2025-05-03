@@ -78,11 +78,11 @@ class AuditSystemManagerUiImpTest {
         every { searchUtils.getMainMenuOption() } returns 3 andThen 6
         every { reader.readStringOrNull() } returns "projId"
         every { searchUtils.shouldSearchAgain(reader) } returns false
-        every { useCase.getAuditsByEntityTypeId("projId") } returns Result.success(emptyList())
+        every { useCase.getProjectAuditsByName("projId") } returns Result.success(emptyList())
         //when
         auditSystemUi.showAuditSystemManagerUI()
         //then
-        verify { useCase.getAuditsByEntityTypeId("projId") }
+        verify { useCase.getProjectAuditsByName("projId") }
     }
 
     @Test
@@ -201,7 +201,7 @@ class AuditSystemManagerUiImpTest {
         every { searchUtils.getMainMenuOption() } returns 3 andThen 6
         every { searchUtils.shouldSearchAgain(reader) } returns false
         every { reader.readStringOrNull() } returns "456"
-        every { useCase.getAuditsByEntityTypeId("456") } returns Result.failure(Exception("Project fetch failed"))
+        every { useCase.getProjectAuditsByName("456") } returns Result.failure(Exception("Project fetch failed"))
         //when
         auditSystemUi.showAuditSystemManagerUI()
         //then
