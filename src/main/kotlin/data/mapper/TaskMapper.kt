@@ -1,8 +1,8 @@
 package org.example.data.mapper
 
 import logic.model.entities.Task
-import org.example.data.extention.toLocalDateTime
 import org.example.data.models.TaskModel
+import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 
 fun TaskModel.mapToTaskEntity(): Task = Task(
@@ -10,8 +10,8 @@ fun TaskModel.mapToTaskEntity(): Task = Task(
     name,
     description,
     stateId.toSafeUUID(),
-    createdDate.toLocalDateTime(),
-    updatedDate.toLocalDateTime()
+    DateHandlerImp().getLocalDateTimeFromString(createdDate),
+    DateHandlerImp().getLocalDateTimeFromString(updatedDate)
 )
 
 fun Task.mapToTaskModel(): TaskModel = TaskModel(

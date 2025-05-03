@@ -2,8 +2,8 @@ package data.mapper
 
 import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
-import org.example.data.extention.toLocalDateTime
 import org.example.data.models.AuditSystemModel
+import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 
 
@@ -14,7 +14,7 @@ fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem {
         entityTypeId = entityTypeId.toSafeUUID(),
         description = description,
         userId = userId.toSafeUUID(),
-        dateTime = dateTime.toLocalDateTime()
+        dateTime = DateHandlerImp().getLocalDateTimeFromString(dateTime)
     )
 }
 
@@ -29,7 +29,7 @@ fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
     )
 }
 
- fun getAuditSystemType(auditSystem: String): EntityType = when {
+fun getAuditSystemType(auditSystem: String): EntityType = when {
     auditSystem.equals("AuditSystemType.TASK", ignoreCase = true) -> EntityType.TASK
     auditSystem.equals("AuditSystemType.PROJECT", ignoreCase = true) -> EntityType.PROJECT
     else -> throw Exception("Unknown AuditSystemType: $auditSystem")
