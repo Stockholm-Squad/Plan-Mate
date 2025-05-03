@@ -7,25 +7,35 @@ import java.util.UUID
 
 class ManageTasksInProjectUseCase(
     private val taskUseCase: ManageTasksUseCase,
+    private val projectUseCase: ManageProjectUseCase,
     private val taskRepository: TaskRepository
 
 ) {
 
-    fun getTasksAssignedToProject(projectId: UUID): Result<List<Task>> {
-        return taskRepository.getTasksInProject(projectId = projectId).fold(
-            onSuccess = { tasksIds ->
-                tasksIds.mapNotNull {
-                    taskUseCase.getTaskById(it.id).fold(
-                        onSuccess = { task -> task },
-                        onFailure = { null }
-                    )
-                }.let {
-                    Result.success(it)
-                }
+    fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
+        return projectUseCase.getProjectByName(projectName).fold(
+            onSuccess = { project ->
+                taskRepository.getTasksInProject(project.id).fold(
+                    onSuccess = { taskRefs ->
+                        taskRefs.mapNotNull { taskRef ->
+                            getTaskByName(taskRef.name).getOrNull()
+                        }.let { Result.success(it) }
+                    },
+                    onFailure = { throwable -> Result.failure(throwable) }
+                )
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
+    }
 
+
+
+    fun getTasksInProject(projectId: UUID): Result<List<Task>> {
+        return taskRepository.getTasksInProject(projectId)
+    }
+
+    fun getTasksInProjectByName(ProjectName: String): Result<List<Task>> {
+        return projectUseCase.getProjectByName(projectUseCase)
     }
 
     fun addTaskToProject(projectId: UUID, taskId: UUID): Result<Boolean> {
@@ -33,18 +43,11 @@ class ManageTasksInProjectUseCase(
     }
 
     fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskRepository.getTasksInProject(projectId = projectId).fold(
-            onSuccess = { tasks ->
-                tasks.find { it.id == taskId }?.let { task ->
+        return taskRepository.deleteTaskFromProject(projectId, taskId)
+    }
 
-                    taskRepository.deleteTaskFromProject(projectId = projectId, taskId = taskId)
-
-
-                } ?: Result.failure(Exception("Couldn't delete"))
-
-            },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
+    fun getAllTasksByUserName(userName: String): Result<List<Task>> {
+        return taskRepository.getAllTasksByUserName(userName)
     }
 
 }
