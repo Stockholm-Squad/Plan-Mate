@@ -1,12 +1,10 @@
 package org.example.logic.usecase.task
 
 import logic.model.entities.Task
-import org.example.logic.model.exceptions.NoTasksCreated
-import org.example.logic.model.exceptions.NoTasksDeleted
-import org.example.logic.model.exceptions.NoTasksFound
-import org.example.logic.model.exceptions.TaskNotFoundException
+import org.example.logic.model.exceptions.*
 import org.example.logic.repository.TaskRepository
-import java.util.*
+import java.util.UUID
+import kotlin.Result
 
 
 class ManageTasksUseCase(private val taskRepository: TaskRepository) {
@@ -17,15 +15,27 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { Result.failure(NoTasksFound()) }
         )
 
-    fun getTaskById(taskId: UUID?): Result<Task> =
-        taskRepository.getAllTasks().fold(
-            onSuccess = { tasks ->
-                tasks.find { it.id == taskId }
-                    ?.let { Result.success(it) }
-                    ?: Result.failure(TaskNotFoundException())
+    fun getTaskByName(taskName: String): Result<Task> {
+        return runCatching {
+            taskRepository.getAllTasks()
+        }.fold(
+            onSuccess = { result ->
+                result.fold(
+                    onSuccess = { tasks ->
+                        tasks.find { it.name == taskName }
+                            ?.let { Result.success(it) }
+                            ?: Result.failure(TaskNotFoundException())
+                    },
+                    onFailure = { Result.failure(TaskNotFoundException()) }
+                )
             },
             onFailure = { Result.failure(TaskNotFoundException()) }
         )
+    }
+
+    fun getTaskIdByName(taskName: String): Result<UUID> {
+        return getTaskByName(taskName).map { it.id }
+    }
 
     fun createTask(task: Task): Result<Boolean> =
         taskRepository.addTask(task).fold(
@@ -39,33 +49,15 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onFailure = { Result.failure(NoTasksFound()) }
         )
 
-    fun deleteTask(taskId: UUID?): Result<Boolean> =
-        getTaskById(taskId).fold(
-            onSuccess = {
-                taskRepository.deleteTask(taskId).fold(
+    fun deleteTaskByName(taskName: String): Result<Boolean> {
+        return getTaskIdByName(taskName).fold(
+            onSuccess = { uuid ->
+                taskRepository.deleteTask(uuid).fold(
                     onSuccess = { Result.success(it) },
                     onFailure = { Result.failure(NoTasksDeleted()) }
                 )
             },
             onFailure = { Result.failure(TaskNotFoundException()) }
         )
-
-    fun getTasksInProject(projectId: UUID): Result<List<Task>> {
-        return taskRepository.getTasksInProject(projectId)
     }
-
-    fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskRepository.addTaskInProject(projectId, taskId)
-    }
-
-    fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskRepository.deleteTaskFromProject(projectId, taskId)
-    }
-
-
-    fun getAllTasksByUserName(userName: String): Result<List<Task>> {
-        return taskRepository.getAllTasksByUserName(userName)
-    }
-
-
 }
