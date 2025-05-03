@@ -1,4 +1,4 @@
-package org.example.di.logicmodule
+package org.example.di
 
 import logic.usecase.login.LoginUseCase
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
