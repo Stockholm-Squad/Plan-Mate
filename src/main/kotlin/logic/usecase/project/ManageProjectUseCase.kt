@@ -1,9 +1,12 @@
 package org.example.logic.usecase.project
 
 import logic.model.entities.Project
+import org.example.data.extention.toSafeUUID
+import org.example.logic.model.exceptions.InvalidPassword
 import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAdded
 import org.example.logic.repository.ProjectRepository
+import java.awt.dnd.InvalidDnDOperationException
 import java.util.*
 
 class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
@@ -16,9 +19,14 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
     }
 
     fun getProjectById(id: UUID): Result<Project> {
-        return projectRepository.getAllProjects().fold(
-            onFailure = { Result.failure(NoObjectFound()) },
-            onSuccess = { allProjects -> findProject(id, allProjects) }
+        return kotlin.runCatching { id }.fold(
+            onSuccess = {
+                projectRepository.getAllProjects().fold(
+                    onFailure = { Result.failure(NoObjectFound()) },
+                    onSuccess = { allProjects -> findProject(id, allProjects) }
+                )
+            },
+            onFailure = {Result.failure(it)}
         )
     }
 
@@ -27,7 +35,7 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
             ?: Result.failure(NoObjectFound())
 
     }
-    //ToDO add task, add state
+
     fun addProject(project: Project): Result<Boolean> {
         return projectRepository.addProject(project).fold(
             onFailure = { Result.failure(NoProjectAdded()) },

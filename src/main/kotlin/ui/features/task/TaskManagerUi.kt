@@ -1,18 +1,17 @@
 package org.example.ui.features.task
 
 import logic.model.entities.Task
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
 import org.example.utils.DateHandler
 import org.example.utils.TaskOptions
-import java.util.UUID
+import java.util.*
 
 
 class TaskManagerUi(
@@ -22,7 +21,6 @@ class TaskManagerUi(
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageStatesUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val getTasksAssignedToUserUseCase: GetTasksAssignedToUserUseCase
 ) : UiLauncher {
 
     override fun launchUi() {
@@ -197,12 +195,12 @@ class TaskManagerUi(
 
     private fun printTaskOptionsMenu() {
         printer.showMessage("========================= Tasks Option =========================")
-       printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
+        printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
 
         TaskOptions.entries
             .forEach { println("${it.option}. ${it.label}") }
 
         printer.showMessage("-----------------------------------------------------")
-       printer.showMessage("Choose an option: ")
+        printer.showMessage("Choose an option: ")
     }
 }

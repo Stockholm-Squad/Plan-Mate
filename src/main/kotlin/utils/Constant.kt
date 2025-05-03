@@ -12,17 +12,11 @@ object Constant {
     val SHOW_AUDIT_SYSTEM_OPTIONS = """
         |----------- Audit System Menu -----------|
         | 1. Show All Audit Entries               |
-        | 2. Show Audit Logs by Task ID           |
-        | 3. Show Audit Logs by Project ID        |
-        | 4. Show Audit Logs by Audit System ID   |
-        | 5. Show Audit Logs by Username          |
-        | 6. Exit                                 |
+        | 2. Show Audit Logs by Entity ID         |
+        | 3. Exit                                 |
     """.trimIndent()
+    const val PROMPT_ENTITY_ID = "Enter entity ( project - task ) ID: "
 
-    const val PROMPT_PROJECT_ID = "Enter project ID: "
-    const val PROMPT_TASK_ID = "Enter task ID: "
-    const val PROMPT_USERNAMES = "Enter Username: "
-    const val PROMPT_AUDIT_SYSTEM_ID = "Enter Audit System ID: "
 
     val MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN = """
         |----------- Welcome to planMate System ^_^ -----------|
