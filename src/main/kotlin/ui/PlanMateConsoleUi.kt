@@ -10,7 +10,7 @@ import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.utils.Constant
+import org.example.ui.utils.UiMessages
 
 
 class PlanMateConsoleUi(
@@ -39,7 +39,7 @@ class PlanMateConsoleUi(
     }
 
     private fun handleMateUi() {
-        printer.showMessage(Constant.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
+        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
         handleMateChoice()
     }
 
@@ -67,7 +67,7 @@ class PlanMateConsoleUi(
     }
 
     private fun handleAdminUi() {
-        printer.showMessage(Constant.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
+        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi(user)

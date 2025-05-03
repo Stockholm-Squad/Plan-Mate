@@ -158,7 +158,7 @@ class ManageAuditSystemUseCaseTest {
         )
         every { auditSystemRepository.getAllAuditEntries() } returns Result.success(data)
         // when
-        val result = manageAuditSystemUseCase.getAuditsByEntityTypeId("3")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName("3")
 
         // then
         Truth.assertThat(result.getOrNull()).hasSize(1)
@@ -178,7 +178,7 @@ class ManageAuditSystemUseCaseTest {
         )
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
         // when
-        val result = manageAuditSystemUseCase.getAuditsByEntityTypeId("4")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName("4")
 
         // then
         Truth.assertThat(result.isFailure).isTrue()

@@ -34,7 +34,7 @@ class TaskManagerUi(
     private fun enteredTaskOption(option: TaskOptions?): Boolean {
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
-            TaskOptions.SHOW_TASK_BY_ID -> getTaskById()
+            TaskOptions.SHOW_TASK_BY_ID -> getTaskByName()
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
@@ -63,13 +63,13 @@ class TaskManagerUi(
             ?: printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
     }
 
-    fun getTaskById() {
-        printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
+    fun getTaskByName() {
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT.message)
 
-        val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+        val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message)
 
-        manageTasksUseCase.getTaskById(taskId).fold(
+        manageTasksUseCase.getTaskByName(taskName).fold(
             onSuccess = { task -> printer.printTask(task) },
             onFailure = ::handleFailure
         )
@@ -83,7 +83,6 @@ class TaskManagerUi(
             ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT.message)
 
         val task = Task(
-            id = UUID.randomUUID().toString(),
             name = name,
             description = description,
             stateId = stateId,
@@ -98,11 +97,11 @@ class TaskManagerUi(
     }
 
     fun editTask() {
-        printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
-        val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT.message)
+        val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message)
 
-        val existingTask = manageTasksUseCase.getTaskById(taskId).getOrNull()
+        val existingTask = manageTasksUseCase.getTaskByName(taskName).getOrNull()
             ?: return printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
 
         val (newName, newDescription, newStateName) = readTaskInput()
@@ -125,16 +124,16 @@ class TaskManagerUi(
     }
 
     fun deleteTask() {
-        printer.showMessage(UiMessages.TASK_ID_PROMPT.message)
+        printer.showMessage(UiMessages.TASK_NAME_PROMPT.message)
 
-        val taskId = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT.message)
+        val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT.message)
 
-        if (manageTasksUseCase.getTaskById(taskId).getOrNull() == null) {
+        if (manageTasksUseCase.getTaskByName(taskName).getOrNull() == null) {
             return printer.showMessage(UiMessages.NO_TASK_FOUNDED.message)
         }
 
-        manageTasksUseCase.deleteTask(taskId).fold(
+        manageTasksUseCase.deleteTaskByName(taskName).fold(
             onSuccess = { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY.message) },
             onFailure = ::handleFailure
         )
@@ -143,10 +142,10 @@ class TaskManagerUi(
     fun showAllTasksInProject() {
         printer.showMessage(UiMessages.PROJECT_ID_PROMPT.message)
 
-        val projectId = uiUtils.readNonBlankInputOrNull(reader)
+        val projectName = uiUtils.readNonBlankInputOrNull(reader)
             ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT.message)
 
-        manageTasksInProjectUseCase.getTasksAssignedToProject(projectId).fold(
+        manageTasksInProjectUseCase.getTasksAssignedToProject(projectName).fold(
             onSuccess = { tasks: List<Task> ->
                 tasks.takeUnless { it.isEmpty() }
                     ?.let { printer.printTaskList(it) }
