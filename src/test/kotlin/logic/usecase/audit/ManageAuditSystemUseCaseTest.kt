@@ -5,39 +5,77 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.AuditSystem
+import kotlinx.datetime.LocalDateTime
+import logic.model.entities.*
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
+import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.task.ManageTasksUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class ManageAuditSystemUseCaseTest {
 
     private lateinit var manageAuditSystemUseCase: ManageAuditSystemUseCase
+    private lateinit var projectUseCase: ManageProjectUseCase
+    private lateinit var tasksUseCase: ManageTasksUseCase
     private lateinit var auditSystemRepository: AuditSystemRepository
+    private val task = Task(
+        name = "test",
+        description = "test",
+        stateId = UUID.randomUUID(),
+        createdDate = LocalDateTime.parse("2020-01-01"),
+        updatedDate = LocalDateTime.parse("2020-01-01")
+    )
+
+    private val project = Project(
+        name = "test",
+        stateId = UUID.randomUUID(),
+    )
+
+    private val user = User(
+        username = "test",
+        hashedPassword = "test",
+    )
+
+    private val taskData = listOf(
+        AuditSystem(
+            entityType = EntityType.TASK,
+            entityTypeId = task.id,
+            description = "change from 'Open' to 'In Progress'",
+            userId = user.id,
+            dateTime = LocalDateTime.parse("2020-01-01")
+        )
+    )
+
+    private val projectData = listOf(
+        AuditSystem(
+            entityType = EntityType.PROJECT,
+            entityTypeId = project.id,
+            description = "change from 'Open' to 'In Progress'",
+            userId = user.id,
+            dateTime = LocalDateTime.parse("2020-01-01")
+        )
+    )
+
 
     @BeforeEach
     fun setUp() {
         auditSystemRepository = mockk(relaxed = true)
-        manageAuditSystemUseCase = ManageAuditSystemUseCase(auditSystemRepository)
+        projectUseCase = mockk(relaxed = true)
+        tasksUseCase = mockk(relaxed = true)
+        manageAuditSystemUseCase = ManageAuditSystemUseCase(auditSystemRepository ,projectUseCase , tasksUseCase )
     }
 
     @Test
     fun `recordAuditsEntries should return true when successfully added task changes`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                entityType = "TASK",
-                entityId = "2",
-                changeDescription = "change from 'Open' to 'In Progress'",
-                changedBy = "mano",
-                dateTime = "19\\12\\2025"
-            )
-        )
-        every { auditSystemRepository.addAuditsEntries(data) } returns Result.success(true)
+
+        every { auditSystemRepository.addAuditsEntries(taskData) } returns Result.success(true)
 
         //When
-        val result = manageAuditSystemUseCase.addAuditsEntries(data)
+        val result = manageAuditSystemUseCase.addAuditsEntries(taskData)
 
         // then
         Truth.assertThat(result.getOrNull()).isTrue()
@@ -46,20 +84,11 @@ class ManageAuditSystemUseCaseTest {
     @Test
     fun `recordAuditsEntries should return false when successfully added task changes`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                id = "",
-                entityType = "TASK",
-                entityId = "2",
-                changeDescription = "change from 'Open' to 'In Progress'",
-                changedBy = "mano",
-                dateTime = "19\\12\\2025"
-            )
-        )
-        every { auditSystemRepository.addAuditsEntries(data) } returns Result.failure(Exception("error"))
+
+        every { auditSystemRepository.addAuditsEntries(taskData) } returns Result.failure(Exception("error"))
 
         //When
-        val result = manageAuditSystemUseCase.addAuditsEntries(data)
+        val result = manageAuditSystemUseCase.addAuditsEntries(taskData)
 
         // then
         Truth.assertThat(result.isFailure).isTrue()
@@ -69,19 +98,11 @@ class ManageAuditSystemUseCaseTest {
 
     @Test
     fun `getTaskChangeLogsById should return audit system for task when found`() {
-        val data = listOf(
-            AuditSystem(
-                entityType = "TASK",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(data)
+
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(taskData)
 
         // when
-        val result = manageAuditSystemUseCase.getTaskChangeLogsById("3")
+        val result = manageAuditSystemUseCase.getTaskAuditsByName(task.name)
 
         // then
         Truth.assertThat(result.isSuccess).isTrue()
@@ -89,19 +110,11 @@ class ManageAuditSystemUseCaseTest {
 
     @Test
     fun `getTaskChangeLogsById should return failure audit system for task when not found`() {
-        val data = listOf(
-            AuditSystem(
-                entityType = "TASK",
-                entityId = "4",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
+        //given
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
 
         // when
-        val result = manageAuditSystemUseCase.getTaskChangeLogsById("3")
+        val result = manageAuditSystemUseCase.getTaskAuditsByName(task.name)
 
         // then
         Truth.assertThat(result.isFailure).isTrue()
@@ -110,20 +123,11 @@ class ManageAuditSystemUseCaseTest {
     @Test
     fun `getAuditSystemByID should return audit system for task when found`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                id = "test",
-                entityType = "TASK",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(data)
+
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(taskData)
 
         // when
-        val result = manageAuditSystemUseCase.getAuditSystemByID("test")
+        val result = manageAuditSystemUseCase.getAuditsByUserId(user.id)
 
         // then
         Truth.assertThat(result.isSuccess).isTrue()
@@ -136,7 +140,7 @@ class ManageAuditSystemUseCaseTest {
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
 
         // when
-        val result = manageAuditSystemUseCase.getAuditSystemByID("test12")
+        val result = manageAuditSystemUseCase.getAuditsByUserId(user.id)
 
         // then
         Truth.assertThat(result.isFailure).isTrue()
@@ -145,18 +149,10 @@ class ManageAuditSystemUseCaseTest {
     @Test
     fun `getProjectChanges should return audit system for project when found`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(data)
+
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(projectData)
         // when
-        val result = manageAuditSystemUseCase.getProjectAuditsByName("3")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName(project.name)
 
         // then
         Truth.assertThat(result.getOrNull()).hasSize(1)
@@ -165,18 +161,10 @@ class ManageAuditSystemUseCaseTest {
     @Test
     fun `getProjectChanges should return failure audit system for project when not found`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
+
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
         // when
-        val result = manageAuditSystemUseCase.getProjectAuditsByName("4")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName(project.name)
 
         // then
         Truth.assertThat(result.isFailure).isTrue()
@@ -185,18 +173,10 @@ class ManageAuditSystemUseCaseTest {
     @Test
     fun `getChangesByUser should return audit system when found`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(data)
+
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(projectData)
         // when
-        val result = manageAuditSystemUseCase.getAuditsByUserId("mano")
+        val result = manageAuditSystemUseCase.getAuditsByUserId(user.id)
 
         // then
         Truth.assertThat(result.getOrNull()).hasSize(1)
@@ -205,41 +185,11 @@ class ManageAuditSystemUseCaseTest {
     @Test
     fun `getChangesByUser should return failure audit system when not found`() {
         //given
-        val data = listOf(
-            AuditSystem(
-                entityType = "PROJECT",
-                entityId = "3",
-                changeDescription = "SAFAFGA",
-                changedBy = "mano",
-                dateTime = "15/12/2005"
-            )
-        )
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
         // when
-        val result = manageAuditSystemUseCase.getAuditsByUserId("mano1")
+        val result = manageAuditSystemUseCase.getAuditsByUserId(user.id)
 
         // then
         Truth.assertThat(result.isFailure).isTrue()
-    }
-
-    @Test
-    fun `getAllAuditSystems should return success result`(){
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(emptyList())
-        //when
-        val result = manageAuditSystemUseCase.getAllAuditSystems()
-        //then
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { auditSystemRepository.getAllAuditEntries() }
-    }
-
-    @Test
-    fun `getAllAuditSystems should return failure result`(){
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(exception = Exception("error"))
-        //when
-        val result = manageAuditSystemUseCase.getAllAuditSystems()
-        //then
-        assertThat(result.isFailure).isTrue()
     }
 }
