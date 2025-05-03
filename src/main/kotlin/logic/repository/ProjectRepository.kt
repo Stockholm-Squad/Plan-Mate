@@ -4,7 +4,7 @@ import logic.model.entities.Project
 
 interface ProjectRepository {
 
-    fun addProject(projectName:String, projectStateName:String): Result<Boolean>
+    fun addProject(project: Project): Result<Boolean>
     fun editProject(updatedProject: Project): Result<Boolean>
     fun deleteProject(projectToDelete: Project): Result<Boolean>
     fun getAllProjects(): Result<List<Project>>

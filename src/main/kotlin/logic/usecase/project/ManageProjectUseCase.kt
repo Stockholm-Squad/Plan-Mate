@@ -4,6 +4,7 @@ import logic.model.entities.Project
 
 import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAdded
+import org.example.logic.model.exceptions.StateNotExistException
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.state.ManageStatesUseCase
 import java.util.*
@@ -33,17 +34,22 @@ class ManageProjectUseCase(
     }
 
 
+    fun addProject(projectName: String, stateName: String): Result<Boolean> {
+        val projectStateId = manageProjectState.getProjectStateIdByName(stateName)
+            ?: return Result.failure(StateNotExistException())
 
-    fun addProject(project: Project): Result<Boolean> {
-        return projectRepository.addProject(project).fold(
+        return projectRepository.addProject(Project(id = UUID.randomUUID(), projectName, projectStateId)).fold(
             onFailure = { Result.failure(NoProjectAdded()) },
             onSuccess = { Result.success(true) }
         )
     }
 
 
-    fun updateProject(project: Project): Result<Boolean> {
-        return projectRepository.editProject(project).fold(
+    fun updateProject(projectName: String, newProjectStateName: String): Result<Boolean> {
+        val newProjectStateId =
+            manageProjectState.getProjectStateIdByName(newProjectStateName)
+                ?: return Result.failure(StateNotExistException())
+        return projectRepository.editProject(Project(name = projectName, stateId = newProjectStateId)).fold(
             onFailure = { Result.failure(NoObjectFound()) },
             onSuccess = { Result.success(true) }
         )
