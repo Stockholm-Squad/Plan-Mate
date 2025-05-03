@@ -6,7 +6,7 @@ import io.mockk.verify
 import logic.model.entities.User
 import org.example.data.datasources.PlanMateDataSource
 import org.example.data.repo.UserRepositoryImp
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
@@ -75,7 +75,7 @@ class UserRepositoryImpTest {
  @Test
  fun `getAllUsers should return failure when datasource read fails`() {
   // Given
-  val expectedException = PlanMateExceptions.LogicException.UsersIsEmpty()
+  val expectedException = UsersDataAreEmpty()
   every { mockDataSource.read() } returns Result.failure(expectedException)
 
   // When

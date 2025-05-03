@@ -2,7 +2,6 @@ package org.example.ui.features.state.admin
 
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.ExceptionMessage
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
@@ -77,7 +76,7 @@ class AdminStateManagerUiImpl(
     }
 
     private fun showInvalidInput() {
-        printer.showMessage(ExceptionMessage.INVALID_INPUT.message)
+        printer.showMessage("Invalid input")
     }
 
     override fun deleteState() {

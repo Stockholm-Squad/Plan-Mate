@@ -9,7 +9,7 @@ import org.example.data.datasources.user_data_source.IUserDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.ProjectMapper
 import org.example.data.mapper.UserMapper
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
@@ -27,7 +27,7 @@ class ProjectRepositoryImp(
 
     override fun editProject(updatedProject: Project): Result<Boolean> {
         return projectDataSource.read()
-            .fold(onFailure = { Result.failure(PlanMateExceptions.DataException.ReadException()) }, onSuccess = {
+            .fold(onFailure = { Result.failure(ReadDataException()) }, onSuccess = {
                 it.map { project ->
                     if (project.id == updatedProject.id.toString()) {
                         updatedProject

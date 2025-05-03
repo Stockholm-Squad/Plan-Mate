@@ -5,8 +5,12 @@ import createState
 import io.mockk.every
 import io.mockk.mockk
 import logic.model.entities.ProjectState
-import org.example.logic.model.exceptions.PlanMateExceptions.DataException
-import org.example.logic.model.exceptions.PlanMateExceptions.LogicException
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.NotAllowedStateNameException
+import org.example.logic.model.exceptions.StateNotExistException
+import org.example.logic.model.exceptions.StateAlreadyExistException
+import org.example.logic.model.exceptions.EmptyDataException
+import org.example.logic.model.exceptions.StateNameLengthException
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -61,7 +65,7 @@ class ManageStatesUseCaseTest {
         val result = manageStatesUseCase.editProjectStateByName(stateName)
 
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
@@ -83,38 +87,38 @@ class ManageStatesUseCaseTest {
         //Given
         val stateName = "In Review"
         every { projectStateRepository.getAllProjectStates() } returns Result.success(listOf(ProjectState("567", stateName)))
-        every { projectStateRepository.editProjectState(any()) } returns Result.failure(DataException.FileNotExistException())
+        every { projectStateRepository.editProjectState(any()) } returns Result.failure(FileNotExistException())
 
         //When
         val result = manageStatesUseCase.editProjectStateByName(stateName)
 
         //Then
-        assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
+        assertThrows<StateNotExistException> { result.getOrThrow() }
     }
 
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
         val stateName = "1In Rev3ew"
-        every { projectStateRepository.editProjectState(any()) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        every { projectStateRepository.editProjectState(any()) } returns Result.failure(NotAllowedStateNameException())
         //When
         val result = manageStatesUseCase.editProjectStateByName(stateName)
 
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
     fun `editState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
         val stateName = "   "
-        every { projectStateRepository.editProjectState(any()) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        every { projectStateRepository.editProjectState(any()) } returns Result.failure(NotAllowedStateNameException())
 
         //When
         val result = manageStatesUseCase.editProjectStateByName(stateName)
 
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
@@ -127,7 +131,7 @@ class ManageStatesUseCaseTest {
         val result = manageStatesUseCase.editProjectStateByName(stateName)
 
         //Then
-        assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
+        assertThrows<StateNotExistException> { result.getOrThrow() }
     }
 
     @Test
@@ -163,7 +167,7 @@ class ManageStatesUseCaseTest {
         //Given
         val stateName = "TOD&%O"
         every { projectStateRepository.getAllProjectStates() } returns Result.failure(
-            DataException.FileNotExistException()
+          FileNotExistException()
         )
 
         //  When
@@ -183,7 +187,7 @@ class ManageStatesUseCaseTest {
         val result = manageStatesUseCase.deleteProjectState(stateName)
 
         //Then
-        assertThrows<LogicException.StateNotExistException> { result.getOrThrow() }
+        assertThrows<StateNotExistException> { result.getOrThrow() }
     }
 
     @Test
@@ -255,7 +259,7 @@ class ManageStatesUseCaseTest {
         val result = manageStatesUseCase.addProjectState(stateName)
 
         //Then
-        assertThrows<LogicException.StateAlreadyExistException> { result.getOrThrow() }
+        assertThrows<StateAlreadyExistException> { result.getOrThrow() }
     }
 
     @Test
@@ -266,19 +270,19 @@ class ManageStatesUseCaseTest {
         //When
         val result = manageStatesUseCase.addProjectState(stateName)
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
     fun `addState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
         val stateName = "1I Rev3ew"
-        every { projectStateRepository.addProjectState(stateName) } returns Result.failure(LogicException.NotAllowedStateNameException())
+        every { projectStateRepository.addProjectState(stateName) } returns Result.failure(NotAllowedStateNameException())
         //When
         val result = manageStatesUseCase.addProjectState(stateName)
 
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
@@ -291,7 +295,7 @@ class ManageStatesUseCaseTest {
         val result = manageStatesUseCase.addProjectState(stateName)
 
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
@@ -300,11 +304,11 @@ class ManageStatesUseCaseTest {
     fun `addState() should return failure result with not allowed length exception when the name of state is more than 30`() {
         //Given
         val state = "hi in this state this is too long state"
-        every { projectStateRepository.addProjectState(state) } returns Result.failure(LogicException.StateNameLengthException())
+        every { projectStateRepository.addProjectState(state) } returns Result.failure(StateNameLengthException())
         //When
         val result = manageStatesUseCase.addProjectState(state)
         //Then
-        assertThrows<LogicException.NotAllowedStateNameException> { result.getOrThrow() }
+        assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
     }
 
     @Test
@@ -331,7 +335,7 @@ class ManageStatesUseCaseTest {
         val result = manageStatesUseCase.getAllProjectStates()
 
         //Then
-        assertThrows<DataException.EmptyDataException> { result.getOrThrow() }
+        assertThrows<EmptyDataException> { result.getOrThrow() }
     }
 
     @Test

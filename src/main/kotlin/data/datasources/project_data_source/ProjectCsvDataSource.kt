@@ -1,8 +1,9 @@
 package org.example.data.datasources.project_data_source
 
-import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.models.ProjectModel
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -18,16 +19,19 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
     override fun read(): Result<List<ProjectModel>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+            return Result.failure(FileNotExistException())
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<ProjectModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
+            Result.failure(ReadDataException())
         }
     }
 
@@ -36,7 +40,7 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 
@@ -52,7 +56,7 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
             }
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 }

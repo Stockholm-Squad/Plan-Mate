@@ -2,7 +2,7 @@ package logic.usecase.login
 
 
 import logic.model.entities.User
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.*
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.common.ValidateUserDataUseCase
 import org.example.utils.hashToMd5
@@ -32,14 +32,14 @@ class LoginUseCase(
 
     private fun checkUserExists(users: List<User>, username: String): User {
         return users.find { it.username == username }
-            ?: throw PlanMateExceptions.LogicException.UserDoesNotExist()
+            ?: throw UserDoesNotExist()
     }
 
     private fun checkPassword(password: String, user: User): User {
         if (hashToMd5(password) == user.hashedPassword) {
             return user
         } else {
-            throw PlanMateExceptions.LogicException.IncorrectPassword()
+            throw IncorrectPassword()
         }
     }
 

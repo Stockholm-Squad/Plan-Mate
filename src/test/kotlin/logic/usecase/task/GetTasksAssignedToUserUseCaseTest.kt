@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import data.models.MateTaskAssignment
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.repository.TaskRepository
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -74,7 +74,7 @@ class GetTasksAssignedToUserUseCaseTest {
         // Then
         assertThat(result.isFailure).isTrue()
 
-        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+        assertThrows<NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }
@@ -83,7 +83,7 @@ class GetTasksAssignedToUserUseCaseTest {
     fun `getAllMateTaskAssignment should return failure when repository returns NoTaskAssignmentFound`() {
         // Given
         val userName = "David"
-        val error = PlanMateExceptions.LogicException.NoTaskAssignmentFound()
+        val error = NoTaskAssignmentFound()
 
         every { taskRepository.getAllTasksByUserName(userName) } returns Result.failure(error)
 
@@ -93,7 +93,7 @@ class GetTasksAssignedToUserUseCaseTest {
         // Then
         assertThat(result.isFailure).isTrue()
 
-        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+        assertThrows<NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }
@@ -112,7 +112,7 @@ class GetTasksAssignedToUserUseCaseTest {
         // Then
         assertThat(result.isFailure).isTrue()
 
-        assertThrows<PlanMateExceptions.LogicException.NoTaskAssignmentFound> {
+        assertThrows<NoTaskAssignmentFound> {
             result.getOrThrow()
         }
     }

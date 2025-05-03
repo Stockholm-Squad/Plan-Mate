@@ -1,7 +1,9 @@
 package org.example.data.datasources.task_data_source
 
 import org.example.data.models.TaskModel
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -17,16 +19,19 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
     override fun read(): Result<List<TaskModel>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+            return Result.failure(FileNotExistException())
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<TaskModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
+            Result.failure(ReadDataException())
         }
     }
 
@@ -35,7 +40,7 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 
@@ -51,7 +56,7 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
             }
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 }

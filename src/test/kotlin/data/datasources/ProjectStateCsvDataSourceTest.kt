@@ -2,6 +2,7 @@ package data.datasources
 
 import org.example.data.datasources.state_data_source.StateCsvDataSource
 import org.example.data.models.State
+import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.PlanMateExceptions
 import org.junit.jupiter.api.*
 import java.io.File
@@ -36,7 +37,7 @@ class ProjectStateCsvDataSourceTest {
             val result = dataSource.read()
 
             assertTrue(result.isFailure)
-            assertThrows<PlanMateExceptions.DataException.FileNotExistException> { result.getOrThrow() }
+            assertThrows<FileNotExistException> { result.getOrThrow() }
         }
 
         @Test

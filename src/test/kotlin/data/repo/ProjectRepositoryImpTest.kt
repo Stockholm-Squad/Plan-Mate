@@ -7,7 +7,8 @@ import org.example.data.datasources.PlanMateDataSource
 import data.models.TaskInProject
 import data.models.UserAssignedToProject
 import org.example.data.repo.ProjectRepositoryImp
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.junit.jupiter.api.*
 import utils.buildProject
 import kotlin.test.Test
@@ -47,7 +48,7 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `getAllProjects() should return failure when read fails`() {
-        every { projectDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { projectDataSource.read() } returns Result.failure(ReadDataException())
 
         val result = repository.getAllProjects()
 
@@ -70,12 +71,12 @@ class ProjectRepositoryImpTest {
     fun `addProject() should return failure when write fails`() {
         //Given
         every { projectDataSource.append(listOf(testProject)) } returns Result.failure(
-            PlanMateExceptions.DataException.WriteException()
+            WriteDataException()
         )
 
         val result = repository.addProject(testProject)
 
-        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+            assertThrows<WriteDataException> { result.getOrThrow() }
 
     }
 
@@ -96,13 +97,13 @@ class ProjectRepositoryImpTest {
     @Test
     fun `editProject() should fail when he can not read form data source`() {
         //Given
-        every { projectDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { projectDataSource.read() } returns Result.failure(ReadDataException())
 
         //When
         val result = repository.editProject(testProject)
 
         //When Then
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
 
     }
 
@@ -110,11 +111,11 @@ class ProjectRepositoryImpTest {
     @Test
     fun `editProject() should return failure when write fails`() {
         every { projectDataSource.read() } returns Result.success(listOf(testProject))
-        every { projectDataSource.overWrite(listOf(testProject)) } returns Result.failure(PlanMateExceptions.DataException.WriteException())
+        every { projectDataSource.overWrite(listOf(testProject)) } returns Result.failure(WriteDataException())
 
         val result = repository.editProject(testProject)
 
-        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+        assertThrows<WriteDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -135,7 +136,7 @@ class ProjectRepositoryImpTest {
 
         val result = repository.deleteProject(testProject)
 
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -175,12 +176,12 @@ class ProjectRepositoryImpTest {
         @Test
         fun `getTasksInProject should return failure when read fails`() {
             every { taskInProjectDataSource.read() } returns Result.failure(
-                PlanMateExceptions.DataException.ReadException()
+                ReadDataException()
             )
 
             val result = repository.getTasksInProject("1")
 
-            assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+            assertThrows<ReadDataException() > { result.getOrThrow() }
         }
 
         @Test
@@ -196,12 +197,12 @@ class ProjectRepositoryImpTest {
         @Test
         fun `addTaskInProject should return failure when write fails`() {
             every { taskInProjectDataSource.append(any()) } returns Result.failure(
-                PlanMateExceptions.DataException.WriteException()
+                WriteDataException()
             )
 
             val result = repository.addTaskInProject("1", "101")
 
-            assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+            assertThrows<WriteDataException> { result.getOrThrow() }
         }
 
         @Test
@@ -246,12 +247,12 @@ class ProjectRepositoryImpTest {
         @Test
         fun `deleteTaskFromProject should return failure when read fails`() {
             every { taskInProjectDataSource.read() } returns Result.failure(
-                PlanMateExceptions.DataException.ReadException()
+                ReadDataException()
             )
 
             val result = repository.deleteTaskFromProject("1", "101")
 
-            assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+            assertThrows<ReadDataException> { result.getOrThrow() }
         }
 
         @Test
@@ -260,12 +261,12 @@ class ProjectRepositoryImpTest {
                 listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
             )
             every { taskInProjectDataSource.overWrite(any()) } returns Result.failure(
-                PlanMateExceptions.DataException.WriteException()
+                WriteDataException()
             )
 
             val result = repository.deleteTaskFromProject("1", "101")
 
-            assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+            assertThrows<WriteDataException() > { result.getOrThrow() }
         }
     }
 
@@ -296,12 +297,12 @@ class ProjectRepositoryImpTest {
         @Test
         fun `getUsersAssignedToProject should return failure when read fails`() {
             every { userAssignedToProjectDataSource.read() } returns Result.failure(
-                PlanMateExceptions.DataException.ReadException()
+                ReadDataException()
             )
 
             val result = repository.getUsersAssignedToProject("1")
 
-            assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+            assertThrows<ReadDataException> { result.getOrThrow() }
         }
 
         @Test
@@ -321,12 +322,12 @@ class ProjectRepositoryImpTest {
         @Test
         fun `addUserAssignedToProject should return failure when write fails`() {
             every { userAssignedToProjectDataSource.append(any()) } returns Result.failure(
-                PlanMateExceptions.DataException.WriteException()
+                WriteDataException()
             )
 
             val result = repository.addUserAssignedToProject("1", "user1")
 
-            assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+            assertThrows<WriteDataException> { result.getOrThrow() }
         }
 
         @Test
@@ -371,12 +372,12 @@ class ProjectRepositoryImpTest {
         @Test
         fun `deleteUserAssignedToProject should return failure when read fails`() {
             every { userAssignedToProjectDataSource.read() } returns Result.failure(
-                PlanMateExceptions.DataException.ReadException()
+                ReadDataException()
             )
 
             val result = repository.deleteUserAssignedToProject("1", "user1")
 
-            assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+            assertThrows<ReadDataException> { result.getOrThrow() }
         }
 
         @Test
@@ -385,12 +386,12 @@ class ProjectRepositoryImpTest {
                 listOf(testUserAssigned, userAssignedWithDifferentUserName)
             )
             every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.failure(
-                PlanMateExceptions.DataException.WriteException()
+                WriteDataException()
             )
 
             val result = repository.deleteUserAssignedToProject("1", "user1")
 
-            assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+            assertThrows<WriteDataException> { result.getOrThrow() }
         }
     }
 }

@@ -6,7 +6,10 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.User
 import logic.usecase.login.getAllUsers
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.InvalidPassword
+import org.example.logic.model.exceptions.InvalidUserName
+import org.example.logic.model.exceptions.UserExist
+import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.CreateUserUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -25,7 +28,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username is empty`() {
-        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             useCase.createUser(
                 username = "",
                 password = "password"
@@ -36,7 +39,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when password is empty`() {
-        assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
+        assertThrows<InvalidPassword> {
             useCase.createUser(
                 username = "username",
                 password = ""
@@ -47,7 +50,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username starts with a number`() {
-        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             useCase.createUser(
                 username = "1john",
                 password = "password"
@@ -58,7 +61,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username is less than 4 characters`() {
-        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             useCase.createUser(
                 username = "abc",
                 password = "password"
@@ -69,7 +72,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username is more than 20 characters`() {
-        assertThrows<PlanMateExceptions.LogicException.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             useCase.createUser(
                 username = "averyverylongusernamethatexceeds20",
                 password = "password"
@@ -80,7 +83,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when password is less than 8 characters`() {
-        assertThrows<PlanMateExceptions.LogicException.InvalidPassword> {
+        assertThrows<InvalidPassword> {
             useCase.createUser(
                 username = "validUser",
                 password = "short"
@@ -100,7 +103,7 @@ class CreateUserUseCaseTest() {
         )
 
         // When & Then
-        assertThrows<PlanMateExceptions.LogicException.UserExist> {
+        assertThrows<UserExist> {
             useCase.checkUserExists(users, existingUsername)
         }
     }
@@ -129,8 +132,8 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when users are empty`() {
-        every { repository.getAllUsers() } returns Result.failure(PlanMateExceptions.LogicException.UsersIsEmpty())
-        assertThrows<PlanMateExceptions.LogicException.UsersIsEmpty> {
+        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmpty())
+        assertThrows<UsersDataAreEmpty> {
             repository.getAllUsers(
             ).getOrThrow()
         }

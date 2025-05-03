@@ -1,7 +1,7 @@
 package org.example.logic.usecase.state
 
 import logic.model.entities.ProjectState
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.*
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength
@@ -20,9 +20,9 @@ class ManageStatesUseCase(
                             onFailure = { exception -> Result.failure(exception) }
                         )
 
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateAlreadyExistException())
+                    } ?: Result.failure(StateAlreadyExistException())
             },
-            onFailure = { Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException()) }
+            onFailure = { Result.failure(NotAllowedStateNameException()) }
         )
     }
 
@@ -41,7 +41,7 @@ class ManageStatesUseCase(
                                 )
                             }
                         )
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+                    } ?: Result.failure(StateNotExistException())
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
@@ -54,7 +54,7 @@ class ManageStatesUseCase(
                     it.isValidLength(30) &&
                     it.isLetterOrWhiteSpace()
         }?.let { Result.success(it) }
-            ?: Result.failure(PlanMateExceptions.LogicException.NotAllowedStateNameException())
+            ?: Result.failure(NotAllowedStateNameException())
     }
 
     fun deleteProjectState(stateName: String): Result<Boolean> {
@@ -71,7 +71,7 @@ class ManageStatesUseCase(
                                 )
                             }
                         )
-                    } ?: Result.failure(PlanMateExceptions.LogicException.StateNotExistException())
+                    } ?: Result.failure(StateNotExistException())
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
@@ -82,7 +82,7 @@ class ManageStatesUseCase(
             onSuccess = { data ->
                 data.takeIf { data.isNotEmpty() }?.let {
                     Result.success(data)
-                } ?: Result.failure(PlanMateExceptions.DataException.EmptyDataException())
+                } ?: Result.failure(EmptyDataException())
             },
             onFailure = { exception -> Result.failure(exception) }
         )
@@ -98,8 +98,8 @@ class ManageStatesUseCase(
     }
 
     private fun handleProjectStateNotExistException(throwable: Throwable): Result<Boolean> {
-        return throwable.takeIf { it is PlanMateExceptions.DataException.FileNotExistException }
-            ?.let { Result.failure(PlanMateExceptions.LogicException.StateNotExistException()) }
+        return throwable.takeIf { it is FileNotExistException }
+            ?.let { Result.failure(StateNotExistException()) }
             ?: Result.failure(throwable)
     }
 

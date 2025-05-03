@@ -4,10 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import logic.model.entities.Task
-import org.example.data.datasources.PlanMateDataSource
 import data.models.MateTaskAssignment
 import org.example.data.repo.TaskRepositoryImp
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.repository.TaskRepository
 import org.example.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
@@ -50,13 +49,13 @@ class TaskRepositoryImpTest {
     @Test
     fun `getAllTasks() should return failure result with throwable when error happens while reading from the file`() {
         // Given
-        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { taskDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
         val result = taskRepository.getAllTasks()
 
         // Then
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException() > { result.getOrThrow() }
     }
 
     @Test
@@ -97,13 +96,13 @@ class TaskRepositoryImpTest {
         val existingTasks = listOf(
             Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate =dataHandler.getCurrentDateTime(), updatedDate =dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { taskDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
         val result = taskRepository.addTask(newTask)
 
         // Then
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -141,13 +140,13 @@ class TaskRepositoryImpTest {
             createdDate = dataHandler.getCurrentDateTime(),
             updatedDate = dataHandler.getCurrentDateTime()
         )
-        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { taskDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
         val result = taskRepository.editTask(updatedTask)
 
         // Then
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -174,13 +173,13 @@ class TaskRepositoryImpTest {
         val existingTasks = listOf(
             Task(id = "1", name = "Task 1", description = "Description 1", stateId = "state1", createdDate = dataHandler.getCurrentDateTime(), updatedDate = dataHandler.getCurrentDateTime())
         )
-        every { taskDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { taskDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
         val result = taskRepository.deleteTask(taskId)
 
         // Then
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
     @Test
     fun `getAllMateTaskAssignment should return success when read is successful`() {
@@ -199,13 +198,13 @@ class TaskRepositoryImpTest {
     fun `getAllMateTaskAssignment should return failure with ReadException when read fails`() {
         // Given
         val mateName = "Ali"
-        every { mateTaskAssignmentCsvDataSource.read() } returns Result.failure(PlanMateExceptions.DataException.ReadException())
+        every { mateTaskAssignmentCsvDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
         val result = taskRepository.getAllTasksByUserName(mateName)
 
         // Then
-       assertThrows<PlanMateExceptions.DataException.ReadException> {
+       assertThrows<ReadDataException> {
             result.getOrThrow()
         }
     }

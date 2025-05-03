@@ -5,8 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.ProjectState
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.ExceptionMessage
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.NoStatesFoundedException
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.common.UserStateManagerUiImp
@@ -30,14 +29,14 @@ class UserProjectStateManagerUiImpTest {
     fun `showAllStates() should print no states exist when use case returns No state exist exception`() {
         //Given
         every { manageStatesUseCase.getAllProjectStates() } returns Result.failure(
-            PlanMateExceptions.LogicException.NoStatesFoundedException()
+            NoStatesFoundedException()
         )
 
         //When
         userStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage("Failed to Load data, " + ExceptionMessage.NO_STATE_FOUNDED_MESSAGE.message) }
+        verify { printer.showMessage("Failed to Load data, " + NoStatesFoundedException().message) }
         verify { printer.showMessage("Please try again ^_^") }
 
     }

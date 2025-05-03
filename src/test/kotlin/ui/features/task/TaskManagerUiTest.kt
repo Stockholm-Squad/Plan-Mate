@@ -6,9 +6,10 @@ import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
 import data.models.MateTaskAssignment
+import org.example.logic.model.exceptions.NoTasksFound
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
@@ -88,7 +89,7 @@ class TaskManagerUiTest {
     @Test
     fun `showAllTasks() should handle failure gracefully`() {
         // Given
-        val error = PlanMateExceptions.LogicException.NoTasksFound()
+        val error = NoTasksFound()
         every { manageTasksUseCase.getAllTasks() } returns Result.failure(error)
 
         // When
@@ -126,14 +127,14 @@ class TaskManagerUiTest {
         val taskId = "invalid"
 
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
-        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(NoTasksFound())
 
         // When
         taskManagerUi.getTaskById()
 
         // Then
         verify(exactly = 1) {
-            printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTasksFound().message}")
+            printer.showMessage("Error: ${NoTasksFound().message}")
         }
     }
 
@@ -287,7 +288,7 @@ class TaskManagerUiTest {
     fun `editTask() should show error when task not found`() {
         val taskId = "invalid"
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskId
-        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(PlanMateExceptions.LogicException.NoTasksFound())
+        every { manageTasksUseCase.getTaskById(taskId) } returns Result.failure(NoTasksFound())
 
         taskManagerUi.editTask()
 
@@ -570,13 +571,13 @@ class TaskManagerUiTest {
 
         every { uiUtils.readNonBlankInputOrNull(reader) } returns userName
         every { getTasksAssignedToUserUseCase.getAllMateTaskAssignment(userName) } returns
-                Result.failure(PlanMateExceptions.LogicException.NoTaskAssignmentFound())
+                Result.failure(NoTaskAssignmentFound())
 
         // When
         taskManagerUi.showAllMateTaskAssignment()
 
         // Then
-        verify(exactly = 1) { printer.showMessage("Error: ${PlanMateExceptions.LogicException.NoTaskAssignmentFound().message}") }
+        verify(exactly = 1) { printer.showMessage("Error: ${NoTaskAssignmentFound().message}") }
     }
     //endregion
 
@@ -633,7 +634,7 @@ class TaskManagerUiTest {
     fun `showAllTasksInProject() should handle failure from use case gracefully`() {
         // Given
         val projectId = "proj-3"
-        val exception = PlanMateExceptions.LogicException.NoTaskAssignmentFound()
+        val exception = NoTaskAssignmentFound()
         every { uiUtils.readNonBlankInputOrNull(reader) } returns projectId
         every { manageTasksInProjectUseCase.getTasksAssignedToProject(projectId) } returns Result.failure(exception)
 

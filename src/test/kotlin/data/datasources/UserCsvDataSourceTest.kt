@@ -3,7 +3,9 @@ package data.datasources
 import com.google.common.truth.Truth.assertThat
 import org.example.data.models.UserModel
 import org.example.data.datasources.user_data_source.UserCsvDataSource
+import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
@@ -39,7 +41,7 @@ class UserCsvDataSourceTest {
     """.trimIndent()
             File(testFilePath).writeText(invalidCsvContent)
 
-            assertThrows<PlanMateExceptions.DataException.ReadException> {dataSource.read().getOrThrow()  }
+            assertThrows<ReadDataException> {dataSource.read().getOrThrow()  }
         }
 
         @Test
@@ -49,7 +51,7 @@ class UserCsvDataSourceTest {
             val result = dataSource.read()
 
             assertTrue(result.isFailure)
-            assertFailsWith<PlanMateExceptions.DataException.FileNotExistException> {
+            assertFailsWith<FileNotExistException> {
                 result.getOrThrow()
             }
         }

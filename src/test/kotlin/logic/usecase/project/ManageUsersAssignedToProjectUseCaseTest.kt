@@ -4,7 +4,8 @@ import io.mockk.*
 import logic.model.entities.UserRole
 import logic.model.entities.User
 import org.example.logic.repository.ProjectRepository
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.junit.jupiter.api.*
@@ -77,7 +78,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
     @Test
     fun `getUsersAssignedToProject should propagate project repository failure`() {
         // Given
-        val expectedException = PlanMateExceptions.DataException.ReadException()
+        val expectedException = ReadDataException()
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
         every { userRepository.getAllUsers() } returns Result.success(
             listOf(
@@ -105,7 +106,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -124,7 +125,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
     @Test
     fun `addUserAssignedToProject should propagate failure`() {
         // Given
-        val expectedException = PlanMateExceptions.DataException.WriteException()
+        val expectedException = WriteDataException()
         every { projectRepository.addUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
 
         // When
@@ -132,7 +133,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+        assertThrows<WriteDataException> { result.getOrThrow() }
     }
 
     @Test
@@ -165,7 +166,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
     @Test
     fun `deleteUserAssignedToProject should propagate read failure`() {
         // Given
-        val expectedException = PlanMateExceptions.DataException.ReadException()
+        val expectedException = ReadDataException()
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
 
         // When
@@ -173,14 +174,14 @@ class ManageUsersAssignedToProjectUseCaseTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.ReadException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result.getOrThrow() }
     }
 
     @Test
     fun `deleteUserAssignedToProject should propagate delete failure`() {
         // Given
         every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1"))
-        val expectedException = PlanMateExceptions.DataException.WriteException()
+        val expectedException = WriteDataException()
         every { projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
 
         // When
@@ -188,6 +189,6 @@ class ManageUsersAssignedToProjectUseCaseTest {
 
         // Then
         assertTrue(result.isFailure)
-        assertThrows<PlanMateExceptions.DataException.WriteException> { result.getOrThrow() }
+        assertThrows<WriteDataException> { result.getOrThrow() }
     }
 }

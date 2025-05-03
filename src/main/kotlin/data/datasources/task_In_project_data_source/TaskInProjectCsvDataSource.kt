@@ -1,7 +1,9 @@
 package org.example.data.datasources.task_In_project_data_source
 
 import data.models.TaskInProject
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -18,16 +20,19 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
     override fun read(): Result<List<TaskInProject>> {
         val file = resolveFile()
         if (!file.exists()) {
-            return Result.failure(PlanMateExceptions.DataException.FileNotExistException())
+            return Result.failure(FileNotExistException())
         }
 
         return try {
+            if (File(filePath).readLines().size < 2)
+                return Result.success(emptyList())
+
             val users = DataFrame.readCSV(file)
                 .cast<TaskInProject>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.ReadException())
+            Result.failure(ReadDataException())
         }
     }
 
@@ -36,7 +41,7 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 
@@ -52,7 +57,7 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
             }
             Result.success(true)
         } catch (e: Exception) {
-            Result.failure(PlanMateExceptions.DataException.WriteException())
+            Result.failure(WriteDataException())
         }
     }
 }

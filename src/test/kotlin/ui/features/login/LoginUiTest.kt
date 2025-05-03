@@ -8,8 +8,11 @@ import logic.model.entities.UserRole
 import modle.buildUser
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.PlanMateExceptions
+import org.example.logic.model.exceptions.IncorrectPassword
+import org.example.logic.model.exceptions.UserDoesNotExist
 import logic.usecase.login.LoginUseCase
+import org.example.logic.model.exceptions.InvalidUserName
+import org.example.logic.model.exceptions.InvalidPassword
 import org.example.ui.features.login.LoginUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -41,7 +44,7 @@ class LoginUiTest {
         username: String,
         password: String
     ) {
-        val expectedMessage = PlanMateExceptions.LogicException.InvalidUserName().message ?: ""
+        val expectedMessage = InvalidUserName().message ?: ""
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
         every {
@@ -49,7 +52,7 @@ class LoginUiTest {
                 username = username,
                 password = password
             )
-        } returns Result.failure(PlanMateExceptions.LogicException.InvalidUserName())
+        } returns Result.failure(InvalidUserName())
         ui.authenticateUser()
         verify(exactly = 1) { printer.showMessage(expectedMessage) }
     }
@@ -63,12 +66,12 @@ class LoginUiTest {
         username: String,
         password: String
     ) {
-        val expectedMessage = PlanMateExceptions.LogicException.InvalidPassword().message ?: ""
+        val expectedMessage = InvalidPassword().message ?: ""
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
         every {
             useCase.loginUser(username = username, password = password)
-        } returns Result.failure(PlanMateExceptions.LogicException.InvalidPassword())
+        } returns Result.failure(InvalidPassword())
 
         ui.authenticateUser()
 
@@ -77,9 +80,9 @@ class LoginUiTest {
 
     @Test
     fun `authenticateUser() should print user does not exist when username and password entered with not existing user`() {
-        val expectedMessage = PlanMateExceptions.LogicException.UserDoesNotExist().message ?: ""
+        val expectedMessage = UserDoesNotExist().message ?: ""
         every { useCase.loginUser(username = "username", password = "password") } returns Result.failure(
-            PlanMateExceptions.LogicException.UserDoesNotExist()
+            UserDoesNotExist()
         )
         every { reader.readStringOrNull() } returnsMany listOf("username", "password")
 
@@ -90,9 +93,9 @@ class LoginUiTest {
 
     @Test
     fun `authenticateUser() should print incorrect password when incorrect password entered with not existing user`() {
-        val expectedMessage = PlanMateExceptions.LogicException.IncorrectPassword().message ?: ""
+        val expectedMessage = IncorrectPassword().message ?: ""
         every { useCase.loginUser(username = "username", password = "password") } returns Result.failure(
-            PlanMateExceptions.LogicException.IncorrectPassword()
+            IncorrectPassword()
         )
         every { reader.readStringOrNull() } returnsMany listOf("username", "password")
 
