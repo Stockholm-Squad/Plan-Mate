@@ -1,13 +1,11 @@
 package org.example.logic.usecase.user
 
 import logic.model.entities.User
-import org.example.logic.model.exceptions.InvalidPassword
-import org.example.logic.model.exceptions.InvalidUserName
 import org.example.logic.model.exceptions.UserExist
 import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.common.ValidateUserDataUseCase
-import org.example.utils.hashToMd5
+import org.example.logic.utils.hashToMd5
 
 class CreateUserUseCase(
     private val userRepository: UserRepository,

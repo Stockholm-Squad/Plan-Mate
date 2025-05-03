@@ -1,6 +1,7 @@
 package org.example.ui.features.task
 
 import logic.model.entities.Task
+import logic.model.entities.User
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
@@ -9,8 +10,8 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.utils.DateHandler
-import org.example.utils.TaskOptions
+import org.example.data.utils.DateHandlerImp
+import org.example.ui.utils.TaskOptions
 import java.util.*
 
 
@@ -23,7 +24,7 @@ class TaskManagerUi(
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
 ) : UiLauncher {
 
-    override fun launchUi() {
+    override fun launchUi(user: User?) {
         while (true) {
             printTaskOptionsMenu()
             if (enteredTaskOption(uiUtils.getEnteredOption(reader.readIntOrNull()))) break
@@ -86,8 +87,8 @@ class TaskManagerUi(
             name = name,
             description = description,
             stateId = stateId,
-            createdDate = DateHandler().getCurrentDateTime(),
-            updatedDate = DateHandler().getCurrentDateTime()
+            createdDate = DateHandlerImp().getCurrentDateTime(),
+            updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
         manageTasksUseCase.createTask(task).fold(
@@ -114,7 +115,7 @@ class TaskManagerUi(
             name = newName,
             description = newDescription,
             stateId = newStateId,
-            updatedDate = DateHandler().getCurrentDateTime()
+            updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
         manageTasksUseCase.editTask(updatedTask).fold(

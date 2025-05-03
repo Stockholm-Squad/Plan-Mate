@@ -6,19 +6,19 @@ import io.mockk.verify
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.user.CreateUserUseCase
-import org.example.ui.features.user.CreateUserUi
+import org.example.ui.features.user.CreateUserUiImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class CreateUserUiTest {
+class CreateUserUiImpTest {
     private val mockCreateUserUseCase: CreateUserUseCase = mockk(relaxed = true)
     private val mockPrinter: OutputPrinter = mockk(relaxed = true)
     private val mockInputReader: InputReader = mockk()
-    private lateinit var createUserUi: CreateUserUi
+    private lateinit var createUserUiImp: CreateUserUiImp
 
     @BeforeEach
     fun setUp() {
-        createUserUi = CreateUserUi(mockCreateUserUseCase, mockPrinter, mockInputReader)
+        createUserUiImp = CreateUserUiImp(mockCreateUserUseCase, mockPrinter, mockInputReader)
     }
 
     @Test
@@ -27,7 +27,7 @@ class CreateUserUiTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf(null, null)
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify {
@@ -43,7 +43,7 @@ class CreateUserUiTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf("", "password")
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockPrinter.showMessage("❌ Error: Username and password cannot be empty") }
@@ -55,7 +55,7 @@ class CreateUserUiTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf("username", "")
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockPrinter.showMessage("❌ Error: Username and password cannot be empty") }
@@ -67,7 +67,7 @@ class CreateUserUiTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf(null, null)
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockPrinter.showMessage("❌ Error: Username and password cannot be empty") }
@@ -83,7 +83,7 @@ class CreateUserUiTest {
         every { mockCreateUserUseCase.createUser(username, password) } returns Result.success(true)
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockPrinter.showMessage("✅ User $username added successfully!") }
@@ -98,7 +98,7 @@ class CreateUserUiTest {
         every { mockCreateUserUseCase.createUser(username, password) } returns Result.success(false)
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockPrinter.showMessage("❌ Error: Failed to add user") }
@@ -115,7 +115,7 @@ class CreateUserUiTest {
                 Result.failure(IllegalArgumentException(errorMessage))
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockPrinter.showMessage("Error: $errorMessage") }
@@ -131,7 +131,7 @@ class CreateUserUiTest {
         every { mockCreateUserUseCase.createUser(username, password) } returns Result.success(true)
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify { mockCreateUserUseCase.createUser(username, password) }
@@ -143,7 +143,7 @@ class CreateUserUiTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf(null, "validPass")
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify(exactly = 0) { mockCreateUserUseCase.createUser(any(), any()) }
@@ -155,7 +155,7 @@ class CreateUserUiTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf("validUser", null)
 
         // When
-        createUserUi.launchUi()
+        createUserUiImp.launchUi()
 
         // Then
         verify(exactly = 0) { mockCreateUserUseCase.createUser(any(), any()) }

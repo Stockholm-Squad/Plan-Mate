@@ -10,7 +10,7 @@ import org.example.logic.model.exceptions.NoTasksCreated
 import org.example.logic.model.exceptions.NoTasksFound
 import org.example.logic.model.exceptions.TaskNotFoundException
 import org.example.logic.model.exceptions.NoTasksDeleted
-import org.example.utils.DateHandler
+import org.example.data.utils.DateHandlerImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,13 +20,13 @@ class ManageTasksUseCaseTest {
 
     private lateinit var taskRepository: TaskRepository
     private lateinit var manageTasksUseCase: ManageTasksUseCase
-    private lateinit var dataHandler: DateHandler
+    private lateinit var dataHandler: DateHandlerImp
 
     @BeforeEach
     fun setUp() {
         taskRepository = mockk(relaxed = true)
         manageTasksUseCase = ManageTasksUseCase(taskRepository)
-        dataHandler = DateHandler()
+        dataHandler = DateHandlerImp()
     }
 
     @Test

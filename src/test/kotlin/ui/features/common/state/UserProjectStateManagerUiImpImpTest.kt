@@ -12,7 +12,7 @@ import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class UserProjectStateManagerUiImpTest {
+class UserProjectStateManagerUiImpImpTest {
 
     private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var userStateManagerUi: UserStateManagerUi

@@ -2,7 +2,7 @@ package utils
 
 import kotlinx.datetime.LocalDateTime
 import logic.model.entities.Task
-import org.example.utils.DateHandler
+import org.example.data.utils.DateHandlerImp
 import java.util.UUID
 
 fun buildTask(
@@ -10,8 +10,8 @@ fun buildTask(
     name: String = "",
     description: String = "",
     stateId: String = "",
-    createdDate: LocalDateTime = DateHandler().getCurrentDateTime(),
-    updatedDate: LocalDateTime = DateHandler().getCurrentDateTime()
+    createdDate: LocalDateTime = DateHandlerImp().getCurrentDateTime(),
+    updatedDate: LocalDateTime = DateHandlerImp().getCurrentDateTime()
 
 ): Task {
     return Task(
