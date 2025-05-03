@@ -29,11 +29,11 @@ class AuditSystemManagerUiImp(
         printer.showMessage(Constant.EXITING)
     }
 
-    private fun displayAllAuditSystems() =
-        useCase.getAllAuditSystems().fold(
-            onSuccess = { audits -> printer.showAudits(audits) },
-            onFailure = { printer.showMessage(it.message.toString()) }
-        )
+//    private fun displayAllAuditSystems() =
+//        useCase.getAllAuditSystems().fold(
+//            onSuccess = { audits -> printer.showAudits(audits) },
+//            onFailure = { printer.showMessage(it.message.toString()) }
+//        )
 
     private fun displayAuditLogsByProjectId() {
         printer.showMessage(Constant.PROMPT_PROJECT_ID)

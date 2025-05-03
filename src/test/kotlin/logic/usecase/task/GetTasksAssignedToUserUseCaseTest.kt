@@ -6,7 +6,6 @@ import io.mockk.mockk
 import data.models.MateTaskAssignment
 import org.example.logic.model.exceptions.NoTaskAssignmentFound
 import org.example.logic.repository.TaskRepository
-import org.example.logic.usecase.task.GetTasksAssignedToUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
