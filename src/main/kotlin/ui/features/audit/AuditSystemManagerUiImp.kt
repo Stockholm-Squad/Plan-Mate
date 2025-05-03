@@ -1,30 +1,28 @@
 package org.example.ui.features.audit
 
 import logic.model.entities.User
+import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.utils.Constant
-import org.example.ui.utils.SearchUtils
 
 class AuditSystemManagerUiImp(
     private val useCase: ManageAuditSystemUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val searchUtils: SearchUtils,
-    private val user : User
+    private val user: User
 ) : AuditSystemManagerUi {
 
     override fun invoke() {
         do {
             printer.showMessage(Constant.SHOW_AUDIT_SYSTEM_OPTIONS)
-            when (searchUtils.getMainMenuOption()) {
+            when (getMainMenuOption()) {
                 1 -> displayAuditsByEntityID()
                 2 -> displayAllAudits()
                 3 -> printer.showMessage(Constant.EXITING)
                 else -> printer.showMessage(Constant.INVALID_SELECTION_MESSAGE)
             }
-        } while (searchUtils.shouldSearchAgain(reader) == true)
+        } while (shouldSearchAgain(reader) == true)
         printer.showMessage(Constant.EXITING)
     }
 
@@ -40,13 +38,23 @@ class AuditSystemManagerUiImp(
 
     }
 
-    
 
     private fun displayAllAudits() {
-            useCase.getAuditsByUserId(user.id).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
-        }
+        useCase.getAuditsByUserId(user.id).fold(
+            onSuccess = { audits -> printer.showAudits(audits) },
+            onFailure = { printer.showMessage(it.message.toString()) }
+        )
+    }
+
+    fun shouldSearchAgain(reader: InputReader): Boolean? {
+        printer.showMessage(Constant.SEARCH_AGAIN_PROMPT)
+        val input = reader.readStringOrNull()?.trim()?.lowercase()?.takeIf { it.isNotBlank() }
+        return if (input?.trim()?.lowercase() == Constant.Y) true else null
+    }
+
+    fun getMainMenuOption(): Int {
+        printer.showMessage(Constant.PLEASE_SELECT_OPTION)
+        return reader.readStringOrNull()?.toIntOrNull() ?: 0
+    }
 
 }
