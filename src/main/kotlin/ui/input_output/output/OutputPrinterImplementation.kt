@@ -1,11 +1,9 @@
 package org.example.ui.input_output.output
 
+import data.models.MateTaskAssignment
+import logic.model.entities.AuditSystem
 import logic.model.entities.ProjectState
 import logic.model.entities.Task
-import data.models.MateTaskAssignment
-import kotlin.collections.forEach
-
-import logic.model.entities.AuditSystem
 
 class OutputPrinterImplementation : OutputPrinter {
 
@@ -68,10 +66,10 @@ class OutputPrinterImplementation : OutputPrinter {
                     String.format(
                         "| %-36s | %-12s | %-15s | %-20s | %-30s |",
                         entry.id,
-                        entry.entityId,
-                        entry.changedBy,
+                        entry.entityTypeId,
+                        entry.userId,
                         entry.dateTime,
-                        entry.changeDescription.take(30)
+                        entry.description.take(30)
                     )
                 )
             }
