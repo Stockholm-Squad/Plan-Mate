@@ -11,7 +11,6 @@ interface UserRepository {
     fun addUserToProject(projectId: UUID, userName: String): Result<Boolean>
     fun deleteUserFromProject(projectId: UUID, userName: String): Result<Boolean>
 
-    fun getAllUsersByTaskId(taskId: UUID): Result<List<User>>
     fun addUserToTask(mateName: String, taskId: UUID): Result<Boolean>
     fun deleteUserFromTask(mateName: String, taskId: UUID): Result<Boolean>
 }

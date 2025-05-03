@@ -17,6 +17,4 @@ interface TaskRepository {
 
 
     fun getAllTasksByUserName(userName: String): Result<List<Task>>
-    fun getAllTasksByUserId(userId: UUID): Result<List<Task>>
-
 }

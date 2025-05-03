@@ -14,6 +14,8 @@ import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

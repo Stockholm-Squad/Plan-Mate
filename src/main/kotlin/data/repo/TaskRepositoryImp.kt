@@ -1,21 +1,20 @@
 package org.example.data.repo
 
-import data.models.MateTaskAssignment
-import logic.model.entities.Task
 import data.models.TaskInProject
-import org.example.data.datasources.task_data_source.ITaskDataSource
+import logic.model.entities.Task
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
+import org.example.data.datasources.task_data_source.ITaskDataSource
+import org.example.data.extention.toSafeUUID
 import org.example.data.mapper.TaskMapper
-
 import org.example.logic.repository.TaskRepository
 import org.example.logic.usecase.task.ManageTasksUseCase
+import java.util.*
 
 class TaskRepositoryImp(
     private val taskDataSource: ITaskDataSource,
     private val mateTaskAssignment: IMateTaskAssignmentDataSource,
     private val taskInProjectDataSource: ITaskInProjectDataSource,
-    private val manageTasksUseCase: ManageTasksUseCase,
     private val taskMapper: TaskMapper,
 ) : TaskRepository {
 
@@ -33,41 +32,55 @@ class TaskRepositoryImp(
             onFailure = { Result.failure(it) }
         )
 
-    override fun deleteTask(id: String?): Result<Boolean> =
+    override fun deleteTask(id: UUID?): Result<Boolean> =
         readTasks().fold(
             onSuccess = { tasks ->
-                writeTasks(tasks.filterNot { it.id.toString() == id })
+                writeTasks(tasks.filterNot { it.id.toString() == id.toString() })
             },
             onFailure = { Result.failure(it) }
         )
 
 
-    override fun getTasksInProject(projectId: String): Result<List<Task>> {
+    override fun getTasksInProject(projectId: UUID): Result<List<Task>> {
         return taskInProjectDataSource.read().fold(
             onSuccess = { taskInProject ->
                 taskInProject.filter {
-                    projectId == it.projectId
+                    projectId.toString() == it.projectId
                 }.map { it.taskId }.let { tasksIds ->
-                    tasksIds.mapNotNull {
-                        manageTasksUseCase.getTaskById(it).getOrNull()
-                    }.let {
+                    getTasks(tasksIds).let {
                         Result.success(it)
                     }
                 }
             }, onFailure = { Result.failure(it) })
     }
 
-    override fun addTaskInProject(projectId: String, taskId: String): Result<Boolean> {
-        return taskInProjectDataSource.append(listOf(TaskInProject(projectId = projectId, taskId = taskId)))
+    private fun getTasks(tasksIds: List<String>) = tasksIds.mapNotNull {
+        this.getAllTasks().fold(
+            onSuccess = { tasks ->
+                tasks.filter { it }
+            },
+            onFailure = { Result.failure(it) }
+        )
     }
 
-    override fun deleteTaskFromProject(projectId: String, taskId: String): Result<Boolean> {
+    override fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+        return taskInProjectDataSource.append(
+            listOf(
+                TaskInProject(
+                    projectId = projectId.toString(),
+                    taskId = taskId.toString()
+                )
+            )
+        )
+    }
+
+    override fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
         return taskInProjectDataSource.read().fold(
             onSuccess = { tasksInProject ->
                 tasksInProject.filterNot { taskInProject ->
-                    (taskInProject.projectId == projectId) && (taskInProject.taskId == taskId)
+                    (taskInProject.projectId == projectId.toString()) && (taskInProject.taskId == taskId.toString())
                 }.let { newTasksInProject ->
-                    when (newTasksInProject.contains(TaskInProject(taskId, projectId))) {
+                    when (newTasksInProject.contains(TaskInProject(taskId.toString(), projectId.toString()))) {
                         true -> Result.success(false)
                         false -> taskInProjectDataSource.overWrite(newTasksInProject)
                     }
@@ -83,63 +96,13 @@ class TaskRepositoryImp(
                     userName == it.userName
                 }.map { it.taskId }.let { tasksIds ->
                     tasksIds.mapNotNull {
-                        manageTasksUseCase.getTaskById(it).getOrNull()
+                        manageTasksUseCase.getTaskById(it.toSafeUUID()).getOrNull()
                     }.let {
                         Result.success(it)
                     }
                 }
             }, onFailure = { Result.failure(it) }
         )
-
-    override fun getAllTasksByUserId(userId: String): Result<List<Task>> {
-        return mateTaskAssignment.read().fold(
-            onSuccess = { assignments ->
-                assignments.filter { it.userName == userId }
-                    .map { it.taskId }
-                    .let { taskIds ->
-                        taskIds.mapNotNull { taskId ->
-                            manageTasksUseCase.getTaskById(taskId).getOrNull()
-                        }.let { tasks ->
-                            Result.success(tasks)
-                        }
-                    }
-            },
-            onFailure = { Result.failure(it) }
-        )
-    }
-
-    override fun getAllUsersByTaskId(taskId: String): Result<List<String>> {
-        return mateTaskAssignment.read().fold(
-            onSuccess = { assignments ->
-                Result.success(
-                    assignments.filter { it.taskId == taskId }
-                        .map { it.userName }
-                )
-            },
-            onFailure = { Result.failure(it) }
-        )
-    }
-
-    override fun addUserToTask(mateName: String, taskId: String): Result<Boolean> {
-        return mateTaskAssignment.append(
-            listOf(MateTaskAssignment(userName = mateName, taskId = taskId))
-        )
-    }
-
-    override fun deleteUserFromTask(mateName: String, taskId: String): Result<Boolean> {
-        return mateTaskAssignment.read().fold(
-            onSuccess = { assignments ->
-                val newAssignments = assignments.filterNot {
-                    it.userName == mateName && it.taskId == taskId
-                }
-                when (newAssignments.size == assignments.size) {
-                    true -> Result.success(false)
-                    false -> mateTaskAssignment.overWrite(newAssignments)
-                }
-            },
-            onFailure = { Result.failure(it) }
-        )
-    }
 
     private fun readTasks(): Result<List<Task>> {
         return taskDataSource.read().fold(
@@ -148,7 +111,7 @@ class TaskRepositoryImp(
         )
     }
 
-    fun writeTasks(tasks: List<Task>): Result<Boolean> {
+    private fun writeTasks(tasks: List<Task>): Result<Boolean> {
         return tasks.map { task -> taskMapper.mapToTaskModel(task) }.let {
             taskDataSource.overWrite(it)
         }

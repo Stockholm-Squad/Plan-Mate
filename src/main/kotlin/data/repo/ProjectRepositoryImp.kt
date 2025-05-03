@@ -1,11 +1,8 @@
 package org.example.data.repo
 
 
-import data.models.UserAssignedToProject
 import logic.model.entities.Project
-import logic.model.entities.User
 import org.example.data.datasources.project_data_source.IProjectDataSource
-import org.example.data.datasources.user_data_source.IUserDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.ProjectMapper
 import org.example.data.mapper.UserMapper
@@ -15,7 +12,6 @@ import org.example.logic.repository.ProjectRepository
 class ProjectRepositoryImp(
     private val projectDataSource: IProjectDataSource,
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
-    private val userDataSource: IUserDataSource,
     private val projectMapper: ProjectMapper,
     private val userMapper: UserMapper
 ) : ProjectRepository {
@@ -55,55 +51,12 @@ class ProjectRepositoryImp(
         )
     }
 
-    //TODO: move to User Repo
-    //TODO: separate into clean functions
-    override fun getUsersAssignedToProject(projectId: String): Result<List<User>> {
-        return userAssignedToProjectDataSource.read().fold(
-            onSuccess = { userAssignedToProject ->
-                userDataSource.read().fold(
-                    onSuccess = { users ->
-                        userAssignedToProject.filter {
-                            projectId == it.projectId
-                        }.map { it.userName }
-                            .let { userNames ->
-                                users.filter { user -> userNames.contains(user.username) }.map { userModel ->
-                                    userMapper.mapToUserEntity(userModel)
-                                }.let {
-                                    Result.success(it)
-                                }
-                            }
-                    },
-                    onFailure = { Result.failure(it) }
-                )
-
-            }, onFailure = { Result.failure(it) })
-    }
-
-    //TODO: move to User Repo
-    override fun addUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {
-        return userAssignedToProjectDataSource.append(
-            listOf(UserAssignedToProject(projectId = projectId, userName = userName))
-        )
-    }
-
-    //TODO: move to User Repo
-    override fun deleteUserAssignedToProject(projectId: String, userName: String): Result<Boolean> {
-        return userAssignedToProjectDataSource.read().fold(onSuccess = { usersAssignedToProject ->
-            usersAssignedToProject.filterNot { userAssignedToProject ->
-                (userAssignedToProject.projectId == projectId) && (userAssignedToProject.userName == userName)
-            }.let { newUsersAssignedToProject ->
-                userAssignedToProjectDataSource.overWrite(newUsersAssignedToProject)
-            }
-        }, onFailure = { Result.failure(it) })
-    }
-
-    //TODO: separate into clean functions
-    override fun getProjectsAssignedToUser(userName: String): Result<List<Project>> {
+    override fun getProjectsByUsername(username: String): Result<List<Project>> {
         return userAssignedToProjectDataSource.read().fold(
             onSuccess = { userAssignments ->
                 projectDataSource.read().fold(
                     onSuccess = { projects ->
-                        userAssignments.filter { it.userName == userName }
+                        userAssignments.filter { it.userName == username }
                             .map { it.projectId }
                             .let { projectIds ->
                                 projects.filter { project -> projectIds.contains(project.id) }
