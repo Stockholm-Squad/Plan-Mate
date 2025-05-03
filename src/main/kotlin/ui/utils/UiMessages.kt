@@ -2,7 +2,6 @@ package org.example.ui.utils
 
 
 enum class UiMessages(val message: String) {
-
     TASK_ID_PROMPT("Enter task ID:"),
     TASK_NAME_PROMPT("Enter task name:"),
     TASK_DESCRIPTION_PROMPT("Enter task description:"),

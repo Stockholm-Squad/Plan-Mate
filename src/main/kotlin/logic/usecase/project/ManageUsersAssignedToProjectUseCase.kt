@@ -1,5 +1,6 @@
 package org.example.logic.usecase.project
 
+import logic.model.entities.Project
 import logic.model.entities.User
 import org.example.logic.repository.UserRepository
 import java.util.*

@@ -18,15 +18,15 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
         )
     }
 
-    fun getProjectById(id: String): Result<Project> {
-        kotlin.runCatching { id.toSafeUUID() }.fold(
+    fun getProjectById(id: UUID): Result<Project> {
+        return kotlin.runCatching { id }.fold(
             onSuccess = {
                 projectRepository.getAllProjects().fold(
                     onFailure = { Result.failure(NoObjectFound()) },
                     onSuccess = { allProjects -> findProject(id, allProjects) }
                 )
             },
-            onFailure = {Result.failure(InvalidPassword)}
+            onFailure = {Result.failure(it)}
         )
     }
 
@@ -35,7 +35,7 @@ class ManageProjectUseCase(private val projectRepository: ProjectRepository) {
             ?: Result.failure(NoObjectFound())
 
     }
-    //ToDO add task, add state
+
     fun addProject(project: Project): Result<Boolean> {
         return projectRepository.addProject(project).fold(
             onFailure = { Result.failure(NoProjectAdded()) },
