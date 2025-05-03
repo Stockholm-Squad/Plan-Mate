@@ -2,16 +2,17 @@ package org.example.data.repo
 
 import logic.model.entities.ProjectState
 import org.example.data.datasources.state_data_source.IStateDataSource
-import org.example.data.mapper.StateMapper
+import org.example.data.mapper.mapToStateEntity
+import org.example.data.mapper.mapToStateModel
 import org.example.logic.repository.ProjectStateRepository
 
 class ProjectStateRepositoryImp(
     private val stateDataSource: IStateDataSource,
-    private val stateMapper: StateMapper,
 ) : ProjectStateRepository {
 
     override fun addProjectState(stateName: String): Result<Boolean> {
-        return stateDataSource.append(listOf(stateMapper.mapToStateModel(ProjectState(name = stateName))))
+        val projectState=ProjectState(name = stateName)
+        return stateDataSource.append(listOf((projectState.mapToStateModel())))
     }
 
     override fun editProjectState(projectState: ProjectState): Result<Boolean> {
@@ -27,7 +28,7 @@ class ProjectStateRepositoryImp(
     override fun deleteProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.filterNot { it == stateMapper.mapToStateModel(projectState) }
+                currentStates.filterNot { it == projectState.mapToStateModel() }
                 stateDataSource.overWrite(currentStates)
             },
             onFailure = { exception -> Result.failure(exception) }
@@ -37,7 +38,7 @@ class ProjectStateRepositoryImp(
     override fun getAllProjectStates(): Result<List<ProjectState>> {
         return stateDataSource.read().fold(
             onSuccess = { allStates ->
-                Result.success(allStates.map { it1 -> stateMapper.mapToStateEntity(it1) })
+                Result.success(allStates.map { it.mapToStateEntity() })
             },
             onFailure = { exception -> Result.failure(exception) }
         )

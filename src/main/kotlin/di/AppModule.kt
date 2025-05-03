@@ -1,7 +1,6 @@
 package org.example.di
 
 import di.datamodule.datasourceModule
-import org.example.di.datamodule.mappersModule
 import org.example.di.datamodule.repositoryModule
 import org.koin.dsl.module
 
@@ -13,6 +12,5 @@ val appModule = module {
         uiModule,
         inputOutputModule,
         utilsModule,
-        mappersModule
     )
 }
