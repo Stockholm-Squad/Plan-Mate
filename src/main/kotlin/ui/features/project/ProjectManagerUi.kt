@@ -10,4 +10,6 @@ interface ProjectManagerUi: UiLauncher{
     fun editProject()
     fun deleteProject()
     fun assignUsersToProject(user: User?)
+    fun showUsersAssignedToProject()
+    fun removeUserFromProject()
 }
