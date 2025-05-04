@@ -22,7 +22,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onSuccess = { result ->
                 result.fold(
                     onSuccess = { tasks ->
-                        tasks.find { it.name == taskName }
+                        tasks.find { it.name.equals(taskName, ignoreCase = true) }
                             ?.let { Result.success(it) }
                             ?: Result.failure(TaskNotFoundException())
                     },
