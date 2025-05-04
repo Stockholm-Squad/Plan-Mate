@@ -30,7 +30,7 @@ class TaskManagerUi(
         while (true) {
             printTaskOptionsMenu()
             val optionChoice = reader.readIntOrNull()
-            if (enteredTaskOption(uiUtils.getEnteredOption(optionChoice))) break
+            if (enteredTaskOption(getEnteredOption(optionChoice))) break
         }
     }
 
@@ -229,6 +229,9 @@ class TaskManagerUi(
     private fun handleFailure(throwable: Throwable) {
         printer.showMessage("Error: ${throwable.message}")
     }
+
+    private fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
+
 
     private fun printTaskOptionsMenu() {
         printer.showMessage("========================= Tasks Option =========================")

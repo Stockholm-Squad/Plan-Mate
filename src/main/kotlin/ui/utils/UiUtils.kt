@@ -12,8 +12,6 @@ class UiUtils(
         return reader.readStringOrNull()?.takeIf { it.isNotBlank() }?.lowercase()
     }
 
-    fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
-
     fun invalidChoice() {
         printer.showMessage(UiMessages.INVALID_OPTION)
     }
