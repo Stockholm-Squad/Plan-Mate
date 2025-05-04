@@ -184,10 +184,6 @@ class ProjectManagerUiImp(
             )
     }
 
-
-
-
-
     override fun launchUi(user: User?) {
         while (true) {
             outputPrinter.showMessage("\nProject Management:")
