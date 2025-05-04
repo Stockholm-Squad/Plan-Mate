@@ -35,7 +35,7 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ReadDataException())
         }
     }
 
