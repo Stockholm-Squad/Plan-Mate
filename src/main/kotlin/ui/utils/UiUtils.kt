@@ -19,5 +19,4 @@ class UiUtils(
     fun exit() {
         printer.showMessage(UiMessages.GOODBYE)
     }
-
 }
