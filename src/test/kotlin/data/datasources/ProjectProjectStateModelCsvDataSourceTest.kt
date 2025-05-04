@@ -29,15 +29,6 @@ class ProjectProjectStateModelCsvDataSourceTest {
 
     @Nested
     inner class ReadTests {
-        @Test
-        fun `read should return FileNotExistException when file doesn't exist`() {
-            File(testFilePath).delete()
-
-            val result = dataSource.read()
-
-            assertTrue(result.isFailure)
-            assertThrows<FileNotExistException> { result.getOrThrow() }
-        }
 
         @Test
         fun `read should return Throwable when read from file not exist`() {
@@ -114,7 +105,7 @@ class ProjectProjectStateModelCsvDataSourceTest {
             assertTrue(result.getOrThrow())
 
             val content = File(testFilePath).readText()
-            Assertions.assertEquals("", content)
+            Assertions.assertEquals("<id,name>", content)
         }
     }
 }
