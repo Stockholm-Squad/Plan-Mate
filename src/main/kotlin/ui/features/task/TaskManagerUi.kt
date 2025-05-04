@@ -29,8 +29,7 @@ class TaskManagerUi(
     override fun launchUi(user: User?) {
         while (true) {
             printTaskOptionsMenu()
-            val optionChoice = reader.readIntOrNull() // Read the integer choice
-            reader.readStringOrNull()
+            val optionChoice = reader.readIntOrNull()
             if (enteredTaskOption(uiUtils.getEnteredOption(optionChoice))) break
         }
     }
@@ -151,7 +150,6 @@ class TaskManagerUi(
     }
 
     fun showAllMateTaskAssignment() {
-        printer.showMessage("--- DEBUG: showAllMateTaskAssignment ---")
         val userName = getUserName()
         manageTasksInProjectUseCase.getAllTasksByUserName(userName).fold(
             onSuccess = { assignments -> printer.printMateTaskAssignments(assignments) },
@@ -183,19 +181,6 @@ class TaskManagerUi(
             }
 
             return Triple(name, description, stateName)
-        }
-    }
-
-    private fun getStateByName(): String? {
-        while (true) {
-            printer.showMessage(UiMessages.TASK_STATE_PROMPT)
-            val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-            if (stateName == null) {
-                printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT)
-                continue
-            }
-
-            return stateName
         }
     }
 
@@ -232,17 +217,11 @@ class TaskManagerUi(
     private fun getUserName(): String {
         while (true) {
             printer.showMessage(UiMessages.USER_NAME_PROMPT)
-            printer.showMessage("--- DEBUG: Prompt printed. Waiting for input...")
-
             val userName = uiUtils.readNonBlankInputOrNull(reader)
-            printer.showMessage("--- DEBUG: Input read. Value: [$userName]")
-
             if (userName == null) {
                 printer.showMessage(UiMessages.EMPTY_USER_NAME_INPUT)
-                printer.showMessage("--- DEBUG: Input was null/blank. Continuing loop.")
                 continue
             }
-            printer.showMessage("--- DEBUG: Valid username received: [$userName]. Returning.")
             return userName
         }
     }
