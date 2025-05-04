@@ -164,13 +164,13 @@ class ManageProjectUseCaseTest {
             val existingProject = buildProject(id = projectId, name = "Existing Project")
             val updatedProject = existingProject.copy(name = "Updated Project")
             every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
-            every { projectRepository.editProjectState(updatedProject) } returns Result.success(true)
+            every { projectRepository.editProject(updatedProject) } returns Result.success(true)
 
             // When
-//            val result = manageProjectUseCase.updateProject("existingProject","")
+            val result = manageProjectUseCase.updateProjectState("existingProject","")
 
             // Then
-//            assertThat(result.isSuccess).isTrue()
+            assertThat(result.isSuccess).isTrue()
         }
 
         @Test
@@ -178,14 +178,14 @@ class ManageProjectUseCaseTest {
             // Given
             val projectId = "non-existent"
             val existingProject = buildProject(id = UUID.randomUUID(), name = "Existing Project")
-            every { projectRepository.editProjectState(existingProject) } returns Result.failure(NoObjectFound())
+            every { projectRepository.editProject(existingProject) } returns Result.failure(NoObjectFound())
 
             // When
-//            val result = manageProjectUseCase.updateProject("existingProject", "")
+            val result = manageProjectUseCase.updateProjectState("existingProject", "")
 
             // Then
-//            assertThat(result.isFailure).isTrue()
-//            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoObjectFound::class.java)
 
 
         }
@@ -204,7 +204,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.deleteProject(existingProject) } returns Result.success(true)
 
             // When
-            val result = manageProjectUseCase.removeProjectByName(projectId)
+            val result = manageProjectUseCase.removeProjectById(projectId)
 
             // Then
             assertThat(result.isSuccess).isTrue()
@@ -220,7 +220,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.success(emptyList())
 
             // When
-            val result = manageProjectUseCase.removeProjectByName(projectId)
+            val result = manageProjectUseCase.removeProjectById(projectId)
 
             // Then
             assertThat(result.isFailure).isTrue()
@@ -237,7 +237,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.failure(expectedException)
 
             // When
-            val result = manageProjectUseCase.removeProjectByName(projectId)
+            val result = manageProjectUseCase.removeProjectById(projectId)
 
             // Then
             assertThat(result.isFailure).isTrue()
