@@ -6,6 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.User
 import logic.usecase.login.getAllUsers
+import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.model.exceptions.InvalidPassword
 import org.example.logic.model.exceptions.InvalidUserName
 import org.example.logic.model.exceptions.UserExist
@@ -19,11 +20,13 @@ import kotlin.test.Test
 class CreateUserUseCaseTest() {
     private lateinit var repository: UserRepository
     private lateinit var useCase: CreateUserUseCase
+    private lateinit var validateUserDataUseCase: ValidateUserDataUseCase
 
     @BeforeEach
     fun setUp() {
         repository = mockk(relaxed = true)
-        useCase = CreateUserUseCase(repository)
+        validateUserDataUseCase = mockk(relaxed = true)
+        useCase = CreateUserUseCase(repository, validateUserDataUseCase)
     }
 
     @Test
@@ -97,9 +100,9 @@ class CreateUserUseCaseTest() {
         // Given
         val existingUsername = "existingUser"
         val users = listOf(
-            User("otherUser1", "hash1"),
-            User(existingUsername, "hash2"),
-            User("otherUser2", "hash3")
+            User(username = "otherUser1", hashedPassword = "hash1"),
+            User(username = existingUsername, hashedPassword = "hash2"),
+            User(username = "otherUser2", hashedPassword = "hash3")
         )
 
         // When & Then
