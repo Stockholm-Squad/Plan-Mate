@@ -54,14 +54,26 @@ class AdminStateManagerUiImpl(
 
     override fun editState() {
         printer.showMessage("Please enter the state you want to update: ")
-        reader.readStringOrNull().takeIf { stateName ->
-            !stateName.isNullOrEmpty()
-        }?.let { stateName ->
-            manageStatesUseCase.editProjectStateByName(stateName = stateName).fold(
-                onSuccess = { showStateUpdatedMessage() },
-                onFailure = { showFailure("Failed to Update state: ${it.message}") }
-            )
-        } ?: showInvalidInput()
+        val currentStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            ?: run {
+                showInvalidInput()
+                return
+            }
+
+        printer.showMessage("Please enter the new state name: ")
+        val newStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            ?: run {
+                showInvalidInput()
+                return
+            }
+
+        manageStatesUseCase.editProjectStateByName(
+            stateName = currentStateName,
+            newStateName = newStateName
+        ).fold(
+            onSuccess = { showStateUpdatedMessage() },
+            onFailure = { showFailure("Failed to update state: ${it.message}") }
+        )
     }
 
     private fun showStateUpdatedMessage() {

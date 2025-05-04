@@ -18,10 +18,12 @@ class ProjectStateRepositoryImp(
     override fun editProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.map { item -> if (item.id == projectState.id.toString()) projectState else item }
-                stateDataSource.overWrite(currentStates)
+                val updatedStates = currentStates.map { item ->
+                    if (item.id == projectState.id.toString()) projectState.mapToStateModel() else item
+                }
+                stateDataSource.overWrite(updatedStates)
             },
-            onFailure = { exception -> Result.failure(exception) }
+            onFailure = { Result.failure(it) }
         )
     }
 
