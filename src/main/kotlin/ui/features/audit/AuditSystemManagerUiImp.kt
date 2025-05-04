@@ -53,6 +53,7 @@ class AuditSystemManagerUiImp(
 
 
     private fun displayAllAudits() {
+
         user?.id ?: return
         useCase.getAuditsByUserId(user?.id!!).fold(
             onSuccess = { audits -> printer.showAudits(audits) },
