@@ -1,13 +1,13 @@
 package org.example.ui.features.audit
 
 import logic.model.entities.User
-import org.example.logic.usecase.audit.ManageAuditSystemUseCase
+import org.example.logic.usecase.audit.GetAuditSystemUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 
 class AuditSystemManagerUiImp(
-    private val useCase: ManageAuditSystemUseCase,
+    private val useCase: GetAuditSystemUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
 ) : AuditSystemManagerUi {
