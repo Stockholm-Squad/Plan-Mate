@@ -28,12 +28,12 @@ val uiModule = module {
     factory<AuditSystemManagerUi> { AuditSystemManagerUiImp(get(), get(), get()) }
     factory<LoginUi> { LoginUiImp(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
-    factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get()) }
+    factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
-    factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get()) }
+    factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get(), get()) }
     factory<StateManageUi> { StateManagerUiImp(get(), get(), get()) }
 
     factory { UiUtils(get()) }

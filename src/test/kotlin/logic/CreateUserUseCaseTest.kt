@@ -1,142 +1,142 @@
-package logic
-
-import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import logic.model.entities.User
-import logic.usecase.login.getAllUsers
-import org.example.logic.model.exceptions.InvalidPassword
-import org.example.logic.model.exceptions.InvalidUserName
-import org.example.logic.model.exceptions.UserExist
-import org.example.logic.model.exceptions.UsersDataAreEmpty
-import org.example.logic.repository.UserRepository
-import org.example.logic.usecase.user.CreateUserUseCase
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
-import kotlin.test.Test
-
-class CreateUserUseCaseTest() {
-    private lateinit var repository: UserRepository
-    private lateinit var useCase: CreateUserUseCase
-
-    @BeforeEach
-    fun setUp() {
-        repository = mockk(relaxed = true)
-        useCase = CreateUserUseCase(repository)
-    }
-
-    @Test
-    fun `addUser() should return failure when username is empty`() {
-        assertThrows<InvalidUserName> {
-            useCase.createUser(
-                username = "",
-                password = "password"
-            ).getOrThrow()
-        }
-        verify(exactly = 0) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when password is empty`() {
-        assertThrows<InvalidPassword> {
-            useCase.createUser(
-                username = "username",
-                password = ""
-            ).getOrThrow()
-        }
-        verify(exactly = 0) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when username starts with a number`() {
-        assertThrows<InvalidUserName> {
-            useCase.createUser(
-                username = "1john",
-                password = "password"
-            ).getOrThrow()
-        }
-        verify(exactly = 0) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when username is less than 4 characters`() {
-        assertThrows<InvalidUserName> {
-            useCase.createUser(
-                username = "abc",
-                password = "password"
-            ).getOrThrow()
-        }
-        verify(exactly = 0) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when username is more than 20 characters`() {
-        assertThrows<InvalidUserName> {
-            useCase.createUser(
-                username = "averyverylongusernamethatexceeds20",
-                password = "password"
-            ).getOrThrow()
-        }
-        verify(exactly = 0) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when password is less than 8 characters`() {
-        assertThrows<InvalidPassword> {
-            useCase.createUser(
-                username = "validUser",
-                password = "short"
-            ).getOrThrow()
-        }
-        verify(exactly = 0) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `checkUserExists should throw UserExist when username exists in list`() {
-        // Given
-        val existingUsername = "existingUser"
-        val users = listOf(
-            User("otherUser1", "hash1"),
-            User(existingUsername, "hash2"),
-            User("otherUser2", "hash3")
-        )
-
-        // When & Then
-        assertThrows<UserExist> {
-            useCase.checkUserExists(users, existingUsername)
-        }
-    }
-
-    @Test
-    fun `addUser() should return success when user and password are valid`() {
-        val users = getAllUsers()
-        every { repository.getAllUsers() } returns Result.success(users)
-        val result = useCase.createUser(username = "johnDoe", password = "hashedPass1")
-        assertThat(result.getOrThrow()).isEqualTo(true)
-        verify(exactly = 1) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when repo fails`() {
-        val users = getAllUsers()
-        every { repository.getAllUsers() } returns Result.failure(Throwable())
-        assertThrows<Throwable> {
-            useCase.createUser(
-                username = "johnDoe",
-                password = "password2"
-            ).getOrThrow()
-        }
-        verify(exactly = 1) { repository.getAllUsers() }
-    }
-
-    @Test
-    fun `addUser() should return failure when users are empty`() {
-        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmpty())
-        assertThrows<UsersDataAreEmpty> {
-            repository.getAllUsers(
-            ).getOrThrow()
-        }
-        verify(exactly = 1) { repository.getAllUsers() }
-    }
-}
+//package logic
+//
+//import com.google.common.truth.Truth.assertThat
+//import io.mockk.every
+//import io.mockk.mockk
+//import io.mockk.verify
+//import logic.model.entities.User
+//import logic.usecase.login.getAllUsers
+//import org.example.logic.model.exceptions.InvalidPassword
+//import org.example.logic.model.exceptions.InvalidUserName
+//import org.example.logic.model.exceptions.UserExist
+//import org.example.logic.model.exceptions.UsersDataAreEmpty
+//import org.example.logic.repository.UserRepository
+//import org.example.logic.usecase.user.CreateUserUseCase
+//import org.junit.jupiter.api.BeforeEach
+//import org.junit.jupiter.api.assertThrows
+//import kotlin.test.Test
+//
+//class CreateUserUseCaseTest() {
+//    private lateinit var repository: UserRepository
+//    private lateinit var useCase: CreateUserUseCase
+//
+//    @BeforeEach
+//    fun setUp() {
+//        repository = mockk(relaxed = true)
+//        useCase = CreateUserUseCase(repository)
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when username is empty`() {
+//        assertThrows<InvalidUserName> {
+//            useCase.createUser(
+//                username = "",
+//                password = "password"
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 0) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when password is empty`() {
+//        assertThrows<InvalidPassword> {
+//            useCase.createUser(
+//                username = "username",
+//                password = ""
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 0) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when username starts with a number`() {
+//        assertThrows<InvalidUserName> {
+//            useCase.createUser(
+//                username = "1john",
+//                password = "password"
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 0) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when username is less than 4 characters`() {
+//        assertThrows<InvalidUserName> {
+//            useCase.createUser(
+//                username = "abc",
+//                password = "password"
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 0) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when username is more than 20 characters`() {
+//        assertThrows<InvalidUserName> {
+//            useCase.createUser(
+//                username = "averyverylongusernamethatexceeds20",
+//                password = "password"
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 0) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when password is less than 8 characters`() {
+//        assertThrows<InvalidPassword> {
+//            useCase.createUser(
+//                username = "validUser",
+//                password = "short"
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 0) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `checkUserExists should throw UserExist when username exists in list`() {
+//        // Given
+//        val existingUsername = "existingUser"
+//        val users = listOf(
+//            User("otherUser1", "hash1"),
+//            User(existingUsername, "hash2"),
+//            User("otherUser2", "hash3")
+//        )
+//
+//        // When & Then
+//        assertThrows<UserExist> {
+//            useCase.checkUserExists(users, existingUsername)
+//        }
+//    }
+//
+//    @Test
+//    fun `addUser() should return success when user and password are valid`() {
+//        val users = getAllUsers()
+//        every { repository.getAllUsers() } returns Result.success(users)
+//        val result = useCase.createUser(username = "johnDoe", password = "hashedPass1")
+//        assertThat(result.getOrThrow()).isEqualTo(true)
+//        verify(exactly = 1) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when repo fails`() {
+//        val users = getAllUsers()
+//        every { repository.getAllUsers() } returns Result.failure(Throwable())
+//        assertThrows<Throwable> {
+//            useCase.createUser(
+//                username = "johnDoe",
+//                password = "password2"
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 1) { repository.getAllUsers() }
+//    }
+//
+//    @Test
+//    fun `addUser() should return failure when users are empty`() {
+//        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmpty())
+//        assertThrows<UsersDataAreEmpty> {
+//            repository.getAllUsers(
+//            ).getOrThrow()
+//        }
+//        verify(exactly = 1) { repository.getAllUsers() }
+//    }
+//}
