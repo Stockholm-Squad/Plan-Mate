@@ -41,19 +41,19 @@ class UserProjectProjectStateModelManagerUiImpImpTest {
 
     }
 
-//    @Test
-//    fun `showAllStates() should print states when use case returns states`() {
-//        //Given
-//        val projectStates = listOf(
-//            ProjectState(id = "12", name = "TODO"),
-//            ProjectState(id = "12", name = "TODO"),
-//        )
-//        every { manageStatesUseCase.getAllProjectStates() } returns Result.success(projectStates)
-//
-//        //When
-//        userStateManagerUi.showAllStates()
-//
-//        //Then
-//        verify(exactly = 1) { printer.showStates(projectStates) }
-//    }
+    @Test
+    fun `showAllStates() should print states when use case returns states`() {
+        //Given
+        val projectStates = listOf(
+            ProjectState(id = "12", name = "TODO"),
+            ProjectState(id = "12", name = "TODO"),
+        )
+        every { manageStatesUseCase.getAllProjectStates() } returns Result.success(projectStates)
+
+        //When
+        userStateManagerUi.showAllStates()
+
+        //Then
+        verify(exactly = 1) { printer.showStates(projectStates) }
+    }
 }

@@ -167,7 +167,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.editProject(updatedProject) } returns Result.success(true)
 
             // When
-            val result = manageProjectUseCase.updateProjectState("existingProject","")
+            val result = manageProjectUseCase.updateProjectState(updatedProject)
 
             // Then
             assertThat(result.isSuccess).isTrue()
@@ -177,11 +177,11 @@ class ManageProjectUseCaseTest {
         fun `should return failure when project does not exist`() {
             // Given
             val projectId = "non-existent"
-            val existingProject = buildProject(id = UUID.randomUUID(), name = "Existing Project")
+            val existingProject = buildProject(id = projectId, name = "Existing Project")
             every { projectRepository.editProject(existingProject) } returns Result.failure(NoObjectFound())
 
             // When
-            val result = manageProjectUseCase.updateProjectState("existingProject", "")
+            val result = manageProjectUseCase.updateProjectState(existingProject)
 
             // Then
             assertThat(result.isFailure).isTrue()
@@ -199,7 +199,7 @@ class ManageProjectUseCaseTest {
         fun `should return success when project exists and is deleted`() {
             // Given
             val projectId = "123"
-            val existingProject = buildProject(id = /*projectId*/ UUID.randomUUID(), name = "Project to delete")
+            val existingProject = buildProject(id = projectId, name = "Project to delete")
             every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
             every { projectRepository.deleteProject(existingProject) } returns Result.success(true)
 
@@ -253,7 +253,7 @@ class ManageProjectUseCaseTest {
         fun `should return true when project exists`() {
             // Given
             val projectId = "1"
-            val existingProject = buildProject(id = /*projectId*/ UUID.randomUUID(), name = "Existing Project")
+            val existingProject = buildProject(id = projectId, name = "Existing Project")
             every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
 
             // When
