@@ -30,13 +30,12 @@ class ProjectStateRepositoryImp(
     override fun deleteProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.filterNot { it == projectState.mapToStateModel() }
-                stateDataSource.overWrite(currentStates)
+                val updatedStates = currentStates.filterNot { it.id == projectState.id.toString() }
+                stateDataSource.overWrite(updatedStates)
             },
-            onFailure = { exception -> Result.failure(exception) }
+            onFailure = { Result.failure(it) }
         )
     }
-
     override fun getAllProjectStates(): Result<List<ProjectState>> {
         return stateDataSource.read().fold(
             onSuccess = { allStates ->
