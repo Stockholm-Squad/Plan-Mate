@@ -1,7 +1,7 @@
 package data.datasources
 
 import org.example.data.datasources.state_data_source.StateCsvDataSource
-import org.example.data.models.ProjectStateModel
+import org.example.data.models.State
 import org.example.logic.model.exceptions.FileNotExistException
 import org.junit.jupiter.api.*
 import java.io.File
@@ -9,7 +9,7 @@ import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-class ProjectProjectStateModelCsvDataSourceTest {
+class ProjectStateCsvDataSourceTest {
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
     private lateinit var dataSource: StateCsvDataSource
@@ -91,8 +91,8 @@ class ProjectProjectStateModelCsvDataSourceTest {
         @Test
         fun `write should create file with correct content`() {
             val states = listOf(
-                ProjectStateModel(id = "1", name = "TODO"),
-                ProjectStateModel(id = "2", name = "Progress")
+                State(id = "1", name = "TODO"),
+                State(id = "2", name = "Progress")
             )
 
             val result = dataSource.overWrite(states)

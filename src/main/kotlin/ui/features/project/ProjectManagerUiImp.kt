@@ -132,7 +132,7 @@ class ProjectManagerUiImp(
                         outputPrinter.showMessage("Invalid Project State Name")
                         return
                     }
-                    manageProjectUseCase.updateProjectState(projectName, newProjectStateName)
+                    manageProjectUseCase.updateProject(projectName, newProjectStateName)
                         .fold(
                             onSuccess = { success ->
                                 if (success) {

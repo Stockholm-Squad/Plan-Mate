@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.model.entities.ProjectState
 import org.example.data.datasources.state_data_source.IStateDataSource
-import org.example.data.models.ProjectStateModel
+import org.example.data.models.State
 import org.example.data.repo.ProjectStateRepositoryImp
 import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.repository.ProjectStateRepository
@@ -13,12 +13,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class ProjectProjectProjectStateModelRepositoryImpTest {
+class ProjectProjectStateRepositoryImpTest {
 
     private lateinit var projectStateDataSource: IStateDataSource
     private lateinit var stateRepository: ProjectStateRepository
     private lateinit var projectState: ProjectState
-    private lateinit var projectStateModel: ProjectStateModel
+    private lateinit var projectStateModel: State
 
 
     @BeforeEach
@@ -177,7 +177,7 @@ class ProjectProjectProjectStateModelRepositoryImpTest {
     fun `getAllStates() should return success result with list of state when the file have data`() {
         //Given
         val stateList = listOf(
-            ProjectStateModel(id = "12", name = "In-Progress"),
+            State(id = "12", name = "In-Progress"),
         )
         every { projectStateDataSource.read() } returns Result.success(
             stateList

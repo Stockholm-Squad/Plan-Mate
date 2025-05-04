@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.ProjectState
+import org.example.data.models.State
 import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAdded
 import org.example.logic.repository.ProjectRepository
@@ -12,7 +12,7 @@ import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.junit.jupiter.api.*
 import utils.buildProject
-import java.util.*
+import kotlin.random.Random
 
 class ManageProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -32,8 +32,8 @@ class ManageProjectUseCaseTest {
         fun `should return all projects when repository succeeds`() {
             // Given
             val expectedProjects = listOf(
-                buildProject(id = UUID.randomUUID(), name = "Project 1"),
-                buildProject(id = UUID.randomUUID(), name = "Project 2")
+                buildProject(id = "1", name = "Project 1"),
+                buildProject(id = "2", name = "Project 2")
             )
             every { projectRepository.getAllProjects() } returns Result.success(expectedProjects)
 
@@ -63,21 +63,21 @@ class ManageProjectUseCaseTest {
     }
 
     @Nested
-    inner class GetProjectByName {
+    inner class GetProjectById {
         @Test
         fun `should return project when it exists`() {
             // Given
-            val projectId = UUID.randomUUID()
+            val projectId = "3"
             val expectedProject = buildProject(id = projectId, name = "Test Project")
             val allProjects = listOf(
-                buildProject(id = UUID.randomUUID(), name = "Project 1"),
+                buildProject(id = "1", name = "Project 1"),
                 expectedProject,
-                buildProject(id = UUID.randomUUID(), name = "Project 2")
+                buildProject(id = "2", name = "Project 2")
             )
             every { projectRepository.getAllProjects() } returns Result.success(allProjects)
 
             // When
-            val result = manageProjectUseCase.getProjectByName(expectedProject.name) //
+            val result = manageProjectUseCase.getProjectByName(projectId)
 
             // Then
             assertThat(result.isSuccess).isTrue()
@@ -88,15 +88,15 @@ class ManageProjectUseCaseTest {
         @Test
         fun `should return failure when project does not exist`() {
             // Given
-            val projectId = UUID.randomUUID()
+            val projectId = "3"
             val allProjects = listOf(
-                buildProject(id = UUID.randomUUID(), name = "Project 1"),
-                buildProject(id = UUID.randomUUID(), name = "Project 2")
+                buildProject(id = "1", name = "Project 1"),
+                buildProject(id = "2", name = "Project 2")
             )
             every { projectRepository.getAllProjects() } returns Result.success(allProjects)
 
             // When
-            val result = manageProjectUseCase.getProjectByName("not exist project")
+            val result = manageProjectUseCase.getProjectByName(projectId)
 
             // Then
             assertThrows<NoObjectFound> { result.getOrThrow() }
@@ -124,34 +124,34 @@ class ManageProjectUseCaseTest {
         @Test
         fun `should return success when project is added successfully`() {
             // Given
-            val project = buildProject(id = UUID.randomUUID(), name = "New Project")
-            val state = ProjectState(project.stateId, "todo")
-            every { projectRepository.addProject(project) } returns Result.success(true)
+            val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
+            val state = State(project.stateId, "todo")
+            every { projectRepository.addProject(project.name, state.name) } returns Result.success(true)
 
             // When
-            val result = manageProjectUseCase.addProject(projectName = project.name, stateName =  state.name)
+            val result = manageProjectUseCase.addProject(project)
 
             // Then
             assertThat(result.isSuccess).isTrue()
             assertThat(result.getOrNull()).isTrue()
-            verify { projectRepository.addProject(project) }
+            verify { projectRepository.addProject(project.name, state.name) }
         }
 
         @Test
         fun `should return failure when project addition fails`() {
             // Given
             val expectedException = Exception("Database error")
-            val project = buildProject(id = UUID.randomUUID(), name = "New Project")
-            val state = ProjectState(project.stateId, "todo")
-            every { projectRepository.addProject(project) } returns Result.failure(expectedException)
+            val project = buildProject(id = Random.nextLong().toString(), name = "New Project")
+            val state = State(project.stateId, "todo")
+            every { projectRepository.addProject(project.name, state.name) } returns Result.failure(expectedException)
 
             // When
-            val result = manageProjectUseCase.addProject(project.name, state.name)
+            val result = manageProjectUseCase.addProject(project)
 
             // Then
             assertThat(result.isFailure).isTrue()
             assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectAdded::class.java)
-            verify { projectRepository.addProject(project) }
+            verify { projectRepository.addProject(project.name, state.name) }
         }
     }
 
@@ -160,14 +160,14 @@ class ManageProjectUseCaseTest {
         @Test
         fun `should return success when project exists and is updated`() {
             // Given
-            val projectId = UUID.randomUUID()
+            val projectId = "123"
             val existingProject = buildProject(id = projectId, name = "Existing Project")
             val updatedProject = existingProject.copy(name = "Updated Project")
             every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
             every { projectRepository.editProject(updatedProject) } returns Result.success(true)
 
             // When
-            val result = manageProjectUseCase.updateProjectState(updatedProject)
+            val result = manageProjectUseCase.updateProject(updatedProject)
 
             // Then
             assertThat(result.isSuccess).isTrue()
@@ -181,7 +181,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.editProject(existingProject) } returns Result.failure(NoObjectFound())
 
             // When
-            val result = manageProjectUseCase.updateProjectState(existingProject)
+            val result = manageProjectUseCase.updateProject(existingProject)
 
             // Then
             assertThat(result.isFailure).isTrue()

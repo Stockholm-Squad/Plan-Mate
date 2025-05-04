@@ -1,9 +1,9 @@
 package org.example.data.datasources.state_data_source
 
-import org.example.data.models.ProjectStateModel
+import org.example.data.models.State
 
 interface IStateDataSource {
-    fun read(): Result<List<ProjectStateModel>>
-    fun overWrite(users: List<ProjectStateModel>): Result<Boolean>
-    fun append(users: List<ProjectStateModel>): Result<Boolean>
+    fun read(): Result<List<State>>
+    fun overWrite(users: List<State>): Result<Boolean>
+    fun append(users: List<State>): Result<Boolean>
 }
