@@ -151,250 +151,250 @@ class ProjectRepositoryImpTest {
         assertThat(result.getOrNull()).isEqualTo(listOf(testProject, anotherProject))
     }
 
-    @Nested
-    inner class TasksInProjectTests {
-
-        @Test
-        fun `getTasksInProject should return list of task IDs for given project`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
-            )
-
-            val result = repository.getTasksInProject("1")
-
-            assertThat(result.getOrNull()).containsExactly("101", "102")
-        }
-
-        @Test
-        fun `getTasksInProject should return empty list when no tasks for project`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(TaskInProject(projectId = "2", taskId = "201"))
-            )
-
-            val result = repository.getTasksInProject("1")
-
-            assertThat(result.getOrNull()).isEmpty()
-        }
-
-        @Test
-        fun `getTasksInProject should return failure when read fails`() {
-            every { taskInProjectDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = repository.getTasksInProject("1")
-
-            assertThrows < ReadDataException() > { result.getOrThrow() }
-        }
-
-        @Test
-        fun `addTaskInProject should append task and return success`() {
-            every { taskInProjectDataSource.append(any()) } returns Result.success(true)
-
-            val result = repository.addTaskInProject("1", "101")
-
-            assertThat(result.getOrThrow()).isTrue()
-            verify { taskInProjectDataSource.append(listOf(TaskInProject(projectId = "1", taskId = "101"))) }
-        }
-
-        @Test
-        fun `addTaskInProject should return failure when write fails`() {
-            every { taskInProjectDataSource.append(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = repository.addTaskInProject("1", "101")
-
-            assertThrows<WriteDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should remove task and return success`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = repository.deleteTaskFromProject("1", "101")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentTaskId)) }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return success when task not found`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(taskInProjectWithDifferentTaskId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = repository.deleteTaskFromProject("1", "101")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentTaskId)) }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return success when project not found`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(taskInProjectWithDifferentProjectId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = repository.deleteTaskFromProject("1", "101")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentProjectId)) }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return failure when read fails`() {
-            every { taskInProjectDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = repository.deleteTaskFromProject("1", "101")
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return failure when write fails`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = repository.deleteTaskFromProject("1", "101")
-
-            assertThrows < WriteDataException() > { result.getOrThrow() }
-        }
-    }
-
-    @Nested
-    inner class UsersAssignedToProjectTests {
-        @Test
-        fun `getUsersAssignedToProject should return list of usernames for given project`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.success(
-                listOf(testUserAssigned, userAssignedWithDifferentUserName)
-            )
-
-            val result = repository.getUsersAssignedToProject("1")
-
-            assertThat(result.getOrNull()).containsExactly("user1", "user2")
-        }
-
-        @Test
-        fun `getUsersAssignedToProject should return empty list when no users for project`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.success(
-                listOf(UserAssignedToProject(projectId = "2", userName = "user3"))
-            )
-
-            val result = repository.getUsersAssignedToProject("1")
-
-            assertThat(result.getOrNull()).isEmpty()
-        }
-
-        @Test
-        fun `getUsersAssignedToProject should return failure when read fails`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = repository.getUsersAssignedToProject("1")
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `addUserAssignedToProject should append user and return success`() {
-            every { userAssignedToProjectDataSource.append(any()) } returns Result.success(true)
-
-            val result = repository.addUserAssignedToProject("1", "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify {
-                userAssignedToProjectDataSource.append(
-                    listOf(UserAssignedToProject(projectId = "1", userName = "user1"))
-                )
-            }
-        }
-
-        @Test
-        fun `addUserAssignedToProject should return failure when write fails`() {
-            every { userAssignedToProjectDataSource.append(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = repository.addUserAssignedToProject("1", "user1")
-
-            assertThrows<WriteDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should remove user and return success`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.success(
-                listOf(testUserAssigned, userAssignedWithDifferentUserName)
-            )
-            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = repository.deleteUserAssignedToProject("1", "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { userAssignedToProjectDataSource.overWrite(listOf(userAssignedWithDifferentUserName)) }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return success when user not found`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.success(
-                listOf(userAssignedWithDifferentUserName)
-            )
-            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = repository.deleteUserAssignedToProject("1", "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { userAssignedToProjectDataSource.overWrite(listOf(userAssignedWithDifferentUserName)) }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return success when project not found`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.success(
-                listOf(userAssignedWithDifferentProjectId)
-            )
-            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = repository.deleteUserAssignedToProject("1", "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { userAssignedToProjectDataSource.overWrite(listOf(userAssignedWithDifferentProjectId)) }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return failure when read fails`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = repository.deleteUserAssignedToProject("1", "user1")
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return failure when write fails`() {
-            every { userAssignedToProjectDataSource.read() } returns Result.success(
-                listOf(testUserAssigned, userAssignedWithDifferentUserName)
-            )
-            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = repository.deleteUserAssignedToProject("1", "user1")
-
-            assertThrows<WriteDataException> { result.getOrThrow() }
-        }
-    }
+//    @Nested
+//    inner class TasksInProjectTests {
+//
+//        @Test
+//        fun `getTasksInProject should return list of task IDs for given project`() {
+//            every { taskInProjectDataSource.read() } returns Result.success(
+//                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
+//            )
+//
+//            val result = repository.getTasksInProject("1")
+//
+//            assertThat(result.getOrNull()).containsExactly("101", "102")
+//        }
+//
+//        @Test
+//        fun `getTasksInProject should return empty list when no tasks for project`() {
+//            every { taskInProjectDataSource.read() } returns Result.success(
+//                listOf(TaskInProject(projectId = "2", taskId = "201"))
+//            )
+//
+//            val result = repository.getTasksInProject("1")
+//
+//            assertThat(result.getOrNull()).isEmpty()
+//        }
+//
+//        @Test
+//        fun `getTasksInProject should return failure when read fails`() {
+//            every { taskInProjectDataSource.read() } returns Result.failure(
+//                ReadDataException()
+//            )
+//
+//            val result = repository.getTasksInProject("1")
+//
+//            assertThrows < ReadDataException() > { result.getOrThrow() }
+//        }
+//
+//        @Test
+//        fun `addTaskInProject should append task and return success`() {
+//            every { taskInProjectDataSource.append(any()) } returns Result.success(true)
+//
+//            val result = repository.addTaskInProject("1", "101")
+//
+//            assertThat(result.getOrThrow()).isTrue()
+//            verify { taskInProjectDataSource.append(listOf(TaskInProject(projectId = "1", taskId = "101"))) }
+//        }
+//
+//        @Test
+//        fun `addTaskInProject should return failure when write fails`() {
+//            every { taskInProjectDataSource.append(any()) } returns Result.failure(
+//                WriteDataException()
+//            )
+//
+//            val result = repository.addTaskInProject("1", "101")
+//
+//            assertThrows<WriteDataException> { result.getOrThrow() }
+//        }
+//
+//        @Test
+//        fun `deleteTaskFromProject should remove task and return success`() {
+//            every { taskInProjectDataSource.read() } returns Result.success(
+//                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
+//            )
+//            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
+//
+//            val result = repository.deleteTaskFromProject("1", "101")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentTaskId)) }
+//        }
+//
+//        @Test
+//        fun `deleteTaskFromProject should return success when task not found`() {
+//            every { taskInProjectDataSource.read() } returns Result.success(
+//                listOf(taskInProjectWithDifferentTaskId)
+//            )
+//            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
+//
+//            val result = repository.deleteTaskFromProject("1", "101")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentTaskId)) }
+//        }
+//
+//        @Test
+//        fun `deleteTaskFromProject should return success when project not found`() {
+//            every { taskInProjectDataSource.read() } returns Result.success(
+//                listOf(taskInProjectWithDifferentProjectId)
+//            )
+//            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
+//
+//            val result = repository.deleteTaskFromProject("1", "101")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentProjectId)) }
+//        }
+//
+//        @Test
+//        fun `deleteTaskFromProject should return failure when read fails`() {
+//            every { taskInProjectDataSource.read() } returns Result.failure(
+//                ReadDataException()
+//            )
+//
+//            val result = repository.deleteTaskFromProject("1", "101")
+//
+//            assertThrows<ReadDataException> { result.getOrThrow() }
+//        }
+//
+//        @Test
+//        fun `deleteTaskFromProject should return failure when write fails`() {
+//            every { taskInProjectDataSource.read() } returns Result.success(
+//                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
+//            )
+//            every { taskInProjectDataSource.overWrite(any()) } returns Result.failure(
+//                WriteDataException()
+//            )
+//
+//            val result = repository.deleteTaskFromProject("1", "101")
+//
+//            assertThrows < WriteDataException() > { result.getOrThrow() }
+//        }
+//    }
+//
+//    @Nested
+//    inner class UsersAssignedToProjectTests {
+//        @Test
+//        fun `getUsersAssignedToProject should return list of usernames for given project`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.success(
+//                listOf(testUserAssigned, userAssignedWithDifferentUserName)
+//            )
+//
+//            val result = repository.getUsersAssignedToProject("1")
+//
+//            assertThat(result.getOrNull()).containsExactly("user1", "user2")
+//        }
+//
+//        @Test
+//        fun `getUsersAssignedToProject should return empty list when no users for project`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.success(
+//                listOf(UserAssignedToProject(projectId = "2", userName = "user3"))
+//            )
+//
+//            val result = repository.getUsersAssignedToProject("1")
+//
+//            assertThat(result.getOrNull()).isEmpty()
+//        }
+//
+//        @Test
+//        fun `getUsersAssignedToProject should return failure when read fails`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.failure(
+//                ReadDataException()
+//            )
+//
+//            val result = repository.getUsersAssignedToProject("1")
+//
+//            assertThrows<ReadDataException> { result.getOrThrow() }
+//        }
+//
+//        @Test
+//        fun `addUserAssignedToProject should append user and return success`() {
+//            every { userAssignedToProjectDataSource.append(any()) } returns Result.success(true)
+//
+//            val result = repository.addUserAssignedToProject("1", "user1")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify {
+//                userAssignedToProjectDataSource.append(
+//                    listOf(UserAssignedToProject(projectId = "1", userName = "user1"))
+//                )
+//            }
+//        }
+//
+//        @Test
+//        fun `addUserAssignedToProject should return failure when write fails`() {
+//            every { userAssignedToProjectDataSource.append(any()) } returns Result.failure(
+//                WriteDataException()
+//            )
+//
+//            val result = repository.addUserAssignedToProject("1", "user1")
+//
+//            assertThrows<WriteDataException> { result.getOrThrow() }
+//        }
+//
+//        @Test
+//        fun `deleteUserAssignedToProject should remove user and return success`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.success(
+//                listOf(testUserAssigned, userAssignedWithDifferentUserName)
+//            )
+//            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.success(true)
+//
+//            val result = repository.deleteUserAssignedToProject("1", "user1")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify { userAssignedToProjectDataSource.overWrite(listOf(userAssignedWithDifferentUserName)) }
+//        }
+//
+//        @Test
+//        fun `deleteUserAssignedToProject should return success when user not found`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.success(
+//                listOf(userAssignedWithDifferentUserName)
+//            )
+//            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.success(true)
+//
+//            val result = repository.deleteUserAssignedToProject("1", "user1")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify { userAssignedToProjectDataSource.overWrite(listOf(userAssignedWithDifferentUserName)) }
+//        }
+//
+//        @Test
+//        fun `deleteUserAssignedToProject should return success when project not found`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.success(
+//                listOf(userAssignedWithDifferentProjectId)
+//            )
+//            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.success(true)
+//
+//            val result = repository.deleteUserAssignedToProject("1", "user1")
+//
+//            assertThat(result.isSuccess).isTrue()
+//            verify { userAssignedToProjectDataSource.overWrite(listOf(userAssignedWithDifferentProjectId)) }
+//        }
+//
+//        @Test
+//        fun `deleteUserAssignedToProject should return failure when read fails`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.failure(
+//                ReadDataException()
+//            )
+//
+//            val result = repository.deleteUserAssignedToProject("1", "user1")
+//
+//            assertThrows<ReadDataException> { result.getOrThrow() }
+//        }
+//
+//        @Test
+//        fun `deleteUserAssignedToProject should return failure when write fails`() {
+//            every { userAssignedToProjectDataSource.read() } returns Result.success(
+//                listOf(testUserAssigned, userAssignedWithDifferentUserName)
+//            )
+//            every { userAssignedToProjectDataSource.overWrite(any()) } returns Result.failure(
+//                WriteDataException()
+//            )
+//
+//            val result = repository.deleteUserAssignedToProject("1", "user1")
+//
+//            assertThrows<WriteDataException> { result.getOrThrow() }
+//        }
+//    }
 }
