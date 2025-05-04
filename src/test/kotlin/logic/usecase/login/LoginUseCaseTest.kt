@@ -5,10 +5,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.UserRole
-import logic.usecase.validation.ValidateUserDataUseCase
 import modle.buildUser
 import org.example.logic.model.exceptions.*
 import org.example.logic.repository.UserRepository
+import org.example.logic.usecase.common.ValidateUserDataUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
