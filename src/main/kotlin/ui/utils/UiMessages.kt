@@ -31,18 +31,18 @@ object UiMessages {
     const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please choose a valid number."
     const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n):"
     const val EXITING = "Exiting"
-    const val INVALID_USER="Invalid user"
-    const val WHAT_DO_YOU_NEED="What do you need ^_^"
-    const val PLEASE_ENTER_NAME_FOR_THE_STATE="Please enter name for the state:"
-    const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE="Please enter the state you want to update: "
-    const val FAILED_TO_ADD_STATE ="Failed to Add state:"
-    const val FAILED_TO_EDIT_STATE ="Failed to edit state:"
-    const val FAILED_TO_DELETE_STATE ="Failed to delete state:"
-    const val STATE_UPDATED_SUCCESSFULLY="State updated successfully ^_^"
-    const val STATE_DELETED_SUCCESSFULLY="State deleted successfully ^_^"
-    const val STATE_ADDED_SUCCESSFULLY="State added successfully ^_^"
-    const val PLEASE_ENTER_THE_NEW_STATE_NAME ="Please enter the new state name: "
-    const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE="Please enter the state you want to delete: "
+    const val INVALID_USER = "Invalid user"
+    const val WHAT_DO_YOU_NEED = "What do you need ^_^"
+    const val PLEASE_ENTER_NAME_FOR_THE_STATE = "Please enter name for the state:"
+    const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE = "Please enter the state you want to update: "
+    const val FAILED_TO_ADD_STATE = "Failed to Add state:"
+    const val FAILED_TO_EDIT_STATE = "Failed to edit state:"
+    const val FAILED_TO_DELETE_STATE = "Failed to delete state:"
+    const val STATE_UPDATED_SUCCESSFULLY = "State updated successfully ^_^"
+    const val STATE_DELETED_SUCCESSFULLY = "State deleted successfully ^_^"
+    const val STATE_ADDED_SUCCESSFULLY = "State added successfully ^_^"
+    const val PLEASE_ENTER_THE_NEW_STATE_NAME = "Please enter the new state name: "
+    const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE = "Please enter the state you want to delete: "
     const val INVALID_INPUT = "Invalid input"
 
     //audit system constants
@@ -57,7 +57,6 @@ object UiMessages {
     const val PROMPT_PROJECT_NAME = "Enter Project Name: "
 
 
-
     val MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN = """
         |----------- Welcome to planMate System ^_^ -----------|
         |-------  Please choose what do you want to do  -------|
@@ -65,8 +64,9 @@ object UiMessages {
         | 2. Manage tasks                                      |
         | 3. Manage states                                     |
         | 4. Add Mate                                          |
-        | 5. Show Audit system                                 |
-        | 6. Log out                                           |
+        | 5. Add Mate To Project                               |
+        | 6. Show Audit system                                 |
+        | 7. Log out                                           |
     """.trimIndent()
 
     val MAIN_MENU_WELCOME_MESSAGE_FOR_MATE = """
