@@ -14,11 +14,9 @@ class ProjectManagerUiImp(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
-    private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
-    private val createUserUiImp: CreateUserUi,
 ) : ProjectManagerUi {
 
     override fun showAllProjects() {
@@ -186,114 +184,6 @@ class ProjectManagerUiImp(
             )
     }
 
-
-    override fun assignUsersToProject(user: User?) {
-        while (true) {
-            outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
-            if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                createUserUiImp.launchUi(user)
-            }
-
-            outputPrinter.showMessage("Enter username to assign or leave it blank to back: ")
-            val username = inputReader.readStringOrNull() ?: return
-            if (username.equals("done", ignoreCase = true)) break
-
-            outputPrinter.showMessage("Enter project Name: ")
-            val projectName = inputReader.readStringOrNull() ?: continue
-
-            assignUserToProject(username, projectName)
-        }
-    }
-
-    private fun assignUserToProject(username: String, projectName: String) {
-//        if (authenticationUseCase.checkUserExists(username)) {
-//            outputPrinter.showMessage("User does not exist")  //TODO: to be added
-//            return
-//        }
-
-        manageProjectUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).fold(
-                    onSuccess = { success ->
-                        if (success) {
-                            outputPrinter.showMessage("User assigned successfully")
-                        } else {
-                            outputPrinter.showMessage("Failed to assign user to project")
-                        }
-                    },
-                    onFailure = { e ->
-                        outputPrinter.showMessage(e.message ?: "Failed to assign user to project")
-                    }
-                )
-            },
-            onFailure = {
-                outputPrinter.showMessage("Project does not exist")
-            }
-        )
-    }
-
-    override fun showUsersAssignedToProject() {
-        outputPrinter.showMessage("Enter project name to view assigned users (leave blank to cancel): ")
-        val projectName = inputReader.readStringOrNull() ?: return
-
-        manageProjectUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).fold(
-                    onSuccess = { users ->
-                        if (users.isEmpty()) {
-                            outputPrinter.showMessage("No users assigned to this project")
-                        } else {
-                            outputPrinter.showMessage("Users assigned to project '$projectName':")
-                            users.forEachIndexed { index, user ->
-                                outputPrinter.showMessage("${index + 1}. ${user.username}")
-                            }
-                        }
-                    },
-                    onFailure = { e ->
-                        outputPrinter.showMessage(e.message ?: "Failed to get assigned users")
-                    }
-                )
-            },
-            onFailure = { e ->
-                outputPrinter.showMessage(e.message ?: "Project not found")
-            }
-        )
-    }
-
-    override fun removeUserFromProject() {
-        outputPrinter.showMessage("Enter project name (leave blank to cancel): ")
-        val projectName = inputReader.readStringOrNull() ?: return
-
-
-        manageProjectUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
-                val username = inputReader.readStringOrNull() ?: return
-
-//                if (authenticationUseCase.checkUserExists(username)) {
-//                    outputPrinter.showMessage("User does not exist")  //TODO: to be added
-//                    return
-//                }
-                manageUsersAssignedToProjectUseCase.deleteUserFromProject(project.id, username).fold(
-                    onSuccess = { success ->
-                        if (success) {
-                            outputPrinter.showMessage("User '$username' removed from project '$projectName' successfully")
-                        } else {
-                            outputPrinter.showMessage("Failed to remove user from project")
-                        }
-                    },
-                    onFailure = { e ->
-                        outputPrinter.run { showMessage(e.message ?: "Failed to remove user from project") }
-                    }
-                )
-            },
-            onFailure = { e ->
-                outputPrinter.showMessage(e.message ?: "Project not found")
-            }
-        )
-    }
-
-
     override fun launchUi(user: User?) {
         while (true) {
             outputPrinter.showMessage("\nProject Management:")
@@ -302,9 +192,6 @@ class ProjectManagerUiImp(
             outputPrinter.showMessage("3. Add project")
             outputPrinter.showMessage("4. Edit project State")
             outputPrinter.showMessage("5. Delete project")
-            outputPrinter.showMessage("6. Assign users to project")
-            outputPrinter.showMessage("7. View users assigned to project")
-            outputPrinter.showMessage("8. Remove user from project")
             outputPrinter.showMessage("0. Back")
             outputPrinter.showMessage("Enter your choice: ")
 
@@ -314,9 +201,6 @@ class ProjectManagerUiImp(
                 "3" -> addProject()
                 "4" -> editProject()
                 "5" -> deleteProject()
-                "6" -> assignUsersToProject(user)
-                "7" -> showUsersAssignedToProject()
-                "8" -> removeUserFromProject()
                 "0" -> return
                 else -> outputPrinter.showMessage("Invalid choice")
             }

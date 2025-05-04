@@ -9,7 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ProjectProjectStateModelCsvDataSourceTest {
+class ProjectStateCsvDataSourceTest {
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
     private lateinit var dataSource: StateCsvDataSource

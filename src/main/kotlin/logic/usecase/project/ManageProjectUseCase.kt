@@ -44,8 +44,14 @@ class ManageProjectUseCase(
 
     fun updateProject(projectId: UUID, newProjectName: String, newProjectStateName: String): Result<Boolean> {
         val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
-                ?: return Result.failure(StateNotExistException())
-        return projectRepository.editProjectState(Project(id = projectId, name = newProjectName, stateId = newProjectStateId))
+            ?: return Result.failure(StateNotExistException())
+        return projectRepository.editProjectState(
+            Project(
+                id = projectId,
+                name = newProjectName,
+                stateId = newProjectStateId
+            )
+        )
     }
 
     fun removeProjectByName(projectName: String): Result<Boolean> {

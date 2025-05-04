@@ -2,6 +2,7 @@ package org.example.ui
 
 import logic.model.entities.User
 import logic.model.entities.UserRole
+import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
@@ -19,6 +20,7 @@ class PlanMateConsoleUi(
     private val manageProjectUi: ProjectManagerUi,
     private val stateManagerUiImp: StateManageUi,
     private val taskManagerUi: TaskManagerUi,
+    private val addUserToProjectUI: AddUserToProjectUI,
     private val printer: OutputPrinter,
     private val reader: InputReader,
     private val createUserUiImp: CreateUserUi
@@ -74,6 +76,7 @@ class PlanMateConsoleUi(
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
                 AdminChoice.ADD_MATE.choice -> createUserUiImp.launchUi(user)
+                AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.invoke(user = user)
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
@@ -109,6 +112,7 @@ enum class AdminChoice(
     MANAGE_TASKS(2),
     MANAGE_STATES(3),
     ADD_MATE(4),
-    SHOW_AUDIT_LOG(5),
-    LOGOUT(6),
+    ADD_MATE_TO_PROJECT(5),
+    SHOW_AUDIT_LOG(6),
+    LOGOUT(7),
 }

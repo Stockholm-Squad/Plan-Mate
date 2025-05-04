@@ -1,22 +1,28 @@
 package org.example.logic.usecase.state
 
+import logic.model.entities.AuditSystem
+import logic.model.entities.EntityType
 import logic.model.entities.ProjectState
+import org.example.data.utils.DateHandlerImp
 import org.example.logic.model.exceptions.*
 import org.example.logic.repository.ProjectStateRepository
+import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength
 import java.util.*
 
 class ManageStatesUseCase(
     private val projectStateRepository: ProjectStateRepository,
+    private val auditSystemUseCase: ManageAuditSystemUseCase
 ) {
-    fun addProjectState(stateName: String): Result<Boolean> {
+    fun addProjectState(stateName: String,userId: UUID): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = { validStateName ->
                 validStateName.takeIf { state -> !isProjectStateExist(state) }
                     ?.let {
-                        projectStateRepository.addProjectState(it).fold(
-                            onSuccess = { Result.success(true) },
+                        val projectState=ProjectState(UUID.randomUUID(),it)
+                        projectStateRepository.addProjectState(projectState).fold(
+                            onSuccess = { addAuditSystem(projectState.id,userId) },
                             onFailure = { exception -> Result.failure(exception) }
                         )
 
@@ -26,15 +32,20 @@ class ManageStatesUseCase(
         )
     }
 
+    fun addAuditSystem(projectId: UUID,userId:UUID): Result<Boolean> {
+        val auditSystem= listOf(AuditSystem(entityType = EntityType.PROJECT, entityTypeId =projectId
+            , description = "", dateTime = DateHandlerImp().getCurrentDateTime(), userId = userId))
+        return auditSystemUseCase.addAuditsEntries(auditSystem).runCatching { return Result.success(true) }
+    }
 
-    fun editProjectStateByName(stateName: String,newStateName:String): Result<Boolean> {
+    fun editProjectStateByName(stateName: String,newStateName:String,userId: UUID): Result<Boolean> {
         return validateStateNames(stateName,newStateName).fold(
             onSuccess = {
                 getProjectState(stateName)
                     .takeIf { it != null }
                     ?.let { state ->
                         projectStateRepository.editProjectState(ProjectState(state.id,newStateName)).fold(
-                            onSuccess = { Result.success(it) },
+                            onSuccess = {addAuditSystem(state.id,userId) },
                             onFailure = { throwable ->
                                 this@ManageStatesUseCase.handleProjectStateNotExistException(
                                     throwable
@@ -66,14 +77,14 @@ class ManageStatesUseCase(
             ?: Result.failure(NotAllowedStateNameException())
     }
 
-    fun deleteProjectState(stateName: String): Result<Boolean> {
+    fun deleteProjectState(stateName: String,userId: UUID): Result<Boolean> {
         return isStateNameValid(stateName).fold(
             onSuccess = {
                 getProjectState(stateName)
                     .takeIf { it != null }
                     ?.let { state ->
                         projectStateRepository.deleteProjectState(state).fold(
-                            onSuccess = { Result.success(it) },
+                            onSuccess = { addAuditSystem(state.id, userId ) },
                             onFailure = { throwable ->
                                 this@ManageStatesUseCase.handleProjectStateNotExistException(
                                     throwable

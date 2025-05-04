@@ -18,7 +18,11 @@ class AdminStateManagerUiImpl(
     override fun launchUi(user: User?) {
         while (true) {
             showMenu()
-            if (handleMenuChoice()) break
+            if (user != null) {
+                if (handleMenuChoice(user)) break
+            }else{
+                printer.showMessage("Sorry user cannot be found.")
+            }
         }
     }
 
@@ -29,31 +33,31 @@ class AdminStateManagerUiImpl(
         }
     }
 
-    private fun handleMenuChoice(): Boolean {
+    private fun handleMenuChoice(user:User): Boolean {
         when (reader.readIntOrNull()) {
             StateMenuChoice.SHOW_ALL.choiceNumber -> this.showAllStates()
-            StateMenuChoice.ADD_STATE.choiceNumber -> this.addState()
-            StateMenuChoice.EDIT_STATE.choiceNumber -> this.editState()
-            StateMenuChoice.DELETE_STATE.choiceNumber -> this.deleteState()
+            StateMenuChoice.ADD_STATE.choiceNumber -> this.addState(user)
+            StateMenuChoice.EDIT_STATE.choiceNumber -> this.editState(user)
+            StateMenuChoice.DELETE_STATE.choiceNumber -> this.deleteState(user)
             StateMenuChoice.BACK.choiceNumber -> return true
             else -> printer.showMessage("Please enter a valid choice!!")
         }
         return false
     }
 
-    override fun addState() {
+    override fun addState(user: User) {
         printer.showMessage(UiMessages.PLEASE_ENTER_NAME_FOR_THE_STATE)
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
-                manageStatesUseCase.addProjectState(stateName = stateName).fold(
+                manageStatesUseCase.addProjectState(stateName = stateName, userId = user.id).fold(
                     onSuccess = { showAddStateMessage() },
                     onFailure = { showFailure("${UiMessages.FAILED_TO_ADD_STATE}${it.message}") }
                 )
             } ?: showInvalidInput()
     }
 
-    override fun editState() {
+    override fun editState(user: User) {
         printer.showMessage(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE)
         val currentStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
             ?: run {
@@ -70,7 +74,7 @@ class AdminStateManagerUiImpl(
 
         manageStatesUseCase.editProjectStateByName(
             stateName = currentStateName,
-            newStateName = newStateName
+            newStateName = newStateName, userId = user.id
         ).fold(
             onSuccess = { showStateUpdatedMessage() },
             onFailure = { showFailure("${UiMessages.FAILED_TO_EDIT_STATE} ${it.message}") }
@@ -93,12 +97,12 @@ class AdminStateManagerUiImpl(
         printer.showMessage(UiMessages.INVALID_INPUT)
     }
 
-    override fun deleteState() {
+    override fun deleteState(user: User) {
         printer.showMessage(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE)
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
-            manageStatesUseCase.deleteProjectState(stateName = stateName).fold(
+            manageStatesUseCase.deleteProjectState(stateName = stateName, userId = user.id).fold(
                 onSuccess = { showStateDeletedMessage() },
                 onFailure = { showFailure("${UiMessages.FAILED_TO_DELETE_STATE}${it.message}") }
             )
