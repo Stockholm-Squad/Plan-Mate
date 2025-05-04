@@ -11,6 +11,7 @@ import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
 import org.example.data.utils.DateHandlerImp
+import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.ui.utils.TaskOptions
 import java.util.*
 
@@ -21,13 +22,16 @@ class TaskManagerUi(
     private val uiUtils: UiUtils,
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageStatesUseCase,
+    private val manageProjectUseCase: ManageProjectUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
 ) : UiLauncher {
 
     override fun launchUi(user: User?) {
         while (true) {
             printTaskOptionsMenu()
-            if (enteredTaskOption(uiUtils.getEnteredOption(reader.readIntOrNull()))) break
+            val optionChoice = reader.readIntOrNull() // Read the integer choice
+            reader.readStringOrNull()
+            if (enteredTaskOption(uiUtils.getEnteredOption(optionChoice))) break
         }
     }
 
@@ -64,11 +68,7 @@ class TaskManagerUi(
     }
 
     fun getTaskByName() {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
-
-        val taskName = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
-
+        val taskName = getTaskName()
         manageTasksUseCase.getTaskByName(taskName).fold(
             onSuccess = { task -> printer.printTask(task) },
             onFailure = ::handleFailure
@@ -76,6 +76,7 @@ class TaskManagerUi(
     }
 
     fun createTask() {
+        val projectName = getProjectByName()
         val (name, description, stateName) = readTaskInput()
             ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
 
@@ -83,6 +84,7 @@ class TaskManagerUi(
             ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT)
 
         val task = Task(
+            projectName = projectName,
             name = name,
             description = description,
             stateId = stateId,
@@ -97,9 +99,7 @@ class TaskManagerUi(
     }
 
     fun editTask() {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
-        val taskName = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
+        val taskName = getTaskName()
 
         val existingTask = manageTasksUseCase.getTaskByName(taskName).getOrNull()
             ?: return printer.showMessage(UiMessages.NO_TASK_FOUNDED)
@@ -124,10 +124,7 @@ class TaskManagerUi(
     }
 
     fun deleteTask() {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
-
-        val taskName = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
+        val taskName = getTaskName()
 
         if (manageTasksUseCase.getTaskByName(taskName).getOrNull() == null) {
             return printer.showMessage(UiMessages.NO_TASK_FOUNDED)
@@ -140,10 +137,8 @@ class TaskManagerUi(
     }
 
     fun showAllTasksInProject() {
-        printer.showMessage(UiMessages.PROJECT_NAME_PROMPT)
 
-        val projectName = uiUtils.readNonBlankInputOrNull(reader)
-            ?: return printer.showMessage(UiMessages.EMPTY_PROJECT_NAME_INPUT)
+        val projectName = getProjectByName()
 
         manageTasksInProjectUseCase.getTasksInProjectByName(projectName).fold(
             onSuccess = { tasks: List<Task> ->
@@ -156,38 +151,100 @@ class TaskManagerUi(
     }
 
     fun showAllMateTaskAssignment() {
-        printer.showMessage(UiMessages.USER_NAME_PROMPT)
-
-        val userName = uiUtils.readNonBlankInputOrNull(reader)
-            ?: printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
-
-        manageTasksInProjectUseCase.getAllTasksByUserName(userName as String).fold(
+        printer.showMessage("--- DEBUG: showAllMateTaskAssignment ---")
+        val userName = getUserName()
+        manageTasksInProjectUseCase.getAllTasksByUserName(userName).fold(
             onSuccess = { assignments -> printer.printMateTaskAssignments(assignments) },
             onFailure = ::handleFailure
         )
     }
 
-
     private fun readTaskInput(): Triple<String, String, String>? {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
-        val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() } ?: run {
-            printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
-            return null
-        }
+        while (true) {
+            printer.showMessage(UiMessages.TASK_NAME_PROMPT)
+            val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            if (name == null) {
+                printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
+                continue
+            }
 
-        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
-        val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() } ?: run {
-            printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT)
-            return null
-        }
+            printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
+            val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            if (description == null) {
+                printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT)
+                continue
+            }
 
-        printer.showMessage(UiMessages.TASK_STATE_PROMPT)
-        val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() } ?: run {
-            printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT)
-            return null
-        }
+            printer.showMessage(UiMessages.TASK_STATE_PROMPT)
+            val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            if (stateName == null) {
+                printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT)
+                continue
+            }
 
-        return Triple(name, description, stateName)
+            return Triple(name, description, stateName)
+        }
+    }
+
+    private fun getStateByName(): String? {
+        while (true) {
+            printer.showMessage(UiMessages.TASK_STATE_PROMPT)
+            val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            if (stateName == null) {
+                printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT)
+                continue
+            }
+
+            return stateName
+        }
+    }
+
+    private fun getProjectByName(): String {
+        while (true) {
+            printer.showMessage(UiMessages.PROJECT_NAME_PROMPT)
+            val projectNameInput = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+            if (projectNameInput == null) {
+                printer.showMessage(UiMessages.EMPTY_PROJECT_NAME_INPUT)
+                continue
+            }
+
+            if (manageProjectUseCase.getProjectByName(projectNameInput).getOrNull() == null) {
+                printer.showMessage(UiMessages.NO_PROJECT_FOUNDED)
+                continue
+            }
+
+            return projectNameInput
+        }
+    }
+
+    private fun getTaskName(): String {
+        while (true) {
+            printer.showMessage(UiMessages.TASK_NAME_PROMPT)
+            val taskName = uiUtils.readNonBlankInputOrNull(reader)
+            if (taskName == null) {
+                printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
+                continue
+            }
+            return taskName
+        }
+    }
+
+    private fun getUserName(): String {
+        while (true) {
+            printer.showMessage(UiMessages.USER_NAME_PROMPT)
+            printer.showMessage("--- DEBUG: Prompt printed. Waiting for input...")
+
+            val userName = uiUtils.readNonBlankInputOrNull(reader)
+            printer.showMessage("--- DEBUG: Input read. Value: [$userName]")
+
+            if (userName == null) {
+                printer.showMessage(UiMessages.EMPTY_USER_NAME_INPUT)
+                printer.showMessage("--- DEBUG: Input was null/blank. Continuing loop.")
+                continue
+            }
+            printer.showMessage("--- DEBUG: Valid username received: [$userName]. Returning.")
+            return userName
+        }
     }
 
     private fun handleFailure(throwable: Throwable) {
