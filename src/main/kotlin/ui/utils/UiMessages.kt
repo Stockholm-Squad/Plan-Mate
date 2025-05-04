@@ -9,7 +9,7 @@ object UiMessages {
     const val TASK_CREATE_SUCCESSFULLY = "Task created successfully."
     const val TASK_EDIT_SUCCESSFULLY = "Task updated successfully."
     const val EMPTY_TASK_INPUT = "Inputs are empty"
-    const val USER_NAME_PROMPT = ""
+    const val USER_NAME_PROMPT = "Enter User name"
     const val NO_TASK_FOUNDED = "No Tasks founded"
     const val TASK_DELETE_SUCCESSFULLY = "Task deleted successfully."
     const val EMPTY_TASK_ID_INPUT = "No task ID was provided."
