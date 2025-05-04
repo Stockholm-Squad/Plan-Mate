@@ -9,7 +9,7 @@ class UiUtils(
 ) {
 
     fun readNonBlankInputOrNull(reader: InputReader): String? {
-        return reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+        return reader.readStringOrNull()?.takeIf { it.isNotBlank() }?.lowercase()
     }
 
     fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
