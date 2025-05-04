@@ -12,10 +12,8 @@ import org.example.logic.repository.ProjectStateRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.*
-import kotlin.test.assertTrue
 
-class ProjectProjectProjectStateModelRepositoryImpTest {
+class ProjectStateRepositoryImpTest {
 
     private lateinit var projectStateDataSource: IStateDataSource
     private lateinit var stateRepository: ProjectStateRepository
