@@ -1,6 +1,7 @@
 package utils
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import logic.model.entities.AuditSystem
@@ -9,31 +10,20 @@ import org.example.data.models.AuditSystemModel
 import java.util.UUID
 
 
+fun createAuditSystemEntity(
+    id: UUID,
+    entityType: EntityType,
+    entityTypeId: UUID,
+    userId: UUID,
+    description: String,
+    createdAt: LocalDateTime
+): AuditSystem = AuditSystem(id = id, entityType = entityType, entityTypeId = entityTypeId, userId = userId, description = description, dateTime = createdAt)
+
 fun createAuditSystemModel(
     id: String,
-    entityType: EntityType,
+    entityType: String,
     entityId: String,
+    userId: String,
     changeDescription: String,
-    userId: String
-): AuditSystemModel {
-    return AuditSystemModel(
-        id = id,
-        entityType = entityType.toString(),
-        entityTypeId = entityId,
-        description = changeDescription,
-        dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).toString(),
-        userId = userId
-    )
-
-}
-    fun createAuditSystemEntity(
-        entityType: EntityType,
-        changeDescription: String,
-    ): AuditSystem {
-        return AuditSystem(
-            entityType = entityType,
-            entityTypeId = UUID.randomUUID(),
-            description = changeDescription,
-            dateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),
-            userId =UUID.randomUUID(),
-        )}
+    createdAt: String
+): AuditSystemModel = AuditSystemModel(id, entityType, entityId, userId, changeDescription, createdAt)

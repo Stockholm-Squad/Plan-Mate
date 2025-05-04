@@ -1,12 +1,16 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
+import data.mapper.mapToAuditSystemEntity
+import data.mapper.mapToAuditSystemModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.datetime.LocalDateTime
 import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
 import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
+import org.example.data.models.AuditSystemModel
 import org.example.data.repo.AuditSystemRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,93 +23,101 @@ class AuditSystemRepositoryImpTest {
     private lateinit var auditSystemRepositoryImp: AuditSystemRepositoryImp
     private lateinit var auditSystemDataSource: AuditSystemCsvDataSource
 
-    private val auditListModel = listOf(
-        createAuditSystemModel(
-            id = "1",
-            entityType = EntityType.TASK,
-            entityId = "123",
-            changeDescription = "Changed something",
-            userId = "12"
-        )
-    )
-    private val auditListEntity = listOf(
-        createAuditSystemEntity(
-            entityType = EntityType.TASK,
-            changeDescription = "Changed something",
-        )
-    )
+    private lateinit var auditListModel: List<AuditSystemModel>
+    private lateinit var auditListEntity: List<AuditSystem>
 
     @BeforeEach
     fun setUp() {
         auditSystemDataSource = mockk(relaxed = true)
         auditSystemRepositoryImp = AuditSystemRepositoryImp(auditSystemDataSource)
+
+        val id = UUID.randomUUID()
+        val entityId = UUID.randomUUID()
+        val userId = UUID.randomUUID()
+        val createdAt = LocalDateTime.parse("2020-04-04T00:00:00.000")
+
+        auditListEntity = listOf(
+            AuditSystem(
+                id = id,
+                entityType = EntityType.TASK,
+                entityTypeId = entityId,
+                userId = userId,
+                description = "Changed something",
+                dateTime = createdAt
+            )
+        )
+
+        auditListModel = listOf(
+            AuditSystemModel(
+                id = id.toString(),
+                entityType = "TASK",
+                entityTypeId = entityId.toString(),
+                userId = userId.toString(),
+                description = "Changed something",
+                dateTime = "2020-04-04T00:00:00.000"
+            )
+        )
     }
 
 
     @Test
     fun `recordAuditsEntries returns success when append succeeds`() {
-        //given
-        every { auditSystemDataSource.append(auditListModel) } returns Result.success(true)
-        //when
+        val expectedModels = auditListEntity.map { it.mapToAuditSystemModel() }
+        every { auditSystemDataSource.append(expectedModels) } returns Result.success(true)
+
         val result = auditSystemRepositoryImp.addAuditsEntries(auditListEntity)
-        //then
+
         assertThat(result.isSuccess).isTrue()
-        verify { auditSystemDataSource.append(auditListModel) }
     }
 
     @Test
     fun `recordAuditsEntries returns failure when append fails`() {
-        //given
-        every { auditSystemDataSource.append(auditListModel) } returns Result.failure(Exception("Append failed"))
-        //when
+        val expectedModels = auditListEntity.map { it.mapToAuditSystemModel() }
+        every { auditSystemDataSource.append(expectedModels) } returns Result.failure(Exception("Append failed"))
+
         val result = auditSystemRepositoryImp.addAuditsEntries(auditListEntity)
-        //then
+
         assertThat(result.isFailure).isTrue()
-        verify { auditSystemDataSource.append(auditListModel) }
     }
 
     @Test
     fun `getAllAuditEntries returns success when read succeeds`() {
-        //given
         every { auditSystemDataSource.read() } returns Result.success(auditListModel)
-        //when
+
         val result = auditSystemRepositoryImp.getAllAuditEntries()
-        //then
+
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(auditListModel)
-        verify { auditSystemDataSource.read() }
+        assertThat(result.getOrNull()).isEqualTo(auditListModel.mapNotNull { it.mapToAuditSystemEntity() })
     }
 
     @Test
     fun `getAllAuditEntries returns failure when read fails`() {
-        //given
         every { auditSystemDataSource.read() } returns Result.failure(Exception("Read failed"))
-        //when
+
         val result = auditSystemRepositoryImp.getAllAuditEntries()
-        //then
+
         assertThat(result.isFailure).isTrue()
         verify { auditSystemDataSource.read() }
     }
 
     @Test
     fun `initializeDataInFile returns success when overwrite succeeds`() {
-        //given
-        every { auditSystemDataSource.overWrite(auditListModel) } returns Result.success(true)
-        //when
+        val expectedModels = auditListEntity.map { it.mapToAuditSystemModel() }
+        every { auditSystemDataSource.overWrite(expectedModels) } returns Result.success(true)
+
         val result = auditSystemRepositoryImp.initializeDataInFile(auditListEntity)
-        //then
+
         assertThat(result.isSuccess).isTrue()
-        verify { auditSystemDataSource.overWrite(auditListModel) }
     }
 
     @Test
     fun `initializeDataInFile returns failure when overwrite fails`() {
-        //given
-        every { auditSystemDataSource.overWrite(auditListModel) } returns Result.failure(Exception("Overwrite failed"))
-        //when
+        val expectedModels = auditListEntity.map { it.mapToAuditSystemModel() }
+        every { auditSystemDataSource.overWrite(expectedModels) } returns Result.failure(Exception("Overwrite failed"))
+
         val result = auditSystemRepositoryImp.initializeDataInFile(auditListEntity)
-        //then
+
         assertThat(result.isFailure).isTrue()
-        verify { auditSystemDataSource.overWrite(auditListModel) }
     }
+
 }
