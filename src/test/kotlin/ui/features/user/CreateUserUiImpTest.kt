@@ -1,26 +1,26 @@
-//package ui.features.user
-//
-//import io.mockk.every
-//import io.mockk.mockk
-//import io.mockk.verify
-//import org.example.ui.input_output.input.InputReader
-//import org.example.ui.input_output.output.OutputPrinter
-//import org.example.logic.usecase.user.CreateUserUseCase
-//import org.example.ui.features.user.CreateUserUiImp
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//
-//class CreateUserUiImpTest {
-//    private val mockCreateUserUseCase: CreateUserUseCase = mockk(relaxed = true)
-//    private val mockPrinter: OutputPrinter = mockk(relaxed = true)
-//    private val mockInputReader: InputReader = mockk()
-//    private lateinit var createUserUiImp: CreateUserUiImp
-//
-//    @BeforeEach
-//    fun setUp() {
-//        createUserUiImp = CreateUserUiImp(mockCreateUserUseCase, mockPrinter, mockInputReader)
-//    }
-//
+package ui.features.user
+
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
+import org.example.logic.usecase.user.CreateUserUseCase
+import org.example.ui.features.user.CreateUserUiImp
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+
+class CreateUserUiImpTest {
+    private val mockCreateUserUseCase: CreateUserUseCase = mockk(relaxed = true)
+    private val mockPrinter: OutputPrinter = mockk(relaxed = true)
+    private val mockInputReader: InputReader = mockk()
+    private lateinit var createUserUiImp: CreateUserUiImp
+
+    @BeforeEach
+    fun setUp() {
+        createUserUiImp = CreateUserUiImp(mockCreateUserUseCase, mockPrinter, mockInputReader)
+    }
+
 //    @Test
 //    fun `should show proper messages when launched`() {
 //        // Given
@@ -161,5 +161,5 @@
 //        verify(exactly = 0) { mockCreateUserUseCase.createUser(any(), any()) }
 //        verify { mockPrinter.showMessage("❌ Error: Username and password cannot be empty") }
 //    }
-//
-//}
+
+}

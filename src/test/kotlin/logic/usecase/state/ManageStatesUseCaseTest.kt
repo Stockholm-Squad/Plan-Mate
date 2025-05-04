@@ -1,33 +1,33 @@
-//package logic.usecase.state
-//
-//import com.google.common.truth.Truth.assertThat
-//import createState
-//import io.mockk.every
-//import io.mockk.mockk
-//import logic.model.entities.ProjectState
-//import org.example.logic.model.exceptions.FileNotExistException
-//import org.example.logic.model.exceptions.NotAllowedStateNameException
-//import org.example.logic.model.exceptions.StateNotExistException
-//import org.example.logic.model.exceptions.StateAlreadyExistException
-//import org.example.logic.model.exceptions.EmptyDataException
-//import org.example.logic.model.exceptions.StateNameLengthException
-//import org.example.logic.repository.ProjectStateRepository
-//import org.example.logic.usecase.state.ManageStatesUseCase
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import org.junit.jupiter.api.assertThrows
-//
-//class ManageStatesUseCaseTest {
-//
-//    private lateinit var projectStateRepository: ProjectStateRepository
-//    private lateinit var manageStatesUseCase: ManageStatesUseCase
-//
-//    @BeforeEach
-//    fun setUp() {
-//        projectStateRepository = mockk(relaxed = true)
-//        manageStatesUseCase = ManageStatesUseCase(projectStateRepository)
-//    }
-//
+package logic.usecase.state
+
+import com.google.common.truth.Truth.assertThat
+import createState
+import io.mockk.every
+import io.mockk.mockk
+import logic.model.entities.ProjectState
+import org.example.logic.model.exceptions.FileNotExistException
+import org.example.logic.model.exceptions.NotAllowedStateNameException
+import org.example.logic.model.exceptions.StateNotExistException
+import org.example.logic.model.exceptions.StateAlreadyExistException
+import org.example.logic.model.exceptions.EmptyDataException
+import org.example.logic.model.exceptions.StateNameLengthException
+import org.example.logic.repository.ProjectStateRepository
+import org.example.logic.usecase.state.ManageStatesUseCase
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+
+class ManageStatesUseCaseTest {
+
+    private lateinit var projectStateRepository: ProjectStateRepository
+    private lateinit var manageStatesUseCase: ManageStatesUseCase
+
+    @BeforeEach
+    fun setUp() {
+        projectStateRepository = mockk(relaxed = true)
+        manageStatesUseCase = ManageStatesUseCase(projectStateRepository)
+    }
+
 //    @Test
 //    fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() {
 //        //Given
@@ -401,5 +401,5 @@
 //        //Then
 //        assertThat(result).isEqualTo(null)
 //    }
-//
-//}
+
+}

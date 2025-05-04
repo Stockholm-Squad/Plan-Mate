@@ -1,33 +1,33 @@
-//package ui.features.project
-//
-//import io.mockk.every
-//import io.mockk.mockk
-//import io.mockk.verify
-//import logic.model.entities.Project
-//import org.example.ui.input_output.input.InputReader
-//import org.example.ui.input_output.output.OutputPrinter
-//import org.example.logic.usecase.project.ManageProjectUseCase
-//import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-//import org.example.ui.features.project.ProjectManagerUiImp
-//import org.example.ui.features.state.admin.AdminStateManagerUi
-//import org.example.ui.features.task.TaskManagerUi
-//import org.example.ui.features.user.CreateUserUiImp
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Nested
-//import org.junit.jupiter.api.Test
-//import utils.buildProject
-//
-//class ProjectManagerUiImpTest {
-//    private lateinit var manageProjectUseCase: ManageProjectUseCase
-//    private lateinit var stateManagerUi: AdminStateManagerUi
-//    private lateinit var taskManagerUi: TaskManagerUi
-//    private lateinit var CreateUserUiImp: CreateUserUiImp
-//    private lateinit var inputReader: InputReader
-//    private lateinit var outputPrinter: OutputPrinter
-//    private lateinit var projectManagerUiImp: ProjectManagerUiImp
-//    private lateinit var manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase
-//
-//
+package ui.features.project
+
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import logic.model.entities.Project
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
+import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
+import org.example.ui.features.project.ProjectManagerUiImp
+import org.example.ui.features.state.admin.AdminStateManagerUi
+import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.features.user.CreateUserUiImp
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import utils.buildProject
+
+class ProjectManagerUiImpTest {
+    private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var stateManagerUi: AdminStateManagerUi
+    private lateinit var taskManagerUi: TaskManagerUi
+    private lateinit var CreateUserUiImp: CreateUserUiImp
+    private lateinit var inputReader: InputReader
+    private lateinit var outputPrinter: OutputPrinter
+    private lateinit var projectManagerUiImp: ProjectManagerUiImp
+    private lateinit var manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase
+
+
 //    @BeforeEach
 //    fun setUp() {
 //        manageProjectUseCase = mockk(relaxed = true)
@@ -203,7 +203,7 @@
 //            val updatedProject = buildProject(id = "1", name = "New Name", stateId = project.stateId)
 //            every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
 //            every { inputReader.readStringOrNull() } returnsMany listOf("4", "1", "New Name", "", "no", "0")
-//            every { manageProjectUseCase.updateProject(updatedProject) } returns Result.success(true)
+//            every { manageProjectUseCase.updateProjectState(updatedProject) } returns Result.success(true)
 //
 //            // When
 //            projectManagerUiImp.launchUi()
@@ -232,7 +232,7 @@
 //            val updatedProject = buildProject(id = "1", name = "New Name")
 //            every { manageProjectUseCase.getProjectByName("1") } returns Result.success(project)
 //            every { inputReader.readStringOrNull() } returnsMany listOf("4", "1", "New Name", "", "no", "0")
-//            every { manageProjectUseCase.updateProject(updatedProject) } returns Result.failure(Exception("Update failed"))
+//            every { manageProjectUseCase.updateProjectState(updatedProject) } returns Result.failure(Exception("Update failed"))
 //
 //            // When
 //            projectManagerUiImp.launchUi()
@@ -346,4 +346,4 @@
 //            verify { outputPrinter.showMessage("error: Assignment failed") }
 //        }
 //    }
-//}
+}

@@ -1,57 +1,57 @@
-//package ui.features.task
-//
-//
-//import io.mockk.every
-//import io.mockk.mockk
-//import io.mockk.verify
-//import io.mockk.verifySequence
-//import data.models.MateTaskAssignment
-//import org.example.logic.model.exceptions.NoTasksFound
-//import org.example.ui.input_output.input.InputReader
-//import org.example.ui.input_output.output.OutputPrinter
-//import org.example.logic.model.exceptions.NoTaskAssignmentFound
-//import org.example.logic.usecase.project.ManageTasksInProjectUseCase
-//import org.example.logic.usecase.state.ManageStatesUseCase
-//import org.example.logic.usecase.task.ManageTasksUseCase
-//import org.example.ui.features.task.TaskManagerUi
-//import org.example.ui.utils.UiMessages
-//import org.example.ui.utils.UiUtils
-//import org.example.ui.utils.TaskOptions
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import utils.buildMateTaskAssignment
-//import utils.buildTask
-//
-//class TaskManagerUiTest {
-//
-//    private lateinit var reader: InputReader
-//    private lateinit var printer: OutputPrinter
-//    private lateinit var uiUtils: UiUtils
-//    private lateinit var manageTasksUseCase: ManageTasksUseCase
-//    private lateinit var manageStateUseCase: ManageStatesUseCase
-//    private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
-//    private lateinit var taskManagerUi: TaskManagerUi
-//
-//    @BeforeEach
-//    fun setUp() {
-//        reader = mockk(relaxed = true)
-//        printer = mockk(relaxed = true)
-//        uiUtils = mockk(relaxed = true)
-//
-//        manageTasksUseCase = mockk(relaxed = true)
-//        manageStateUseCase = mockk(relaxed = true)
-//        manageTasksInProjectUseCase = mockk(relaxed = true)
-//
-//        taskManagerUi = TaskManagerUi(
-//            reader,
-//            printer,
-//            uiUtils,
-//            manageTasksUseCase,
-//            manageStateUseCase,
-//            manageTasksInProjectUseCase
-//        )
-//    }
-//
+package ui.features.task
+
+
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifySequence
+import data.models.MateTaskAssignment
+import org.example.logic.model.exceptions.NoTasksFound
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
+import org.example.logic.model.exceptions.NoTaskAssignmentFound
+import org.example.logic.usecase.project.ManageTasksInProjectUseCase
+import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.task.ManageTasksUseCase
+import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.utils.UiMessages
+import org.example.ui.utils.UiUtils
+import org.example.ui.utils.TaskOptions
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import utils.buildMateTaskAssignment
+import utils.buildTask
+
+class TaskManagerUiTest {
+
+    private lateinit var reader: InputReader
+    private lateinit var printer: OutputPrinter
+    private lateinit var uiUtils: UiUtils
+    private lateinit var manageTasksUseCase: ManageTasksUseCase
+    private lateinit var manageStateUseCase: ManageStatesUseCase
+    private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
+    private lateinit var taskManagerUi: TaskManagerUi
+
+    @BeforeEach
+    fun setUp() {
+        reader = mockk(relaxed = true)
+        printer = mockk(relaxed = true)
+        uiUtils = mockk(relaxed = true)
+
+        manageTasksUseCase = mockk(relaxed = true)
+        manageStateUseCase = mockk(relaxed = true)
+        manageTasksInProjectUseCase = mockk(relaxed = true)
+
+        taskManagerUi = TaskManagerUi(
+            reader,
+            printer,
+            uiUtils,
+            manageTasksUseCase,
+            manageStateUseCase,
+            manageTasksInProjectUseCase
+        )
+    }
+
 //    //region showAllTasks
 //    @Test
 //    fun `showAllTasks() should print all tasks when use case succeeds`() {
@@ -676,5 +676,5 @@
 //        verify(exactly = 1) { manageTasksUseCase.getAllTasks() }
 //        verify { uiUtils.exit() }
 //    }
-//
-//}
+
+}
