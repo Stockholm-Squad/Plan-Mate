@@ -5,12 +5,14 @@ import logic.model.entities.Project
 import org.example.logic.model.exceptions.ProjectNotFoundException
 import org.example.logic.model.exceptions.StateNotExistException
 import org.example.logic.repository.ProjectRepository
+import org.example.logic.usecase.audit.AddAuditSystemUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import java.util.*
 
 class ManageProjectUseCase(
     private val projectRepository: ProjectRepository,
-    private val manageProjectStateUseCase: ManageStatesUseCase
+    private val manageProjectStateUseCase: ManageStatesUseCase,
+    private val addAuditSystemUseCase: AddAuditSystemUseCase
 ) {
 
     fun getAllProjects(): Result<List<Project>> {

@@ -2,13 +2,11 @@ package org.example.logic.usecase.audit
 
 import logic.model.entities.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
-import org.example.logic.usecase.extention.toSafeUUID
 import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import java.util.*
 
-class ManageAuditSystemUseCase(
+class GetAuditSystemUseCase(
     private val auditSystemRepository: AuditSystemRepository,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val manageTasksUseCase: ManageTasksUseCase
@@ -57,7 +55,5 @@ class ManageAuditSystemUseCase(
             onFailure = { Result.failure(it) }
         )
 
-    override fun addAuditsEntries(auditEntry: List<AuditSystem>): Result<Boolean> =
-        auditSystemRepository.addAuditsEntries(auditEntry)
 
 }
