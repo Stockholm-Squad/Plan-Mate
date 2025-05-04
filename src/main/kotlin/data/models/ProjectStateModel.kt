@@ -1,8 +1,6 @@
 package org.example.data.models
 
-import java.util.UUID
-
-data class State(
+data class ProjectStateModel(
     val id: String,
     val name: String
 )
