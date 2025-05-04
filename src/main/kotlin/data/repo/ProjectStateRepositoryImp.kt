@@ -10,8 +10,7 @@ class ProjectStateRepositoryImp(
     private val stateDataSource: IStateDataSource,
 ) : ProjectStateRepository {
 
-    override fun addProjectState(stateName: String): Result<Boolean> {
-        val projectState=ProjectState(name = stateName)
+    override fun addProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.append(listOf((projectState.mapToStateModel())))
     }
 
