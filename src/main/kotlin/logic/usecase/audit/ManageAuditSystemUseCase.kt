@@ -24,7 +24,7 @@ class ManageAuditSystemUseCase(
                         }
                         Result.success(result)
                     },
-                    onFailure = { Result.failure(it )}
+                    onFailure = { Result.failure( it )}
                 )
             },
             onFailure = { Result.failure(it) }

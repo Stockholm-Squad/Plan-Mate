@@ -25,7 +25,7 @@ class AuditSystemManagerUiImp(
                 4 -> printer.showMessage(UiMessages.EXITING)
                 else -> printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
             }
-        } while (shouldSearchAgain(reader) == true)
+        } while (askSearchAgain() == true)
         printer.showMessage(UiMessages.EXITING)
     }
 
@@ -60,13 +60,13 @@ class AuditSystemManagerUiImp(
         )
     }
 
-    fun shouldSearchAgain(reader: InputReader): Boolean? {
+    private fun askSearchAgain(): Boolean? {
         printer.showMessage(UiMessages.SEARCH_AGAIN_PROMPT)
         val input = reader.readStringOrNull()?.trim()?.lowercase()?.takeIf { it.isNotBlank() }
         return if (input?.trim()?.lowercase() == UiMessages.Y) true else null
     }
 
-    fun getMainMenuOption(): Int {
+    private fun getMainMenuOption(): Int {
         printer.showMessage(UiMessages.PLEASE_SELECT_OPTION)
         return reader.readStringOrNull()?.toIntOrNull() ?: 0
     }

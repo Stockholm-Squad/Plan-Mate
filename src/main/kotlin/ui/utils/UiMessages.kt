@@ -9,23 +9,25 @@ object UiMessages {
     const val TASK_CREATE_SUCCESSFULLY = "Task created successfully."
     const val TASK_EDIT_SUCCESSFULLY = "Task updated successfully."
     const val EMPTY_TASK_INPUT = "Inputs are empty"
-    const val USER_NAME_PROMPT = ""
+    const val USER_NAME_PROMPT = "Enter User name"
     const val NO_TASK_FOUNDED = "No Tasks founded"
     const val TASK_DELETE_SUCCESSFULLY = "Task deleted successfully."
     const val EMPTY_TASK_ID_INPUT = "No task ID was provided."
     const val EMPTY_TASK_NAME_INPUT = "Task name cannot be empty."
     const val EMPTY_TASK_DESCRIPTION_INPUT = "Task description cannot be empty."
     const val EMPTY_TASK_STATE_INPUT = "Task state cannot be empty."
+    const val EMPTY_USER_NAME_INPUT = "Empty user name"
     const val INVALID_STATE_NAME = "Invalid state name. No matching state ID found."
     const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
     const val NO_TASKS_FOUND_IN_PROJECT = "No task found in project"
     const val EMPTY_PROJECT_ID_INPUT = "Empty project input"
     const val PROJECT_NAME_PROMPT = "Enter project name:"
+    const val NO_PROJECT_FOUNDED = "No project founded"
     const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
     const val PLEASE_SELECT_OPTION = "Please select an option:"
-    const val Y = "yes"
-    const val N = "no"
+    const val Y = "y"
+    const val N = "n"
     const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please choose a valid number."
     const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n):"
     const val EXITING = "Exiting"
@@ -48,7 +50,7 @@ object UiMessages {
         |----------- Audit System Menu -----------|
         | 1. Show Project Audits                  |
         | 2. Show Task Audits                     |
-        | 3. Show Audit Logs by Entity ID         |
+        | 3. Show All Audits                      |
         | 4. Exit                                 |
     """.trimIndent()
     const val PROMPT_TASK_NAME = "Enter Task name: "
