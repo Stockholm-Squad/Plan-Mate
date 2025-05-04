@@ -41,7 +41,7 @@ class TaskManagerUi(
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
-            TaskOptions.SHOW_TASKS_BY_PROJECT_ID -> showAllTasksInProject()
+            TaskOptions.SHOW_TASKS_BY_PROJECT_NAME-> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
             TaskOptions.EXIT -> {
                 uiUtils.exit()

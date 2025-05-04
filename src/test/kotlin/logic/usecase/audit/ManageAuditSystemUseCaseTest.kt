@@ -1,11 +1,8 @@
 package logic.usecase.audit
 
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
-import data.mapper.mapToAuditSystemModel
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.datetime.LocalDateTime
 import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
@@ -24,196 +21,164 @@ class ManageAuditSystemUseCaseTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
     private lateinit var manageTasksUseCase: ManageTasksUseCase
 
-    private val taskAuditEntityUUID = UUID.randomUUID()
-    private val taskAuditEntityTypeUUID = UUID.randomUUID()
-    private val taskAuditEntityUserUUID = UUID.randomUUID()
-    private val taskAuditEntity = AuditSystem(
-        id = taskAuditEntityUUID,
-        entityType = EntityType.TASK,
-        entityTypeId = taskAuditEntityTypeUUID,
-        description = "change from 'Open' to 'In Progress'",
-        userId = taskAuditEntityUserUUID,
-        dateTime = LocalDateTime(2025, 12, 19, 12, 0)
-    )
-    private val taskAuditModel = taskAuditEntity.mapToAuditSystemModel()
-
-    private val projectAuditEntityUUID = UUID.randomUUID()
-    private val projectAuditEntityTypeUUID = UUID.randomUUID()
-    private val projectAuditEntityUserUUID = UUID.randomUUID()
-    private val projectAuditEntity = AuditSystem(
-        id = projectAuditEntityUUID,
-        entityType = EntityType.TASK,
-        entityTypeId = projectAuditEntityTypeUUID,
-        description = "change from 'Open' to 'In Progress'",
-        userId = projectAuditEntityUserUUID,
-        dateTime = LocalDateTime(2025, 12, 19, 12, 0)
-    )
-    private val projectAuditModel = projectAuditEntity.mapToAuditSystemModel()
-
-
-    private val invalidTaskAuditEntityUUID = UUID.randomUUID()
-    private val invalidTaskAuditEntityTypeUUID = UUID.randomUUID()
-    private val invalidTaskAuditEntityUserUUID = UUID.randomUUID()
-    private val invalidTaskAuditEntity = AuditSystem(
-        id = invalidTaskAuditEntityUUID,
-        entityType = EntityType.TASK,
-        entityTypeId = invalidTaskAuditEntityTypeUUID,
-        description = "change from 'Open' to 'In Progress'",
-        userId = invalidTaskAuditEntityUserUUID,
-        dateTime = LocalDateTime(2025, 12, 19, 12, 0)
-    )
-    private val invalidTaskAuditModel = invalidTaskAuditEntity.mapToAuditSystemModel()
-
-
     @BeforeEach
     fun setUp() {
         auditSystemRepository = mockk(relaxed = true)
         manageProjectUseCase = mockk(relaxed = true)
         manageTasksUseCase = mockk(relaxed = true)
-        manageAuditSystemUseCase = ManageAuditSystemUseCase(auditSystemRepository, manageProjectUseCase, manageTasksUseCase)
+        manageAuditSystemUseCase = ManageAuditSystemUseCase(
+            auditSystemRepository,
+            manageProjectUseCase,
+            manageTasksUseCase
+        )
     }
 
     @Test
-    fun `recordAuditsEntries should return true when successfully added task changes`() {
-        //given
-        every { auditSystemRepository.addAuditsEntries(listOf(taskAuditEntity)) } returns Result.success(true)
+    fun `addAuditsEntries should return true when successful`() {
+        val data = listOf(
+            AuditSystem(
+                entityType = EntityType.TASK,
+                entityTypeId = UUID.randomUUID(),
+                description = "Task updated",
+                userId = UUID.randomUUID(),
+                dateTime = LocalDateTime(2025, 12, 19, 12, 0)
+            )
+        )
+        every { auditSystemRepository.addAuditsEntries(data) } returns Result.success(true)
 
-        //When
-        val result = manageAuditSystemUseCase.addAuditsEntries(listOf(taskAuditEntity))
+        val result = manageAuditSystemUseCase.addAuditsEntries(data)
 
-        // then
-        Truth.assertThat(result.getOrNull()).isTrue()
+        assertThat(result.getOrNull()).isTrue()
     }
 
     @Test
-    fun `recordAuditsEntries should return false when successfully added task changes`() {
-        //given
-        every { auditSystemRepository.addAuditsEntries(listOf(invalidTaskAuditEntity)) } returns Result.failure(Exception("error"))
+    fun `addAuditsEntries should return failure when repository fails`() {
+        val data = listOf(
+            AuditSystem(
+                entityType = EntityType.TASK,
+                entityTypeId = UUID.randomUUID(),
+                description = "Task update failed",
+                userId = UUID.randomUUID(),
+                dateTime = LocalDateTime(2025, 12, 19, 12, 0)
+            )
+        )
+        every { auditSystemRepository.addAuditsEntries(data) } returns Result.failure(Exception("DB error"))
 
-        //When
-        val result = manageAuditSystemUseCase.addAuditsEntries(listOf(invalidTaskAuditEntity))
+        val result = manageAuditSystemUseCase.addAuditsEntries(data)
 
-        // then
-        Truth.assertThat(result.isFailure).isTrue()
+        assertThat(result.isFailure).isTrue()
     }
 
     @Test
-    fun `getTaskChangeLogsById should return audit system for task when found`() {
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(listOf(taskAuditEntity))
+    fun `getAuditsByUserId should return filtered audit list`() {
+        val userId = UUID.randomUUID()
+        val auditList = listOf(
+            AuditSystem(
+                entityType = EntityType.PROJECT,
+                entityTypeId = UUID.randomUUID(),
+                description = "Project created",
+                userId = userId,
+                dateTime = LocalDateTime(2023, 1, 1, 10, 0)
+            )
+        )
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(auditList)
 
-        // when
-        val result = manageAuditSystemUseCase.getTaskAuditsByName("taskName") //TODO: task name
+        val result = manageAuditSystemUseCase.getAuditsByUserId(userId)
 
-        // then
-        Truth.assertThat(result.isSuccess).isTrue()
-    }
-
-    @Test
-    fun `getTaskChangeLogsById should return failure audit system for task when not found`() {
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
-
-        // when
-        val result = manageAuditSystemUseCase.getTaskAuditsByName("taskName")
-
-        // then
-        Truth.assertThat(result.isFailure).isTrue()
-    }
-
-    @Test
-    fun `getAuditSystemByID should return audit system for task when found`() {
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(listOf(taskAuditEntity))
-
-        // when
-        val result = manageAuditSystemUseCase.getTaskAuditsByName("FoundTaskName")
-
-        // then
-        assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrNull()).hasSize(1)
     }
 
     @Test
-    fun `getAuditSystemByID should return failure audit system for task when not found`() {
-        //given
+    fun `getAuditsByUserId should return failure on repository error`() {
+        val userId = UUID.randomUUID()
         every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
 
-        // when
-        val result = manageAuditSystemUseCase.getTaskAuditsByName("notFoundTaskName")
+        val result = manageAuditSystemUseCase.getAuditsByUserId(userId)
 
-        // then
-        Truth.assertThat(result.isFailure).isTrue()
+        assertThat(result.isFailure).isTrue()
     }
 
     @Test
-    fun `getProjectChanges should return audit system for project when found`() {
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(listOf(projectAuditEntity))
+    fun `getProjectAuditsByName should return filtered results if project found`() {
+        val projectId = UUID.randomUUID()
+        val projectName = "My Project"
+        val audits = listOf(
+            AuditSystem(
+                entityType = EntityType.PROJECT,
+                entityTypeId = projectId,
+                description = "Created",
+                userId = UUID.randomUUID(),
+                dateTime = LocalDateTime(2023, 1, 1, 10, 0)
+            )
+        )
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(audits)
+        every { manageProjectUseCase.getProjectByName(projectName) } returns Result.success(
+            mockk { every { id } returns projectId }
+        )
 
-        // when
-        val result = manageAuditSystemUseCase.getProjectAuditsByName("3")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName(projectName)
 
-        // then
-        Truth.assertThat(result.getOrNull()).hasSize(1)
+        assertThat(result.getOrNull()).hasSize(1)
     }
 
     @Test
-    fun `getProjectChanges should return failure audit system for project when not found`() {
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
+    fun `getProjectAuditsByName should return failure if project not found`() {
+        val projectName = "Missing Project"
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(emptyList())
+        every { manageProjectUseCase.getProjectByName(projectName) } returns Result.failure(Exception("Not found"))
 
-        // when
-        val result = manageAuditSystemUseCase.getProjectAuditsByName("4")
+        val result = manageAuditSystemUseCase.getProjectAuditsByName(projectName)
 
-        // then
-        Truth.assertThat(result.isFailure).isTrue()
+        assertThat(result.isFailure).isTrue()
     }
 
     @Test
-    fun `getChangesByUser should return audit system when found`() {
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(listOf(projectAuditEntity))
+    fun `getTaskAuditsByName should return filtered results if task found`() {
+        val taskId = UUID.randomUUID()
+        val taskName = "My Task"
+        val audits = listOf(
+            AuditSystem(
+                entityType = EntityType.TASK,
+                entityTypeId = taskId,
+                description = "Changed",
+                userId = UUID.randomUUID(),
+                dateTime = LocalDateTime(2023, 1, 1, 10, 0)
+            )
+        )
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(audits)
+        every { manageTasksUseCase.getTaskIdByName(taskName) } returns Result.success(taskId)
 
-        // when
-        val result = manageAuditSystemUseCase.getAuditsByUserId(UUID.randomUUID()) // TODO: change to UserName not Id
+        val result = manageAuditSystemUseCase.getTaskAuditsByName(taskName)
 
-        // then
-        Truth.assertThat(result.getOrNull()).hasSize(1)
+        assertThat(result.getOrNull()).hasSize(1)
     }
 
     @Test
-    fun `getChangesByUser should return failure audit system when not found`() {
-        //given
-        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("error"))
+    fun `getTaskAuditsByName should return failure if task not found`() {
+        val taskName = "Invalid Task"
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(emptyList())
+        every { manageTasksUseCase.getTaskIdByName(taskName) } returns Result.failure(Exception("Not found"))
 
-        // when
-        val result = manageAuditSystemUseCase.getAuditsByUserId(UUID.randomUUID())  // TODO: change to UserName not Id
+        val result = manageAuditSystemUseCase.getTaskAuditsByName(taskName)
 
-        // then
-        Truth.assertThat(result.isFailure).isTrue()
+        assertThat(result.isFailure).isTrue()
     }
 
-//    @Test
-//    fun `getAllAuditSystems should return success result`(){
-//        //given
-//        every { auditSystemRepository.getAllAuditEntries() } returns Result.success(emptyList())
-//
-//        //when
-//        val result = manageAuditSystemUseCase.getAllAuditSystems()
-//
-//        //then
-//        assertThat(result.isSuccess).isTrue()
-//        verify(exactly = 1) { auditSystemRepository.getAllAuditEntries() }
-//    }
-//
-//    @Test
-//    fun `getAllAuditSystems should return failure result`(){
-//        //given
-//        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(exception = Exception("error"))
-//
-//        //when
-//        val result = manageAuditSystemUseCase.getAllAuditSystems()
-//
-//        //then
-//        assertThat(result.isFailure).isTrue()
-//    }
+    @Test
+    fun `getTaskAuditsByName should return failure if auditRepository fails`() {
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("DB down"))
+
+        val result = manageAuditSystemUseCase.getTaskAuditsByName("Task")
+
+        assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `getProjectAuditsByName should return failure if auditRepository fails`() {
+        every { auditSystemRepository.getAllAuditEntries() } returns Result.failure(Exception("DB down"))
+
+        val result = manageAuditSystemUseCase.getProjectAuditsByName("Project")
+
+        assertThat(result.isFailure).isTrue()
+    }
 }

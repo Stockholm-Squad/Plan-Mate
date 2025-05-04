@@ -5,6 +5,7 @@ import logic.model.entities.UserRole
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
+import org.example.ui.utils.UiMessages
 
 class StateManagerUiImp(
     private val adminStateManagerUi: AdminStateManagerUi,
@@ -15,7 +16,7 @@ class StateManagerUiImp(
         when (user?.userRole) {
             UserRole.ADMIN -> adminStateManagerUi.launchUi(user)
             UserRole.MATE -> mateStateManagerUi.launchUi(user)
-            else -> printer.showMessage("Invalid user")
+            else -> printer.showMessage(UiMessages.INVALID_USER)
         }
     }
 
