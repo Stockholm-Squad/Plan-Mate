@@ -83,7 +83,7 @@ class ProjectRepositoryImpTest {
 
         //When
         val updated = testProject.copy(name = "Updated")
-        val result = projectRepositoryImp.editProject(updated)
+        val result = projectRepositoryImp.editProjectState(updated)
         //Then
         assertThat(result.isSuccess).isTrue()
 
@@ -95,7 +95,7 @@ class ProjectRepositoryImpTest {
         every { projectDataSource.read() } returns Result.failure(ReadDataException())
 
         //When
-        val result = projectRepositoryImp.editProject(testProject)
+        val result = projectRepositoryImp.editProjectState(testProject)
 
         //When Then
         assertThrows<ReadDataException> { result.getOrThrow() }
@@ -108,7 +108,7 @@ class ProjectRepositoryImpTest {
         every { projectDataSource.read() } returns Result.success(listOf(projectModel))
         every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.failure(WriteDataException())
 
-        val result = projectRepositoryImp.editProject(testProject)
+        val result = projectRepositoryImp.editProjectState(testProject)
 
         assertThrows<WriteDataException> { result.getOrThrow() }
     }
