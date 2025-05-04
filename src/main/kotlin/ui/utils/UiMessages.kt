@@ -24,8 +24,8 @@ object UiMessages {
     const val PROJECT_NAME_PROMPT = "Enter project name:"
     const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
     const val PLEASE_SELECT_OPTION = "Please select an option:"
-    const val Y = "yes"
-    const val N = "no"
+    const val Y = "y"
+    const val N = "n"
     const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please choose a valid number."
     const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n):"
     const val EXITING = "Exiting"
@@ -35,7 +35,7 @@ object UiMessages {
         |----------- Audit System Menu -----------|
         | 1. Show Project Audits                  |
         | 2. Show Task Audits                     |
-        | 3. Show Audit Logs by Entity ID         |
+        | 3. Show All Audits                      |
         | 4. Exit                                 |
     """.trimIndent()
     const val PROMPT_TASK_NAME = "Enter Task name: "
