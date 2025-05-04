@@ -91,9 +91,19 @@ class TaskManagerUi(
             updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
-        manageTasksUseCase.createTask(task).fold(
-            onSuccess = { printer.printTask(task) },
-            onFailure = ::handleFailure
+        manageProjectUseCase.getProjectByName(projectName).fold(
+            onSuccess = { project ->
+                manageTasksUseCase.createTask(task).fold(
+                    onSuccess = { printer.printTask(task)
+                        manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
+                    },
+                    onFailure = ::handleFailure
+                )
+            },
+            onFailure = {
+                printer.showMessage(UiMessages.NO_PROJECT_FOUNDED)
+                return
+            }
         )
     }
 
@@ -227,7 +237,7 @@ class TaskManagerUi(
     }
 
     private fun handleFailure(throwable: Throwable) {
-        printer.showMessage("Error: ${throwable.message}")
+        printer.showMessage(throwable.message?: UiMessages.NO_TASK_FOUNDED)
     }
 
     private fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
