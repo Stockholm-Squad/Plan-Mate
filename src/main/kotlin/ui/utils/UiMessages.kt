@@ -35,7 +35,7 @@ object UiMessages {
         |----------- Audit System Menu -----------|
         | 1. Show Project Audits                  |
         | 2. Show Task Audits                     |
-        | 3. Show All Audits         |
+        | 3. Show All Audits                      |
         | 4. Exit                                 |
     """.trimIndent()
     const val PROMPT_TASK_NAME = "Enter Task name: "
