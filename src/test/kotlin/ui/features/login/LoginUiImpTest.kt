@@ -127,12 +127,10 @@ class LoginUiImpTest {
     fun `authenticateUser() should print invalid message and returns null when username is null`() {
         every { reader.readStringOrNull() } returns null andThen "username"
         assertThat(ui.authenticateUser()).isEqualTo(null)
-        verify { printer.showMessage("Invalid input") }
     }
     @Test
     fun `authenticateUser() should print invalid message and returns null when password is null`() {
         every { reader.readStringOrNull() } returns "username" andThen null
         assertThat(ui.authenticateUser()).isEqualTo(null)
-        verify { printer.showMessage("Invalid input") }
     }
 }

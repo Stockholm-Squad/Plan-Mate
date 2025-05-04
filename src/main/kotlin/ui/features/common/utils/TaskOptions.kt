@@ -1,4 +1,4 @@
-package org.example.ui.utils
+package org.example.ui.features.common.utils
 
 
 enum class TaskOptions(val option: Int?, val label: String) {

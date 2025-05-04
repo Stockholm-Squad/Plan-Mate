@@ -1,4 +1,4 @@
-package org.example.ui.utils
+package org.example.ui.features.common.utils
 
 object UiMessages {
     const val TASK_ID_PROMPT = "Enter task ID:"

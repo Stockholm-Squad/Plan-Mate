@@ -10,7 +10,7 @@ import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.utils.UiMessages
+import org.example.ui.features.common.utils.UiMessages
 
 
 class PlanMateConsoleUi(
