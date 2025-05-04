@@ -11,4 +11,3 @@ data class AuditSystem(
     val userId: UUID,
     val dateTime: LocalDateTime
 )
-//TODO Kotlin UUid
