@@ -116,6 +116,18 @@ class ManageStatesUseCase(
             onFailure = { null }
         )
     }
+    fun getProjectStateNameByStateId(stateId: UUID): ProjectState? {
+        return getAllProjectStates()
+            .fold(
+                onSuccess = { states -> findStateById(states, stateId) },
+                onFailure = { null }
+            )
+    }
+
+    private fun findStateById(states: List<ProjectState>, stateId: UUID): ProjectState? {
+        return states.firstOrNull { it.id == stateId }
+            ?.let { throw StateNotExistException()}
+    }
 
 
 }
