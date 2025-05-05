@@ -2,8 +2,8 @@ package logic.usecase.login
 
 
 import logic.models.entities.User
-import logic.models.exceptions.IncorrectPassword
-import logic.models.exceptions.UserDoesNotExist
+import logic.models.exceptions.IncorrectPasswordException
+import logic.models.exceptions.UserDoesNotExistException
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
