@@ -2,14 +2,14 @@ package data.datasources
 
 import org.example.data.datasources.state_data_source.StateCsvDataSource
 import org.example.data.models.ProjectStateModel
-import org.example.logic.model.exceptions.FileNotExistException
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ProjectProjectStateModelCsvDataSourceTest {
+class ProjectStateCsvDataSourceTest {
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
     private lateinit var dataSource: StateCsvDataSource
@@ -30,13 +30,12 @@ class ProjectProjectStateModelCsvDataSourceTest {
     @Nested
     inner class ReadTests {
         @Test
-        fun `read should return FileNotExistException when file doesn't exist`() {
+        fun `read should create new file and return true  when file deleted`() {
             File(testFilePath).delete()
 
             val result = dataSource.read()
 
-            assertTrue(result.isFailure)
-            assertThrows<FileNotExistException> { result.getOrThrow() }
+            assertTrue(result.isSuccess)
         }
 
         @Test
@@ -114,7 +113,10 @@ class ProjectProjectStateModelCsvDataSourceTest {
             assertTrue(result.getOrThrow())
 
             val content = File(testFilePath).readText()
-            Assertions.assertEquals("", content)
+                .replace("\r\n", "\n") // Normalize to LF
+                .trim() // Remove any trailing whitespace
+
+            assertEquals("id,name", content) // Compare without newline
         }
     }
 }

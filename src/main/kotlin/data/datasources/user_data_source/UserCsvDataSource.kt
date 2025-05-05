@@ -20,6 +20,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     override fun read(): Result<List<UserModel>> {
         val file = resolveFile()
         if (!file.exists()) {
+            file.createNewFile()
             createAdminIfNotExist()
         }
 

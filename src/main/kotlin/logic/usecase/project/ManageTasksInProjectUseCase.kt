@@ -15,14 +15,7 @@ class ManageTasksInProjectUseCase(
     fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
         return manageProjectUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
-                taskRepository.getTasksInProject(project.id).fold(
-                    onSuccess = { taskRefs ->
-                        taskRefs.mapNotNull { taskRef ->
-                            taskUseCase.getTaskByName(taskRef.name).getOrNull()
-                        }.let { Result.success(it) }
-                    },
-                    onFailure = { throwable -> Result.failure(throwable) }
-                )
+                taskRepository.getTasksInProject(project.id)
             },
             onFailure = { throwable -> Result.failure(throwable) }
         )
