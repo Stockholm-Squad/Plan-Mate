@@ -10,9 +10,9 @@ class GetAuditSystemUseCase(
     private val auditSystemRepository: AuditSystemRepository,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val manageTasksUseCase: ManageTasksUseCase
-) : IManageAuditSystemUseCase {
+) {
 
-    override fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>> =
+    fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = { audits ->
                 manageProjectUseCase.getProjectByName(projectName).fold(
@@ -28,7 +28,7 @@ class GetAuditSystemUseCase(
             onFailure = { Result.failure(it) }
         )
 
-    override fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> =
+    fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = { audits ->
                 manageTasksUseCase.getTaskIdByName(taskName).fold(
@@ -46,7 +46,7 @@ class GetAuditSystemUseCase(
 
 
 
-    override fun getAuditsByUserId(userId: UUID): Result<List<AuditSystem>> =
+    fun getAuditsByUserId(userId: UUID): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = {
                 val result = it.filter { it.userId == userId }

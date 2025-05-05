@@ -3,7 +3,6 @@ package org.example.logic.repository
 import logic.model.entities.Project
 
 interface ProjectRepository {
-
     fun addProject(project: Project): Result<Boolean>
     fun editProjectState(updatedProject: Project): Result<Boolean>
     fun deleteProject(projectToDelete: Project): Result<Boolean>

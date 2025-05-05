@@ -1,8 +1,8 @@
 package org.example.ui.utils
 
 object UiMessages {
-    const val TASK_ID_PROMPT = "Enter task ID:"
     const val TASK_NAME_PROMPT = "Enter task name:"
+    const val NEW_TASK_NAME_PROMPT = "Enter new task name:"
     const val TASK_DESCRIPTION_PROMPT = "Enter task description:"
     const val TASK_STATE_PROMPT = "Enter task state name:"
     const val INVALID_TASK_STATE_INPUT = "Invalid task state input"
@@ -17,7 +17,7 @@ object UiMessages {
     const val EMPTY_TASK_DESCRIPTION_INPUT = "Task description cannot be empty."
     const val EMPTY_TASK_STATE_INPUT = "Task state cannot be empty."
     const val EMPTY_USER_NAME_INPUT = "Empty user name"
-    const val INVALID_STATE_NAME = "Invalid state name. No matching state ID found."
+    const val INVALID_STATE_NAME = "Invalid state name. No matching state Name found."
     const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
     const val NO_TASKS_FOUND_IN_PROJECT = "No task found in project"
@@ -44,6 +44,15 @@ object UiMessages {
     const val PLEASE_ENTER_THE_NEW_STATE_NAME = "Please enter the new state name: "
     const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE = "Please enter the state you want to delete: "
     const val INVALID_INPUT = "Invalid input"
+    const val USER_NOT_LOGGED_IN = "user not loged in"
+    const val INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
+        "Invalid task name entered. Press Enter to return to the main menu."
+    const val INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
+        "Invalid project name entered. Press Enter to return to the main menu."
+    const val INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
+        "Invalid description entered. Press Enter to return to the main menu."
+    const val INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
+        "Invalid state name entered. Press Enter to return to the main menu."
 
     //audit system constants
     val SHOW_AUDIT_SYSTEM_OPTIONS = """
