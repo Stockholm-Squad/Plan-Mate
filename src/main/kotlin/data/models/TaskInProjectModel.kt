@@ -1,6 +1,6 @@
 package data.models
 
-data class TaskInProject(
+data class TaskInProjectModel(
     val taskId: String,
     val projectId: String,
 )

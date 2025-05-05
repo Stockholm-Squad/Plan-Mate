@@ -1,6 +1,6 @@
 package data.models
 
-data class UserAssignedToProject(
+data class UserAssignedToProjectModel(
     val userName: String,
     val projectId: String
 )
