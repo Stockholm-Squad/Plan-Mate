@@ -27,13 +27,13 @@ class ManageStatesUseCase(
     }
 
 
-    fun editProjectStateByName(stateName: String): Result<Boolean> {
-        return isStateNameValid(stateName).fold(
-            onSuccess = { validStateName ->
-                getProjectState(validStateName)
+    fun editProjectStateByName(stateName: String,newStateName:String): Result<Boolean> {
+        return validateStateNames(stateName,newStateName).fold(
+            onSuccess = {
+                getProjectState(stateName)
                     .takeIf { it != null }
                     ?.let { state ->
-                        projectStateRepository.editProjectState(state).fold(
+                        projectStateRepository.editProjectState(ProjectState(state.id,newStateName)).fold(
                             onSuccess = { Result.success(it) },
                             onFailure = { throwable ->
                                 this@ManageStatesUseCase.handleProjectStateNotExistException(
@@ -47,7 +47,16 @@ class ManageStatesUseCase(
         )
     }
 
-
+    private fun validateStateNames(stateName: String, newStateName: String): Result<Pair<String, String>> {
+        return isStateNameValid(stateName).fold(
+            onSuccess = { validStateName ->
+                isStateNameValid(newStateName).map { validNewName ->
+                    validStateName to validNewName
+                }
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
     private fun isStateNameValid(stateName: String): Result<String> {
         return stateName.trim().takeIf {
             it.isNotBlank() &&
@@ -117,5 +126,15 @@ class ManageStatesUseCase(
         )
     }
 
+    fun getProjectStateNameByStateId(stateId: UUID): String? {
+        return getAllProjectStates()
+            .fold(
+                onSuccess = { states -> findStateById(states, stateId)?.name },
+                onFailure = { null }
+            )
+    }
 
+    private fun findStateById(states: List<ProjectState>, stateId: UUID): ProjectState? {
+        return states.firstOrNull { it.id == stateId }
+    }
 }

@@ -42,7 +42,9 @@ class AdminProjectProjectStateModelManagerUiImpImplTest {
     @Test
     fun `editState should succeed with valid input`() {
         every { reader.readStringOrNull() } returns "ExistingState"
-        every { manageStatesUseCase.editProjectStateByName("ExistingState") } returns Result.success(true)
+        every { reader.readStringOrNull() } returns "NewState"
+
+        every { manageStatesUseCase.editProjectStateByName("ExistingState","NewState") } returns Result.success(true)
 
         adminStateManagerUi.editState()
 
@@ -52,8 +54,9 @@ class AdminProjectProjectStateModelManagerUiImpImplTest {
     fun `editState() should print state updated successfully when a valid name`() {
         //Given
         val stateName = "TODO"
+        val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
-        every { this@AdminProjectProjectStateModelManagerUiImpImplTest.manageStatesUseCase.editProjectStateByName(stateName) } returns Result.success(true)
+        every { this@AdminProjectProjectStateModelManagerUiImpImplTest.manageStatesUseCase.editProjectStateByName(stateName,newState) } returns Result.success(true)
 
         //When
         adminStateManagerUi.editState()
@@ -66,9 +69,11 @@ class AdminProjectProjectStateModelManagerUiImpImplTest {
     @Test
     fun `editState() should print invalid input when enter not valid name`() {
         val stateName = "1hnfjnj!"
-
+        val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.editProjectStateByName(any()) } returns Result.failure(
+        every { reader.readStringOrNull() } returns newState
+
+        every { manageStatesUseCase.editProjectStateByName(any(),any()) } returns Result.failure(
            NotAllowedStateNameException()
         )
 

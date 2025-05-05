@@ -11,7 +11,11 @@ class OutputPrinterImplementation : OutputPrinter {
     }
 
     override fun printTask(task: Task) {
-        println("ID: ${task.id} | Name: ${task.name} | Description: ${task.description} | State: ${task.stateId} | Created: ${task.createdDate} | Updated: ${task.updatedDate}")
+        println(
+            "Name: ${task.name} | Description: ${task.description} " +
+//                "| State: ${task.stateId} " + //TODO: State Name not id
+                    "| Created: ${task.createdDate.date} ${task.createdDate.time} | Updated: ${task.updatedDate.date} ${task.updatedDate.time}"
+        )
     }
 
     override fun printTaskList(tasks: List<Task>) {

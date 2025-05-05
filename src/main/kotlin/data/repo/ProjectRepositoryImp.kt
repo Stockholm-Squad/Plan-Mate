@@ -1,12 +1,13 @@
 package org.example.data.repo
 
 
+import data.models.UserAssignedToProject
 import logic.model.entities.Project
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.mapToProjectEntity
 import org.example.data.mapper.mapToProjectModel
-import org.example.logic.model.exceptions.ReadDataException
+import org.example.data.models.ProjectModel
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
@@ -19,53 +20,91 @@ class ProjectRepositoryImp(
         return projectDataSource.append(listOf(project.mapToProjectModel()))
     }
 
-    override fun editProject(updatedProject: Project): Result<Boolean> {
-        return projectDataSource.read()
-            .fold(onFailure = { Result.failure(ReadDataException()) }, onSuccess = {
-                it.map { project ->
-                    if (project.id == updatedProject.id.toString()) {
-                        updatedProject
-                    } else project
-                }
-                projectDataSource.overWrite(it)
-            })
+    override fun editProjectState(updatedProject: Project): Result<Boolean> {
+        return projectDataSource.read().fold(
+            onSuccess = { existingProjects ->
+                updateProjectList(existingProjects, updatedProject)
+                    .let { updatedProjects -> projectDataSource.overWrite(updatedProjects) }
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    private fun updateProjectList(
+        existing: List<ProjectModel>,
+        updated: Project
+    ): List<ProjectModel> {
+        return existing.map {
+            if (it.id == updated.id.toString()) updated.mapToProjectModel() else it
+        }
     }
 
     override fun deleteProject(projectToDelete: Project): Result<Boolean> {
-        return projectDataSource.read()
-            .fold(
-                onFailure = { Result.failure(it) },
-                onSuccess = { projects ->
-                    projects.filterNot { project -> project.id == projectToDelete.id.toString() }
-                        .let { projectList -> projectDataSource.overWrite(projectList) }
-
-                })
+        return projectDataSource.read().fold(
+            onSuccess = { projects ->
+                projects.filterNot { project ->
+                    project.id == projectToDelete.id.toString()
+                }.let { projectList ->
+                    projectDataSource.overWrite(projectList)
+                }
+            },
+            onFailure = { Result.failure(it) },
+        )
     }
 
     override fun getAllProjects(): Result<List<Project>> {
         return projectDataSource.read().fold(
-            onSuccess = { list -> Result.success(list.mapNotNull { it.mapToProjectEntity() }) },
+            onSuccess = { projectModelList ->
+                Result.success(
+                    projectModelList.mapNotNull { projectModel ->
+                        projectModel.mapToProjectEntity()
+                    },
+                )
+            },
             onFailure = { Result.failure(it) }
         )
     }
 
     override fun getProjectsByUsername(username: String): Result<List<Project>> {
         return userAssignedToProjectDataSource.read().fold(
-            onSuccess = { userAssignments ->
-                projectDataSource.read().fold(
-                    onSuccess = { projects ->
-                        userAssignments.filter { it.userName == username }
-                            .map { it.projectId }
-                            .let { projectIds ->
-                                projects.filter { project -> projectIds.contains(project.id) }
-                                    .mapNotNull { it.mapToProjectEntity() }
-                                    .let { Result.success(it) }
-                            }
-                    },
-                    onFailure = { Result.failure(it) }
-                )
+            onSuccess = { assignments ->
+                return filterAssignmentsByUsername(assignments, username).let { filteredAssignments ->
+                    extractProjectIds(filteredAssignments).let { projectIds ->
+                        projectDataSource.read().fold(
+                            onSuccess = { projects ->
+                                filterProjectsByIds(projects, projectIds).let { filteredProjects ->
+                                    Result.success(convertToProjects(filteredProjects))
+                                }
+                            },
+                            onFailure = { Result.failure(it) }
+                        )
+                    }
+                }
             },
             onFailure = { Result.failure(it) }
         )
     }
+
+    private fun filterAssignmentsByUsername(
+        assignments: List<UserAssignedToProject>,
+        username: String
+    ): List<UserAssignedToProject> {
+        return assignments.filter { it.userName == username }
+    }
+
+    private fun extractProjectIds(assignments: List<UserAssignedToProject>): List<String> {
+        return assignments.map { it.projectId }
+    }
+
+    private fun filterProjectsByIds(
+        projects: List<ProjectModel>,
+        ids: List<String>
+    ): List<ProjectModel> {
+        return projects.filter { ids.contains(it.id) }
+    }
+
+    private fun convertToProjects(projects: List<ProjectModel>): List<Project> {
+        return projects.mapNotNull { it.mapToProjectEntity() }
+    }
+
 }

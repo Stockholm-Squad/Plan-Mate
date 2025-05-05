@@ -9,6 +9,7 @@ fun TaskModel.mapToTaskEntity(): Task? {
     return try {
         Task(
             id.toSafeUUID(),
+            projectName,
             name,
             description,
             stateId.toSafeUUID(),
@@ -22,6 +23,7 @@ fun TaskModel.mapToTaskEntity(): Task? {
 
 fun Task.mapToTaskModel(): TaskModel = TaskModel(
     id.toString(),
+    projectName,
     name,
     description,
     stateId.toString(),

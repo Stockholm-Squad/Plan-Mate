@@ -18,23 +18,24 @@ class ProjectStateRepositoryImp(
     override fun editProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.map { item -> if (item.id == projectState.id.toString()) projectState else item }
-                stateDataSource.overWrite(currentStates)
+                val updatedStates = currentStates.map { item ->
+                    if (item.id == projectState.id.toString()) projectState.mapToStateModel() else item
+                }
+                stateDataSource.overWrite(updatedStates)
             },
-            onFailure = { exception -> Result.failure(exception) }
+            onFailure = { Result.failure(it) }
         )
     }
 
     override fun deleteProjectState(projectState: ProjectState): Result<Boolean> {
         return stateDataSource.read().fold(
             onSuccess = { currentStates ->
-                currentStates.filterNot { it == projectState.mapToStateModel() }
-                stateDataSource.overWrite(currentStates)
+                val updatedStates = currentStates.filterNot { it.id == projectState.id.toString() }
+                stateDataSource.overWrite(updatedStates)
             },
-            onFailure = { exception -> Result.failure(exception) }
+            onFailure = { Result.failure(it) }
         )
     }
-
     override fun getAllProjectStates(): Result<List<ProjectState>> {
         return stateDataSource.read().fold(
             onSuccess = { allStates ->

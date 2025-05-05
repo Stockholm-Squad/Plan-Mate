@@ -55,9 +55,5 @@ class GetAuditSystemUseCase(
             onFailure = { Result.failure(it) }
         )
 
-    override fun addAuditsEntries(auditEntry: List<AuditSystem>): Result<Boolean> {
-        TODO("Not yet implemented")
-    }
-
 
 }

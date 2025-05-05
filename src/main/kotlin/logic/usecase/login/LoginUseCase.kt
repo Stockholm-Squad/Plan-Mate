@@ -43,4 +43,14 @@ class LoginUseCase(
         }
     }
 
+    fun isUserExists(userName: String): Result<Boolean> {
+        return userRepository.getAllUsers().fold(
+            onSuccess = { users ->
+                val exist = users.any { user -> user.username == userName }
+                Result.success(exist)
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
 }

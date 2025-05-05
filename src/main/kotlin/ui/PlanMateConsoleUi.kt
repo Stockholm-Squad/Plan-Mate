@@ -2,11 +2,12 @@ package org.example.ui
 
 import logic.model.entities.User
 import logic.model.entities.UserRole
+import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.StateManageUi
-import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -18,7 +19,8 @@ class PlanMateConsoleUi(
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
     private val stateManagerUiImp: StateManageUi,
-    private val taskManagerUi: TaskManagerUi,
+    private val taskManagerUiImp: TaskManagerUiImp,
+    private val addUserToProjectUI: AddUserToProjectUI,
     private val printer: OutputPrinter,
     private val reader: InputReader,
     private val createUserUiImp: CreateUserUi
@@ -57,7 +59,7 @@ class PlanMateConsoleUi(
     private fun handleMateChoice() {
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
-                MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
+                MateChoice.MANAGE_TASKS.choice -> taskManagerUiImp.launchUi(user)
                 MateChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
                 MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 MateChoice.LOGOUT.choice -> logout()
@@ -71,9 +73,10 @@ class PlanMateConsoleUi(
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi(user)
-                AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
+                AdminChoice.MANAGE_TASKS.choice -> taskManagerUiImp.launchUi(user)
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
                 AdminChoice.ADD_MATE.choice -> createUserUiImp.launchUi(user)
+                AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.invoke(user = user)
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
@@ -109,6 +112,7 @@ enum class AdminChoice(
     MANAGE_TASKS(2),
     MANAGE_STATES(3),
     ADD_MATE(4),
-    SHOW_AUDIT_LOG(5),
-    LOGOUT(6),
+    ADD_MATE_TO_PROJECT(5),
+    SHOW_AUDIT_LOG(6),
+    LOGOUT(7),
 }
