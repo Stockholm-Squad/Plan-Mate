@@ -3,11 +3,12 @@ package org.example.ui.features.project
 import logic.model.entities.User
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.utils.UiMessages
+
 
 class ProjectManagerUiImp(
     private val inputReader: InputReader,
