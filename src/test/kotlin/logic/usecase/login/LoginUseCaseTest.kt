@@ -27,7 +27,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when username is empty`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.loginUser(
                 username = "",
                 password = "password"
@@ -38,7 +38,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when password is empty`() {
-        assertThrows<InvalidPassword> {
+        assertThrows<InvalidPasswordException> {
             useCase.loginUser(
                 username = "username",
                 password = ""
@@ -49,7 +49,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when username starts with a number`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.loginUser(
                 username = "1john",
                 password = "password"
@@ -60,7 +60,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when username is less than 4 characters`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.loginUser(
                 username = "abc",
                 password = "password"
@@ -71,7 +71,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when username is more than 20 characters`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.loginUser(
                 username = "averyverylongusernamethatexceeds20",
                 password = "password"
@@ -82,7 +82,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when password is less than 8 characters`() {
-        assertThrows<InvalidPassword> {
+        assertThrows<InvalidPasswordException> {
             useCase.loginUser(
                 username = "validUser",
                 password = "short"
@@ -95,7 +95,7 @@ class LoginUseCaseTest() {
     fun `loginUser() should return failure when user does not exist`() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.success(users)
-        assertThrows<UserDoesNotExist> {
+        assertThrows<UserDoesNotExistException> {
             useCase.loginUser(
                 username = "Rodina",
                 password = "rodinapassword"
@@ -108,7 +108,7 @@ class LoginUseCaseTest() {
     fun `loginUser() should return failure when user exist and incorrect password `() {
         val users = getAllUsers()
         every { repository.getAllUsers() } returns Result.success(users)
-        assertThrows<IncorrectPassword> {
+        assertThrows<IncorrectPasswordException> {
             useCase.loginUser(
                 username = "johnDoe",
                 password = "password2"
@@ -143,8 +143,8 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when users are empty`() {
-        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmpty())
-        assertThrows<UsersDataAreEmpty> {
+        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmptyException())
+        assertThrows<UsersDataAreEmptyException> {
             useCase.loginUser(
                 username = "johnDoe",
                 password = "password2"

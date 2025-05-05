@@ -32,14 +32,14 @@ class LoginUseCase(
 
     private fun checkUserExists(users: List<User>, username: String): User {
         return users.find { it.username == username }
-            ?: throw UserDoesNotExist()
+            ?: throw UserDoesNotExistException()
     }
 
     private fun checkPassword(password: String, user: User): User {
         if (hashToMd5(password) == user.hashedPassword) {
             return user
         } else {
-            throw IncorrectPassword()
+            throw IncorrectPasswordException()
         }
     }
 

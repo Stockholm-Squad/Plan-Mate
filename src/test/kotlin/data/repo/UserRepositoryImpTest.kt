@@ -13,7 +13,7 @@ import org.example.data.datasources.user_data_source.UserCsvDataSource
 import org.example.data.models.UserModel
 import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.UsersDataAreEmpty
+import org.example.logic.model.exceptions.UsersDataAreEmptyException
 import org.example.logic.model.exceptions.WriteDataException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -123,7 +123,7 @@ class UserRepositoryImpTest {
     @Test
     fun `getAllUsers should return failure when datasource read fails`() {
         // Given
-        val expectedException = UsersDataAreEmpty()
+        val expectedException = UsersDataAreEmptyException()
         every { userCsvDataSource.read() } returns Result.failure(expectedException)
 
         // When

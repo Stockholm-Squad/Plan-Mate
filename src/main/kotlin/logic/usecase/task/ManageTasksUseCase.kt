@@ -12,7 +12,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
     fun getAllTasks(): Result<List<Task>> =
         taskRepository.getAllTasks().fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun getTaskByName(taskName: String): Result<Task> {
@@ -40,13 +40,13 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
     fun createTask(task: Task): Result<Boolean> =
         taskRepository.addTask(task).fold(
             onSuccess = { Result.success(true) },
-            onFailure = { Result.failure(NoTasksCreated()) }
+            onFailure = { Result.failure(NoTasksCreatedException()) }
         )
 
     fun editTask(updatedTask: Task): Result<Boolean> =
         taskRepository.editTask(updatedTask).fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun deleteTaskByName(taskName: String): Result<Boolean> {
@@ -54,7 +54,7 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onSuccess = { uuid ->
                 taskRepository.deleteTask(uuid).fold(
                     onSuccess = { Result.success(it) },
-                    onFailure = { Result.failure(NoTasksDeleted()) }
+                    onFailure = { Result.failure(NoTasksDeletedException()) }
                 )
             },
             onFailure = { Result.failure(TaskNotFoundException()) }

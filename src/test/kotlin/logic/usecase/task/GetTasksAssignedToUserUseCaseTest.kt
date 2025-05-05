@@ -1,16 +1,5 @@
 package logic.usecase.task
 
-import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
-import data.models.MateTaskAssignment
-import org.example.logic.model.exceptions.NoTaskAssignmentFound
-import org.example.logic.repository.TaskRepository
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import utils.buildMateTaskAssignment
-
 
 class GetTasksAssignedToUserUseCaseTest {
 
