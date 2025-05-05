@@ -1,6 +1,5 @@
-package logic.model.entities
+package logic.models.entities
 import java.util.*
-
 
 data class Project(
     val id: UUID = UUID.randomUUID(),

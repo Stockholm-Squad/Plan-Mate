@@ -1,8 +1,7 @@
 package data.mapper
 
-import logic.model.entities.AuditSystem
-import logic.model.entities.EntityType
-import logic.model.entities.Project
+import logic.models.entities.AuditSystem
+import logic.models.entities.EntityType
 import org.example.data.models.AuditSystemModel
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
@@ -36,7 +35,7 @@ fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
 }
 
 fun getAuditSystemType(auditSystem: String): EntityType = when {
-    auditSystem.equals("EntityType.TASK", ignoreCase = true) -> EntityType.TASK
-    auditSystem.equals("EntityType.PROJECT", ignoreCase = true) -> EntityType.PROJECT
+    auditSystem.equals("TASK", ignoreCase = true) -> EntityType.TASK
+    auditSystem.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
     else -> throw Exception("Unknown AuditSystemType: $auditSystem")
 }

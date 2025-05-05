@@ -3,19 +3,16 @@ package ui.features.state
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.NotAllowedStateNameException
-import org.example.logic.model.exceptions.StateAlreadyExistException
-import org.example.logic.model.exceptions.StateNotExistException
+import logic.models.exceptions.NotAllowedStateNameException
+import logic.models.exceptions.StateAlreadyExistException
+import logic.models.exceptions.StateNotExistException
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.admin.AdminStateManagerUiImpl
 import org.example.ui.features.state.common.UserStateManagerUi
-import org.example.ui.features.state.model.StateMenuChoice
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
 
 class AdminProjectProjectStateModelManagerUiImpImplTest {
     private lateinit var manageStatesUseCase: ManageStatesUseCase

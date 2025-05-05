@@ -2,7 +2,7 @@ package org.example.data.repo
 
 import data.mapper.mapToAuditSystemEntity
 import data.mapper.mapToAuditSystemModel
-import logic.model.entities.AuditSystem
+import logic.models.entities.AuditSystem
 import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
 import org.example.logic.repository.AuditSystemRepository
 

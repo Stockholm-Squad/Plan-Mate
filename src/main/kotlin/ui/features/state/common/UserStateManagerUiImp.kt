@@ -1,8 +1,8 @@
 package org.example.ui.features.state.common
 
-import logic.model.entities.ProjectState
-import org.example.ui.input_output.output.OutputPrinter
+import logic.models.entities.ProjectState
 import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.ui.input_output.output.OutputPrinter
 
 class UserStateManagerUiImp(
     private val manageStatesUseCase: ManageStatesUseCase,

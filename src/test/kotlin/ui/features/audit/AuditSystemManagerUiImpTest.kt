@@ -1,12 +1,12 @@
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.User
-import logic.model.entities.UserRole
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
+import logic.models.entities.User
+import logic.models.entities.UserRole
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.features.audit.AuditSystemManagerUiImp
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

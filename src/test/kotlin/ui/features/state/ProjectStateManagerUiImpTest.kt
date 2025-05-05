@@ -1,12 +1,12 @@
 package ui.features.state
 
 import io.mockk.*
-import logic.model.entities.User
-import logic.model.entities.UserRole
-import org.example.ui.input_output.output.OutputPrinter
+import logic.models.entities.User
+import logic.models.entities.UserRole
 import org.example.ui.features.state.StateManagerUiImp
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
+import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*

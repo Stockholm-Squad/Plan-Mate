@@ -5,26 +5,24 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import logic.model.entities.Task
-import logic.model.entities.UserRole
+import logic.models.entities.Task
+import logic.models.entities.UserRole
+import logic.models.exceptions.NoTaskAssignmentFound
+import logic.models.exceptions.NoTasksFound
 import modle.buildUser
-import org.example.logic.model.exceptions.NoTasksFound
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.NoTaskAssignmentFound
-import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.ui.utils.TaskOptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import utils.buildMateTaskAssignment
 import utils.buildTask
-import java.util.UUID
+import java.util.*
 
 class TaskManagerUiTest {
 
@@ -33,7 +31,7 @@ class TaskManagerUiTest {
     private lateinit var uiUtils: UiUtils
     private lateinit var manageTasksUseCase: ManageTasksUseCase
     private lateinit var manageStateUseCase: ManageStatesUseCase
-    private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var getProjectUseCase: GetProjectsUseCase
     private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
     private lateinit var taskManagerUi: TaskManagerUi
 
@@ -42,8 +40,7 @@ class TaskManagerUiTest {
         reader = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         uiUtils = mockk(relaxed = true)
-
-        manageTasksUseCase = mockk(relaxed = true)
+        getProjectUseCase = mockk(relaxed = true)
         manageStateUseCase = mockk(relaxed = true)
         manageTasksInProjectUseCase = mockk(relaxed = true)
 
@@ -53,7 +50,7 @@ class TaskManagerUiTest {
             uiUtils,
             manageTasksUseCase,
             manageStateUseCase,
-            manageProjectUseCase,
+            getProjectUseCase,
             manageTasksInProjectUseCase
         )
     }
@@ -73,7 +70,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.printTaskList(sampleTasks) }
-        verify(exactly = 0) { printer.showMessage(UiMessages.NO_TASK_FOUNDED) }
+        verify(exactly = 0) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
@@ -85,13 +82,13 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasks()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUNDED) }
+        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
     fun `showAllTasks() should handle failure gracefully`() {
         // Given
-        val error = NoTasksFound()
+        val error = NoTasksFoundException()
         every { manageTasksUseCase.getAllTasks() } returns Result.failure(error)
 
         // When
@@ -129,14 +126,14 @@ class TaskManagerUiTest {
         val taskName = "invalid"
 
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
-        every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFound())
+        every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFoundException())
 
         // When
         taskManagerUi.getTaskByName()
 
         // Then
         verify(exactly = 1) {
-            printer.showMessage("Error: ${NoTasksFound()}")
+            printer.showMessage("Error: ${NoTasksFoundException()}")
         }
     }
 
@@ -290,13 +287,13 @@ class TaskManagerUiTest {
         // Given
         val taskName = "invalid"
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
-        every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFound())
+        every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFoundException())
 
         // When
         taskManagerUi.editTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUNDED) }
+        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
@@ -535,13 +532,13 @@ class TaskManagerUiTest {
         // Given
         val taskName = "Non-existing Task"
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
-        every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFound())
+        every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFoundException())
 
         // When
         taskManagerUi.deleteTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUNDED) }
+        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
     }
     //endregion
 
@@ -632,7 +629,7 @@ class TaskManagerUiTest {
     fun `showAllTasksInProject() should handle failure from use case gracefully`() {
         // Given
         val projectId = "proj-3"
-        val exception = NoTaskAssignmentFound()
+        val exception = NoTaskAssignmentFoundException()
         every { uiUtils.readNonBlankInputOrNull(reader) } returns projectId
         every { manageTasksInProjectUseCase.getTasksInProjectByName(projectId) } returns Result.failure(exception)
 

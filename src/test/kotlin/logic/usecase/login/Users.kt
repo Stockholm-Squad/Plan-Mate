@@ -1,6 +1,6 @@
 package logic.usecase.login
 
-import logic.model.entities.UserRole
+import logic.models.entities.UserRole
 import modle.buildUser
 
 private val allUsers = listOf(

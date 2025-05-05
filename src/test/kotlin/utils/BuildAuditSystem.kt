@@ -1,13 +1,10 @@
 package utils
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import logic.model.entities.AuditSystem
-import logic.model.entities.EntityType
+import logic.models.entities.AuditSystem
+import logic.models.entities.EntityType
 import org.example.data.models.AuditSystemModel
-import java.util.UUID
+import java.util.*
 
 
 fun createAuditSystemEntity(

@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.model.entities.AuditSystem
+import logic.models.entities.AuditSystem
 
 interface AuditSystemRepository {
     fun addAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean>

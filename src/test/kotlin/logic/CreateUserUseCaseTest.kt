@@ -31,7 +31,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username is empty`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.createUser(
                 username = "",
                 password = "password"
@@ -42,7 +42,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when password is empty`() {
-        assertThrows<InvalidPassword> {
+        assertThrows<InvalidPasswordException> {
             useCase.createUser(
                 username = "username",
                 password = ""
@@ -52,7 +52,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username starts with a number`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.createUser(
                 username = "1john",
                 password = "password"
@@ -62,18 +62,18 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when username is less than 4 characters`() {
-        assertThrows<Throwable> {
+        assertThrows<InvalidUserNameException> {
             useCase.createUser(
                 username = "abc",
                 password = "password"
             ).getOrThrow()
         }
-
+        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
     fun `addUser() should return failure when username is more than 20 characters`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<InvalidUserNameException> {
             useCase.createUser(
                 username = "averyverylongusernamethatexceeds20",
                 password = "password"
@@ -84,7 +84,7 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when password is less than 8 characters`() {
-        assertThrows<InvalidPassword> {
+        assertThrows<InvalidPasswordException> {
             useCase.createUser(
                 username = "validUser",
                 password = "short"
@@ -104,7 +104,7 @@ class CreateUserUseCaseTest() {
         )
 
         // When & Then
-        assertThrows<UserExist> {
+        assertThrows<UserExistException> {
             useCase.checkUserExists(users, existingUsername)
         }
     }
@@ -133,8 +133,8 @@ class CreateUserUseCaseTest() {
 
     @Test
     fun `addUser() should return failure when users are empty`() {
-        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmpty())
-        assertThrows<UsersDataAreEmpty> {
+        every { repository.getAllUsers() } returns Result.failure(UsersDataAreEmptyException())
+        assertThrows<UsersDataAreEmptyException> {
             repository.getAllUsers(
             ).getOrThrow()
         }

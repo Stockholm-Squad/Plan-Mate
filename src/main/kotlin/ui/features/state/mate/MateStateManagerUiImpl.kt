@@ -1,6 +1,6 @@
 package org.example.ui.features.state.mate
 
-import logic.model.entities.User
+import logic.models.entities.User
 import org.example.ui.features.state.common.UserStateManagerUi
 
 class MateStateManagerUiImpl(

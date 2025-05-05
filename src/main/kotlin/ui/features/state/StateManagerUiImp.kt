@@ -1,11 +1,13 @@
 package org.example.ui.features.state
 
-import logic.model.entities.User
-import logic.model.entities.UserRole
+import logic.models.entities.User
+import logic.models.entities.UserRole
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
+
+
 
 class StateManagerUiImp(
     private val adminStateManagerUi: AdminStateManagerUi,

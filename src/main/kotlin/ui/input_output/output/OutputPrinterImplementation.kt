@@ -1,8 +1,8 @@
 package org.example.ui.input_output.output
 
-import logic.model.entities.AuditSystem
-import logic.model.entities.ProjectState
-import logic.model.entities.Task
+import logic.models.entities.AuditSystem
+import logic.models.entities.ProjectState
+import logic.models.entities.Task
 
 class OutputPrinterImplementation : OutputPrinter {
 
@@ -46,7 +46,7 @@ class OutputPrinterImplementation : OutputPrinter {
         println("└──────────────────────────────┘")
     }
 
-    override fun showAudits(audits: List<AuditSystem>) {
+    override fun showAudits(audits: List<AuditSystem> , username : String) {
         if (audits.isEmpty()) {
             println("No audits to display.")
             return
@@ -58,8 +58,8 @@ class OutputPrinterImplementation : OutputPrinter {
             println("\n========== $entityType ==========\n")
             println(
                 String.format(
-                    "| %-36s | %-12s | %-15s | %-20s | %-30s |",
-                    "ID", "Entity ID", "Changed By", "Date", "Change Description"
+                    "| %-15s | %-20s | %-30s |",
+                    "Changed By", "Date", "Change Description"
                 )
             )
             println("-".repeat(130))
@@ -67,10 +67,8 @@ class OutputPrinterImplementation : OutputPrinter {
             for (entry in entries) {
                 println(
                     String.format(
-                        "| %-36s | %-12s | %-15s | %-20s | %-30s |",
-                        entry.id,
-                        entry.entityTypeId,
-                        entry.userId,
+                        "| %-15s | %-20s | %-30s |",
+                        username,
                         entry.dateTime,
                         entry.description.take(30)
                     )

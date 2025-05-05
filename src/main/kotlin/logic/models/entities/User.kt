@@ -1,6 +1,7 @@
-package logic.model.entities
+package logic.models.entities
 
 import java.util.*
+
 
 data class User(
     val id: UUID = UUID.randomUUID(),

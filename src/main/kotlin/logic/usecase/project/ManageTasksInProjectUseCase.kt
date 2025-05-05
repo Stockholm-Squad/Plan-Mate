@@ -1,19 +1,16 @@
 package org.example.logic.usecase.project
 
-import logic.model.entities.Task
+import logic.models.entities.Task
 import org.example.logic.repository.TaskRepository
-import org.example.logic.usecase.task.ManageTasksUseCase
-import java.util.UUID
+import java.util.*
 
 class ManageTasksInProjectUseCase(
-    private val taskUseCase: ManageTasksUseCase,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectsUseCase: GetProjectsUseCase,
     private val taskRepository: TaskRepository
-
 ) {
 
     fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
-        return manageProjectUseCase.getProjectByName(projectName).fold(
+        return getProjectsUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 taskRepository.getTasksInProject(project.id)
             },

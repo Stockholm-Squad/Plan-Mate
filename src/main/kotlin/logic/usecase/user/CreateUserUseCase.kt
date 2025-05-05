@@ -1,10 +1,10 @@
 package org.example.logic.usecase.user
 
-import logic.model.entities.User
-import org.example.logic.model.exceptions.UserExist
-import org.example.logic.model.exceptions.UsersDataAreEmpty
-import org.example.logic.repository.UserRepository
+import logic.models.entities.User
+import logic.models.exceptions.UserExistException
+import logic.models.exceptions.UsersDataAreEmptyException
 import logic.usecase.validation.ValidateUserDataUseCase
+import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
 
 class CreateUserUseCase(
@@ -42,13 +42,10 @@ class CreateUserUseCase(
 
     }
 
-    private fun handleFailure(throwable: Throwable): Result<Boolean> {
-        return Result.failure(throwable)
-    }
 
     fun checkUserExists(users: List<User>, username: String) {
         users.forEach {
-            if (it.username == username) throw UserExist()
+            if (it.username == username) throw UserExistException()
         }
 
     }
