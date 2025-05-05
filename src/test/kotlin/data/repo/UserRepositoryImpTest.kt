@@ -1,7 +1,7 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import data.models.UserAssignedToProject
+import data.models.UserAssignedToProjectModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,13 +15,14 @@ import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.example.logic.model.exceptions.WriteDataException
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.UUID
+import java.util.*
 
 class UserRepositoryImpTest {
 
@@ -32,11 +33,11 @@ class UserRepositoryImpTest {
 
     private val projectUUID1 = UUID.randomUUID()
     private val projectUUID2 = UUID.randomUUID()
-    private val testUserAssigned = UserAssignedToProject(projectId = projectUUID1.toString(), userName = "user1")
+    private val testUserAssigned = UserAssignedToProjectModel(projectId = projectUUID1.toString(), userName = "user1")
     private val userAssignedWithDifferentUserName =
-        UserAssignedToProject(projectId = projectUUID1.toString(), userName = "user2")
+        UserAssignedToProjectModel(projectId = projectUUID1.toString(), userName = "user2")
     private val userAssignedWithDifferentProjectId =
-        UserAssignedToProject(projectId = projectUUID2.toString(), userName = "user1")
+        UserAssignedToProjectModel(projectId = projectUUID2.toString(), userName = "user1")
 
     private val testUserUUID1 = UUID.randomUUID()
     private val testUserEntity1 = User(
@@ -178,7 +179,7 @@ class UserRepositoryImpTest {
         @Test
         fun `getUsersAssignedToProject should return empty list when no users for project`() {
             every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(UserAssignedToProject(projectId = "2", userName = "user3"))
+                listOf(UserAssignedToProjectModel(projectId = "2", userName = "user3"))
             )
 
             val result = userRepository.getUsersByProjectId(projectUUID1)
@@ -206,7 +207,7 @@ class UserRepositoryImpTest {
             assertThat(result.isSuccess).isTrue()
             verify {
                 userAssignedToProjectCsvDataSource.append(
-                    listOf(UserAssignedToProject(projectId = "1", userName = "user1"))
+                    listOf(UserAssignedToProjectModel(projectId = "1", userName = "user1"))
                 )
             }
         }

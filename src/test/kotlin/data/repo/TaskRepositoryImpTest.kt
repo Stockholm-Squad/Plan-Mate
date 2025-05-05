@@ -1,26 +1,26 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
+import data.models.MateTaskAssignmentModel
+import data.models.TaskInProjectModel
 import io.mockk.every
 import io.mockk.mockk
-import data.models.MateTaskAssignment
-import data.models.TaskInProject
+import io.mockk.verify
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.TaskCsvDataSource
 import org.example.data.repo.TaskRepositoryImp
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.repository.TaskRepository
 import org.example.data.utils.DateHandlerImp
+import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.WriteDataException
+import org.example.logic.repository.TaskRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utils.buildTask
 import utils.buildTaskModel
-import java.util.UUID
-import io.mockk.*
+import java.util.*
 
 
 class TaskRepositoryImpTest {
@@ -34,9 +34,12 @@ class TaskRepositoryImpTest {
     private val projectUUID2 = UUID.randomUUID()
     private val taskUUID1 = UUID.randomUUID()
     private val taskUUID2 = UUID.randomUUID()
-    private val testTaskInProject = TaskInProject(projectId = projectUUID1.toString(), taskId = taskUUID1.toString())
-    private val taskInProjectWithDifferentTaskId = TaskInProject(projectId = projectUUID1.toString(), taskId = taskUUID2.toString())
-    private val taskInProjectWithDifferentProjectId = TaskInProject(projectId = projectUUID2.toString(), taskId = taskUUID1.toString())
+    private val testTaskInProject =
+        TaskInProjectModel(projectId = projectUUID1.toString(), taskId = taskUUID1.toString())
+    private val taskInProjectWithDifferentTaskId =
+        TaskInProjectModel(projectId = projectUUID1.toString(), taskId = taskUUID2.toString())
+    private val taskInProjectWithDifferentProjectId =
+        TaskInProjectModel(projectId = projectUUID2.toString(), taskId = taskUUID1.toString())
 
 
     @BeforeEach
@@ -133,7 +136,7 @@ class TaskRepositoryImpTest {
     fun `editTask() should return failure result with throwable when the task to edit does not exist`() {
         // Given
         val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
-        val existingTasks = listOf(
+        listOf(
             buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
         )
         every { taskDataSource.read() } returns Result.failure(ReadDataException())
@@ -166,7 +169,7 @@ class TaskRepositoryImpTest {
     fun `deleteTask() should return failure result with throwable when the task to delete does not exist`() {
         // Given
         val taskId = UUID.randomUUID()
-        val existingTasks = listOf(
+        listOf(
             buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
         )
         every { taskDataSource.read() } returns Result.failure(ReadDataException())
@@ -182,7 +185,7 @@ class TaskRepositoryImpTest {
     fun `getAllMateTaskAssignment should return success when read is successful`() {
         // Given
         val mateName = "Ali"
-        val assignments = listOf(MateTaskAssignment("task1", "Ali"), MateTaskAssignment("task2", "Ali"))
+        val assignments = listOf(MateTaskAssignmentModel("task1", "Ali"), MateTaskAssignmentModel("task2", "Ali"))
         every { mateTaskAssignmentCsvDataSource.read() } returns Result.success(assignments)
 
         // When
@@ -223,7 +226,7 @@ class TaskRepositoryImpTest {
         @Test
         fun `getTasksInProject should return empty list when no tasks for project`() {
             every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(TaskInProject(projectId = "2", taskId = "201"))
+                listOf(TaskInProjectModel(projectId = "2", taskId = "201"))
             )
 
             val result = taskRepository.getTasksInProject(projectUUID1)
@@ -249,7 +252,7 @@ class TaskRepositoryImpTest {
             val result = taskRepository.addTaskInProject(projectUUID1, taskUUID1)
 
             assertThat(result.getOrThrow()).isTrue()
-            verify { taskInProjectDataSource.append(listOf(TaskInProject(projectId = "1", taskId = "101"))) }
+            verify { taskInProjectDataSource.append(listOf(TaskInProjectModel(projectId = "1", taskId = "101"))) }
         }
 
         @Test

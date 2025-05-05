@@ -1,6 +1,6 @@
 package org.example.data.datasources.task_In_project_data_source
 
-import data.models.TaskInProject
+import data.models.TaskInProjectModel
 import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.WriteDataException
@@ -17,7 +17,7 @@ import java.io.File
 class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<TaskInProject>> {
+    override fun read(): Result<List<TaskInProjectModel>> {
         val file = resolveFile()
         if (!file.exists()) {
             try {
@@ -32,7 +32,7 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
                 return Result.success(emptyList())
 
             val users = DataFrame.readCSV(file)
-                .cast<TaskInProject>()
+                .cast<TaskInProjectModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -40,7 +40,7 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
         }
     }
 
-    override fun overWrite(users: List<TaskInProject>): Result<Boolean> {
+    override fun overWrite(users: List<TaskInProjectModel>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -49,12 +49,12 @@ class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectD
         }
     }
 
-    override fun append(users: List<TaskInProject>): Result<Boolean> {
+    override fun append(users: List<TaskInProjectModel>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                } else emptyList<TaskInProject>().toDataFrame()
+                } else emptyList<TaskInProjectModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)

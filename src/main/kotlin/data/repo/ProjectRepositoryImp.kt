@@ -1,7 +1,7 @@
 package org.example.data.repo
 
 
-import data.models.UserAssignedToProject
+import data.models.UserAssignedToProjectModel
 import logic.model.entities.Project
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
@@ -86,13 +86,13 @@ class ProjectRepositoryImp(
     }
 
     private fun filterAssignmentsByUsername(
-        assignments: List<UserAssignedToProject>,
+        assignments: List<UserAssignedToProjectModel>,
         username: String
-    ): List<UserAssignedToProject> {
+    ): List<UserAssignedToProjectModel> {
         return assignments.filter { it.userName == username }
     }
 
-    private fun extractProjectIds(assignments: List<UserAssignedToProject>): List<String> {
+    private fun extractProjectIds(assignments: List<UserAssignedToProjectModel>): List<String> {
         return assignments.map { it.projectId }
     }
 

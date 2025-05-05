@@ -1,13 +1,13 @@
 package utils
 
-import data.models.MateTaskAssignment
+import data.models.MateTaskAssignmentModel
 
 fun buildMateTaskAssignment(
     userName: String = "",
     taskId: String = ""
 
-): MateTaskAssignment {
-    return MateTaskAssignment(
+): MateTaskAssignmentModel {
+    return MateTaskAssignmentModel(
         userName, taskId
     )
 }

@@ -1,7 +1,7 @@
 package org.example.data.repo
 
-import data.models.MateTaskAssignment
-import data.models.UserAssignedToProject
+import data.models.MateTaskAssignmentModel
+import data.models.UserAssignedToProjectModel
 import logic.model.entities.User
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
@@ -51,7 +51,7 @@ class UserRepositoryImp(
 
     override fun addUserToProject(projectId: UUID, userName: String): Result<Boolean> {
         return userAssignedToProjectDataSource.append(
-            listOf(UserAssignedToProject(projectId = projectId.toString(), userName = userName))
+            listOf(UserAssignedToProjectModel(projectId = projectId.toString(), userName = userName))
         )
     }
 
@@ -67,7 +67,7 @@ class UserRepositoryImp(
 
     override fun addUserToTask(mateName: String, taskId: UUID): Result<Boolean> {
         return mateTaskAssignment.append(
-            listOf(MateTaskAssignment(userName = mateName, taskId = taskId.toString()))
+            listOf(MateTaskAssignmentModel(userName = mateName, taskId = taskId.toString()))
         )
     }
 
