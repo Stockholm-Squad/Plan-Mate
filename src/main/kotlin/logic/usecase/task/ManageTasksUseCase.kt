@@ -4,9 +4,9 @@ import logic.model.entities.AuditSystem
 import logic.model.entities.EntityType
 import logic.model.entities.Task
 import org.example.data.utils.DateHandlerImp
-import org.example.logic.model.exceptions.NoTasksCreated
-import org.example.logic.model.exceptions.NoTasksDeleted
-import org.example.logic.model.exceptions.NoTasksFound
+import org.example.logic.model.exceptions.NoTasksCreatedException
+import org.example.logic.model.exceptions.NoTasksDeletedException
+import org.example.logic.model.exceptions.NoTasksFoundException
 import org.example.logic.model.exceptions.TaskNotFoundException
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.repository.TaskRepository
@@ -21,7 +21,7 @@ class ManageTasksUseCase(
     fun getAllTasks(): Result<List<Task>> =
         taskRepository.getAllTasks().fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun getTaskByName(taskName: String): Result<Task> {
@@ -52,7 +52,7 @@ class ManageTasksUseCase(
                 if (isCreates) logAudit(task, userId)
                 Result.success(true)
             },
-            onFailure = { Result.failure(NoTasksCreated()) }
+            onFailure = { Result.failure(NoTasksCreatedException()) }
         )
 
     fun editTask(updatedTask: Task, userId: UUID): Result<Boolean> =
@@ -61,7 +61,7 @@ class ManageTasksUseCase(
                 if (isUpdated) logAudit(updatedTask, userId)
                 Result.success(isUpdated)
             },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun deleteTaskByName(taskName: String): Result<Boolean> {
@@ -69,7 +69,7 @@ class ManageTasksUseCase(
             onSuccess = { uuid ->
                 taskRepository.deleteTask(uuid).fold(
                     onSuccess = { Result.success(it) },
-                    onFailure = { Result.failure(NoTasksDeleted()) }
+                    onFailure = { Result.failure(NoTasksDeletedException()) }
                 )
             },
             onFailure = { Result.failure(TaskNotFoundException()) }
