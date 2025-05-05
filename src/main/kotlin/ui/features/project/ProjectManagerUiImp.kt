@@ -2,22 +2,22 @@ package org.example.ui.features.project
 
 import logic.model.entities.User
 import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.admin.AdminStateManagerUi
-import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.CreateUserUi
+import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
+import org.example.ui.utils.UiMessages
 
 class ProjectManagerUiImp(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val stateManagerUi: AdminStateManagerUi,
-    private val taskManagerUi: TaskManagerUi,
+    private val taskManagerUiImp: TaskManagerUiImp,
     private val manageStatesUseCase: ManageStatesUseCase,
 ) : ProjectManagerUi {
+    private var currentUser: User? = null
 
     override fun showAllProjects() {
         manageProjectUseCase.getAllProjects().fold(
@@ -87,7 +87,10 @@ class ProjectManagerUiImp(
             }
         }
 
-        manageProjectUseCase.addProject(projectName, stateName)
+        val userId = currentUser?.id
+            ?: return outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+
+        manageProjectUseCase.addProject(projectName, stateName, userId)
             .fold(
                 onSuccess = { success ->
                     extractedAddingProjectResult(success)
@@ -103,7 +106,7 @@ class ProjectManagerUiImp(
             outputPrinter.showMessage("Project added successfully")
             outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
             if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                taskManagerUi.createTask()
+                taskManagerUiImp.createTask()
             }
         } else {
             outputPrinter.showMessage("Failed to add project")
@@ -135,11 +138,15 @@ class ProjectManagerUiImp(
 
                 val newProjectStateName = inputReader.readStringOrNull()
 
+                val userId = currentUser?.id
+                    ?: return outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+
                 if (newName != null || newProjectStateName != null)
                     manageProjectUseCase.updateProject(
                         project.id,
                         newName ?: projectName,
-                        newProjectStateName ?: projectStateName
+                        newProjectStateName ?: projectStateName,
+                        userId
                     )
                         .fold(
                             onSuccess = { success ->
@@ -185,6 +192,13 @@ class ProjectManagerUiImp(
     }
 
     override fun launchUi(user: User?) {
+        this.currentUser = user
+
+        if (currentUser == null) {
+            outputPrinter.showMessage(UiMessages.INVALID_USER)
+            return
+        }
+
         while (true) {
             outputPrinter.showMessage("\nProject Management:")
             outputPrinter.showMessage("1. Show all projects")
