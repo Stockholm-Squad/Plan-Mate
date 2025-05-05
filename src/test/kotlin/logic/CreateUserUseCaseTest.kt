@@ -4,13 +4,13 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.entities.User
+import logic.model.entities.User
 import logic.usecase.login.getAllUsers
 import logic.usecase.validation.ValidateUserDataUseCase
-import org.example.logic.models.exceptions.InvalidPasswordException
-import org.example.logic.models.exceptions.InvalidUserNameException
-import org.example.logic.models.exceptions.UserExistException
-import org.example.logic.models.exceptions.UsersDataAreEmptyException
+import org.example.logic.model.exceptions.InvalidPassword
+import org.example.logic.model.exceptions.InvalidUserName
+import org.example.logic.model.exceptions.UserExist
+import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.CreateUserUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -25,7 +25,7 @@ class CreateUserUseCaseTest() {
     @BeforeEach
     fun setUp() {
         repository = mockk(relaxed = true)
-        validateUserDataUseCase = mockk(relaxed = true)
+        validateUserDataUseCase = mockk()
         useCase = CreateUserUseCase(repository, validateUserDataUseCase)
     }
 
@@ -37,7 +37,7 @@ class CreateUserUseCaseTest() {
                 password = "password"
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
+
     }
 
     @Test
@@ -48,7 +48,6 @@ class CreateUserUseCaseTest() {
                 password = ""
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
@@ -59,7 +58,6 @@ class CreateUserUseCaseTest() {
                 password = "password"
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test

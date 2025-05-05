@@ -21,7 +21,7 @@ import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.features.user.CreateUserUiImp
-import org.example.ui.utils.UiUtils
+import org.example.ui.features.common.utils.UiUtils
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

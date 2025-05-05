@@ -17,7 +17,7 @@ class CreateUserUiImp(
                 if (success) {
                     printer.showMessage("✅ User ${username} added successfully!")
                 } else {
-                    printer.showMessage("❌ Error: Failed to add user")
+                    printer.showMessage("Failed to add user")
                 }
             }
             .onFailure { error ->
@@ -38,7 +38,7 @@ class CreateUserUiImp(
         if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
             createUser(username, password)
         } else {
-            printer.showMessage("❌ Error: Username and password cannot be empty")
+            printer.showMessage("Username and password cannot be empty")
         }
     }
 }
