@@ -35,7 +35,7 @@ fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
 }
 
 fun getAuditSystemType(auditSystem: String): EntityType = when {
-    auditSystem.equals("EntityType.TASK", ignoreCase = true) -> EntityType.TASK
-    auditSystem.equals("EntityType.PROJECT", ignoreCase = true) -> EntityType.PROJECT
+    auditSystem.equals("TASK", ignoreCase = true) -> EntityType.TASK
+    auditSystem.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
     else -> throw Exception("Unknown AuditSystemType: $auditSystem")
 }

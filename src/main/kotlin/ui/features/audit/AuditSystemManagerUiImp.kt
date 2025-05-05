@@ -34,7 +34,7 @@ class AuditSystemManagerUiImp(
         printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
         reader.readStringOrNull()?.let {
             useCase.getProjectAuditsByName(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
+                onSuccess = { audits -> printer.showAudits(audits,user!!.username) },
                 onFailure = { printer.showMessage(it.message.toString()) }
             )
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
@@ -44,7 +44,7 @@ class AuditSystemManagerUiImp(
         printer.showMessage(UiMessages.PROMPT_TASK_NAME)
         reader.readStringOrNull()?.let {
             useCase.getTaskAuditsByName(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits) },
+                onSuccess = { audits -> printer.showAudits(audits,user!!.username) },
                 onFailure = { printer.showMessage(it.message.toString()) }
             )
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
@@ -56,7 +56,7 @@ class AuditSystemManagerUiImp(
 
         user?.id ?: return
         useCase.getAuditsByUserId(user?.id!!).fold(
-            onSuccess = { audits -> printer.showAudits(audits) },
+            onSuccess = { audits -> printer.showAudits(audits, user!!.username) },
             onFailure = { printer.showMessage(it.message.toString()) }
         )
     }
