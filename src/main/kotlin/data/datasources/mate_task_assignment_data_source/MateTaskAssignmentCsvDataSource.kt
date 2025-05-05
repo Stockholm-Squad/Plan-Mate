@@ -1,9 +1,9 @@
 package org.example.data.datasources.mate_task_assignment_data_source
 
 import data.models.MateTaskAssignmentModel
-import org.example.logic.model.exceptions.FileNotExistException
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.WriteDataException
+import logic.models.exceptions.FileNotExistException
+import logic.models.exceptions.ReadDataException
+import logic.models.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat

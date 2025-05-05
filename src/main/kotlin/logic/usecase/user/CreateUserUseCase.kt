@@ -1,10 +1,10 @@
 package org.example.logic.usecase.user
 
-import logic.model.entities.User
-import org.example.logic.model.exceptions.UserExist
-import org.example.logic.model.exceptions.UsersDataAreEmpty
-import org.example.logic.repository.UserRepository
+import logic.models.entities.User
+import logic.models.exceptions.UserExist
+import logic.models.exceptions.UsersDataAreEmpty
 import logic.usecase.validation.ValidateUserDataUseCase
+import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
 
 class CreateUserUseCase(

@@ -1,7 +1,7 @@
 package org.example.logic.usecase.audit
 
-import logic.model.entities.AuditSystem
-import java.util.UUID
+import logic.models.entities.AuditSystem
+import java.util.*
 
 interface IManageAuditSystemUseCase {
     fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>>

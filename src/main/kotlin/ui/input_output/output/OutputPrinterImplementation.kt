@@ -1,8 +1,8 @@
 package org.example.ui.input_output.output
 
-import logic.model.entities.AuditSystem
-import logic.model.entities.ProjectState
-import logic.model.entities.Task
+import logic.models.entities.AuditSystem
+import logic.models.entities.ProjectState
+import logic.models.entities.Task
 
 class OutputPrinterImplementation : OutputPrinter {
 

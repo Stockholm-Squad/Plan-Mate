@@ -2,7 +2,7 @@ package org.example.data.repo
 
 import data.models.MateTaskAssignmentModel
 import data.models.TaskInProjectModel
-import logic.model.entities.Task
+import logic.models.entities.Task
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.ITaskDataSource

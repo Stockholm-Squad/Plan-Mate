@@ -1,11 +1,8 @@
 package org.example.data.mapper
 
-import data.mapper.getAuditSystemType
-import logic.model.entities.AuditSystem
-import logic.model.entities.User
-import logic.model.entities.UserRole
+import logic.models.entities.User
+import logic.models.entities.UserRole
 import org.example.data.models.UserModel
-import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 
 fun UserModel.mapToUserEntity(): User? {

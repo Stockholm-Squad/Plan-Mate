@@ -4,10 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.model.entities.UserRole
+import logic.models.entities.UserRole
+import logic.models.exceptions.*
 import logic.usecase.validation.ValidateUserDataUseCase
 import modle.buildUser
-import org.example.logic.model.exceptions.*
 import org.example.logic.repository.UserRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -130,7 +130,7 @@ class LoginUseCaseTest() {
 
     @Test
     fun `loginUser() should return failure when repo fails`() {
-        val users = getAllUsers()
+        getAllUsers()
         every { repository.getAllUsers() } returns Result.failure(Throwable())
         assertThrows<Throwable> {
             useCase.loginUser(

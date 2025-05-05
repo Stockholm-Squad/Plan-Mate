@@ -1,9 +1,9 @@
 package org.example.data.datasources.user_assigned_to_project_data_source
 
 import data.models.UserAssignedToProjectModel
-import org.example.logic.model.exceptions.FileNotExistException
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.WriteDataException
+import logic.models.exceptions.FileNotExistException
+import logic.models.exceptions.ReadDataException
+import logic.models.exceptions.WriteDataException
 
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

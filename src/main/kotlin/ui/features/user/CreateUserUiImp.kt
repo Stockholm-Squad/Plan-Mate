@@ -1,9 +1,9 @@
 package org.example.ui.features.user
 
-import logic.model.entities.User
+import logic.models.entities.User
+import org.example.logic.usecase.user.CreateUserUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.usecase.user.CreateUserUseCase
 
 class CreateUserUiImp(
     private val createUserUseCase: CreateUserUseCase,

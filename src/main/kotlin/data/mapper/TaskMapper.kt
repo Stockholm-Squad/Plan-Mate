@@ -1,6 +1,6 @@
 package org.example.data.mapper
 
-import logic.model.entities.Task
+import logic.models.entities.Task
 import org.example.data.models.TaskModel
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID

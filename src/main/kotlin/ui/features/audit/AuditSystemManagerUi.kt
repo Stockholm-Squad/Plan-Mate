@@ -1,6 +1,6 @@
 package org.example.ui.features.audit
 
-import logic.model.entities.User
+import logic.models.entities.User
 
 interface AuditSystemManagerUi {
     fun invoke(user: User?)

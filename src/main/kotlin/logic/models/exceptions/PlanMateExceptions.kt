@@ -1,4 +1,4 @@
-package org.example.logic.model.exceptions
+package logic.models.exceptions
 
 class ReadDataException : Exception("Error while reading data!")
 class WriteDataException : Exception("Error while writing data!")

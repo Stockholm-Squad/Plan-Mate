@@ -1,6 +1,6 @@
 package org.example.ui.features.audit
 
-import logic.model.entities.User
+import logic.models.entities.User
 import org.example.logic.usecase.audit.GetAuditSystemUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter

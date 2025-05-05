@@ -1,6 +1,6 @@
 package org.example.data.repo
 
-import logic.model.entities.ProjectState
+import logic.models.entities.ProjectState
 import org.example.data.datasources.state_data_source.IStateDataSource
 import org.example.data.mapper.mapToStateEntity
 import org.example.data.mapper.mapToStateModel

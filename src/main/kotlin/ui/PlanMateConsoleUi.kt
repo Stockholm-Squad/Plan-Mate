@@ -1,7 +1,7 @@
 package org.example.ui
 
-import logic.model.entities.User
-import logic.model.entities.UserRole
+import logic.models.entities.User
+import logic.models.entities.UserRole
 import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.login.LoginUi

@@ -1,18 +1,18 @@
 package org.example.ui.features.task
 
-import logic.model.entities.Task
-import logic.model.entities.User
+import logic.models.entities.Task
+import logic.models.entities.User
+import org.example.data.utils.DateHandlerImp
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
+import org.example.ui.utils.TaskOptions
 import org.example.ui.utils.UiMessages
 import org.example.ui.utils.UiUtils
-import org.example.data.utils.DateHandlerImp
-import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.ui.utils.TaskOptions
 
 
 class TaskManagerUi(
@@ -21,7 +21,7 @@ class TaskManagerUi(
     private val uiUtils: UiUtils,
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageStatesUseCase,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
 ) : UiLauncher {
 
@@ -90,7 +90,7 @@ class TaskManagerUi(
             updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
-        manageProjectUseCase.getProjectByName(projectName).fold(
+        getProjectUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 manageTasksUseCase.createTask(task).fold(
                     onSuccess = { printer.printTask(task)
@@ -200,7 +200,7 @@ class TaskManagerUi(
                 continue
             }
 
-            if (manageProjectUseCase.getProjectByName(projectNameInput).getOrNull() == null) {
+            if (getProjectUseCase.getProjectByName(projectNameInput).getOrNull() == null) {
                 printer.showMessage(UiMessages.NO_PROJECT_FOUNDED)
                 continue
             }

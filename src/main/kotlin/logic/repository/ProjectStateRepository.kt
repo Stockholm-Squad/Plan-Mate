@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.model.entities.ProjectState
+import logic.models.entities.ProjectState
 
 interface ProjectStateRepository {
     fun addProjectState(stateName: String): Result<Boolean>

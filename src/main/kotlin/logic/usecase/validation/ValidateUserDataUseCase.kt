@@ -1,7 +1,7 @@
 package logic.usecase.validation
 
-import org.example.logic.model.exceptions.InvalidPassword
-import org.example.logic.model.exceptions.InvalidUserName
+import logic.models.exceptions.InvalidPassword
+import logic.models.exceptions.InvalidUserName
 
 class ValidateUserDataUseCase {
 

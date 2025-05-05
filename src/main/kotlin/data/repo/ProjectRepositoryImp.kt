@@ -2,7 +2,7 @@ package org.example.data.repo
 
 
 import data.models.UserAssignedToProjectModel
-import logic.model.entities.Project
+import logic.models.entities.Project
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.mapToProjectEntity
@@ -20,7 +20,7 @@ class ProjectRepositoryImp(
         return projectDataSource.append(listOf(project.mapToProjectModel()))
     }
 
-    override fun editProjectState(updatedProject: Project): Result<Boolean> {
+    override fun editProject(updatedProject: Project): Result<Boolean> {
         return projectDataSource.read().fold(
             onSuccess = { existingProjects ->
                 updateProjectList(existingProjects, updatedProject)

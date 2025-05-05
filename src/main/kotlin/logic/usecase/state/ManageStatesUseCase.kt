@@ -1,7 +1,7 @@
 package org.example.logic.usecase.state
 
-import logic.model.entities.ProjectState
-import org.example.logic.model.exceptions.*
+import logic.models.entities.ProjectState
+import logic.models.exceptions.*
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength

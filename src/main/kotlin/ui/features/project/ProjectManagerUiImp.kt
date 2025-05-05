@@ -1,12 +1,11 @@
 package org.example.ui.features.project
 
-import logic.model.entities.User
+import logic.models.entities.User
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
-import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
@@ -14,13 +13,14 @@ class ProjectManagerUiImp(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
 ) : ProjectManagerUi {
 
     override fun showAllProjects() {
-        manageProjectUseCase.getAllProjects().fold(
+        getProjectsUseCase.getAllProjects().fold(
             onSuccess = { projects ->
                 if (projects.isEmpty()) {
                     outputPrinter.showMessage("No projects found")
@@ -48,7 +48,7 @@ class ProjectManagerUiImp(
             }
         } while (projectName.isNullOrBlank())
 
-        manageProjectUseCase.getProjectByName(projectName)
+        getProjectsUseCase.getProjectByName(projectName)
             .fold(
                 onSuccess = { project ->
                     outputPrinter.showMessage("Project Details:")
@@ -117,7 +117,7 @@ class ProjectManagerUiImp(
             return
         }
 
-        manageProjectUseCase.getProjectByName(projectName).fold(
+        getProjectsUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 val projectStateName: String =
                     manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
