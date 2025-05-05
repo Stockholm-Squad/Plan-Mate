@@ -1,18 +1,27 @@
 package org.example.logic.usecase.task
 
-import logic.model.entities.Task
-import org.example.logic.model.exceptions.*
+import logic.models.entities.AuditSystem
+import logic.models.entities.EntityType
+import logic.models.entities.Task
+import logic.models.exceptions.NoTasksCreatedException
+import logic.models.exceptions.NoTasksDeletedException
+import logic.models.exceptions.NoTasksFoundException
+import logic.models.exceptions.TaskNotFoundException
+import org.example.data.utils.DateHandlerImp
+import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.repository.TaskRepository
-import java.util.UUID
-import kotlin.Result
+import java.util.*
 
 
-class ManageTasksUseCase(private val taskRepository: TaskRepository) {
+class ManageTasksUseCase(
+    private val taskRepository: TaskRepository,
+    private val auditSystemRepository: AuditSystemRepository,
+) {
 
     fun getAllTasks(): Result<List<Task>> =
         taskRepository.getAllTasks().fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun getTaskByName(taskName: String): Result<Task> {
@@ -37,16 +46,22 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
         return getTaskByName(taskName).map { it.id }
     }
 
-    fun createTask(task: Task): Result<Boolean> =
+    fun createTask(task: Task, userId: UUID): Result<Boolean> =
         taskRepository.addTask(task).fold(
-            onSuccess = { Result.success(true) },
-            onFailure = { Result.failure(NoTasksCreated()) }
+            onSuccess = { isCreates ->
+                if (isCreates) logAudit(task, userId)
+                Result.success(true)
+            },
+            onFailure = { Result.failure(NoTasksCreatedException()) }
         )
 
-    fun editTask(updatedTask: Task): Result<Boolean> =
+    fun editTask(updatedTask: Task, userId: UUID): Result<Boolean> =
         taskRepository.editTask(updatedTask).fold(
-            onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onSuccess = { isUpdated ->
+                if (isUpdated) logAudit(updatedTask, userId)
+                Result.success(isUpdated)
+            },
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun deleteTaskByName(taskName: String): Result<Boolean> {
@@ -54,11 +69,22 @@ class ManageTasksUseCase(private val taskRepository: TaskRepository) {
             onSuccess = { uuid ->
                 taskRepository.deleteTask(uuid).fold(
                     onSuccess = { Result.success(it) },
-                    onFailure = { Result.failure(NoTasksDeleted()) }
+                    onFailure = { Result.failure(NoTasksDeletedException()) }
                 )
             },
             onFailure = { Result.failure(TaskNotFoundException()) }
         )
+    }
+
+    private fun logAudit(updatedTask: Task, userId: UUID) {
+        val auditEntry = AuditSystem(
+            entityType = EntityType.TASK,
+            description = "update task ${updatedTask.name}",
+            userId = userId,
+            dateTime = DateHandlerImp().getCurrentDateTime(),
+            entityTypeId = updatedTask.id
+        )
+        auditSystemRepository.addAuditsEntries(listOf(auditEntry))
     }
 
 }

@@ -6,10 +6,11 @@ import data.mapper.mapToAuditSystemModel
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.LocalDateTime
-import logic.model.entities.AuditSystem
-import logic.model.entities.EntityType
+import logic.models.entities.AuditSystem
+import logic.models.entities.EntityType
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.audit.GetAuditSystemUseCase
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -21,6 +22,7 @@ class GetAuditSystemUseCaseTest {
     private lateinit var getAuditSystemUseCase: GetAuditSystemUseCase
     private lateinit var auditSystemRepository: AuditSystemRepository
     private lateinit var manageProjectUseCase: ManageProjectUseCase
+    private lateinit var getProjectsUseCase: GetProjectsUseCase
     private lateinit var manageTasksUseCase: ManageTasksUseCase
 
     private val taskAuditEntityUUID = UUID.randomUUID()
@@ -68,7 +70,7 @@ class GetAuditSystemUseCaseTest {
         auditSystemRepository = mockk(relaxed = true)
         manageProjectUseCase = mockk(relaxed = true)
         manageTasksUseCase = mockk(relaxed = true)
-        getAuditSystemUseCase = GetAuditSystemUseCase(auditSystemRepository, manageProjectUseCase, manageTasksUseCase)
+        getAuditSystemUseCase = GetAuditSystemUseCase(auditSystemRepository, getProjectsUseCase, manageTasksUseCase)
     }
 
 

@@ -1,8 +1,8 @@
 package org.example.data.repo
 
-import data.models.MateTaskAssignment
-import data.models.TaskInProject
-import logic.model.entities.Task
+import data.models.MateTaskAssignmentModel
+import data.models.TaskInProjectModel
+import logic.models.entities.Task
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.ITaskDataSource
@@ -54,7 +54,7 @@ class TaskRepositoryImp(
     override fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean> {
         return taskInProjectDataSource.append(
             listOf(
-                TaskInProject(
+                TaskInProjectModel(
                     projectId = projectId.toString(),
                     taskId = taskId.toString()
                 )
@@ -68,7 +68,7 @@ class TaskRepositoryImp(
                 tasksInProject.filterNot { taskInProject ->
                     (taskInProject.projectId == projectId.toString()) && (taskInProject.taskId == taskId.toString())
                 }.let { newTasksInProject ->
-                    when (newTasksInProject.contains(TaskInProject(taskId.toString(), projectId.toString()))) {
+                    when (newTasksInProject.contains(TaskInProjectModel(taskId.toString(), projectId.toString()))) {
                         true -> Result.success(false)
                         false -> taskInProjectDataSource.overWrite(newTasksInProject)
                     }
@@ -98,7 +98,7 @@ class TaskRepositoryImp(
     }
 
     private fun getTasksIdsAssignedToUser(
-        userToTaskList: List<MateTaskAssignment>,
+        userToTaskList: List<MateTaskAssignmentModel>,
         userName: String
     ): List<String> {
         return userToTaskList.filter { userToTask ->

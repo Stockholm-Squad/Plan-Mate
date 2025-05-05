@@ -7,15 +7,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.datetime.LocalDateTime
-import logic.model.entities.AuditSystem
-import logic.model.entities.EntityType
+import logic.models.entities.AuditSystem
+import logic.models.entities.EntityType
 import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
 import org.example.data.models.AuditSystemModel
 import org.example.data.repo.AuditSystemRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import utils.createAuditSystemEntity
-import utils.createAuditSystemModel
 import java.util.*
 
 class AuditSystemRepositoryImpTest {

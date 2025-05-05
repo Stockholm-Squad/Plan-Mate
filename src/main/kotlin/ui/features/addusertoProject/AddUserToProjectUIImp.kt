@@ -1,6 +1,6 @@
-import logic.model.entities.User
+import logic.models.entities.User
 import logic.usecase.login.LoginUseCase
-import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.user.CreateUserUi
@@ -10,7 +10,7 @@ import org.example.ui.input_output.output.OutputPrinter
 class AddUserToProjectUIImp(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectsUseCase: GetProjectsUseCase,
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val createUserUiImp: CreateUserUi,
     private val authenticationUseCase: LoginUseCase
@@ -68,7 +68,7 @@ class AddUserToProjectUIImp(
             }
         )
 
-        manageProjectUseCase.getProjectByName(projectName).fold(
+        getProjectsUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).fold(
                     onSuccess = { success ->
@@ -93,7 +93,7 @@ class AddUserToProjectUIImp(
         outputPrinter.showMessage("Enter project name to view assigned users (leave blank to cancel): ")
         val projectName = inputReader.readStringOrNull() ?: return
 
-        manageProjectUseCase.getProjectByName(projectName).fold(
+        getProjectsUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).fold(
                     onSuccess = { users ->
@@ -122,7 +122,7 @@ class AddUserToProjectUIImp(
         val projectName = inputReader.readStringOrNull() ?: return
 
 
-        manageProjectUseCase.getProjectByName(projectName).fold(
+        getProjectsUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
                 val username = inputReader.readStringOrNull() ?: return

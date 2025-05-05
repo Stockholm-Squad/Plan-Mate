@@ -1,4 +1,4 @@
-package logic.model.entities
+package logic.models.entities
 
 import kotlinx.datetime.LocalDateTime
 import java.util.*

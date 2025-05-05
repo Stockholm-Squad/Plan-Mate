@@ -3,8 +3,8 @@ package logic.usecase.state
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.model.entities.ProjectState
-import org.example.logic.model.exceptions.*
+import logic.models.entities.ProjectState
+import logic.models.exceptions.*
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -152,7 +152,7 @@ class ManageStatesUseCaseTest {
     fun `deleteState() should return success result with true when the state name exist and the repo added successfully`() {
         //Given
         val stateName = "TODO"
-        val newStateName = "New ToDo"
+        "New ToDo"
 
         every { projectStateRepository.getAllProjectStates() } returns Result.success(listOf(ProjectState(name = stateName)))
         every { projectStateRepository.deleteProjectState(any()) } returns Result.success(true)

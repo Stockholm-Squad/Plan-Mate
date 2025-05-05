@@ -3,11 +3,11 @@ package data.repo
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.model.entities.ProjectState
+import logic.models.entities.ProjectState
+import logic.models.exceptions.FileNotExistException
 import org.example.data.datasources.state_data_source.IStateDataSource
 import org.example.data.models.ProjectStateModel
 import org.example.data.repo.ProjectStateRepositoryImp
-import org.example.logic.model.exceptions.FileNotExistException
 import org.example.logic.repository.ProjectStateRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

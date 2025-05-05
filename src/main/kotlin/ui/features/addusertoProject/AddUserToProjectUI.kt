@@ -1,6 +1,6 @@
 package org.example.ui.features.addusertoProject
 
-import logic.model.entities.User
+import logic.models.entities.User
 
 interface AddUserToProjectUI {
     fun invoke(user: User?)

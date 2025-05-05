@@ -1,7 +1,7 @@
 package utils
 
-import logic.model.entities.Project
-import java.util.UUID
+import logic.models.entities.Project
+import java.util.*
 
 fun buildProject(
     id: UUID = UUID.randomUUID(),

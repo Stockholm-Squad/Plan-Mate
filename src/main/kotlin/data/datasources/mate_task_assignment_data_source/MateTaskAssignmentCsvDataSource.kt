@@ -1,24 +1,23 @@
 package org.example.data.datasources.mate_task_assignment_data_source
 
-import data.models.MateTaskAssignment
-import org.example.logic.model.exceptions.FileNotExistException
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.WriteDataException
+import data.models.MateTaskAssignmentModel
+import logic.models.exceptions.FileNotExistException
+import logic.models.exceptions.ReadDataException
+import logic.models.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
-import org.jetbrains.kotlinx.dataframe.io.readCSV
-import org.jetbrains.kotlinx.dataframe.io.writeCSV
-import java.io.File
-
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
 import org.jetbrains.kotlinx.dataframe.api.toDataFrame
 import org.jetbrains.kotlinx.dataframe.api.toList
+import org.jetbrains.kotlinx.dataframe.io.readCSV
+import org.jetbrains.kotlinx.dataframe.io.writeCSV
+import java.io.File
 
 
 class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskAssignmentDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<MateTaskAssignment>> {
+    override fun read(): Result<List<MateTaskAssignmentModel>> {
         val file = resolveFile()
         if (!file.exists()) {
             try {
@@ -33,7 +32,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
                 return Result.success(emptyList())
 
             val users = DataFrame.readCSV(file)
-                .cast<MateTaskAssignment>()
+                .cast<MateTaskAssignmentModel>()
                 .toList()
             Result.success(users)
         } catch (e: Exception) {
@@ -41,7 +40,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
         }
     }
 
-    override fun overWrite(users: List<MateTaskAssignment>): Result<Boolean> {
+    override fun overWrite(users: List<MateTaskAssignmentModel>): Result<Boolean> {
         return try {
             users.toDataFrame().writeCSV(resolveFile())
             Result.success(true)
@@ -50,12 +49,12 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
         }
     }
 
-    override fun append(users: List<MateTaskAssignment>): Result<Boolean> {
+    override fun append(users: List<MateTaskAssignmentModel>): Result<Boolean> {
         return try {
             resolveFile().also { file ->
                 val existing = if (file.exists() && file.length() > 0) {
                     DataFrame.readCSV(file).cast()
-                } else emptyList<MateTaskAssignment>().toDataFrame()
+                } else emptyList<MateTaskAssignmentModel>().toDataFrame()
 
                 val newData = users.toDataFrame()
                 (existing.concat(newData)).writeCSV(file)

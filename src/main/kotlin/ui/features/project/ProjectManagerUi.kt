@@ -1,6 +1,5 @@
 package org.example.ui.features.project
 
-import logic.model.entities.User
 import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface ProjectManagerUi: UiLauncher{

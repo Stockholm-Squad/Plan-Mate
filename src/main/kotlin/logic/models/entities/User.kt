@@ -1,8 +1,8 @@
-package logic.model.entities
+package logic.models.entities
 
 import java.util.*
 
-// Define this once in your project
+
 data class User(
     val id: UUID = UUID.randomUUID(),
     val username: String,

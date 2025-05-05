@@ -1,6 +1,6 @@
 package org.example.logic.usecase.audit
 
-import logic.model.entities.AuditSystem
+import logic.models.entities.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
 
 class AddAuditSystemUseCase(

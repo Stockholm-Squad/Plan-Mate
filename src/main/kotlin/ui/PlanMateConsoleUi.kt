@@ -1,7 +1,7 @@
 package org.example.ui
 
-import logic.model.entities.User
-import logic.model.entities.UserRole
+import logic.models.entities.User
+import logic.models.entities.UserRole
 import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.login.LoginUi
@@ -18,12 +18,12 @@ class PlanMateConsoleUi(
     private val loginUi: LoginUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
-    private val stateManagerUiImp: StateManageUi,
+    private val stateManagerUi: StateManageUi,
     private val taskManagerUi: TaskManagerUi,
     private val addUserToProjectUI: AddUserToProjectUI,
+    private val createUserUi: CreateUserUi,
     private val printer: OutputPrinter,
     private val reader: InputReader,
-    private val createUserUiImp: CreateUserUi
 ) {
     fun invoke() {
         while (true) {
@@ -60,7 +60,7 @@ class PlanMateConsoleUi(
         reader.readIntOrNull().takeIf { it != null }.let { choice ->
             when (choice) {
                 MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
-                MateChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
+                MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi(user)
                 MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 MateChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
@@ -74,8 +74,8 @@ class PlanMateConsoleUi(
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi(user)
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi(user)
-                AdminChoice.MANAGE_STATES.choice -> stateManagerUiImp.launchUi(user)
-                AdminChoice.ADD_MATE.choice -> createUserUiImp.launchUi(user)
+                AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi(user)
+                AdminChoice.ADD_MATE.choice -> createUserUi.launchUi(user)
                 AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.invoke(user = user)
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditSystemUi.invoke(user)
                 AdminChoice.LOGOUT.choice -> logout()

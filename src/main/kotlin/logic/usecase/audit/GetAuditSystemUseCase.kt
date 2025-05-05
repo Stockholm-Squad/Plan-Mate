@@ -1,21 +1,21 @@
 package org.example.logic.usecase.audit
 
-import logic.model.entities.AuditSystem
+import logic.models.entities.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
-import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import java.util.*
 
 class GetAuditSystemUseCase(
     private val auditSystemRepository: AuditSystemRepository,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksUseCase: ManageTasksUseCase
-) : IManageAuditSystemUseCase {
+) {
 
-    override fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>> =
+    fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = { audits ->
-                manageProjectUseCase.getProjectByName(projectName).fold(
+                getProjectsUseCase.getProjectByName(projectName).fold(
                     onSuccess = { project ->
                         val result = audits.filter { audit ->
                             audit.entityTypeId == project.id
@@ -28,7 +28,7 @@ class GetAuditSystemUseCase(
             onFailure = { Result.failure(it) }
         )
 
-    override fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> =
+    fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = { audits ->
                 manageTasksUseCase.getTaskIdByName(taskName).fold(
@@ -46,7 +46,7 @@ class GetAuditSystemUseCase(
 
 
 
-    override fun getAuditsByUserId(userId: UUID): Result<List<AuditSystem>> =
+    fun getAuditsByUserId(userId: UUID): Result<List<AuditSystem>> =
         auditSystemRepository.getAllAuditEntries().fold(
             onSuccess = {
                 val result = it.filter { it.userId == userId }

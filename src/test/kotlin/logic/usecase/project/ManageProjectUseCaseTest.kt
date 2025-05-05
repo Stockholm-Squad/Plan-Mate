@@ -6,7 +6,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.model.entities.ProjectState
 import org.example.logic.model.exceptions.NoObjectFound
-import org.example.logic.model.exceptions.NoProjectAdded
+import org.example.logic.model.exceptions.NoProjectAddedException
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -107,7 +107,7 @@ class ManageProjectUseCaseTest {
             // Given
             val projectId = "123"
 
-            every { projectRepository.getAllProjects() } returns Result.failure(NoProjectAdded())
+            every { projectRepository.getAllProjects() } returns Result.failure(NoProjectAddedException())
 
             // When
             val result = manageProjectUseCase.getProjectByName(projectId)
@@ -150,7 +150,7 @@ class ManageProjectUseCaseTest {
 
             // Then
             assertThat(result.isFailure).isTrue()
-            assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectAdded::class.java)
+            assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectAddedException::class.java)
             verify { projectRepository.addProject(project) }
         }
     }

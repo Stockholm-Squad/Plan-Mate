@@ -1,9 +1,9 @@
 package org.example.data.datasources.task_data_source
 
+import logic.models.exceptions.FileNotExistException
+import logic.models.exceptions.ReadDataException
+import logic.models.exceptions.WriteDataException
 import org.example.data.models.TaskModel
-import org.example.logic.model.exceptions.FileNotExistException
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat

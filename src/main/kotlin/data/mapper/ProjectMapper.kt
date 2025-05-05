@@ -1,6 +1,6 @@
 package org.example.data.mapper
 
-import logic.model.entities.Project
+import logic.models.entities.Project
 import org.example.data.models.ProjectModel
 import org.example.logic.usecase.extention.toSafeUUID
 
