@@ -6,14 +6,14 @@ import logic.model.entities.ProjectState
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.model.exceptions.*
 import org.example.logic.repository.ProjectStateRepository
-import org.example.logic.usecase.audit.ManageAuditSystemUseCase
+import org.example.logic.usecase.audit.AddAuditSystemUseCase
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength
 import java.util.*
 
 class ManageStatesUseCase(
     private val projectStateRepository: ProjectStateRepository,
-    private val auditSystemUseCase: ManageAuditSystemUseCase
+    private val auditSystemUseCase: AddAuditSystemUseCase,
 ) {
     fun addProjectState(stateName: String,userId: UUID): Result<Boolean> {
         return isStateNameValid(stateName).fold(

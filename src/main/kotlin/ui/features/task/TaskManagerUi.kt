@@ -24,8 +24,10 @@ class TaskManagerUi(
     private val manageProjectUseCase: ManageProjectUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
 ) : UiLauncher {
-
-    override fun launchUi(user: User?) {
+    private var user : User? = null
+    override fun launchUi(user: User?)
+    {
+        this.user = user
         while (true) {
             printTaskOptionsMenu()
             val optionChoice = reader.readIntOrNull()
@@ -125,7 +127,7 @@ class TaskManagerUi(
             updatedDate = DateHandlerImp().getCurrentDateTime()
         )
 
-        manageTasksUseCase.editTask(updatedTask).fold(
+        manageTasksUseCase.editTask(updatedTask, user!!.id).fold(
             onSuccess = { printer.printTask(updatedTask) },
             onFailure = ::handleFailure
         )
