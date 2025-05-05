@@ -1,21 +1,21 @@
 package di.datamodule
 
 import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
-import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentCsvDataSource
-import org.example.data.datasources.project_data_source.ProjectCsvDataSource
 import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentCsvDataSource
 import org.example.data.datasources.project_data_source.IProjectDataSource
+import org.example.data.datasources.project_data_source.ProjectCsvDataSource
 import org.example.data.datasources.state_data_source.IStateDataSource
 import org.example.data.datasources.state_data_source.StateCsvDataSource
-import org.example.data.datasources.task_data_source.ITaskDataSource
-import org.example.data.datasources.task_data_source.TaskCsvDataSource
-import org.example.data.datasources.user_data_source.UserCsvDataSource
-import org.example.data.datasources.user_data_source.IUserDataSource
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
+import org.example.data.datasources.task_data_source.ITaskDataSource
+import org.example.data.datasources.task_data_source.TaskCsvDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectCsvDataSource
+import org.example.data.datasources.user_data_source.IUserDataSource
+import org.example.data.datasources.user_data_source.UserCsvDataSource
 import org.koin.dsl.module
 
 val datasourceModule = module {
