@@ -24,7 +24,6 @@ val datasourceModule = module {
     factory<IStateDataSource> { StateCsvDataSource(filePath = "state.csv") }
     factory<ITaskDataSource> { TaskCsvDataSource(filePath = "task.csv") }
     factory<IUserDataSource> { UserCsvDataSource(filePath = "users.csv") }
-
     factory<ITaskInProjectDataSource> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
     factory<IUserAssignedToProjectDataSource> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
     factory<IMateTaskAssignmentDataSource> { MateTaskAssignmentCsvDataSource(filePath = "mate_task_assignment.csv") }

@@ -11,5 +11,5 @@ interface OutputPrinter {
     fun printTaskList(tasks: List<Task>)
     fun printMateTaskAssignments(tasks: List<Task>)
     fun showStates(projectStates: List<ProjectState>)
-    fun showAudits(audits: List<AuditSystem>)
+    fun showAudits(audits: List<AuditSystem> , username : String)
 }
