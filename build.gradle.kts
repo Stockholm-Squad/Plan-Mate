@@ -38,11 +38,21 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 
-    //Data Frame
+    // Data Frame
     implementation("org.jetbrains.kotlinx:dataframe:0.15.0")
     implementation("org.slf4j:slf4j-nop:2.0.9")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") // JSON serialization
+    // JSON serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // Kotlin coroutine dependency
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+    // MongoDB Kotlin driver dependency
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
+    implementation("org.litote.kmongo:kmongo-coroutine:4.10.0")
+    implementation("org.litote.kmongo:kmongo-serialization:4.10.0")
+
 
 }
 
