@@ -1,9 +1,9 @@
 package org.example.ui.features.task
 
-import logic.model.entities.Task
-import logic.model.entities.User
+import logic.models.entities.Task
+import logic.models.entities.User
 import org.example.data.utils.DateHandlerImp
-import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
@@ -20,7 +20,7 @@ class TaskManagerUiImp(
     private val uiUtils: UiUtils,
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageStatesUseCase,
-    private val manageProjectUseCase: ManageProjectUseCase,
+    private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
 ) : TaskManagerUi {
     private var currentUser: User? = null
@@ -102,7 +102,7 @@ class TaskManagerUiImp(
         val userId = currentUser?.id
             ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
-        manageProjectUseCase.getProjectByName(projectName).fold(
+        getProjectsUseCase.getProjectByName(projectName).fold(
             onSuccess = { project ->
                 manageTasksUseCase.createTask(task, userId).fold(
                     onSuccess = {
@@ -249,7 +249,7 @@ class TaskManagerUiImp(
                 continue
             }
 
-            val project = manageProjectUseCase.getProjectByName(projectNameInput).getOrNull()
+            val project = getProjectsUseCase.getProjectByName(projectNameInput).getOrNull()
             if (project != null) {
                 return projectNameInput
             } else {

@@ -17,6 +17,7 @@ import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.features.state.mate.MateStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUiImpl
+import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.features.user.CreateUserUiImp
@@ -35,7 +36,7 @@ val uiModule = module {
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
-    factory<TaskManagerUiImp> { TaskManagerUiImp(get(), get(), get(), get(), get(), get(), get()) }
+    factory<TaskManagerUi> { TaskManagerUiImp(get(), get(), get(), get(), get(), get(), get()) }
     factory<StateManageUi> { StateManagerUiImp(get(), get(), get()) }
     factory<UiUtils> { UiUtils(get()) }
 }
