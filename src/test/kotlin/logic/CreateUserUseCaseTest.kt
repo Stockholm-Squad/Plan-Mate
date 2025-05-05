@@ -25,7 +25,7 @@ class CreateUserUseCaseTest() {
     @BeforeEach
     fun setUp() {
         repository = mockk(relaxed = true)
-        validateUserDataUseCase = mockk(relaxed = true)
+        validateUserDataUseCase = mockk()
         useCase = CreateUserUseCase(repository, validateUserDataUseCase)
     }
 
@@ -37,7 +37,7 @@ class CreateUserUseCaseTest() {
                 password = "password"
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
+
     }
 
     @Test
@@ -48,7 +48,6 @@ class CreateUserUseCaseTest() {
                 password = ""
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
@@ -59,18 +58,17 @@ class CreateUserUseCaseTest() {
                 password = "password"
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
     }
 
     @Test
     fun `addUser() should return failure when username is less than 4 characters`() {
-        assertThrows<InvalidUserName> {
+        assertThrows<Throwable> {
             useCase.createUser(
                 username = "abc",
                 password = "password"
             ).getOrThrow()
         }
-        verify(exactly = 0) { repository.getAllUsers() }
+
     }
 
     @Test

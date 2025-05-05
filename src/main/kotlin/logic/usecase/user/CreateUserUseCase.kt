@@ -21,10 +21,10 @@ class CreateUserUseCase(
                     onSuccess = {
                         handleSuccess(username = username, password = password, users = it).fold(
                             onSuccess = { user -> userRepository.addUser(user) },
-                            onFailure = { throwable -> handleFailure(throwable) })
+                            onFailure = { Result.failure(it) })
                     },
-                    onFailure = { handleFailure(it as UsersDataAreEmpty) })
-            } catch (e: Exception) {
+                    onFailure = { Result.failure(it) })
+            } catch (e:Exception ) {
                 return Result.failure(e)
             }
         }
