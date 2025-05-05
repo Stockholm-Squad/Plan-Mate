@@ -2,11 +2,11 @@ package org.example.ui.features.state.admin
 
 import logic.models.entities.User
 import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.utils.UiMessages
 
 class AdminStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
