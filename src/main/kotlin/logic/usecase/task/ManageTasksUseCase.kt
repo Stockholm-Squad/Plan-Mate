@@ -2,14 +2,14 @@ package org.example.logic.usecase.task
 
 import logic.models.entities.AuditSystem
 import logic.models.entities.EntityType
-import org.example.data.utils.DateHandlerImp
 import logic.models.entities.Task
-import logic.models.exceptions.NoTasksCreated
-import logic.models.exceptions.NoTasksDeleted
-import logic.models.exceptions.NoTasksFound
-import logic.models.exceptions.TaskNotFoundException
-import org.example.logic.repository.TaskRepository
+import org.example.data.utils.DateHandlerImp
+import org.example.logic.models.exceptions.NoTasksCreatedException
+import org.example.logic.models.exceptions.NoTasksDeletedException
+import org.example.logic.models.exceptions.NoTasksFoundException
+import org.example.logic.models.exceptions.TaskNotFoundException
 import org.example.logic.repository.AuditSystemRepository
+import org.example.logic.repository.TaskRepository
 import java.util.*
 
 
@@ -21,7 +21,7 @@ class ManageTasksUseCase(
     fun getAllTasks(): Result<List<Task>> =
         taskRepository.getAllTasks().fold(
             onSuccess = { Result.success(it) },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun getTaskByName(taskName: String): Result<Task> {
@@ -52,7 +52,7 @@ class ManageTasksUseCase(
                 if (isCreates) logAudit(task, userId)
                 Result.success(true)
             },
-            onFailure = { Result.failure(NoTasksCreated()) }
+            onFailure = { Result.failure(NoTasksCreatedException()) }
         )
 
     fun editTask(updatedTask: Task, userId: UUID): Result<Boolean> =
@@ -61,7 +61,7 @@ class ManageTasksUseCase(
                 if (isUpdated) logAudit(updatedTask, userId)
                 Result.success(isUpdated)
             },
-            onFailure = { Result.failure(NoTasksFound()) }
+            onFailure = { Result.failure(NoTasksFoundException()) }
         )
 
     fun deleteTaskByName(taskName: String): Result<Boolean> {
@@ -69,7 +69,7 @@ class ManageTasksUseCase(
             onSuccess = { uuid ->
                 taskRepository.deleteTask(uuid).fold(
                     onSuccess = { Result.success(it) },
-                    onFailure = { Result.failure(NoTasksDeleted()) }
+                    onFailure = { Result.failure(NoTasksDeletedException()) }
                 )
             },
             onFailure = { Result.failure(TaskNotFoundException()) }
