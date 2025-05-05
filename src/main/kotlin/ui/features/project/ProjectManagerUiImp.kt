@@ -96,24 +96,12 @@ class ProjectManagerUiImp(
         manageProjectUseCase.addProject(projectName, stateName, userId)
             .fold(
                 onSuccess = { success ->
-                    extractedAddingProjectResult(success)
+                    if (success) outputPrinter.showMessage("Project added successfully") else outputPrinter.showMessage("Failed to add project")
                 },
                 onFailure = { e ->
                     outputPrinter.showMessage(e.message ?: "Failed to add project")
                 }
             )
-    }
-
-    private fun extractedAddingProjectResult(success: Boolean) {
-        if (success) {
-            outputPrinter.showMessage("Project added successfully")
-            outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
-            if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                taskManagerUi.createTask()
-            }
-        } else {
-            outputPrinter.showMessage("Failed to add project")
-        }
     }
 
     override fun editProject() {
