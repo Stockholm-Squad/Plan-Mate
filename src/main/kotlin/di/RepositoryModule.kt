@@ -1,4 +1,4 @@
-package org.example.di.datamodule
+package org.example.di
 
 import org.example.data.repo.*
 import org.example.logic.repository.*
