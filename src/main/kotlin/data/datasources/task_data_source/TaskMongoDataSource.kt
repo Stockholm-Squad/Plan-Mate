@@ -4,11 +4,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.datasources.MongoSetup
 import org.example.data.models.TaskModel
+import org.example.data.utils.TASKS_COLLECTION_NAME
 
 
 class TaskMongoDataSource() : ITaskDataSource {
 
-    private val collection = MongoSetup.database.getCollection<TaskModel>("tasks")
+    private val collection = MongoSetup.database.getCollection<TaskModel>(TASKS_COLLECTION_NAME)
 
     override suspend fun read(): List<TaskModel> = withContext(Dispatchers.IO) {
         collection.find().toList()
