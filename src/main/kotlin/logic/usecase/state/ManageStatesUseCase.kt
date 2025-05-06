@@ -3,6 +3,7 @@ package org.example.logic.usecase.state
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.ProjectState
 import logic.models.exceptions.*
+import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength
@@ -85,8 +86,14 @@ class ManageStatesUseCase(
         } ?: throw StateExceptions.NotAllowedStateNameException()
     }
 
-    private fun isProjectStateExist(stateName: String): Boolean {
-        return (getProjectState(stateName) != null)
+    private suspend fun isProjectStateExist(stateName: String): Boolean {
+        return executeSafelyWithContext(
+            onSuccess = {
+                getProjectState(stateName)
+                true
+            },
+            onFailure = { false }
+        )
     }
 
     private fun getProjectState(stateName: String): ProjectState {
