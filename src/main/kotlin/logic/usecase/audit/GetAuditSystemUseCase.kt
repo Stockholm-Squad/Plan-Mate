@@ -12,48 +12,33 @@ class GetAuditSystemUseCase(
     private val manageTasksUseCase: ManageTasksUseCase
 ) {
 
-    fun getProjectAuditsByName(projectName: String): Result<List<AuditSystem>> =
-        auditSystemRepository.getAllAuditEntries().fold(
-            onSuccess = { audits ->
-                getProjectsUseCase.getProjectByName(projectName).fold(
-                    onSuccess = { project ->
-                        val result = audits.filter { audit ->
-                            audit.entityTypeId == project.id
-                        }
-                        Result.success(result)
-                    },
-                    onFailure = { Result.failure( it )}
-                )
-            },
-            onFailure = { Result.failure(it) }
-        )
+    suspend fun getProjectAuditsByName(projectName: String): List<AuditSystem> =
+        auditSystemRepository.getAllAuditEntries().also { audits ->
+            getProjectsUseCase.getProjectByName(projectName).also { project ->
+                return audits.filter { audit ->
+                    audit.entityTypeId == project.id
+                }
+            }
+        }
 
-    fun getTaskAuditsByName(taskName: String): Result<List<AuditSystem>> =
-        auditSystemRepository.getAllAuditEntries().fold(
-            onSuccess = { audits ->
-                manageTasksUseCase.getTaskIdByName(taskName).fold(
-                    onSuccess = { taskId ->
-                        val result = audits.filter { audit ->
-                            audit.entityTypeId == taskId
-                        }
-                        Result.success(result)
-                    },
-                    onFailure = {Result.failure(it)}
-                )
-            },
-            onFailure = {Result.failure(it)}
-        )
+
+    suspend fun getTaskAuditsByName(taskName: String): List<AuditSystem> =
+        auditSystemRepository.getAllAuditEntries().also { audits ->
+            manageTasksUseCase.getTaskIdByName(taskName).also { taskId ->
+                return audits.filter { audit ->
+                    audit.entityTypeId == taskId
+                }
+            }
+        }
 
 
 
-    fun getAuditsByUserId(userId: UUID): Result<List<AuditSystem>> =
-        auditSystemRepository.getAllAuditEntries().fold(
-            onSuccess = {
-                val result = it.filter { it.userId == userId }
-                Result.success(result)
-            },
-            onFailure = { Result.failure(it) }
-        )
+
+    suspend fun getAuditsByUserId(userId: UUID): List<AuditSystem> =
+        auditSystemRepository.getAllAuditEntries().also { audits ->
+            return audits.filter { it.userId == userId }
+        }
+    
 
 
 }
