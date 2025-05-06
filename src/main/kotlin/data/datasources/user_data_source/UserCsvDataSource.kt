@@ -1,7 +1,5 @@
 package org.example.data.datasources.user_data_source
 
-import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.WriteDataException
 import org.example.data.models.UserModel
 import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
@@ -17,25 +15,21 @@ import java.util.*
 class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<UserModel>> {
+    override suspend fun read(): List<UserModel> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
             createAdminIfNotExist()
         }
 
-        return try {
-            createAdminIfNotExist()
-            val users = DataFrame.readCSV(file)
-                .cast<UserModel>()
-                .toList()
-            Result.success(users)
-        } catch (e: Exception) {
-            Result.failure(ReadDataException())
-        }
+        createAdminIfNotExist()
+        return DataFrame.readCSV(file)
+            .cast<UserModel>()
+            .toList()
     }
 
-    private fun createAdminIfNotExist(): Result<Boolean> {
+
+    private suspend fun createAdminIfNotExist(): Boolean {
         if (File(filePath).readLines().size < 2) {
             val adminUser = listOf(
                 UserModel(
@@ -45,33 +39,26 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
                     role = "ADMIN"
                 ),
             )
-            overWrite(adminUser).onFailure { return Result.failure(it) }
+            overWrite(adminUser)
         }
-        return Result.success(true)
+        return true
     }
 
-    override fun overWrite(users: List<UserModel>): Result<Boolean> {
-        return try {
-            users.toDataFrame().writeCSV(resolveFile())
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(WriteDataException())
-        }
+    override suspend fun overWrite(users: List<UserModel>): Boolean {
+        users.toDataFrame().writeCSV(resolveFile())
+        return true
     }
 
-    override fun append(users: List<UserModel>): Result<Boolean> {
-        return try {
-            resolveFile().also { file ->
-                val existing = if (file.exists() && file.length() > 0) {
-                    DataFrame.readCSV(file).cast()
-                } else emptyList<UserModel>().toDataFrame()
+    override suspend fun append(users: List<UserModel>): Boolean {
+        resolveFile().also { file ->
+            val existing = if (file.exists() && file.length() > 0) {
+                DataFrame.readCSV(file).cast()
+            } else emptyList<UserModel>().toDataFrame()
 
-                val newData = users.toDataFrame()
-                (existing.concat(newData)).writeCSV(file)
-            }
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(WriteDataException())
+            val newData = users.toDataFrame()
+            (existing.concat(newData)).writeCSV(file)
         }
+        return true
+
     }
 }

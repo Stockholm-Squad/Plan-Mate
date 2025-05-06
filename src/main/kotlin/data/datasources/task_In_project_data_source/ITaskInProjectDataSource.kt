@@ -3,7 +3,7 @@ package org.example.data.datasources.task_In_project_data_source
 import data.models.TaskInProjectModel
 
 interface ITaskInProjectDataSource {
-    fun read(): Result<List<TaskInProjectModel>>
-    fun overWrite(users: List<TaskInProjectModel>): Result<Boolean>
-    fun append(users: List<TaskInProjectModel>): Result<Boolean>
+    suspend fun read(): List<TaskInProjectModel>
+    suspend fun overWrite(users: List<TaskInProjectModel>): Boolean
+    suspend fun append(users: List<TaskInProjectModel>): Boolean
 }

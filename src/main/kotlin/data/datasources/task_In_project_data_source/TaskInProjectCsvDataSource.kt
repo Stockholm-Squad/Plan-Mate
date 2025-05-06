@@ -1,9 +1,6 @@
 package org.example.data.datasources.task_In_project_data_source
 
 import data.models.TaskInProjectModel
-import logic.models.exceptions.FileNotExistException
-import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.WriteDataException
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -17,51 +14,38 @@ import java.io.File
 class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override fun read(): Result<List<TaskInProjectModel>> {
+    override suspend fun read(): List<TaskInProjectModel> {
         val file = resolveFile()
         if (!file.exists()) {
-            try {
-                file.createNewFile()
-            } catch (throwable: Throwable) {
-                return Result.failure(FileNotExistException())
-            }
+            file.createNewFile()
         }
 
-        return try {
-            if (File(filePath).readLines().size < 2)
-                return Result.success(emptyList())
 
-            val users = DataFrame.readCSV(file)
-                .cast<TaskInProjectModel>()
-                .toList()
-            Result.success(users)
-        } catch (e: Exception) {
-            Result.failure(ReadDataException())
-        }
+        if (File(filePath).readLines().size < 2)
+            return emptyList()
+
+        val users = DataFrame.readCSV(file)
+            .cast<TaskInProjectModel>()
+            .toList()
+        return users
     }
 
-    override fun overWrite(users: List<TaskInProjectModel>): Result<Boolean> {
-        return try {
-            users.toDataFrame().writeCSV(resolveFile())
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(WriteDataException())
-        }
+    override suspend fun overWrite(users: List<TaskInProjectModel>): Boolean {
+        users.toDataFrame().writeCSV(resolveFile())
+        return true
+
     }
 
-    override fun append(users: List<TaskInProjectModel>): Result<Boolean> {
-        return try {
-            resolveFile().also { file ->
-                val existing = if (file.exists() && file.length() > 0) {
-                    DataFrame.readCSV(file).cast()
-                } else emptyList<TaskInProjectModel>().toDataFrame()
+    override suspend fun append(users: List<TaskInProjectModel>): Boolean {
 
-                val newData = users.toDataFrame()
-                (existing.concat(newData)).writeCSV(file)
-            }
-            Result.success(true)
-        } catch (e: Exception) {
-            Result.failure(WriteDataException())
+        resolveFile().also { file ->
+            val existing = if (file.exists() && file.length() > 0) {
+                DataFrame.readCSV(file).cast()
+            } else emptyList<TaskInProjectModel>().toDataFrame()
+
+            val newData = users.toDataFrame()
+            (existing.concat(newData)).writeCSV(file)
         }
+        return true
     }
 }
