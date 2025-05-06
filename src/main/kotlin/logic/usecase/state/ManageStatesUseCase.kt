@@ -36,22 +36,6 @@ class ManageStatesUseCase(
         }
     }
 
-    private fun validateStateNames(stateName: String, newStateName: String): Pair<String, String> {
-        return isStateNameValid(stateName).let { validStateName ->
-            isStateNameValid(newStateName).let { validNewName ->
-                validStateName to validNewName
-            }
-        }
-    }
-
-    private fun isStateNameValid(stateName: String): String {
-        return stateName.trim().takeIf {
-            it.isNotBlank() &&
-                    it.isValidLength(30) &&
-                    it.isLetterOrWhiteSpace()
-        } ?: throw StateExceptions.NotAllowedStateNameException()
-    }
-
     fun deleteProjectState(stateName: String): Boolean {
         return isStateNameValid(stateName).let { validStateName ->
             runBlocking {
@@ -72,7 +56,7 @@ class ManageStatesUseCase(
         }
     }
 
-    fun getProjectStateIdByName(stateName: String): UUID? {
+    fun getProjectStateIdByName(stateName: String): UUID {
         return isStateNameValid(stateName).let {
             runBlocking {
                 getProjectState(stateName).id
@@ -80,12 +64,26 @@ class ManageStatesUseCase(
         }
     }
 
-    private fun handleProjectStateNotExistException(throwable: Throwable): Result<Boolean> {
-        return throwable.takeIf { it is DataException.FileNotExistException }
-            ?.let { Result.failure(StateExceptions.StateNotExistException()) }
-            ?: Result.failure(throwable)
+    fun getProjectStateNameByStateId(stateId: UUID): String? {
+        return getAllProjectStates()
+            .let { states -> findStateById(states, stateId)?.name }
     }
 
+    private fun validateStateNames(stateName: String, newStateName: String): Pair<String, String> {
+        return isStateNameValid(stateName).let { validStateName ->
+            isStateNameValid(newStateName).let { validNewName ->
+                validStateName to validNewName
+            }
+        }
+    }
+
+    private fun isStateNameValid(stateName: String): String {
+        return stateName.trim().takeIf {
+            it.isNotBlank() &&
+                    it.isValidLength(30) &&
+                    it.isLetterOrWhiteSpace()
+        } ?: throw StateExceptions.NotAllowedStateNameException()
+    }
 
     private fun isProjectStateExist(stateName: String): Boolean {
         return (getProjectState(stateName) != null)
@@ -96,11 +94,6 @@ class ManageStatesUseCase(
             allStates.firstOrNull { state -> state.name.equals(stateName, ignoreCase = true) }
                 ?: throw StateExceptions.StateNotExistException()
         }
-    }
-
-    fun getProjectStateNameByStateId(stateId: UUID): String? {
-        return getAllProjectStates()
-            .let { states -> findStateById(states, stateId)?.name }
     }
 
     private fun findStateById(states: List<ProjectState>, stateId: UUID): ProjectState? {
