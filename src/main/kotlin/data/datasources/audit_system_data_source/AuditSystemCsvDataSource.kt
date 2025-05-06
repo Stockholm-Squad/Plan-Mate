@@ -30,12 +30,12 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
             .toList()
     }
 
-    override suspend fun overWrite(users: List<AuditSystemModel>): Boolean {
-        users.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(audits: List<AuditSystemModel>): Boolean {
+        audits.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(users: List<AuditSystemModel>): Boolean {
+    override suspend fun append(audits: List<AuditSystemModel>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
@@ -43,7 +43,7 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
             emptyList<AuditSystemModel>().toDataFrame()
         }
 
-        val newData = users.toDataFrame()
+        val newData = audits.toDataFrame()
         (existing.concat(newData)).writeCSV(file)
         return true
     }
