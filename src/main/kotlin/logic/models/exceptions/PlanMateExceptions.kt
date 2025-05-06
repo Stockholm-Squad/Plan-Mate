@@ -31,6 +31,7 @@ open class TaskExceptions(message: String) : LogicExceptions(message) {
 open class ProjectExceptions(message: String) : LogicExceptions(message) {
     class ProjectNotFoundException(message: String = "Project not found.") : ProjectExceptions(message)
     class NoProjectAddedException(message: String = "No project added.") : ProjectExceptions(message)
+    class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
 }
 
 open class StateExceptions(message: String) : LogicExceptions(message) {

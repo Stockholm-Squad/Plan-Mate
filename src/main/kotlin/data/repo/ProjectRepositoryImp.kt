@@ -4,6 +4,7 @@ package org.example.data.repo
 import data.models.UserAssignedToProjectModel
 import logic.models.entities.Project
 import logic.models.exceptions.DataException
+import logic.models.exceptions.ProjectExceptions
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.mapToProjectEntity
@@ -11,7 +12,6 @@ import org.example.data.mapper.mapToProjectModel
 import org.example.data.models.ProjectModel
 import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.ProjectRepository
-import javax.xml.crypto.Data
 
 class ProjectRepositoryImp(
     private val projectDataSource: IProjectDataSource,
@@ -29,31 +29,21 @@ class ProjectRepositoryImp(
     }
 
 
-//    override suspend fun getProjectsByUsername(username: String): List<Project> {
-//        return executeSafelyWithContext(
-//            onSuccess = {
-//
-//            },
-//            onFailure = {},
-//        )
-//        userAssignedToProjectDataSource.read().(
-//            onSuccess = { assignments ->
-//                return filterAssignmentsByUsername(assignments, username).let { filteredAssignments ->
-//                    extractProjectIds(filteredAssignments).let { projectIds ->
-//                        projectDataSource.read().fold(
-//                            onSuccess = { projects ->
-//                                filterProjectsByIds(projects, projectIds).let { filteredProjects ->
-//                                    Result.success(convertToProjects(filteredProjects))
-//                                }
-//                            },
-//                            onFailure = { Result.failure(it) }
-//                        )
-//                    }
-//                }
-//            },
-//            onFailure = { Result.failure(it) }
-//        )
-//    }
+    override suspend fun getProjectsByUsername(username: String): List<Project> {
+        return executeSafelyWithContext(
+            onSuccess = {
+                userAssignedToProjectDataSource.read().let { assignments ->
+                    filterAssignmentsByUsername(assignments, username).let { filteredAssignments ->
+                        extractProjectIds(filteredAssignments).let { projectIds ->
+                            getProjectsByIds(projectIds)
+                        }
+                    }
+                }
+            },
+            onFailure = { throw ProjectExceptions.NoProjectsFoundException() },
+        )
+    }
+
 
     private fun filterAssignmentsByUsername(
         assignments: List<UserAssignedToProjectModel>,
@@ -66,11 +56,19 @@ class ProjectRepositoryImp(
         return assignments.map { it.projectId }
     }
 
-    private fun filterProjectsByIds(
-        projects: List<ProjectModel>,
+    private suspend fun getProjectsByIds(
         ids: List<String>
-    ): List<ProjectModel> {
-        return projects.filter { ids.contains(it.id) }
+    ): List<Project> {
+        return executeSafelyWithContext(
+            onSuccess = {
+                projectDataSource.read()
+                    .let { projects ->
+                        convertToProjects(projects.filter { ids.contains(it.id) })
+                    }
+            },
+            onFailure = { throw ProjectExceptions.NoProjectsFoundException() }
+        )
+
     }
 
     private fun convertToProjects(projects: List<ProjectModel>): List<Project> {
@@ -120,17 +118,6 @@ class ProjectRepositoryImp(
                     projectModel.mapToProjectEntity()
                 }
             }
-        } catch (e: Exception) {
-            throw DataException.ReadDataException()
-        }
-    }
-
-    override suspend fun getProjectsByUsername(username: String): List<Project> {
-        try {
-            userAssignedToProjectDataSource.read().let { assignedToProjectModels ->
-
-            }
-
         } catch (e: Exception) {
             throw DataException.ReadDataException()
         }
