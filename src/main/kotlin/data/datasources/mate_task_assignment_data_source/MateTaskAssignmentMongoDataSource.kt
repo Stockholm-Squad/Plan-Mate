@@ -16,14 +16,14 @@ class MateTaskAssignmentMongoDataSource() : IMateTaskAssignmentDataSource {
         collection.find().toList()
     }
 
-    override suspend fun overWrite(audits: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun overWrite(mateTasks: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
         collection.deleteMany()
-        collection.insertMany(audits)
+        collection.insertMany(mateTasks)
         true
     }
 
-    override suspend fun append(audits: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.insertMany(audits)
+    override suspend fun append(mateTasks: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
+        collection.insertMany(mateTasks)
         true
     }
 }
