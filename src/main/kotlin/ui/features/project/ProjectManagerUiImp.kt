@@ -174,7 +174,7 @@ class ProjectManagerUiImp(
         }
     }
 
-    override fun launchUi(user: User?) {
+    override suspend fun launchUi(user: User?) {
         this.currentUser = user
 
         if (currentUser == null) {
