@@ -42,4 +42,9 @@ open class StateExceptions(message: String) : LogicExceptions(message) {
     class NotAllowedStateNameException(message: String = "Only letters are allowed!") : StateExceptions(message)
 }
 
+open class AuditExceptions(message: String) : LogicExceptions(message) {
+    class NoAuditsFoundedException(message: String = "There are no audits.") : AuditExceptions(message)
+    class AuditSystemNotAddedException(message: String = "Audit system not added.") : AuditExceptions(message)
+}
+
 

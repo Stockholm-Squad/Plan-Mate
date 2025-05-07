@@ -3,10 +3,10 @@ package org.example.data.repo
 import data.mapper.mapToAuditSystemEntity
 import data.mapper.mapToAuditSystemModel
 import logic.models.entities.AuditSystem
+import logic.models.exceptions.AuditExceptions
+import logic.models.exceptions.DataException
 import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
 import org.example.data.utils.executeSafelyWithContext
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.WriteDataException
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(
@@ -17,7 +17,7 @@ class AuditSystemRepositoryImp(
             onSuccess = {
                 auditSystemDataSource.append(auditSystem.map { it.mapToAuditSystemModel() })
             },
-            onFailure = { throw WriteDataException() }
+            onFailure = { throw AuditExceptions.AuditSystemNotAddedException() }
         )
 
 
@@ -27,7 +27,7 @@ class AuditSystemRepositoryImp(
             onSuccess = {
                 auditSystemDataSource.read().mapNotNull { it.mapToAuditSystemEntity() }
             },
-            onFailure = { throw ReadDataException() }
+            onFailure = { throw AuditExceptions.NoAuditsFoundedException() }
         )
 
 
