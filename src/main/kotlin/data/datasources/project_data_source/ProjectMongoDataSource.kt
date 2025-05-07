@@ -3,7 +3,7 @@ package org.example.data.datasources.project_data_source
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.models.ProjectModel
-import org.example.data.utils.PROJECTS_COLLECTION_NAME
+import org.example.data.database.PROJECTS_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 class ProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : IProjectDataSource {

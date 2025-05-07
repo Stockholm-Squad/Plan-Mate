@@ -3,7 +3,7 @@ package org.example.data.datasources.task_In_project_data_source
 import data.models.TaskInProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.utils.TASK_IN_PROJECT_COLLECTION_NAME
+import org.example.data.database.TASK_IN_PROJECT_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 class TaskInProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : ITaskInProjectDataSource {

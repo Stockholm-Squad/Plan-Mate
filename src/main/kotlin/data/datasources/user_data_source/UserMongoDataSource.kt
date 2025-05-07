@@ -3,7 +3,7 @@ package org.example.data.datasources.user_data_source
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.models.UserModel
-import org.example.data.utils.USERS_COLLECTION_NAME
+import org.example.data.database.USERS_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 class UserMongoDataSource(mongoDatabase: CoroutineDatabase) : IUserDataSource {

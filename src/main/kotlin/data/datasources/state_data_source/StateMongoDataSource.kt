@@ -3,7 +3,7 @@ package org.example.data.datasources.state_data_source
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.models.ProjectStateModel
-import org.example.data.utils.STATES_COLLECTION_NAME
+import org.example.data.database.STATES_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 

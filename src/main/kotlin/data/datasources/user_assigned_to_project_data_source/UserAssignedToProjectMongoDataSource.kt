@@ -3,7 +3,7 @@ package org.example.data.datasources.user_assigned_to_project_data_source
 import data.models.UserAssignedToProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.utils.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
+import org.example.data.database.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 class UserAssignedToProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : IUserAssignedToProjectDataSource {

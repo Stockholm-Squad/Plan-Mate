@@ -3,7 +3,7 @@ package org.example.data.datasources.mate_task_assignment_data_source
 import data.models.MateTaskAssignmentModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.utils.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
+import org.example.data.database.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 

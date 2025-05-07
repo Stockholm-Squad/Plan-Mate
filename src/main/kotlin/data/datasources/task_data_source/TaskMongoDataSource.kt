@@ -3,7 +3,7 @@ package org.example.data.datasources.task_data_source
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.models.TaskModel
-import org.example.data.utils.TASKS_COLLECTION_NAME
+import org.example.data.database.TASKS_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 
