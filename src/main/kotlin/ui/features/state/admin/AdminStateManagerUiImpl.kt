@@ -1,12 +1,15 @@
 package org.example.ui.features.state.admin
 
+import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
+import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
+
 
 class AdminStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
@@ -46,10 +49,17 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
-                manageStatesUseCase.addProjectState(stateName = stateName).fold(
-                    onSuccess = { showAddStateMessage() },
-                    onFailure = { showFailure("${UiMessages.FAILED_TO_ADD_STATE}${it.message}") }
-                )
+                runBlocking {
+                    executeSafelyWithContext( //TODO: use Try Catch
+                        onSuccess = {
+                            manageStatesUseCase.addProjectState(stateName = stateName)
+                            showAddStateMessage()
+                        },
+                        onFailure = {
+                            showFailure("${UiMessages.FAILED_TO_ADD_STATE}: ${it.message}")
+                        }
+                    )
+                }
             } ?: showInvalidInput()
     }
 
@@ -67,14 +77,20 @@ class AdminStateManagerUiImpl(
                 showInvalidInput()
                 return
             }
-
-        manageStatesUseCase.editProjectStateByName(
-            stateName = currentStateName,
-            newStateName = newStateName
-        ).fold(
-            onSuccess = { showStateUpdatedMessage() },
-            onFailure = { showFailure("${UiMessages.FAILED_TO_EDIT_STATE} ${it.message}") }
-        )
+        runBlocking {
+            executeSafelyWithContext(
+                onSuccess = {
+                    manageStatesUseCase.editProjectStateByName(
+                        stateName = currentStateName,
+                        newStateName = newStateName
+                    )
+                    showStateUpdatedMessage()
+                },
+                onFailure = {
+                    showFailure("${UiMessages.FAILED_TO_EDIT_STATE}: ${it.message}")
+                }
+            )
+        }
     }
 
     private fun showStateUpdatedMessage() {
@@ -98,10 +114,15 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
-            manageStatesUseCase.deleteProjectState(stateName = stateName).fold(
-                onSuccess = { showStateDeletedMessage() },
-                onFailure = { showFailure("${UiMessages.FAILED_TO_DELETE_STATE}${it.message}") }
-            )
+            runBlocking {
+                executeSafelyWithContext(
+                    onSuccess = {
+                        manageStatesUseCase.deleteProjectState(stateName = stateName)
+                        showStateDeletedMessage()
+                    },
+                    onFailure = { showFailure("${UiMessages.FAILED_TO_DELETE_STATE}: ${it.message}") }
+                )
+            }
         } ?: showInvalidInput()
     }
 
