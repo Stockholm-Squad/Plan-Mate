@@ -17,7 +17,7 @@ class AuditSystemManagerUiImp(
     }
     private var user: User? = null
 
-    override fun invoke(user: User?) {
+    override fun invoke(user: User?) { //TODO: Put the invoke function into coroutine scope
         this.user = user
         if (user == null) return
         do {
@@ -34,7 +34,7 @@ class AuditSystemManagerUiImp(
     }
 
 
-    private fun displayAuditsByProjectName() {
+    private fun displayAuditsByProjectName() { //TODO: Switch to IO Dispatcher using with context
         printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
         reader.readStringOrNull()?.let { input ->
             CoroutineScope(Dispatchers.IO).launch(errorHandler) {
@@ -42,9 +42,10 @@ class AuditSystemManagerUiImp(
                     useCase.getProjectAuditsByName(input)
                 }
                 val audits = auditsDeferred.await()
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     printer.showAudits(audits, user!!.username)
-                }            }
+                }
+            }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
     }
 
@@ -56,7 +57,7 @@ class AuditSystemManagerUiImp(
                     useCase.getTaskAuditsByName(input)
                 }
                 val audits = auditsDeferred.await()
-                withContext(Dispatchers.Main){
+                withContext(Dispatchers.Main) {
                     printer.showAudits(audits, user!!.username)
                 }
             }
@@ -71,7 +72,7 @@ class AuditSystemManagerUiImp(
                 useCase.getAuditsByUserId(user!!.id)
             }
             val audits = auditsDeferred.await()
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 printer.showAudits(audits, user!!.username)
             }
         }
