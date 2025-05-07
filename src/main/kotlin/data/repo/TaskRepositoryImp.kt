@@ -2,7 +2,7 @@ package org.example.data.repo
 
 import data.models.TaskInProjectModel
 import logic.models.entities.Task
-import logic.models.exceptions.DataException
+import logic.models.exceptions.TaskExceptions
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.ITaskDataSource
@@ -23,7 +23,7 @@ class TaskRepositoryImp(
             onSuccess = {
                 taskDataSource.read().mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { throw DataException.ReadDataException() }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
 
     override suspend fun addTask(task: Task): Boolean =
@@ -31,7 +31,7 @@ class TaskRepositoryImp(
             onSuccess = {
                 taskDataSource.append(listOf(task.mapToTaskModel()))
             },
-            onFailure = { throw DataException.WriteDataException() }
+            onFailure = { throw TaskExceptions.TaskNotAddedException() }
         )
 
     override suspend fun editTask(task: Task): Boolean =
@@ -41,7 +41,7 @@ class TaskRepositoryImp(
                 val updatedTasks = currentTasks.map { if (it.id == task.id) task else it }
                 taskDataSource.overWrite(updatedTasks.map { it.mapToTaskModel() })
             },
-            onFailure = { throw DataException.WriteDataException() }
+            onFailure = { throw TaskExceptions.TaskNotEditException() }
         )
 
     override suspend fun deleteTask(id: UUID?): Boolean =
@@ -51,7 +51,7 @@ class TaskRepositoryImp(
                 val updatedTasks = currentTasks.filterNot { it.id == id }
                 taskDataSource.overWrite(updatedTasks.map { it.mapToTaskModel() })
             },
-            onFailure = { throw DataException.WriteDataException() }
+            onFailure = { throw TaskExceptions.TaskNotDeletedException() }
         )
 
     override suspend fun getTasksInProject(projectId: UUID): List<Task> =
@@ -62,7 +62,7 @@ class TaskRepositoryImp(
                 val allTasks = taskDataSource.read()
                 allTasks.filter { taskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { throw DataException.ReadDataException() }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
 
     override suspend fun addTaskInProject(projectId: UUID, taskId: UUID): Boolean =
@@ -72,7 +72,7 @@ class TaskRepositoryImp(
                     listOf(TaskInProjectModel(projectId.toString(), taskId.toString()))
                 )
             },
-            onFailure = { throw DataException.WriteDataException() }
+            onFailure = { throw TaskExceptions.TaskNotAddedException() }
         )
 
     override suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean =
@@ -84,7 +84,7 @@ class TaskRepositoryImp(
                 }
                 taskInProjectDataSource.overWrite(updated)
             },
-            onFailure = { throw DataException.WriteDataException() }
+            onFailure = { throw TaskExceptions.TaskNotDeletedException() }
         )
 
     override suspend fun getAllTasksByUserName(userName: String): List<Task> =
@@ -95,6 +95,6 @@ class TaskRepositoryImp(
                 val tasks = taskDataSource.read()
                 tasks.filter { assignedTaskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { throw DataException.ReadDataException() }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
 }
