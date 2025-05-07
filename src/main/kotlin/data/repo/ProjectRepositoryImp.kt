@@ -79,7 +79,7 @@ class ProjectRepositoryImp(
             onSuccess = {
                 projectDataSource.append(listOf(project.mapToProjectModel()))
             },
-            onFailure = { throw ProjectExceptions.ProjectNotAddedException() }
+            onFailure = { throw ProjectExceptions.NoProjectAddedException() }
         )
     }
 
@@ -92,7 +92,7 @@ class ProjectRepositoryImp(
                 }
 
             }, onFailure = {
-                throw ProjectExceptions.ProjectNotEditedException()
+                throw ProjectExceptions.NoProjectEditedException()
             })
     }
 
@@ -106,7 +106,7 @@ class ProjectRepositoryImp(
                 }
             }
         } catch (e: Exception) {
-            throw ProjectExceptions.ProjectNotDeletedException()
+            throw ProjectExceptions.NoProjectDeletedException()
         }
     }
 

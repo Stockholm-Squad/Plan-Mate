@@ -1,3 +1,7 @@
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logic.models.entities.User
 import logic.usecase.login.LoginUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
@@ -15,6 +19,9 @@ class AddUserToProjectUIImp(
     private val createUserUiImp: CreateUserUi,
     private val authenticationUseCase: LoginUseCase
 ) : AddUserToProjectUI {
+    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
+        outputPrinter.showMessage(throwable.message ?: "Unknown error")
+    }
 
     override fun invoke(user: User?) {
         while (true) {
@@ -55,109 +62,88 @@ class AddUserToProjectUIImp(
     private fun assignUserToProject(username: String, projectName: String) {
 
 
-        authenticationUseCase.isUserExists(username).fold(
-            onSuccess = {
-                if (!it) {
-                    outputPrinter.showMessage("User does not exist")
-                    return
-                }
-            },
-            onFailure = {
+        authenticationUseCase.isUserExists(username).let {
+            if (!it) {
                 outputPrinter.showMessage("User does not exist")
                 return
             }
-        )
+        }
 
-        getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).fold(
-                    onSuccess = { success ->
-                        if (success) {
+
+        CoroutineScope(Dispatchers.Default).launch(errorHandler) {
+            getProjectsUseCase.getProjectByName(projectName).let { project ->
+                manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
+                    if (it) {
+                        CoroutineScope(Dispatchers.Main).launch(errorHandler) {
                             outputPrinter.showMessage("User assigned successfully")
-                        } else {
-                            outputPrinter.showMessage("Failed to assign user to project")
                         }
-                    },
-                    onFailure = { e ->
-                        outputPrinter.showMessage(e.message ?: "Failed to assign user to project")
+                    } else {
+                        outputPrinter.showMessage("Failed to assign user to project")
                     }
-                )
-            },
-            onFailure = {
-                outputPrinter.showMessage("Project does not exist")
+                }
             }
-        )
+        }
     }
 
     override fun showUsersAssignedToProject() {
         outputPrinter.showMessage("Enter project name to view assigned users (leave blank to cancel): ")
-        val projectName = inputReader.readStringOrNull() ?: return
-
-        getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).fold(
-                    onSuccess = { users ->
+        inputReader.readStringOrNull()?.let { input ->
+            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+                getProjectsUseCase.getProjectByName(input).let { project ->
+                    manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).let { users ->
                         if (users.isEmpty()) {
-                            outputPrinter.showMessage("No users assigned to this project")
+                            CoroutineScope(Dispatchers.Main).launch {
+                                outputPrinter.showMessage("No users assigned to this project")
+                            }
                         } else {
-                            outputPrinter.showMessage("Users assigned to project '$projectName':")
-                            users.forEachIndexed { index, user ->
-                                outputPrinter.showMessage("${index + 1}. ${user.username}")
+                            CoroutineScope(Dispatchers.Main).launch {
+                                outputPrinter.showMessage("Users assigned to project '$input':")
+                                users.forEachIndexed { index, user ->
+                                    outputPrinter.showMessage("${index + 1}. ${user.username}")
+                                }
                             }
                         }
-                    },
-                    onFailure = { e ->
-                        outputPrinter.showMessage(e.message ?: "Failed to get assigned users")
                     }
-                )
-            },
-            onFailure = { e ->
-                outputPrinter.showMessage(e.message ?: "Project not found")
+                }
             }
-        )
+        }
     }
 
     override fun removeUserFromProject() {
         outputPrinter.showMessage("Enter project name (leave blank to cancel): ")
-        val projectName = inputReader.readStringOrNull() ?: return
-
-
-        getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
-                val username = inputReader.readStringOrNull() ?: return
-
-
-                authenticationUseCase.isUserExists(username).fold(
-                    onSuccess = {
-                        if (!it) {
-                            outputPrinter.showMessage("User does not exist")
-                            return
-                        }
-                    },
-                    onFailure = {
-                        outputPrinter.showMessage("User does not exist")
-                        return
+        inputReader.readStringOrNull()?.let { input ->
+            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+                getProjectsUseCase.getProjectByName(input).let { project -> //TODO: in the use case not in the UI and print the exception message
+                    launch(Dispatchers.Main) {
+                        outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
                     }
-                )
+                    inputReader.readStringOrNull()?.let { username ->
+                        authenticationUseCase.isUserExists(username).let { //TODO: in the use case not in the UI and print the exception message
+                            if (!it) {
+                                outputPrinter.showMessage("User does not exist")
 
-                manageUsersAssignedToProjectUseCase.deleteUserFromProject(project.id, username).fold(
-                    onSuccess = { success ->
-                        if (success) {
-                            outputPrinter.showMessage("User '$username' removed from project '$projectName' successfully")
-                        } else {
-                            outputPrinter.showMessage("Failed to remove user from project")
+                            }
                         }
-                    },
-                    onFailure = { e ->
-                        outputPrinter.run { showMessage(e.message ?: "Failed to remove user from project") }
+                        manageUsersAssignedToProjectUseCase.deleteUserFromProject(project.id, username)
+                            .let { success ->
+                                if (success) {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        outputPrinter.showMessage("User '$username' removed from project '${project.name}' successfully")
+                                    }
+                                } else {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        outputPrinter.showMessage("Failed to remove user from project")
+                                    }
+                                }
+                            }
                     }
-                )
-            },
-            onFailure = { e ->
-                outputPrinter.showMessage(e.message ?: "Project not found")
+
+
+                }
+
             }
-        )
-    }
 
+        }
+
+    }
 }

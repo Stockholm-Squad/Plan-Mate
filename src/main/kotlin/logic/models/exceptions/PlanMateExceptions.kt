@@ -34,6 +34,9 @@ open class ProjectExceptions(message: String) : LogicExceptions(message) {
     class ProjectNotDeletedException(message: String = "Project not deleted.") : ProjectExceptions(message)
     class NoProjectAddedException(message: String = "No project added.") : ProjectExceptions(message)
     class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
+    class NoProjectEditedException(message: String = "The project hasn't edited") : ProjectExceptions(message)
+    class NoProjectDeletedException(message: String = "The project hasn't deleted") : ProjectExceptions(message)
+
 }
 
 open class StateExceptions(message: String) : LogicExceptions(message) {
