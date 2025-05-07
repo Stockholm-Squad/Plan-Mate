@@ -3,7 +3,6 @@ package org.example.data.repo
 
 import data.models.UserAssignedToProjectModel
 import logic.models.entities.Project
-import logic.models.exceptions.DataException
 import logic.models.exceptions.ProjectExceptions
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
@@ -80,7 +79,7 @@ class ProjectRepositoryImp(
             onSuccess = {
                 projectDataSource.append(listOf(project.mapToProjectModel()))
             },
-            onFailure = { throw DataException.ReadDataException() }
+            onFailure = { throw ProjectExceptions.NoProjectAddedException() }
         )
     }
 
@@ -93,7 +92,7 @@ class ProjectRepositoryImp(
                 }
 
             }, onFailure = {
-                throw DataException.WriteDataException()
+                throw ProjectExceptions.NoProjectEditedException()
             })
     }
 
@@ -107,7 +106,7 @@ class ProjectRepositoryImp(
                 }
             }
         } catch (e: Exception) {
-            throw DataException.ReadDataException()
+            throw ProjectExceptions.NoProjectDeletedException()
         }
     }
 
@@ -119,7 +118,7 @@ class ProjectRepositoryImp(
                 }
             }
         } catch (e: Exception) {
-            throw DataException.ReadDataException()
+            throw ProjectExceptions.NoProjectsFoundException()
         }
     }
 
