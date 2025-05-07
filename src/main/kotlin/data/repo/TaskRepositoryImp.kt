@@ -62,7 +62,7 @@ class TaskRepositoryImp(
                 val allTasks = taskDataSource.read()
                 allTasks.filter { taskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { throw TaskExceptions.TasksInProjectNotFoundException() }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
 
     override suspend fun addTaskInProject(projectId: UUID, taskId: UUID): Boolean =
@@ -72,7 +72,7 @@ class TaskRepositoryImp(
                     listOf(TaskInProjectModel(projectId.toString(), taskId.toString()))
                 )
             },
-            onFailure = { throw TaskExceptions.TasksInProjectNotAddedException() }
+            onFailure = { throw TaskExceptions.TaskNotAddedException() }
         )
 
     override suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean =
@@ -95,6 +95,6 @@ class TaskRepositoryImp(
                 val tasks = taskDataSource.read()
                 tasks.filter { assignedTaskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { throw TaskExceptions.TaskNotAssignmentFoundException() }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
 }

@@ -23,9 +23,6 @@ open class TaskExceptions(message: String) : LogicExceptions(message) {
     class TasksNotFoundException(message: String = "No tasks found.") : TaskExceptions(message)
     class TaskNotAddedException(message: String = "Failed to add task.") : TaskExceptions(message)
     class TaskNotEditException(message: String = "Failed to edit task.") : TaskExceptions(message)
-    class TasksInProjectNotFoundException(message: String = "No tasks in project found.") : TaskExceptions(message)
-    class TasksInProjectNotAddedException(message: String = "Failed to add tasks in project.") : TaskExceptions(message)
-    class TaskNotAssignmentFoundException(message: String = "No task assignment found.") : TaskExceptions(message)
     class TaskNotDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
 }
 
