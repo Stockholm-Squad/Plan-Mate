@@ -8,17 +8,20 @@ class GetProjectsUseCase(
     private val projectRepository: ProjectRepository,
 ) {
 
-   suspend fun getAllProjects(): List<Project> {
+    suspend fun getAllProjects(): List<Project> {
         return projectRepository.getAllProjects()
     }
 
     suspend fun getProjectByName(projectName: String): Project {
-        return getProjectFromList(projectName, projectRepository.getAllProjects())
+        return getProjectFromList(
+            projectName,
+            projectRepository.getAllProjects(),
+        )
     }
 
-    private fun getProjectFromList(projectName: String, allProjects: List<Project>):Project {
+    private fun getProjectFromList(projectName: String, allProjects: List<Project>): Project {
         return allProjects.find { project ->
             project.name == projectName
-        } ?:  throw ProjectExceptions.ProjectNotFoundException()
+        } ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 }
