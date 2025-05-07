@@ -9,28 +9,25 @@ class ManageTasksInProjectUseCase(
     private val taskRepository: TaskRepository
 ) {
 
-    fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
-        return getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                taskRepository.getTasksInProject(project.id)
-            },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
+    suspend fun getTasksInProjectByName(projectName: String): List<Task> {
+        return getProjectsUseCase.getProjectByName(projectName).let { project ->
+            taskRepository.getTasksInProject(project.id)
+        }
     }
 
-    fun getTasksInProjectById(projectId: UUID): Result<List<Task>> {
+    suspend fun getTasksInProjectById(projectId: UUID): List<Task> {
         return taskRepository.getTasksInProject(projectId)
     }
 
-    fun addTaskToProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+    suspend fun addTaskToProject(projectId: UUID, taskId: UUID): Boolean {
         return taskRepository.addTaskInProject(projectId = projectId, taskId = taskId)
     }
 
-    fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
+    suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean {
         return taskRepository.deleteTaskFromProject(projectId, taskId)
     }
 
-    fun getAllTasksByUserName(userName: String): Result<List<Task>> {
+    suspend fun getAllTasksByUserName(userName: String): List<Task> {
         return taskRepository.getAllTasksByUserName(userName)
     }
 

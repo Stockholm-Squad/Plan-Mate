@@ -1,13 +1,14 @@
 package org.example.data.repo
 
-import data.models.MateTaskAssignmentModel
 import data.models.TaskInProjectModel
 import logic.models.entities.Task
+import logic.models.exceptions.TaskExceptions
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.ITaskDataSource
 import org.example.data.mapper.mapToTaskEntity
 import org.example.data.mapper.mapToTaskModel
+import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.TaskRepository
 import java.util.*
 
@@ -17,105 +18,83 @@ class TaskRepositoryImp(
     private val taskInProjectDataSource: ITaskInProjectDataSource,
 ) : TaskRepository {
 
-    override fun getAllTasks(): Result<List<Task>> = readTasks()
-
-    override fun addTask(task: Task): Result<Boolean> {
-        return taskDataSource.append(listOf(task.mapToTaskModel()))
-    }
-
-    override fun editTask(task: Task): Result<Boolean> =
-        readTasks().fold(
-            onSuccess = { tasks ->
-                writeTasks(tasks.map { it.takeIf { it.id != task.id } ?: task })
+    override suspend fun getAllTasks(): List<Task> =
+        executeSafelyWithContext(
+            onSuccess = {
+                taskDataSource.read().mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
 
-    override fun deleteTask(id: UUID?): Result<Boolean> =
-        readTasks().fold(
-            onSuccess = { tasks ->
-                writeTasks(tasks.filterNot { it.id.toString() == id.toString() })
+    override suspend fun addTask(task: Task): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                taskDataSource.append(listOf(task.mapToTaskModel()))
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { throw TaskExceptions.TaskNotAddedException() }
         )
 
+    override suspend fun editTask(task: Task): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                val currentTasks = taskDataSource.read().mapNotNull { it.mapToTaskEntity() }
+                val updatedTasks = currentTasks.map { if (it.id == task.id) task else it }
+                taskDataSource.overWrite(updatedTasks.map { it.mapToTaskModel() })
+            },
+            onFailure = { throw TaskExceptions.TaskNotEditException() }
+        )
 
-    override fun getTasksInProject(projectId: UUID): Result<List<Task>> {
-        return taskInProjectDataSource.read().fold(
-            onSuccess = { taskInProject ->
-                taskInProject.filter {
-                    projectId.toString() == it.projectId
-                }.map { it.taskId }.let { tasksIds ->
-                    getTasksFromTasksIds(tasksIds)
-                }
-            }, onFailure = { Result.failure(it) })
-    }
+    override suspend fun deleteTask(id: UUID?): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                val currentTasks = taskDataSource.read().mapNotNull { it.mapToTaskEntity() }
+                val updatedTasks = currentTasks.filterNot { it.id == id }
+                taskDataSource.overWrite(updatedTasks.map { it.mapToTaskModel() })
+            },
+            onFailure = { throw TaskExceptions.TaskNotDeletedException() }
+        )
 
-    override fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskInProjectDataSource.append(
-            listOf(
-                TaskInProjectModel(
-                    projectId = projectId.toString(),
-                    taskId = taskId.toString()
+    override suspend fun getTasksInProject(projectId: UUID): List<Task> =
+        executeSafelyWithContext(
+            onSuccess = {
+                val taskLinks = taskInProjectDataSource.read()
+                val taskIds = taskLinks.filter { it.projectId == projectId.toString() }.map { it.taskId }
+                val allTasks = taskDataSource.read()
+                allTasks.filter { taskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
+            },
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
+        )
+
+    override suspend fun addTaskInProject(projectId: UUID, taskId: UUID): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                taskInProjectDataSource.append(
+                    listOf(TaskInProjectModel(projectId.toString(), taskId.toString()))
                 )
-            )
+            },
+            onFailure = { throw TaskExceptions.TaskNotAddedException() }
         )
-    }
 
-    override fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskInProjectDataSource.read().fold(
-            onSuccess = { tasksInProject ->
-                tasksInProject.filterNot { taskInProject ->
-                    (taskInProject.projectId == projectId.toString()) && (taskInProject.taskId == taskId.toString())
-                }.let { newTasksInProject ->
-                    when (newTasksInProject.contains(TaskInProjectModel(taskId.toString(), projectId.toString()))) {
-                        true -> Result.success(false)
-                        false -> taskInProjectDataSource.overWrite(newTasksInProject)
-                    }
+    override suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                val current = taskInProjectDataSource.read()
+                val updated = current.filterNot {
+                    it.projectId == projectId.toString() && it.taskId == taskId.toString()
                 }
-            }, onFailure = { Result.failure(it) })
-    }
-
-
-    override fun getAllTasksByUserName(userName: String): Result<List<Task>> {
-        return mateTaskAssignment.read().fold(
-            onSuccess = { userToTaskList ->
-                getTasksFromTasksIds(getTasksIdsAssignedToUser(userToTaskList, userName))
+                taskInProjectDataSource.overWrite(updated)
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { throw TaskExceptions.TaskNotDeletedException() }
         )
-    }
 
-    private fun getTasksFromTasksIds(tasksIds: List<String>): Result<List<Task>> {
-        return taskDataSource.read().fold(
-            onSuccess = { tasks ->
-                tasks.filter { tasksIds.contains(it.id) }
-                    .mapNotNull { it.mapToTaskEntity() }
-                    .let { Result.success(it) }
+    override suspend fun getAllTasksByUserName(userName: String): List<Task> =
+        executeSafelyWithContext(
+            onSuccess = {
+                val assignments = mateTaskAssignment.read()
+                val assignedTaskIds = assignments.filter { it.userName == userName }.map { it.taskId }
+                val tasks = taskDataSource.read()
+                tasks.filter { assignedTaskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )
-    }
-
-    private fun getTasksIdsAssignedToUser(
-        userToTaskList: List<MateTaskAssignmentModel>,
-        userName: String
-    ): List<String> {
-        return userToTaskList.filter { userToTask ->
-            userToTask.userName == userName
-        }.map { it.taskId }
-    }
-
-    private fun readTasks(): Result<List<Task>> {
-        return taskDataSource.read().fold(
-            onSuccess = { list -> Result.success(list.mapNotNull { it.mapToTaskEntity() }) },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
-    }
-
-    private fun writeTasks(tasks: List<Task>): Result<Boolean> {
-        return tasks.map { task -> task.mapToTaskModel() }.let {
-            taskDataSource.overWrite(it)
-        }
-    }
 }

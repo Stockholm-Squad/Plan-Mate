@@ -3,7 +3,7 @@ package org.example.ui.features.common.utils
 
 enum class TaskOptions(val option: Int?, val label: String) {
     SHOW_ALL_TASKS(1, "Show all tasks"),
-    SHOW_TASK_BY_ID(2, "Show task by ID"),
+    SHOW_TASK_BY_NAME(2, "Show task by name"),
     CREATE_TASK(3, "Create task"),
     EDIT_TASK(4, "Edit task"),
     DELETE_TASK(5, "Delete task"),
