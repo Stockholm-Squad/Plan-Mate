@@ -101,7 +101,7 @@ class TaskManagerUiImp(
         val project = getProjectsUseCase.getProjectByName(projectName)
 
         withContext(Dispatchers.IO + coroutineExceptionHandler) {
-            val created = manageTasksUseCase.createTask(task, userId)
+            val created = manageTasksUseCase.addTask(task, userId)
             if (!created) throw Exception(UiMessages.FAILED_TO_CREATE_TASK)
 
             val added = manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)

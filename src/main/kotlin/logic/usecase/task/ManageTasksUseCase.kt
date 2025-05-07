@@ -3,6 +3,7 @@ package org.example.logic.usecase.task
 import logic.models.entities.AuditSystem
 import logic.models.entities.EntityType
 import logic.models.entities.Task
+import logic.models.exceptions.TaskExceptions
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.repository.TaskRepository
@@ -14,13 +15,13 @@ class ManageTasksUseCase(
 ) {
     suspend fun getAllTasks(): List<Task> = taskRepository.getAllTasks()
 
-    suspend fun getTaskByName(taskName: String): Task? =
-        taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) }
+    suspend fun getTaskByName(taskName: String): Task =
+        taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) } ?: throw TaskExceptions.TaskNotFoundException()
 
-    suspend fun getTaskIdByName(taskName: String): UUID? =
-        getTaskByName(taskName)?.id
+    suspend fun getTaskIdByName(taskName: String): UUID =
+        getTaskByName(taskName).id
 
-    suspend fun createTask(task: Task, userId: UUID): Boolean =
+    suspend fun addTask(task: Task, userId: UUID): Boolean =
         taskRepository.addTask(task).also { isCreated -> if (isCreated) logAudit(task, userId) }
 
 
@@ -29,7 +30,7 @@ class ManageTasksUseCase(
 
 
     suspend fun deleteTaskByName(taskName: String): Boolean =
-        taskRepository.deleteTask(getTaskIdByName(taskName))
+        taskRepository.deleteTask(getTaskIdByName(taskName)) //TODO: add audit
 
 
     private suspend fun logAudit(updatedTask: Task, userId: UUID) {
