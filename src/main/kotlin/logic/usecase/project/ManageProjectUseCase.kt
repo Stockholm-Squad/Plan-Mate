@@ -50,8 +50,13 @@ class ManageProjectUseCase(
         }
     }
 
-    suspend fun isProjectExists(projectName: String): Boolean {
-        return getProjectsUseCase.getProjectByName(projectName).name.isNotBlank()
+    suspend fun isProjectExists(projectName: String): Boolean { //todo: use it to check in the edit() and add()
+        return try {
+            getProjectsUseCase.getProjectByName(projectName)
+            true
+        }catch (e: Exception){
+            false
+        }
     }
 
     private suspend fun logAudit(updatedProject: Project, userId: UUID) {
