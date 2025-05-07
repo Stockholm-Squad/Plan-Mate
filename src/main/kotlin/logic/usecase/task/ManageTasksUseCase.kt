@@ -18,7 +18,7 @@ class ManageTasksUseCase(
     private val auditSystemRepository: AuditSystemRepository,
 ) {
 
-    fun getAllTasks(): Result<List<Task>> =
+    fun getAllTasks(): List<Task> =
         taskRepository.getAllTasks().fold(
             onSuccess = { Result.success(it) },
             onFailure = { Result.failure(NoTasksFoundException()) }
