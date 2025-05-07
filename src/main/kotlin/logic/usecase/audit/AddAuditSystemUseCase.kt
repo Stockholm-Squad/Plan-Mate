@@ -6,6 +6,6 @@ import org.example.logic.repository.AuditSystemRepository
 class AddAuditSystemUseCase(
     private val auditSystemRepository: AuditSystemRepository,
     ) {
-    fun addAuditsEntries(auditEntry: List<AuditSystem>): Result<Boolean> =
+    suspend fun addAuditsEntries(auditEntry: List<AuditSystem>): Boolean =
         auditSystemRepository.addAuditsEntries(auditEntry)
 }

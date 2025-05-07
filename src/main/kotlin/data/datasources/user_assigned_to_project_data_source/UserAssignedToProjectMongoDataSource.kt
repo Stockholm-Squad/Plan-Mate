@@ -1,17 +1,16 @@
 package org.example.data.datasources.user_assigned_to_project_data_source
 
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.InsertManyResult
 import data.models.UserAssignedToProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.datasources.MongoSetup
-import org.example.data.datasources.task_data_source.ITaskDataSource
-import org.example.data.models.UserModel
-import org.example.data.utils.USERS_COLLECTION_NAME
-import org.example.data.utils.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
+import org.example.data.database.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class UserAssignedToProjectMongoDataSource() : IUserAssignedToProjectDataSource {
+class UserAssignedToProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : IUserAssignedToProjectDataSource {
 
-    private val collection = MongoSetup.database.getCollection<UserAssignedToProjectModel>(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<UserAssignedToProjectModel>(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME)
 
 
     override suspend fun read(): List<UserAssignedToProjectModel> = withContext(Dispatchers.IO) {
@@ -19,13 +18,24 @@ class UserAssignedToProjectMongoDataSource() : IUserAssignedToProjectDataSource 
     }
 
     override suspend fun overWrite(users: List<UserAssignedToProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.deleteMany()
-        collection.insertMany(users)
-        true
+        val deleteResult: DeleteResult = collection.deleteMany()
+        if (!deleteResult.wasAcknowledged()) {
+            return@withContext false
+        }
+
+        if (users.isEmpty()) {
+            return@withContext true
+        }
+
+        val insertResult: InsertManyResult = collection.insertMany(users)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == users.size
     }
 
     override suspend fun append(users: List<UserAssignedToProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.insertMany(users)
-        true
+        if (users.isEmpty()) {
+            return@withContext true
+        }
+        val insertResult: InsertManyResult = collection.insertMany(users)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == users.size
     }
 }
