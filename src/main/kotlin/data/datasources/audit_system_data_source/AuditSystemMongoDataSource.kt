@@ -1,5 +1,7 @@
 package org.example.data.datasources.audit_system_data_source
 
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.InsertManyResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.database.AUDITS_COLLECTION_NAME
@@ -16,13 +18,24 @@ class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSyste
     }
 
     override suspend fun overWrite(audits: List<AuditSystemModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.deleteMany()
-        collection.insertMany(audits)
-        true
+        val deleteResult: DeleteResult = collection.deleteMany()
+        if (!deleteResult.wasAcknowledged()) {
+            return@withContext false
+        }
+
+        if (audits.isEmpty()) {
+            return@withContext true
+        }
+
+        val insertResult: InsertManyResult = collection.insertMany(audits)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == audits.size
     }
 
     override suspend fun append(audits: List<AuditSystemModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.insertMany(audits)
-        true
+        if (audits.isEmpty()) {
+            return@withContext true // nothing to append, considered success
+        }
+        val insertResult: InsertManyResult = collection.insertMany(audits)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == audits.size
     }
 }
