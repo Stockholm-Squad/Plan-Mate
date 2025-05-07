@@ -1,6 +1,5 @@
 package org.example.logic.usecase.state
 
-import kotlinx.coroutines.runBlocking
 import logic.models.entities.ProjectState
 import logic.models.exceptions.*
 import org.example.data.utils.executeSafelyWithContext
@@ -12,60 +11,49 @@ import java.util.*
 class ManageStatesUseCase(
     private val projectStateRepository: ProjectStateRepository,
 ) {
-    fun addProjectState(stateName: String): Boolean {
+    suspend fun addProjectState(stateName: String): Boolean {
         val validStateName = isStateNameValid(stateName)
         return validStateName.takeIf { state ->
-            runBlocking {
-                !isProjectStateExist(state)
-            }
+            !isProjectStateExist(state)
         }
             ?.let {
-                runBlocking {
-                    projectStateRepository.addProjectState(it)
-                }
+                projectStateRepository.addProjectState(it)
             } ?: throw StateExceptions.StateAlreadyExistException()
     }
 
 
-    fun editProjectStateByName(stateName: String, newStateName: String): Boolean {
+    suspend fun editProjectStateByName(stateName: String, newStateName: String): Boolean {
         return validateStateNames(stateName, newStateName).let {
-            runBlocking {
-                getProjectState(stateName).let { state ->
-                    projectStateRepository.editProjectState(ProjectState(state.id, newStateName))
-                }
+            getProjectState(stateName).let { state ->
+                projectStateRepository.editProjectState(ProjectState(state.id, newStateName))
             }
         }
     }
 
-    fun deleteProjectState(stateName: String): Boolean {
+    suspend fun deleteProjectState(stateName: String): Boolean {
         return isStateNameValid(stateName).let { validStateName ->
-            runBlocking {
-                getProjectState(validStateName).let { state ->
-                    projectStateRepository.deleteProjectState(state)
-                }
+            getProjectState(validStateName).let { state ->
+                projectStateRepository.deleteProjectState(state)
             }
         }
     }
 
-    fun getAllProjectStates(): List<ProjectState> {
-        return runBlocking {
-            projectStateRepository.getAllProjectStates().also { data ->
-                data.takeIf { data.isNotEmpty() }?.let {
-                    Result.success(data)
-                } ?: Result.failure(DataException.EmptyDataException())
-            }
+    suspend fun getAllProjectStates(): List<ProjectState> {
+        return projectStateRepository.getAllProjectStates().also { data ->
+            data.takeIf { data.isNotEmpty() }?.let {
+                Result.success(data)
+            } ?: Result.failure(DataException.EmptyDataException())
+
         }
     }
 
-    fun getProjectStateIdByName(stateName: String): UUID {
+    suspend fun getProjectStateIdByName(stateName: String): UUID {
         return isStateNameValid(stateName).let {
-            runBlocking {
-                getProjectState(stateName).id
-            }
+            getProjectState(stateName).id
         }
     }
 
-    fun getProjectStateNameByStateId(stateId: UUID): String? {
+    suspend fun getProjectStateNameByStateId(stateId: UUID): String? {
         return getAllProjectStates()
             .let { states -> findStateById(states, stateId)?.name }
     }
@@ -96,7 +84,7 @@ class ManageStatesUseCase(
         )
     }
 
-    private fun getProjectState(stateName: String): ProjectState {
+    private suspend fun getProjectState(stateName: String): ProjectState {
         return this.getAllProjectStates().let { allStates ->
             allStates.firstOrNull { state -> state.name.equals(stateName, ignoreCase = true) }
                 ?: throw StateExceptions.StateNotExistException()
