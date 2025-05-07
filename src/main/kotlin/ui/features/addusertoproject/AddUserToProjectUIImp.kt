@@ -113,12 +113,12 @@ class AddUserToProjectUIImp(
         outputPrinter.showMessage("Enter project name (leave blank to cancel): ")
         inputReader.readStringOrNull()?.let { input ->
             CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-                getProjectsUseCase.getProjectByName(input).let { project ->
+                getProjectsUseCase.getProjectByName(input).let { project -> //TODO: in the use case not in the UI and print the exception message
                     launch(Dispatchers.Main) {
                         outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
                     }
                     inputReader.readStringOrNull()?.let { username ->
-                        authenticationUseCase.isUserExists(username).let {
+                        authenticationUseCase.isUserExists(username).let { //TODO: in the use case not in the UI and print the exception message
                             if (!it) {
                                 outputPrinter.showMessage("User does not exist")
 
