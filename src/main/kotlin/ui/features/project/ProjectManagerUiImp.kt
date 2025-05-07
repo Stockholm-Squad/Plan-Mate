@@ -1,5 +1,10 @@
 package org.example.ui.features.project
 
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import logic.models.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
@@ -17,14 +22,18 @@ class ProjectManagerUiImp(
     private val manageProjectUseCase: ManageProjectUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminStateManagerUi,
-    private val taskManagerUi: TaskManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
 ) : ProjectManagerUi {
     private var currentUser: User? = null
 
+    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
+        outputPrinter.showMessage(throwable.message ?: "Unknown error")
+    }
+
     override fun showAllProjects() {
-        getProjectsUseCase.getAllProjects().fold(
-            onSuccess = { projects ->
+
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            getProjectsUseCase.getAllProjects().let { projects ->
                 if (projects.isEmpty()) {
                     outputPrinter.showMessage("No projects found")
                 } else {
@@ -32,16 +41,12 @@ class ProjectManagerUiImp(
                         outputPrinter.showMessage("${index + 1}. ${project.name}")
                     }
                 }
-            },
-            onFailure = { e ->
-                outputPrinter.showMessage("error: ${e.message ?: "Unknown error"}")
             }
-        )
+        }
     }
 
     override fun showProjectByName() {
         var projectName: String?
-
         do {
             outputPrinter.showMessage("Enter project Name: ")
             projectName = inputReader.readStringOrNull()
@@ -51,33 +56,27 @@ class ProjectManagerUiImp(
             }
         } while (projectName.isNullOrBlank())
 
-        getProjectsUseCase.getProjectByName(projectName)
-            .fold(
-                onSuccess = { project ->
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            withContext(Dispatchers.Main) {
+                getProjectsUseCase.getProjectByName(projectName).let { project ->
                     outputPrinter.showMessage("Project Details:")
                     outputPrinter.showMessage("Name: ${project.name}")
                     val stateName: String =
                         manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
                     outputPrinter.showMessage("State: $stateName")
-                },
-                onFailure = { e ->
-                    outputPrinter.showMessage(e.message ?: "Project not found")
                 }
-            )
+            }
+        }
     }
 
     override fun addProject() {
-
         outputPrinter.showMessage("Enter project name or leave it blank to back: ")
         val projectName = inputReader.readStringOrNull() ?: run {
             return
         }
-
         outputPrinter.showMessage("Available states:")
         stateManagerUi.showAllStates()
-
         var stateName = ""
-
         while (true) {
             outputPrinter.showMessage("Enter state Name (or 'new' to create a new state) or leave it blank to back: ")
             when (val input = inputReader.readStringOrNull()) {
@@ -90,96 +89,89 @@ class ProjectManagerUiImp(
             }
         }
 
-        val userId = currentUser?.id
-            ?: return outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
-        manageProjectUseCase.addProject(projectName, stateName, userId)
-            .fold(
-                onSuccess = { success ->
-                    if (success) outputPrinter.showMessage("Project added successfully") else outputPrinter.showMessage("Failed to add project")
-                },
-                onFailure = { e ->
-                    outputPrinter.showMessage(e.message ?: "Failed to add project")
+        val userId = currentUser?.id
+
+        if (userId == null) {
+            outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            manageProjectUseCase.addProject(projectName, stateName, userId).let { success ->
+                withContext(Dispatchers.Main) {
+                    if (success)
+                        outputPrinter.showMessage("Project added successfully")
+                    else
+                        outputPrinter.showMessage("Failed to add project")
                 }
-            )
+            }
+        }
     }
 
     override fun editProject() {
 
         outputPrinter.showMessage("Enter project Name to edit or leave it black to back: ")
-        val projectName = inputReader.readStringOrNull() ?: run {
-            return
-        }
+        val projectName = inputReader.readStringOrNull() ?: return
 
-        getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                val projectStateName: String =
-                    manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
-                outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
 
-                val newName = inputReader.readStringOrNull()
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            getProjectsUseCase.getProjectByName(projectName).let { project ->
+                withContext(Dispatchers.Main) {
+                    val projectStateName: String =
+                        manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+                    outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
 
-                outputPrinter.showMessage("Current state: $projectStateName")
+                    val newName = inputReader.readStringOrNull()
 
-                outputPrinter.showMessage("Available states:")
+                    outputPrinter.showMessage("Current state: $projectStateName")
 
-                stateManagerUi.showAllStates()
+                    outputPrinter.showMessage("Available states:")
 
-                outputPrinter.showMessage("Enter new state Name (leave blank to keep '${projectStateName}'): ")
+                    stateManagerUi.showAllStates()
 
-                val newProjectStateName = inputReader.readStringOrNull()
+                    outputPrinter.showMessage("Enter new state Name (leave blank to keep '${projectStateName}'): ")
 
-                val userId = currentUser?.id
-                    ?: return outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+                    val newProjectStateName = inputReader.readStringOrNull()
 
-                if (newName != null || newProjectStateName != null)
-                    manageProjectUseCase.updateProject(
-                        project.id,
-                        newName ?: projectName,
-                        newProjectStateName ?: projectStateName,
-                        userId
-                    )
-                        .fold(
-                            onSuccess = { success ->
-                                if (success) {
-                                    outputPrinter.showMessage("Project updated successfully")
-                                } else {
-                                    outputPrinter.showMessage("Failed to update project")
-                                }
-                            },
-                            onFailure = { e ->
-                                outputPrinter.showMessage(e.message ?: "Failed to update project")
+                    val userId = currentUser?.id
+                        ?: return@withContext outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+
+                    if (newName != null || newProjectStateName != null)
+                        manageProjectUseCase.updateProject(
+                            project.id,
+                            newName ?: projectName,
+                            newProjectStateName ?: projectStateName,
+                            userId
+                        ).let { success ->
+                            if (success) {
+                                outputPrinter.showMessage("Project updated successfully")
+                            } else {
+                                outputPrinter.showMessage("Failed to update project")
                             }
-                        )
-                else outputPrinter.showMessage("project doesn't changed")
 
-            },
-            onFailure = { e ->
-                outputPrinter.showMessage(e.message ?: "Project not found")
+                        }
+                    else outputPrinter.showMessage("project doesn't changed")
+                }
             }
-
-        )
+        }
     }
 
     override fun deleteProject() {
         outputPrinter.showMessage("Enter project Name to delete or leave it blank to back: ")
-        val projectName = inputReader.readStringOrNull() ?: run {
-            return
-        }
+        val projectName = inputReader.readStringOrNull() ?: return
 
-        manageProjectUseCase.removeProjectByName(projectName)
-            .fold(
-                onSuccess = { success ->
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            manageProjectUseCase.removeProjectByName(projectName).let { success ->
+                withContext(Dispatchers.Main) {
                     if (success) {
                         outputPrinter.showMessage("Project deleted successfully")
                     } else {
                         outputPrinter.showMessage("Failed to delete project")
                     }
-                },
-                onFailure = { e ->
-                    outputPrinter.showMessage(e.message ?: "Failed to delete project")
                 }
-            )
+            }
+        }
     }
 
     override fun launchUi(user: User?) {
