@@ -39,12 +39,7 @@ class ManageStatesUseCase(
     }
 
     suspend fun getAllProjectStates(): List<ProjectState> {
-        return projectStateRepository.getAllProjectStates().also { data ->
-            data.takeIf { data.isNotEmpty() }?.let {
-                Result.success(data)
-            } ?: Result.failure(DataException.EmptyDataException())
-
-        }
+        return projectStateRepository.getAllProjectStates()
     }
 
     suspend fun getProjectStateIdByName(stateName: String): UUID {

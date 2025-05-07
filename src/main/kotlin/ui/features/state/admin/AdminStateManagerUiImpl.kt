@@ -10,6 +10,7 @@ import org.example.ui.features.state.model.StateMenuChoice
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
+
 class AdminStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
@@ -49,7 +50,7 @@ class AdminStateManagerUiImpl(
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
                 runBlocking {
-                    executeSafelyWithContext(
+                    executeSafelyWithContext( //TODO: use Try Catch
                         onSuccess = {
                             manageStatesUseCase.addProjectState(stateName = stateName)
                             showAddStateMessage()
