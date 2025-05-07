@@ -113,8 +113,12 @@ class TaskManagerUiImp(
     override suspend fun editTask() {
         val taskName = getTaskName()
 
-        val existingTask =
-            manageTasksUseCase.getTaskByName(taskName) ?: return printer.showMessage(UiMessages.NO_TASK_FOUND)
+        val existingTask = try {
+            manageTasksUseCase.getTaskByName(taskName)
+        } catch (e: Exception) {
+            printer.showMessage(UiMessages.NO_TASK_FOUND)
+            return
+        }
 
         val (newName, newDescription, newStateName) = readEditTaskInput()
             ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
