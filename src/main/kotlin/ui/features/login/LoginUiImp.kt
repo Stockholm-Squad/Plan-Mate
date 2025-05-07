@@ -29,7 +29,7 @@ class LoginUiImp(
         printer.showMessage(message)
     }
 
-    override fun launchUi(user: User?) {
+    override suspend fun launchUi(user: User?) {
         authenticateUser()
     }
 }

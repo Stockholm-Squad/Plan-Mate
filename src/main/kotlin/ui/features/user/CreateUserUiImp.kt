@@ -25,7 +25,7 @@ class CreateUserUiImp(
             }
     }
 
-    override fun launchUi(user: User?) {
+    override suspend fun launchUi(user: User?) {
         printer.showMessage("➕ Adding new user...")
         // Get username input
         printer.showMessage("Enter username:")

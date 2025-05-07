@@ -22,7 +22,7 @@ class StateManagerUiImp(
         }
     }
 
-    override fun launchUi(user: User?) {
+    override suspend fun launchUi(user: User?) {
         launchStateManagerUi(user = user)
     }
 }
