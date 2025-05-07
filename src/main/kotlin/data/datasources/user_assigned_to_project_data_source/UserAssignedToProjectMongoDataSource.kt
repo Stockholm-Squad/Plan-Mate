@@ -1,5 +1,7 @@
 package org.example.data.datasources.user_assigned_to_project_data_source
 
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.InsertManyResult
 import data.models.UserAssignedToProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,13 +18,24 @@ class UserAssignedToProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : I
     }
 
     override suspend fun overWrite(users: List<UserAssignedToProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.deleteMany()
-        collection.insertMany(users)
-        true
+        val deleteResult: DeleteResult = collection.deleteMany()
+        if (!deleteResult.wasAcknowledged()) {
+            return@withContext false
+        }
+
+        if (users.isEmpty()) {
+            return@withContext true
+        }
+
+        val insertResult: InsertManyResult = collection.insertMany(users)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == users.size
     }
 
     override suspend fun append(users: List<UserAssignedToProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.insertMany(users)
-        true
+        if (users.isEmpty()) {
+            return@withContext true
+        }
+        val insertResult: InsertManyResult = collection.insertMany(users)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == users.size
     }
 }

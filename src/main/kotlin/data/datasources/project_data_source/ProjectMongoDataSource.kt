@@ -1,5 +1,7 @@
 package org.example.data.datasources.project_data_source
 
+import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.InsertManyResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.models.ProjectModel
@@ -15,13 +17,24 @@ class ProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : IProjectDataSou
     }
 
     override suspend fun overWrite(projects: List<ProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.deleteMany()
-        collection.insertMany(projects)
-        true
+        val deleteResult: DeleteResult = collection.deleteMany()
+        if (!deleteResult.wasAcknowledged()) {
+            return@withContext false
+        }
+
+        if (projects.isEmpty()) {
+            return@withContext true
+        }
+
+        val insertResult: InsertManyResult = collection.insertMany(projects)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == projects.size
     }
 
     override suspend fun append(projects: List<ProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        collection.insertMany(projects)
-        true
+        if (projects.isEmpty()) {
+            return@withContext true
+        }
+        val insertResult: InsertManyResult = collection.insertMany(projects)
+        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == projects.size
     }
 }
