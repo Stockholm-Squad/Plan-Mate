@@ -29,18 +29,18 @@ class StateCsvDataSource(private val filePath: String) : IStateDataSource {
 
     }
 
-    override suspend fun overWrite(users: List<ProjectStateModel>): Boolean {
-        users.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(state: List<ProjectStateModel>): Boolean {
+        state.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(users: List<ProjectStateModel>): Boolean {
+    override suspend fun append(state: List<ProjectStateModel>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
             } else emptyList<ProjectStateModel>().toDataFrame()
 
-            val newData = users.toDataFrame()
+            val newData = state.toDataFrame()
             (existing.concat(newData)).writeCSV(file)
             return true
         }

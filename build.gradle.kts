@@ -12,48 +12,56 @@ repositories {
 }
 
 dependencies {
+    addKoinDependencies()
 
-    // koin
-    implementation("io.insert-koin:koin-core:4.0.3")
-
-    // kotlin date time
-
-
-    // Testing
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation(kotlin("test"))
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-
-    // kotest, assertion
-    testImplementation("io.kotest:kotest-runner-junit5:5.7.2")
-    testImplementation("io.kotest:kotest-assertions-core:5.7.2")
-
-    // google truth
-    testImplementation("com.google.truth:truth:1.4.2")
-
-    // mockk
-    testImplementation("io.mockk:mockk:1.14.0")
-
-    // junit params
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-
-    // Data Frame
-    implementation("org.jetbrains.kotlinx:dataframe:0.15.0")
+    //logger
     implementation("org.slf4j:slf4j-nop:2.0.9")
 
-    // JSON serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    addKotlinXDependencies()
 
-    // Kotlin coroutine dependency
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    addMongoDependencies()
 
-    // MongoDB Kotlin driver dependency
-    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
-    implementation("org.litote.kmongo:kmongo-coroutine:4.10.0")
-    implementation("org.litote.kmongo:kmongo-serialization:4.10.0")
+    addTestDependencies()
+}
 
+fun addTestDependencies() {
+    dependencies {
+        testImplementation("org.jetbrains.kotlin:kotlin-test")
+        testImplementation(kotlin("test"))
 
+        testImplementation("io.kotest:kotest-runner-junit5:5.7.2")
+        testImplementation("io.kotest:kotest-assertions-core:5.7.2")
+
+        testImplementation("com.google.truth:truth:1.4.2")
+
+        testImplementation("io.mockk:mockk:1.14.0")
+
+        testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    }
+}
+
+fun addKotlinXDependencies() {
+    dependencies {
+        implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+        implementation("org.jetbrains.kotlinx:dataframe:0.15.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    }
+}
+
+fun addMongoDependencies() {
+    dependencies {
+        implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
+        implementation("org.litote.kmongo:kmongo-coroutine:4.10.0")
+        implementation("org.litote.kmongo:kmongo-serialization:4.10.0")
+    }
+}
+
+fun addKoinDependencies() {
+    dependencies {
+        implementation("io.insert-koin:koin-core:4.0.3")
+    }
 }
 
 tasks.test {
@@ -107,3 +115,4 @@ tasks.jacocoTestCoverageVerification {
         }
     )
 }
+

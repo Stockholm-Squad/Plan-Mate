@@ -1,5 +1,6 @@
 package org.example.di
 
+import org.example.data.database.MongoSetup
 import org.example.data.datasources.audit_system_data_source.AuditSystemMongoDataSource
 import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
@@ -16,15 +17,18 @@ import org.example.data.datasources.user_assigned_to_project_data_source.IUserAs
 import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectMongoDataSource
 import org.example.data.datasources.user_data_source.IUserDataSource
 import org.example.data.datasources.user_data_source.UserMongoDataSource
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
 val dataBaseModule = module {
-    single<IAuditSystemDataSource> { AuditSystemMongoDataSource() }
-    single<IProjectDataSource> { ProjectMongoDataSource() }
-    single<ITaskDataSource> { TaskMongoDataSource() }
-    single<IStateDataSource> { StateMongoDataSource() }
-    single<IUserDataSource> { UserMongoDataSource() }
-    single<ITaskInProjectDataSource> { TaskInProjectMongoDataSource() }
-    single<IMateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource() }
-    single<IUserAssignedToProjectDataSource> { UserAssignedToProjectMongoDataSource() }
+    single<CoroutineDatabase> { MongoSetup.database }
+    single<IAuditSystemDataSource> { AuditSystemMongoDataSource(get()) }
+    single<IProjectDataSource> { ProjectMongoDataSource(get()) }
+    single<ITaskDataSource> { TaskMongoDataSource(get()) }
+    single<IStateDataSource> { StateMongoDataSource(get()) }
+    single<IUserDataSource> { UserMongoDataSource(get()) }
+    single<ITaskInProjectDataSource> { TaskInProjectMongoDataSource(get()) }
+    single<IMateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource(get()) }
+    single<IUserAssignedToProjectDataSource> { UserAssignedToProjectMongoDataSource(get()) }
 }
