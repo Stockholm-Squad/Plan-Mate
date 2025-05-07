@@ -3,12 +3,12 @@ package org.example.data.datasources.task_In_project_data_source
 import data.models.TaskInProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.datasources.MongoSetup
 import org.example.data.utils.TASK_IN_PROJECT_COLLECTION_NAME
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class TaskInProjectMongoDataSource() : ITaskInProjectDataSource {
+class TaskInProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : ITaskInProjectDataSource {
 
-    private val collection = MongoSetup.database.getCollection<TaskInProjectModel>(TASK_IN_PROJECT_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<TaskInProjectModel>(TASK_IN_PROJECT_COLLECTION_NAME)
 
 
     override suspend fun read(): List<TaskInProjectModel> = withContext(Dispatchers.IO) {

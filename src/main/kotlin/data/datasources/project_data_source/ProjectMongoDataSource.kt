@@ -2,13 +2,13 @@ package org.example.data.datasources.project_data_source
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.datasources.MongoSetup
 import org.example.data.models.ProjectModel
 import org.example.data.utils.PROJECTS_COLLECTION_NAME
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class ProjectMongoDataSource() : IProjectDataSource {
+class ProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : IProjectDataSource {
 
-    private val collection = MongoSetup.database.getCollection<ProjectModel>(PROJECTS_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<ProjectModel>(PROJECTS_COLLECTION_NAME)
 
     override suspend fun read(): List<ProjectModel> = withContext(Dispatchers.IO) {
         collection.find().toList()

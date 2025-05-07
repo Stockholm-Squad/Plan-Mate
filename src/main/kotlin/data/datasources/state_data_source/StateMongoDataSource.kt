@@ -2,14 +2,14 @@ package org.example.data.datasources.state_data_source
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.datasources.MongoSetup
 import org.example.data.models.ProjectStateModel
 import org.example.data.utils.STATES_COLLECTION_NAME
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
 
-class StateMongoDataSource() : IStateDataSource {
+class StateMongoDataSource(mongoDatabase: CoroutineDatabase) : IStateDataSource {
 
-    private val collection = MongoSetup.database.getCollection<ProjectStateModel>(STATES_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<ProjectStateModel>(STATES_COLLECTION_NAME)
 
     override suspend fun read(): List<ProjectStateModel> = withContext(Dispatchers.IO) {
         collection.find().toList()

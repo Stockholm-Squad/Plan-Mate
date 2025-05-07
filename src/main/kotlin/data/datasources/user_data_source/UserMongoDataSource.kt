@@ -2,13 +2,13 @@ package org.example.data.datasources.user_data_source
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.datasources.MongoSetup
 import org.example.data.models.UserModel
 import org.example.data.utils.USERS_COLLECTION_NAME
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class UserMongoDataSource() : IUserDataSource {
+class UserMongoDataSource(mongoDatabase: CoroutineDatabase) : IUserDataSource {
 
-    private val collection = MongoSetup.database.getCollection<UserModel>(USERS_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<UserModel>(USERS_COLLECTION_NAME)
 
 
     override suspend fun read(): List<UserModel> = withContext(Dispatchers.IO) {
