@@ -4,15 +4,13 @@ import data.models.UserAssignedToProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.datasources.MongoSetup
-import org.example.data.datasources.task_data_source.ITaskDataSource
-import org.example.data.models.UserModel
-import org.example.data.utils.USERS_COLLECTION_NAME
 import org.example.data.utils.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
 
-class UserAssignedToProjectMongoDataSource() : IUserAssignedToProjectDataSource {
+class UserAssignedToProjectMongoDataSource : IUserAssignedToProjectDataSource {
 
-    private val collection = MongoSetup.database.getCollection<UserAssignedToProjectModel>(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME)
-
+    private val collection = MongoSetup.database.getCollection<UserAssignedToProjectModel>(
+        USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
+    )
 
     override suspend fun read(): List<UserAssignedToProjectModel> = withContext(Dispatchers.IO) {
         collection.find().toList()
@@ -28,4 +26,5 @@ class UserAssignedToProjectMongoDataSource() : IUserAssignedToProjectDataSource 
         collection.insertMany(users)
         true
     }
+
 }

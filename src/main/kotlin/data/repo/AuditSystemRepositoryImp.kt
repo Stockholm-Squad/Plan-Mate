@@ -4,20 +4,31 @@ import data.mapper.mapToAuditSystemEntity
 import data.mapper.mapToAuditSystemModel
 import logic.models.entities.AuditSystem
 import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
+import org.example.data.utils.executeSafelyWithContext
+import org.example.logic.model.exceptions.ReadDataException
+import org.example.logic.model.exceptions.WriteDataException
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(
     private val auditSystemDataSource: IAuditSystemDataSource,
 ) : AuditSystemRepository {
-    override fun addAuditsEntries(auditSystem: List<AuditSystem>): Result<Boolean> =
-        auditSystemDataSource.append(auditSystem.map { it.mapToAuditSystemModel() })
-
-    override fun getAllAuditEntries(): Result<List<AuditSystem>> =
-        auditSystemDataSource.read().fold(
-            onSuccess = { Result.success(it.mapNotNull { it.mapToAuditSystemEntity() }) },
-            onFailure = { Result.failure(it) }
+    override suspend fun addAuditsEntries(auditSystem: List<AuditSystem>): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                auditSystemDataSource.append(auditSystem.map { it.mapToAuditSystemModel() })
+            },
+            onFailure = { throw WriteDataException() }
         )
 
-    override fun initializeDataInFile(auditSystem: List<AuditSystem>): Result<Boolean> =
-        auditSystemDataSource.overWrite(auditSystem.map { it.mapToAuditSystemModel() })
+
+
+    override suspend fun getAllAuditEntries(): List<AuditSystem> =
+        executeSafelyWithContext(
+            onSuccess = {
+                auditSystemDataSource.read().mapNotNull { it.mapToAuditSystemEntity() }
+            },
+            onFailure = { throw ReadDataException() }
+        )
+
+
 }

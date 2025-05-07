@@ -1,7 +1,6 @@
 package org.example.logic.usecase.project
 
 import logic.models.entities.Project
-import logic.models.exceptions.StateNotExistException
 import logic.models.entities.AuditSystem
 import logic.models.entities.EntityType
 import org.example.data.utils.DateHandlerImp
@@ -16,54 +15,45 @@ class ManageProjectUseCase(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val auditSystemRepository: AddAuditSystemUseCase,
 ) {
-    fun addProject(projectName: String, stateName: String, userId: UUID): Result<Boolean> {
+    suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
         val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
-            ?: return Result.failure(StateNotExistException())
+            ?: return false
         val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
-        return projectRepository.addProject(newProject)
-            .fold(
-                onSuccess = {
-                    logAudit(newProject, userId)
-                    Result.success(it)
-                },
-                onFailure = { Result.failure(it) }
-            )
+        return projectRepository.addProject(newProject).also {
+            logAudit(newProject, userId)
+        }
     }
 
-    fun updateProject(
+    suspend fun updateProject(
         projectId: UUID,
         newProjectName: String,
         newProjectStateName: String,
         userId: UUID
-    ): Result<Boolean> {
+    ): Boolean {
+
+
         val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
-            ?: return Result.failure(StateNotExistException())
+            ?: return false
+
         val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
-        return projectRepository.editProject(updatedProject)
-            .fold(
-                onSuccess = {
-                    logAudit(updatedProject, userId)
-                    Result.success(it)
-                }, onFailure = { Result.failure(it) }
-            )
+
+        return projectRepository.editProject(updatedProject).also {
+            logAudit(updatedProject, userId)
+        }
     }
 
-    fun removeProjectByName(projectName: String): Result<Boolean> {
-        return getProjectsUseCase.getProjectByName(projectName).fold(
-            onFailure = { Result.failure(it) },
-            onSuccess = { project -> projectRepository.deleteProject(project) }
-        )
+    suspend fun removeProjectByName(projectName: String): Boolean {
+        return getProjectsUseCase.getProjectByName(projectName).let {
+            projectRepository.deleteProject(it)
+        }
     }
 
-    fun isProjectExists(projectName: String): Result<Boolean> {
-        return getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { Result.success(true) },
-            onFailure = { Result.failure(it) }
-        )
+    suspend fun isProjectExists(projectName: String): Boolean {
+        return getProjectsUseCase.getProjectByName(projectName).name.isNotBlank()
     }
 
-    private fun logAudit(updatedProject: Project, userId: UUID) {
+    private suspend fun logAudit(updatedProject: Project, userId: UUID) {
         val auditEntry = AuditSystem(
             entityType = EntityType.PROJECT,
             description = "update project ${updatedProject.name}",

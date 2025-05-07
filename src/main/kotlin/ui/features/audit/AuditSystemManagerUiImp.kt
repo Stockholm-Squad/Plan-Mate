@@ -1,5 +1,6 @@
 package org.example.ui.features.audit
 
+import kotlinx.coroutines.*
 import logic.models.entities.User
 import org.example.logic.usecase.audit.GetAuditSystemUseCase
 import org.example.ui.features.common.utils.UiMessages
@@ -11,11 +12,14 @@ class AuditSystemManagerUiImp(
     private val printer: OutputPrinter,
     private val reader: InputReader,
 ) : AuditSystemManagerUi {
-
+    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
+        printer.showMessage(throwable.message ?: "Unknown error")
+    }
     private var user: User? = null
 
     override fun invoke(user: User?) {
         this.user = user
+        if (user == null) return
         do {
             printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
             when (getMainMenuOption()) {
@@ -32,33 +36,45 @@ class AuditSystemManagerUiImp(
 
     private fun displayAuditsByProjectName() {
         printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
-        reader.readStringOrNull()?.let {
-            useCase.getProjectAuditsByName(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits,user!!.username) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
+        reader.readStringOrNull()?.let { input ->
+            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+                val auditsDeferred = async {
+                    useCase.getProjectAuditsByName(input)
+                }
+                val audits = auditsDeferred.await()
+                withContext(Dispatchers.Main){
+                    printer.showAudits(audits, user!!.username)
+                }            }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
     }
 
     private fun displayAuditsByTaskName() {
         printer.showMessage(UiMessages.PROMPT_TASK_NAME)
-        reader.readStringOrNull()?.let {
-            useCase.getTaskAuditsByName(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits,user!!.username) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
+        reader.readStringOrNull()?.let { input ->
+            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+                val auditsDeferred = async {
+                    useCase.getTaskAuditsByName(input)
+                }
+                val audits = auditsDeferred.await()
+                withContext(Dispatchers.Main){
+                    printer.showAudits(audits, user!!.username)
+                }
+            }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
 
     }
 
 
     private fun displayAllAudits() {
-
-        user?.id ?: return
-        useCase.getAuditsByUserId(user?.id!!).fold(
-            onSuccess = { audits -> printer.showAudits(audits, user!!.username) },
-            onFailure = { printer.showMessage(it.message.toString()) }
-        )
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            val auditsDeferred = async {
+                useCase.getAuditsByUserId(user!!.id)
+            }
+            val audits = auditsDeferred.await()
+            withContext(Dispatchers.Main){
+                printer.showAudits(audits, user!!.username)
+            }
+        }
     }
 
     private fun askSearchAgain(): Boolean? {

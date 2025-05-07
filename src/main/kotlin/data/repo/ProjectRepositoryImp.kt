@@ -3,11 +3,14 @@ package org.example.data.repo
 
 import data.models.UserAssignedToProjectModel
 import logic.models.entities.Project
+import logic.models.exceptions.DataException
+import logic.models.exceptions.ProjectExceptions
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.mapper.mapToProjectEntity
 import org.example.data.mapper.mapToProjectModel
 import org.example.data.models.ProjectModel
+import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
@@ -15,20 +18,6 @@ class ProjectRepositoryImp(
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
 ) : ProjectRepository {
 
-
-    override fun addProject(project: Project): Result<Boolean> {
-        return projectDataSource.append(listOf(project.mapToProjectModel()))
-    }
-
-    override fun editProject(updatedProject: Project): Result<Boolean> {
-        return projectDataSource.read().fold(
-            onSuccess = { existingProjects ->
-                updateProjectList(existingProjects, updatedProject)
-                    .let { updatedProjects -> projectDataSource.overWrite(updatedProjects) }
-            },
-            onFailure = { Result.failure(it) }
-        )
-    }
 
     private fun updateProjectList(
         existing: List<ProjectModel>,
@@ -39,51 +28,22 @@ class ProjectRepositoryImp(
         }
     }
 
-    override fun deleteProject(projectToDelete: Project): Result<Boolean> {
-        return projectDataSource.read().fold(
-            onSuccess = { projects ->
-                projects.filterNot { project ->
-                    project.id == projectToDelete.id.toString()
-                }.let { projectList ->
-                    projectDataSource.overWrite(projectList)
-                }
-            },
-            onFailure = { Result.failure(it) },
-        )
-    }
 
-    override fun getAllProjects(): Result<List<Project>> {
-        return projectDataSource.read().fold(
-            onSuccess = { projectModelList ->
-                Result.success(
-                    projectModelList.mapNotNull { projectModel ->
-                        projectModel.mapToProjectEntity()
-                    },
-                )
-            },
-            onFailure = { Result.failure(it) }
-        )
-    }
-
-    override fun getProjectsByUsername(username: String): Result<List<Project>> {
-        return userAssignedToProjectDataSource.read().fold(
-            onSuccess = { assignments ->
-                return filterAssignmentsByUsername(assignments, username).let { filteredAssignments ->
-                    extractProjectIds(filteredAssignments).let { projectIds ->
-                        projectDataSource.read().fold(
-                            onSuccess = { projects ->
-                                filterProjectsByIds(projects, projectIds).let { filteredProjects ->
-                                    Result.success(convertToProjects(filteredProjects))
-                                }
-                            },
-                            onFailure = { Result.failure(it) }
-                        )
+    override suspend fun getProjectsByUsername(username: String): List<Project> {
+        return executeSafelyWithContext(
+            onSuccess = {
+                userAssignedToProjectDataSource.read().let { assignments ->
+                    filterAssignmentsByUsername(assignments, username).let { filteredAssignments ->
+                        extractProjectIds(filteredAssignments).let { projectIds ->
+                            getProjectsByIds(projectIds)
+                        }
                     }
                 }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = { throw ProjectExceptions.NoProjectsFoundException() },
         )
     }
+
 
     private fun filterAssignmentsByUsername(
         assignments: List<UserAssignedToProjectModel>,
@@ -96,15 +56,71 @@ class ProjectRepositoryImp(
         return assignments.map { it.projectId }
     }
 
-    private fun filterProjectsByIds(
-        projects: List<ProjectModel>,
+    private suspend fun getProjectsByIds(
         ids: List<String>
-    ): List<ProjectModel> {
-        return projects.filter { ids.contains(it.id) }
+    ): List<Project> {
+        return executeSafelyWithContext(
+            onSuccess = {
+                projectDataSource.read()
+                    .let { projects ->
+                        convertToProjects(projects.filter { ids.contains(it.id) })
+                    }
+            },
+            onFailure = { throw ProjectExceptions.NoProjectsFoundException() }
+        )
+
     }
 
     private fun convertToProjects(projects: List<ProjectModel>): List<Project> {
         return projects.mapNotNull { it.mapToProjectEntity() }
+    }
+
+    override suspend fun addProject(project: Project): Boolean {
+        return executeSafelyWithContext(
+            onSuccess = {
+                projectDataSource.append(listOf(project.mapToProjectModel()))
+            },
+            onFailure = { throw DataException.ReadDataException() }
+        )
+    }
+
+    override suspend fun editProject(updatedProject: Project): Boolean {
+        return executeSafelyWithContext(
+            onSuccess = {
+                projectDataSource.read().let {
+                    updateProjectList(it, updatedProject)
+                        .let { updatedProjects -> projectDataSource.overWrite(updatedProjects) }
+                }
+
+            }, onFailure = {
+                throw DataException.WriteDataException()
+            })
+    }
+
+    override suspend fun deleteProject(projectToDelete: Project): Boolean {
+        return try {
+            projectDataSource.read().let { projects ->
+                projects.filterNot { project ->
+                    project.id == projectToDelete.id.toString()
+                }.let { projectList ->
+                    projectDataSource.overWrite(projectList)
+                }
+            }
+        } catch (e: Exception) {
+            throw DataException.ReadDataException()
+        }
+    }
+
+    override suspend fun getAllProjects(): List<Project> {
+        return try {
+            projectDataSource.read().let { projectModels ->
+                projectModels.mapNotNull { projectModel ->
+                    projectModel.mapToProjectEntity()
+                }
+            }
+        } catch (e: Exception) {
+            throw DataException.ReadDataException()
+        }
     }
 
 }
