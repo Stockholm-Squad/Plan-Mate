@@ -101,11 +101,9 @@ class TaskManagerUiImp(
         val project = getProjectsUseCase.getProjectByName(projectName)
 
         withContext(Dispatchers.IO + coroutineExceptionHandler) {
-            val created = manageTasksUseCase.addTask(task, userId)
-            if (!created) throw Exception(UiMessages.FAILED_TO_CREATE_TASK)
+            manageTasksUseCase.addTask(task, userId)
 
-            val added = manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
-            if (!added) throw Exception(UiMessages.FAILED_TO_ADD_TASK_TO_PROJECT)
+            manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
         }
         withContext(Dispatchers.Main) {
             printer.printTask(task)
@@ -134,8 +132,7 @@ class TaskManagerUiImp(
             updatedDate = DateHandlerImp().getCurrentDateTime()
         )
         withContext(Dispatchers.IO + coroutineExceptionHandler) {
-            val isEdited = manageTasksUseCase.editTask(updatedTask, userId)
-            if (!isEdited) throw Exception(UiMessages.FAILED_TO_EDIT_TASK)
+            manageTasksUseCase.editTask(updatedTask, userId)
         }
 
         withContext(Dispatchers.Main) {
@@ -149,8 +146,7 @@ class TaskManagerUiImp(
         if (existingTask == null) return printer.showMessage(UiMessages.NO_TASK_FOUND)
 
         withContext(Dispatchers.IO + coroutineExceptionHandler) {
-            val isDeleted = manageTasksUseCase.deleteTaskByName(taskName)
-            if (!isDeleted) throw Exception(UiMessages.FAILED_TO_DELETE_TASK)
+            manageTasksUseCase.deleteTaskByName(taskName)
         }
         withContext(Dispatchers.Main) {
             printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY)
@@ -185,7 +181,7 @@ class TaskManagerUiImp(
             manageTasksUseCase.getTaskByName(taskName)
         }
         withContext(Dispatchers.Main) {
-            task?.let { printer.printTask(it) } ?: printer.showMessage(UiMessages.NO_TASK_FOUND)
+            task.let { printer.printTask(it) } ?: printer.showMessage(UiMessages.NO_TASK_FOUND)
         }
     }
 
