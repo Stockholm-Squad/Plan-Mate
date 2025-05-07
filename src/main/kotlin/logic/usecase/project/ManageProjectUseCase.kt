@@ -3,6 +3,7 @@ package org.example.logic.usecase.project
 import logic.models.entities.Project
 import logic.models.entities.AuditSystem
 import logic.models.entities.EntityType
+import logic.models.exceptions.StateExceptions
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.audit.AddAuditSystemUseCase
@@ -17,7 +18,7 @@ class ManageProjectUseCase(
 ) {
     suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
         val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
-            ?: return false
+            ?: throw StateExceptions.StateNotExistException()
         val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
         return projectRepository.addProject(newProject).also {
@@ -34,7 +35,7 @@ class ManageProjectUseCase(
 
 
         val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
-            ?: return false
+            ?: throw StateExceptions.StateNotExistException()
 
         val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
 
