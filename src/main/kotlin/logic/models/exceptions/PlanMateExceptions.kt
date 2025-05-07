@@ -40,6 +40,10 @@ open class StateExceptions(message: String) : LogicExceptions(message) {
     class StateNameLengthException(message: String = "The state name is too long.") : StateExceptions(message)
     class NoStatesFoundedException(message: String = "There are no states.") : StateExceptions(message)
     class NotAllowedStateNameException(message: String = "Only letters are allowed!") : StateExceptions(message)
+    class ProjectStateNotAddedException(message: String = "Project State Not Added") : StateExceptions(message)
+    class ProjectStateNotEditedException(message: String = "Project State Not Edited") : StateExceptions(message)
+    class ProjectStateNotDeletedException(message: String = "Project State Not Deleted") : StateExceptions(message)
+    class NoProjectStateFoundException(message: String = "No Project State Found") : StateExceptions(message)
 }
 
 
