@@ -33,7 +33,7 @@ class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSyste
 
     override suspend fun append(audits: List<AuditSystemModel>): Boolean = withContext(Dispatchers.IO) {
         if (audits.isEmpty()) {
-            return@withContext true // nothing to append, considered success
+            return@withContext true
         }
         val insertResult: InsertManyResult = collection.insertMany(audits)
         return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == audits.size

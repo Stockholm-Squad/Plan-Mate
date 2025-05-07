@@ -34,7 +34,7 @@ class MateTaskAssignmentMongoDataSource(mongoDatabase: CoroutineDatabase) : IMat
 
     override suspend fun append(mateTasks: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
         if (mateTasks.isEmpty()) {
-            return@withContext true // nothing to append, considered success
+            return@withContext true
         }
         val insertResult: InsertManyResult = collection.insertMany(mateTasks)
         return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == mateTasks.size
