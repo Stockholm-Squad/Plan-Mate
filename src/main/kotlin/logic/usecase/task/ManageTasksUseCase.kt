@@ -13,25 +13,34 @@ class ManageTasksUseCase(
     private val taskRepository: TaskRepository,
     private val auditSystemRepository: AuditSystemRepository,
 ) {
-    suspend fun getAllTasks(): List<Task> = taskRepository.getAllTasks()
+    suspend fun getAllTasks(): List<Task> {
+        return taskRepository.getAllTasks().takeIf { it.isNotEmpty() }
+            ?: throw TaskExceptions.TasksNotFoundException()
+    }
 
     suspend fun getTaskByName(taskName: String): Task =
-        taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) } ?: throw TaskExceptions.TaskNotFoundException()
+        taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) }
+            ?: throw TaskExceptions.TaskNotFoundException()
 
     suspend fun getTaskIdByName(taskName: String): UUID =
         getTaskByName(taskName).id
 
     suspend fun addTask(task: Task, userId: UUID): Boolean =
-        taskRepository.addTask(task).also { isCreated -> if (isCreated) logAudit(task, userId) }
-
+        taskRepository.addTask(task).also { isAdded ->
+            if (isAdded) logAudit(task, userId)
+            else throw TaskExceptions.TaskNotAddedException()
+        }
 
     suspend fun editTask(updatedTask: Task, userId: UUID): Boolean =
-        taskRepository.editTask(updatedTask).also { isUpdated -> if (isUpdated) logAudit(updatedTask, userId) }
-
+        taskRepository.editTask(updatedTask).also { isUpdated ->
+            if (isUpdated) logAudit(updatedTask, userId)
+            else throw TaskExceptions.TaskNotEditException()
+        }
 
     suspend fun deleteTaskByName(taskName: String): Boolean =
-        taskRepository.deleteTask(getTaskIdByName(taskName)) //TODO: add audit
-
+        taskRepository.deleteTask(getTaskIdByName(taskName)).also { isDeleted ->
+            if (!isDeleted) throw TaskExceptions.TaskNotDeletedException()
+        }
 
     private suspend fun logAudit(updatedTask: Task, userId: UUID) {
         val auditEntry = AuditSystem(
