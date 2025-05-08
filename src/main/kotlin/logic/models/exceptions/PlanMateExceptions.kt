@@ -16,16 +16,17 @@ open class UserExceptions(message: String) : LogicExceptions(message) {
     class IncorrectPasswordException(message: String = "Incorrect password") : UserExceptions(message)
     class UserDoesNotExistException(message: String = "User does not exist") : UserExceptions(message)
     class UserExistException(message: String = "User already exists") : UserExceptions(message)
+    class UserNotAddedException(message: String = "Failed to add User.") : UserExceptions(message)
     class UsersDataAreEmptyException(message: String = "Users data are empty") : UserExceptions(message)
+    class UserNotDeletedException (message: String = "Failed to delete User") : UserExceptions(message)
 }
 
 open class TaskExceptions(message: String) : LogicExceptions(message) {
-    class TaskNotFoundException(message: String = "No tasks found.") : TaskExceptions(message)
-    class NoTaskAssignmentFoundException(message: String = "No task assignments found.") : TaskExceptions(message)
-    class NoTasksCreatedException(message: String = "Failed to create task.") : TaskExceptions(message)
-    class NoTasksDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
-    class NoTasksFoundException(message: String = "No tasks found.") : TaskExceptions(message)
-
+    class TasksNotFoundException(message: String = "No tasks found.") : TaskExceptions(message)
+    class TaskNotFoundException(message: String = "Task Not found.") : TaskExceptions(message)
+    class TaskNotAddedException(message: String = "Failed to add task.") : TaskExceptions(message)
+    class TaskNotEditException(message: String = "Failed to edit task.") : TaskExceptions(message)
+    class TaskNotDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
 }
 
 open class ProjectExceptions(message: String) : LogicExceptions(message) {

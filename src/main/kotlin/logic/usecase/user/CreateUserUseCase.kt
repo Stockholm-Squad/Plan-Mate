@@ -1,8 +1,7 @@
 package org.example.logic.usecase.user
 
 import logic.models.entities.User
-import logic.models.exceptions.UserExistException
-import logic.models.exceptions.UsersDataAreEmptyException
+import logic.models.exceptions.UserExceptions
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
@@ -12,42 +11,29 @@ class CreateUserUseCase(
     private val validateUserDataUseCase: ValidateUserDataUseCase
 ) {
 
-    fun createUser(username: String, password: String): Result<Boolean> {
-            try {
-                validateUserDataUseCase.validateUserName(username)
-                validateUserDataUseCase.validatePassword(password)
+    suspend fun createUser(username: String, password: String): Boolean {
+        validateUserDataUseCase.validateUserName(username)
+        validateUserDataUseCase.validatePassword(password)
 
-                return userRepository.getAllUsers().fold(
-                    onSuccess = {
-                        handleSuccess(username = username, password = password, users = it).fold(
-                            onSuccess = { user -> userRepository.addUser(user) },
-                            onFailure = { Result.failure(it) })
-                    },
-                    onFailure = { Result.failure(it) })
-            } catch (e:Exception ) {
-                return Result.failure(e)
-            }
-        }
+        val users = userRepository.getAllUsers()
+        val user = handleSuccess(username = username, password = password, users = users)
+        return userRepository.addUser(user)
+    }
+
 
     private fun handleSuccess(
         username: String,
         password: String,
         users: List<User>
-    ): Result<User> {
-        return runCatching {
-            checkUserExists(users, username)
-        }.fold(
-            onSuccess = { Result.success(User(username = username, hashedPassword = hashToMd5(password))) },
-            onFailure = { Result.failure(it) })
-
+    ): User {
+        checkUserExists(users, username)
+        return User(username = username, hashedPassword = hashToMd5(password))
     }
-
 
     fun checkUserExists(users: List<User>, username: String) {
         users.forEach {
-            if (it.username == username) throw UserExistException()
+            if (it.username == username) throw UserExceptions.UserExistException()
         }
-
     }
 
 }

@@ -3,11 +3,13 @@ package org.example.data.repo
 import data.models.MateTaskAssignmentModel
 import data.models.UserAssignedToProjectModel
 import logic.models.entities.User
+import logic.models.exceptions.UserExceptions
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_data_source.IUserDataSource
 import org.example.data.mapper.mapToUserEntity
 import org.example.data.mapper.mapToUserModel
+import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.extention.toSafeUUID
 import java.util.*
@@ -17,73 +19,100 @@ class UserRepositoryImp(
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
     private val mateTaskAssignment: IMateTaskAssignmentDataSource,
 ) : UserRepository {
-    override fun addUser(user: User): Result<Boolean> {
-        return userDataSource.append(listOf(user.mapToUserModel()))
-    }
-
-    override fun getAllUsers(): Result<List<User>> {
-        return userDataSource.read().fold(
-            onSuccess = { userModels -> Result.success(userModels.mapNotNull { it.mapToUserEntity() }) },
-            onFailure = { Result.failure(it) })
-    }
-
-    override fun getUsersByProjectId(projectId: UUID): Result<List<User>> {
-        return userAssignedToProjectDataSource.read().fold(
-            onSuccess = { userAssignedToProject ->
-                userDataSource.read().fold(
-                    onSuccess = { users ->
-                        userAssignedToProject.filter {
-                            projectId == it.projectId.toSafeUUID()
-                        }.map { it.userName }
-                            .let { userNames ->
-                                users.filter { user -> userNames.contains(user.username) }.mapNotNull { userModel ->
-                                    userModel.mapToUserEntity()
-                                }.let {
-                                    Result.success(it)
-                                }
-                            }
-                    },
-                    onFailure = { Result.failure(it) }
-                )
-
-            }, onFailure = { Result.failure(it) })
-    }
-
-    override fun addUserToProject(projectId: UUID, userName: String): Result<Boolean> {
-        return userAssignedToProjectDataSource.append(
-            listOf(UserAssignedToProjectModel(projectId = projectId.toString(), userName = userName))
-        )
-    }
-
-    override fun deleteUserFromProject(projectId: UUID, userName: String): Result<Boolean> {
-        return userAssignedToProjectDataSource.read().fold(onSuccess = { usersAssignedToProject ->
-            usersAssignedToProject.filterNot { userAssignedToProject ->
-                (userAssignedToProject.projectId.toSafeUUID() == projectId) && (userAssignedToProject.userName == userName)
-            }.let { newUsersAssignedToProject ->
-                userAssignedToProjectDataSource.overWrite(newUsersAssignedToProject)
+    override suspend fun addUser(user: User): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                userDataSource.append(listOf(user.mapToUserModel()))
+            },
+            onFailure = {
+                throw UserExceptions.UserNotAddedException()
             }
-        }, onFailure = { Result.failure(it) })
-    }
-
-    override fun addUserToTask(mateName: String, taskId: UUID): Result<Boolean> {
-        return mateTaskAssignment.append(
-            listOf(MateTaskAssignmentModel(userName = mateName, taskId = taskId.toString()))
         )
-    }
 
-    override fun deleteUserFromTask(mateName: String, taskId: UUID): Result<Boolean> {
-        return mateTaskAssignment.read().fold(
-            onSuccess = { assignments ->
-                val newAssignments = assignments.filterNot {
+    override suspend fun getAllUsers(): List<User> =
+        executeSafelyWithContext(
+            onSuccess = {
+                userDataSource.read()
+                    .mapNotNull {
+                        it.mapToUserEntity()
+                    }
+            },
+            onFailure = {
+                throw UserExceptions.UserDoesNotExistException()
+            }
+        )
+
+
+    override suspend fun getUsersByProjectId(projectId: UUID): List<User> =
+        executeSafelyWithContext(
+            onSuccess = {
+                val assignedUser = userAssignedToProjectDataSource.read().filter {
+                    it.projectId == projectId.toString()
+                }.map { it.userName }
+                val allUsers = userDataSource.read()
+                allUsers.filter { it.username in assignedUser }
+                    .mapNotNull { it.mapToUserEntity() }
+            },
+            onFailure = {
+                throw UserExceptions.UserDoesNotExistException()
+            }
+        )
+
+
+    override suspend fun addUserToProject(projectId: UUID, userName: String): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                userAssignedToProjectDataSource.append(
+                    listOf(UserAssignedToProjectModel(projectId = projectId.toString(), userName = userName))
+                )
+            }, onFailure = {
+                throw UserExceptions.UserNotAddedException()
+            }
+        )
+
+
+    override suspend fun deleteUserFromProject(projectId: UUID, userName: String): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                userAssignedToProjectDataSource.read().filter {
+                    (it.projectId.toSafeUUID() == projectId) && (it.userName == userName)
+                }.let { userAssignedToProjectDataSource.overWrite(it) }
+            },
+            onFailure = {
+                throw UserExceptions.UserNotDeletedException()
+            }
+        )
+
+
+    override suspend fun addUserToTask(mateName: String, taskId: UUID): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                mateTaskAssignment.append(
+                    listOf(
+                        MateTaskAssignmentModel(userName = mateName, taskId = taskId.toString())
+                    )
+                )
+            }, onFailure = {
+                throw UserExceptions.UserNotAddedException()
+            }
+        )
+
+    override suspend fun deleteUserFromTask(mateName: String, taskId: UUID): Boolean =
+        executeSafelyWithContext(
+            onSuccess = {
+                val originalAssignments = mateTaskAssignment.read()
+                val newAssignments = mateTaskAssignment.read().filterNot {
                     it.userName == mateName && it.taskId == taskId.toString()
                 }
-                when (newAssignments.size == assignments.size) {
-                    true -> Result.success(false)
-                    false -> mateTaskAssignment.overWrite(newAssignments)
+                return@executeSafelyWithContext if (newAssignments.size != originalAssignments.size) {
+                    mateTaskAssignment.overWrite(newAssignments)
+                    true
+                } else {
+                    false
                 }
             },
-            onFailure = { Result.failure(it) }
+            onFailure = {
+                throw UserExceptions.UserNotDeletedException()
+            }
         )
     }
-
-}
