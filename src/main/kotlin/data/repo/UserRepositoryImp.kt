@@ -4,6 +4,8 @@ import data.models.MateTaskAssignmentModel
 import data.models.UserAssignedToProjectModel
 import logic.models.entities.User
 import logic.models.exceptions.UserExceptions
+import logic.models.exceptions.UserToProjectExceptions
+import logic.models.exceptions.UserToTaskExceptions
 import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_data_source.IUserDataSource
@@ -38,7 +40,7 @@ class UserRepositoryImp(
                     }
             },
             onFailure = {
-                throw UserExceptions.UserDoesNotExistException()
+                throw UserExceptions.UsersDoesNotExistException()
             }
         )
 
@@ -66,7 +68,7 @@ class UserRepositoryImp(
                     listOf(UserAssignedToProjectModel(projectId = projectId.toString(), userName = userName))
                 )
             }, onFailure = {
-                throw UserExceptions.UserNotAddedException()
+                throw UserToProjectExceptions.UserNotAddedToProjectException()
             }
         )
 
@@ -79,7 +81,7 @@ class UserRepositoryImp(
                 }.let { userAssignedToProjectDataSource.overWrite(it) }
             },
             onFailure = {
-                throw UserExceptions.UserNotDeletedException()
+                throw UserToProjectExceptions.UserNotDeletedFromProjectException()
             }
         )
 
@@ -93,7 +95,7 @@ class UserRepositoryImp(
                     )
                 )
             }, onFailure = {
-                throw UserExceptions.UserNotAddedException()
+                throw UserToTaskExceptions.UserNotAddedToTaskException()
             }
         )
 
@@ -112,7 +114,7 @@ class UserRepositoryImp(
                 }
             },
             onFailure = {
-                throw UserExceptions.UserNotDeletedException()
+                throw UserToTaskExceptions.UserNotDeletedFromTaskException()
             }
         )
 }
