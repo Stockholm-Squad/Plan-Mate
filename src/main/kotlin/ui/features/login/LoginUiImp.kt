@@ -10,18 +10,20 @@ class LoginUiImp(
     private val getAuthenticationUseCase: LoginUseCase,
     private val printer: OutputPrinter,
     private var reader: InputReader
-) : LoginUi{
-    override fun authenticateUser(): User? {
+) : LoginUi {
+
+    override suspend fun authenticateUser(): User? {
         printer.showMessage("Please enter your user name: ")
-        return reader.readStringOrNull()?.let { username ->
-            printer.showMessage("Please enter your Password: ")
-            reader.readStringOrNull()?.let { password ->
-                getAuthenticationUseCase.loginUser(username = username, password = password)
-                    .fold(onSuccess = { user -> user }, onFailure = {
-                        handleFailure(it.message.toString())
-                        null
-                    })
-            }
+        val username = reader.readStringOrNull() ?: return null
+
+        printer.showMessage("Please enter your Password: ")
+        val password = reader.readStringOrNull() ?: return null
+
+        return try {
+            getAuthenticationUseCase.loginUser(username, password)
+        } catch (e: Exception) {
+            handleFailure(e.message ?: "Unknown error occurred")
+            null
         }
     }
 

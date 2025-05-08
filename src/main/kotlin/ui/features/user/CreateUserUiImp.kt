@@ -11,18 +11,16 @@ class CreateUserUiImp(
     private val inputReader: InputReader
 ):CreateUserUi {
 
-    private fun createUser(username: String, password: String) {
-        createUserUseCase.createUser(username, password)
-            .onSuccess { success ->
+    private suspend fun createUser(username: String, password: String) {
+     val success=   createUserUseCase.createUser(username, password)
+
                 if (success) {
                     printer.showMessage("✅ User ${username} added successfully!")
                 } else {
                     printer.showMessage("Failed to add user")
                 }
-            }
-            .onFailure { error ->
-                printer.showMessage("Error: ${error.message}")
-            }
+
+
     }
 
     override suspend fun launchUi(user: User?) {
