@@ -3,7 +3,7 @@ package org.example.logic.usecase.project
 import logic.models.entities.Project
 import logic.models.entities.AuditSystem
 import logic.models.entities.EntityType
-import logic.models.exceptions.StateExceptions
+import logic.models.exceptions.ProjectExceptions
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.audit.AddAuditSystemUseCase
@@ -16,13 +16,20 @@ class ManageProjectUseCase(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val auditSystemRepository: AddAuditSystemUseCase,
 ) {
-    suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
-        val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
-            ?: throw StateExceptions.StateNotExistException()
-        val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
-        return projectRepository.addProject(newProject).also {
-            logAudit(newProject, userId)
+    suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
+        return isProjectExists(projectName).let { success ->
+            if (!success) {
+                val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
+                val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
+
+                projectRepository.addProject(newProject).also {
+                    logAudit(newProject, userId)
+                }
+            } else {
+                throw ProjectExceptions.ProjectAlreadyExistException()
+            }
+
         }
     }
 
@@ -32,15 +39,15 @@ class ManageProjectUseCase(
         newProjectStateName: String,
         userId: UUID
     ): Boolean {
-
-
-        val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
-            ?: throw StateExceptions.StateNotExistException()
-
-        val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
-
-        return projectRepository.editProject(updatedProject).also {
-            logAudit(updatedProject, userId)
+        return isProjectExists(newProjectName).let { success ->
+            if (success) {
+                val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
+                val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
+                projectRepository.editProject(updatedProject).also {
+                    logAudit(updatedProject, userId)
+                }
+            } else
+                throw ProjectExceptions.ProjectNotFoundException()
         }
     }
 
@@ -50,11 +57,11 @@ class ManageProjectUseCase(
         }
     }
 
-    suspend fun isProjectExists(projectName: String): Boolean { //todo: use it to check in the edit() and add()
+    suspend fun isProjectExists(projectName: String): Boolean {
         return try {
             getProjectsUseCase.getProjectByName(projectName)
             true
-        }catch (e: Exception){
+        } catch (e: Exception) {
             false
         }
     }
