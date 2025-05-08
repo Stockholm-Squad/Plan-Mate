@@ -4,7 +4,6 @@ import logic.models.entities.Project
 import logic.models.entities.AuditSystem
 import logic.models.entities.EntityType
 import logic.models.exceptions.ProjectExceptions
-import logic.models.exceptions.StateExceptions
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.audit.AddAuditSystemUseCase
@@ -28,7 +27,7 @@ class ManageProjectUseCase(
                     logAudit(newProject, userId)
                 }
             } else {
-                throw ProjectExceptions.ProjectAlreadyExist()
+                throw ProjectExceptions.ProjectAlreadyExistException()
             }
 
         }

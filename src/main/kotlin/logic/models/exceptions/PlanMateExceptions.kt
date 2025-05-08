@@ -36,7 +36,7 @@ open class ProjectExceptions(message: String) : LogicExceptions(message) {
     class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
     class NoProjectEditedException(message: String = "The project hasn't edited") : ProjectExceptions(message)
     class NoProjectDeletedException(message: String = "The project hasn't deleted") : ProjectExceptions(message)
-    class ProjectAlreadyExist(message: String = "The project is already exists") : ProjectExceptions(message)
+    class ProjectAlreadyExistException(message: String = "The project is already exists") : ProjectExceptions(message)
 
 }
 
