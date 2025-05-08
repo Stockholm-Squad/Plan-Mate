@@ -14,7 +14,7 @@ class StateManagerUiImp(
     private val mateStateManagerUi: MateStateManagerUi,
     private val printer: OutputPrinter
 ) :StateManageUi{
-  override  fun launchStateManagerUi(user: User?) {
+  override suspend fun launchStateManagerUi(user: User?) {
         when (user?.userRole) {
             UserRole.ADMIN -> adminStateManagerUi.launchUi(user)
             UserRole.MATE -> mateStateManagerUi.launchUi(user)

@@ -15,8 +15,11 @@ open class UserExceptions(message: String) : LogicExceptions(message) {
     class InvalidPasswordException(message: String = "Invalid password") : UserExceptions(message)
     class IncorrectPasswordException(message: String = "Incorrect password") : UserExceptions(message)
     class UserDoesNotExistException(message: String = "User does not exist") : UserExceptions(message)
+    class UsersDoesNotExistException(message: String = "Users does not exist") : UserExceptions(message)
     class UserExistException(message: String = "User already exists") : UserExceptions(message)
     class UsersDataAreEmptyException(message: String = "Users data are empty") : UserExceptions(message)
+    class UserNotAddedException(message: String = "User not added") : UserExceptions(message)
+    class UserNotDeletedException(message: String = "User not deleted") : UserExceptions(message)
 }
 
 open class TaskExceptions(message: String) : LogicExceptions(message) {
@@ -54,6 +57,20 @@ open class StateExceptions(message: String) : LogicExceptions(message) {
 open class AuditExceptions(message: String) : LogicExceptions(message) {
     class NoAuditsFoundedException(message: String = "There are no audits.") : AuditExceptions(message)
     class AuditSystemNotAddedException(message: String = "Audit system not added.") : AuditExceptions(message)
+}
+
+open class UserToProjectExceptions(message: String) : LogicExceptions(message) {
+    class UserNotAddedToProjectException(message: String = "User not added to project") :
+        UserToProjectExceptions(message)
+    class UserNotDeletedFromProjectException(message: String = "User not deleted from project") :
+        UserToProjectExceptions(message)
+}
+
+open class UserToTaskExceptions(message: String) : LogicExceptions(message) {
+    class UserNotAddedToTaskException(message: String = "User not added to task") :
+        UserToTaskExceptions(message)
+    class UserNotDeletedFromTaskException(message: String = "User not deleted from task") :
+        UserToTaskExceptions(message)
 }
 
 
