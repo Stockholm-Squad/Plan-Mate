@@ -2,6 +2,7 @@ package org.example.ui.features.state
 
 import logic.models.entities.User
 import logic.models.entities.UserRole
+import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
@@ -12,13 +13,9 @@ class StateManagerUiImp(
     private val adminStateManagerUi: AdminStateManagerUi,
     private val mateStateManagerUi: MateStateManagerUi,
     private val printer: OutputPrinter
-) : StateManageUi {
+) : UiLauncher {
 
     override suspend fun launchUi(user: User?) {
-        launchStateManagerUi(user = user)
-    }
-
-    override suspend fun launchStateManagerUi(user: User?) {
         when (user?.userRole) {
             UserRole.ADMIN -> adminStateManagerUi.launchUi(user)
             UserRole.MATE -> mateStateManagerUi.launchUi(user)
