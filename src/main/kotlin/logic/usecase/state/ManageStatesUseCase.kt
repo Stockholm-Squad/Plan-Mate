@@ -2,7 +2,6 @@ package org.example.logic.usecase.state
 
 import logic.models.entities.ProjectState
 import logic.models.exceptions.*
-import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength
@@ -12,9 +11,10 @@ class ManageStatesUseCase(
     private val projectStateRepository: ProjectStateRepository,
 ) {
     suspend fun addProjectState(stateName: String): Boolean {
-        val validStateName = isStateNameValid(stateName)
-        return validStateName.takeIf { state ->
-            !isProjectStateExist(state)
+        return isStateNameValid(stateName).let { validStateName ->
+            validStateName.takeIf { state ->
+                !isProjectStateExist(state)
+            }
         }
             ?.let {
                 projectStateRepository.addProjectState(it)
@@ -23,9 +23,9 @@ class ManageStatesUseCase(
 
 
     suspend fun editProjectStateByName(stateName: String, newStateName: String): Boolean {
-        return validateStateNames(stateName, newStateName).let {
-            getProjectState(stateName).let { state ->
-                projectStateRepository.editProjectState(ProjectState(state.id, newStateName))
+        return validateStateNames(stateName, newStateName).let { (validatedStateName, validatedNewStateName) ->
+            getProjectState(validatedStateName).let { state ->
+                projectStateRepository.editProjectState(ProjectState(state.id, validatedNewStateName))
             }
         }
     }
@@ -70,13 +70,12 @@ class ManageStatesUseCase(
     }
 
     private suspend fun isProjectStateExist(stateName: String): Boolean {
-        return executeSafelyWithContext(
-            onSuccess = {
+        return try {
                 getProjectState(stateName)
-                true
-            },
-            onFailure = { false }
-        )
+            true
+        }catch (e: Exception){
+            false
+        }
     }
 
     private suspend fun getProjectState(stateName: String): ProjectState {
