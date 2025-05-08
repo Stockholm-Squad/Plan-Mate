@@ -18,3 +18,17 @@ suspend fun <T> executeSafelyWithContext(
 }
 
 //TODO: Check Package Name
+
+suspend fun <T> tryToExecute(
+    function: suspend () -> T,
+    onSuccess: (T) -> Unit,
+    onFailure: (exception: Exception) -> Unit,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO,
+) = withContext(dispatcher) {
+    try {
+        val result = function()
+        onSuccess(result)
+    } catch (exception: Exception) {
+        onFailure(exception)
+    }
+}

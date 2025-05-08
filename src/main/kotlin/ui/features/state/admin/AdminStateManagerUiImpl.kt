@@ -1,8 +1,8 @@
 package org.example.ui.features.state.admin
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
-import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.common.UserStateManagerUi
@@ -17,6 +17,10 @@ class AdminStateManagerUiImpl(
     private val reader: InputReader,
     private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
+
+    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
+        printer.showMessage(throwable.message ?: "Unknown error")
+    }
 
     override suspend fun launchUi(user: User?) {
         while (true) {
@@ -49,64 +53,34 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
-                runBlocking {
-                    executeSafelyWithContext( //TODO: use Try Catch
-                        onSuccess = {
-                            manageStatesUseCase.addProjectState(stateName = stateName)
-                            showAddStateMessage()
-                        },
-                        onFailure = {
-                            showFailure("${UiMessages.FAILED_TO_ADD_STATE}: ${it.message}")
-                        }
-                    )
+                runBlocking(errorHandler) {
+                    manageStatesUseCase.addProjectState(stateName = stateName)
+                    printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
                 }
-            } ?: showInvalidInput()
+            } ?: printer.showMessage(UiMessages.INVALID_INPUT)
     }
 
     override fun editState() {
         printer.showMessage(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE)
         val currentStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
             ?: run {
-                showInvalidInput()
+                printer.showMessage(UiMessages.INVALID_INPUT)
                 return
             }
 
         printer.showMessage(UiMessages.PLEASE_ENTER_THE_NEW_STATE_NAME)
         val newStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
             ?: run {
-                showInvalidInput()
+                printer.showMessage(UiMessages.INVALID_INPUT)
                 return
             }
-        runBlocking {
-            executeSafelyWithContext(
-                onSuccess = {
-                    manageStatesUseCase.editProjectStateByName(
-                        stateName = currentStateName,
-                        newStateName = newStateName
-                    )
-                    showStateUpdatedMessage()
-                },
-                onFailure = {
-                    showFailure("${UiMessages.FAILED_TO_EDIT_STATE}: ${it.message}")
-                }
+        runBlocking(errorHandler) {
+            manageStatesUseCase.editProjectStateByName(
+                stateName = currentStateName,
+                newStateName = newStateName
             )
+            printer.showMessage(UiMessages.STATE_UPDATED_SUCCESSFULLY)
         }
-    }
-
-    private fun showStateUpdatedMessage() {
-        printer.showMessage(UiMessages.STATE_UPDATED_SUCCESSFULLY)
-    }
-
-    private fun showAddStateMessage() {
-        printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
-    }
-
-    private fun showFailure(errorMessage: String) {
-        printer.showMessage(errorMessage)
-    }
-
-    private fun showInvalidInput() {
-        printer.showMessage(UiMessages.INVALID_INPUT)
     }
 
     override fun deleteState() {
@@ -114,16 +88,11 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
-            runBlocking {
-                executeSafelyWithContext(
-                    onSuccess = {
-                        manageStatesUseCase.deleteProjectState(stateName = stateName)
-                        showStateDeletedMessage()
-                    },
-                    onFailure = { showFailure("${UiMessages.FAILED_TO_DELETE_STATE}: ${it.message}") }
-                )
+            runBlocking(errorHandler) {
+                manageStatesUseCase.deleteProjectState(stateName = stateName)
+                showStateDeletedMessage()
             }
-        } ?: showInvalidInput()
+        } ?: printer.showMessage(UiMessages.INVALID_INPUT)
     }
 
     private fun showStateDeletedMessage() {
