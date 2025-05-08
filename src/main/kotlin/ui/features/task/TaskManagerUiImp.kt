@@ -79,8 +79,9 @@ class TaskManagerUiImp(
         val (name, description, stateName) = readCreateTaskInput()
             ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
 
-        val stateId = manageStateUseCase.getProjectStateIdByName(stateName)
-            ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT)
+        val stateId = runBlocking(coroutineExceptionHandler) {
+            manageStateUseCase.getProjectStateIdByName(stateName)
+        }
 
         val task = Task(
             projectName = projectName,
@@ -112,7 +113,6 @@ class TaskManagerUiImp(
         val (newName, newDescription, newStateName) = editInput
 
         val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
-            ?: return@runBlocking printer.showMessage(UiMessages.INVALID_STATE_NAME)
 
         val userId = currentUser?.id
             ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
