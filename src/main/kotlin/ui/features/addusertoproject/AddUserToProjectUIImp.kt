@@ -2,6 +2,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
 import logic.usecase.login.LoginUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
@@ -42,34 +43,32 @@ class AddUserToProjectUIImp(
     }
 
     override fun assignUsersToProject(user: User?) {
-        while (true) {
-            outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
-            if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                createUserUiImp.launchUi(user)
+        runBlocking {
+            while (true) {
+                outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
+                if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
+                    createUserUiImp.launchUi(user)
+                }
+
+                outputPrinter.showMessage("Enter username to assign or leave it blank to back: ")
+                val username = inputReader.readStringOrNull() ?: return@runBlocking
+                if (username.equals("done", ignoreCase = true)) break
+
+                outputPrinter.showMessage("Enter project Name: ")
+                val projectName = inputReader.readStringOrNull() ?: continue
+
+                assignUserToProject(username, projectName)
             }
-
-            outputPrinter.showMessage("Enter username to assign or leave it blank to back: ")
-            val username = inputReader.readStringOrNull() ?: return
-            if (username.equals("done", ignoreCase = true)) break
-
-            outputPrinter.showMessage("Enter project Name: ")
-            val projectName = inputReader.readStringOrNull() ?: continue
-
-            assignUserToProject(username, projectName)
         }
     }
 
     private fun assignUserToProject(username: String, projectName: String) {
-
-
         authenticationUseCase.isUserExists(username).let {
             if (!it) {
                 outputPrinter.showMessage("User does not exist")
                 return
             }
         }
-
-
         CoroutineScope(Dispatchers.Default).launch(errorHandler) {
             getProjectsUseCase.getProjectByName(projectName).let { project ->
                 manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
@@ -111,39 +110,17 @@ class AddUserToProjectUIImp(
 
     override fun removeUserFromProject() {
         outputPrinter.showMessage("Enter project name (leave blank to cancel): ")
-        inputReader.readStringOrNull()?.let { input ->
-            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-                getProjectsUseCase.getProjectByName(input).let { project -> //TODO: in the use case not in the UI and print the exception message
-                    launch(Dispatchers.Main) {
-                        outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
-                    }
-                    inputReader.readStringOrNull()?.let { username ->
-                        authenticationUseCase.isUserExists(username).let { //TODO: in the use case not in the UI and print the exception message
-                            if (!it) {
-                                outputPrinter.showMessage("User does not exist")
-
-                            }
-                        }
-                        manageUsersAssignedToProjectUseCase.deleteUserFromProject(project.id, username)
-                            .let { success ->
-                                if (success) {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        outputPrinter.showMessage("User '$username' removed from project '${project.name}' successfully")
-                                    }
-                                } else {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        outputPrinter.showMessage("Failed to remove user from project")
-                                    }
-                                }
-                            }
-                    }
-
-
+        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            inputReader.readStringOrNull()?.let { projectName ->
+                launch(Dispatchers.Main) {
+                    outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
                 }
-
+                inputReader.readStringOrNull()?.let { username ->
+                    manageUsersAssignedToProjectUseCase.deleteUserFromProject(projectName, username)
+                }
             }
-
         }
-
     }
+
+
 }
