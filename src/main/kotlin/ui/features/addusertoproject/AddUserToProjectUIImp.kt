@@ -1,7 +1,4 @@
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
 import logic.usecase.login.LoginUseCase
@@ -43,7 +40,7 @@ class AddUserToProjectUIImp(
     }
 
     override fun assignUsersToProject(user: User?) {
-        runBlocking {
+        runBlocking(errorHandler) {
             while (true) {
                 outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
                 if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
@@ -69,13 +66,12 @@ class AddUserToProjectUIImp(
                 return
             }
         }
-        CoroutineScope(Dispatchers.Default).launch(errorHandler) {
+        runBlocking(errorHandler) {
             getProjectsUseCase.getProjectByName(projectName).let { project ->
                 manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
                     if (it) {
-                        CoroutineScope(Dispatchers.Main).launch(errorHandler) {
-                            outputPrinter.showMessage("User assigned successfully")
-                        }
+                        outputPrinter.showMessage("User assigned successfully")
+
                     } else {
                         outputPrinter.showMessage("Failed to assign user to project")
                     }
@@ -87,19 +83,17 @@ class AddUserToProjectUIImp(
     override fun showUsersAssignedToProject() {
         outputPrinter.showMessage("Enter project name to view assigned users (leave blank to cancel): ")
         inputReader.readStringOrNull()?.let { input ->
-            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+            runBlocking(errorHandler) {
                 getProjectsUseCase.getProjectByName(input).let { project ->
                     manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).let { users ->
                         if (users.isEmpty()) {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                outputPrinter.showMessage("No users assigned to this project")
-                            }
+                            outputPrinter.showMessage("No users assigned to this project")
+
                         } else {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                outputPrinter.showMessage("Users assigned to project '$input':")
-                                users.forEachIndexed { index, user ->
-                                    outputPrinter.showMessage("${index + 1}. ${user.username}")
-                                }
+                            outputPrinter.showMessage("Users assigned to project '$input':")
+                            users.forEachIndexed { index, user ->
+                                outputPrinter.showMessage("${index + 1}. ${user.username}")
+
                             }
                         }
                     }
@@ -110,11 +104,9 @@ class AddUserToProjectUIImp(
 
     override fun removeUserFromProject() {
         outputPrinter.showMessage("Enter project name (leave blank to cancel): ")
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+        runBlocking(errorHandler) {
             inputReader.readStringOrNull()?.let { projectName ->
-                launch(Dispatchers.Main) {
-                    outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
-                }
+                outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
                 inputReader.readStringOrNull()?.let { username ->
                     manageUsersAssignedToProjectUseCase.deleteUserFromProject(projectName, username)
                 }

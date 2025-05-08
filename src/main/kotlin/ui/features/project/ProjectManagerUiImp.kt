@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import logic.models.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
@@ -31,7 +32,7 @@ class ProjectManagerUiImp(
 
     override fun showAllProjects() {
 
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+        runBlocking(errorHandler) {
             getProjectsUseCase.getAllProjects().let { projects ->
                 if (projects.isEmpty()) {
                     outputPrinter.showMessage("No projects found")
@@ -55,16 +56,15 @@ class ProjectManagerUiImp(
             }
         } while (projectName.isNullOrBlank())
 
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-            withContext(Dispatchers.Main) {
-                getProjectsUseCase.getProjectByName(projectName).let { project ->
-                    outputPrinter.showMessage("Project Details:")
-                    outputPrinter.showMessage("Name: ${project.name}")
-                    val stateName: String =
-                        manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
-                    outputPrinter.showMessage("State: $stateName")
-                }
+        runBlocking(errorHandler) {
+            getProjectsUseCase.getProjectByName(projectName).let { project ->
+                outputPrinter.showMessage("Project Details:")
+                outputPrinter.showMessage("Name: ${project.name}")
+                val stateName: String =
+                    manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+                outputPrinter.showMessage("State: $stateName")
             }
+
         }
     }
 
@@ -96,14 +96,14 @@ class ProjectManagerUiImp(
             return
         }
 
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+        runBlocking(errorHandler) {
             manageProjectUseCase.addProject(projectName, stateName, userId).let { success ->
-                withContext(Dispatchers.Main) {
-                    if (success)
-                        outputPrinter.showMessage("Project added successfully")
-                    else
-                        outputPrinter.showMessage("Failed to add project")
-                }
+
+                if (success)
+                    outputPrinter.showMessage("Project added successfully")
+                else
+                    outputPrinter.showMessage("Failed to add project")
+
             }
         }
     }
@@ -160,15 +160,15 @@ class ProjectManagerUiImp(
         outputPrinter.showMessage("Enter project Name to delete or leave it blank to back: ")
         val projectName = inputReader.readStringOrNull() ?: return
 
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
+        runBlocking(errorHandler) {
             manageProjectUseCase.removeProjectByName(projectName).let { success ->
-                withContext(Dispatchers.Main) {
-                    if (success) {
-                        outputPrinter.showMessage("Project deleted successfully")
-                    } else {
-                        outputPrinter.showMessage("Failed to delete project")
-                    }
+
+                if (success) {
+                    outputPrinter.showMessage("Project deleted successfully")
+                } else {
+                    outputPrinter.showMessage("Failed to delete project")
                 }
+
             }
         }
     }
