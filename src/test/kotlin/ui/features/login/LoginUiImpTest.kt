@@ -30,7 +30,7 @@ class LoginUiImpTest {
         reader = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         useCase = mockk(relaxed = true)
-        ui = LoginUiImp(getAuthenticationUseCase = useCase, reader = reader, printer = printer)
+        ui = LoginUiImp(loginUseCase = useCase, reader = reader, printer = printer)
     }
 
     @ParameterizedTest
