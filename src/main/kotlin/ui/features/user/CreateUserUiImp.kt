@@ -22,7 +22,7 @@ class CreateUserUiImp(
                 }
             }
         } catch (exception: Exception) {
-            printer.showMessage("Failed to add user")
+            printer.showMessage(exception.message ?: "Failed to add user")
         }
     }
 
@@ -39,7 +39,7 @@ class CreateUserUiImp(
             if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
                 createUser(username, password)
             } else {
-                printer.showMessage("Username and password cannot be empty")
+                printer.showMessage( "Username and password cannot be empty")
             }
         }
     }
