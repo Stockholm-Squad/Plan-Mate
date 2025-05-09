@@ -8,7 +8,7 @@ import org.example.ui.input_output.output.OutputPrinter
 
 
 class LoginUiImp(
-    private val getAuthenticationUseCase: LoginUseCase,
+    private val loginUseCase: LoginUseCase,
     private val printer: OutputPrinter,
     private var reader: InputReader
 ) : LoginUi {
@@ -22,7 +22,7 @@ class LoginUiImp(
 
         return runBlocking {
             try {
-                getAuthenticationUseCase.loginUser(username, password)
+                loginUseCase.loginUser(username, password)
             } catch (e: Exception) {
                 handleFailure(e.message ?: "Unknown error occurred")
                 null
