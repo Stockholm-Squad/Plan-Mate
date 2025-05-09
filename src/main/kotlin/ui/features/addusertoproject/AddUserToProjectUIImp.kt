@@ -1,8 +1,10 @@
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
+import logic.models.exceptions.ProjectExceptions
 import logic.usecase.login.LoginUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
+import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.user.CreateUserUi
@@ -15,7 +17,8 @@ class AddUserToProjectUIImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val createUserUiImp: CreateUserUi,
-    private val authenticationUseCase: LoginUseCase
+    private val authenticationUseCase: LoginUseCase,
+    private val manageProjectUseCase: ManageProjectUseCase
 ) : AddUserToProjectUI {
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
@@ -41,7 +44,7 @@ class AddUserToProjectUIImp(
 
     override fun assignUsersToProject(user: User?) {
         runBlocking(errorHandler) {
-            while (true) {
+            do {
                 outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
                 if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
                     createUserUiImp.launchUi(user)
@@ -54,27 +57,33 @@ class AddUserToProjectUIImp(
                 outputPrinter.showMessage("Enter project Name: ")
                 val projectName = inputReader.readStringOrNull() ?: continue
 
-                assignUserToProject(username, projectName)
-            }
+                if (assignUserToProject(username, projectName))
+                    return@runBlocking
+            } while (true)
         }
     }
 
-    private fun assignUserToProject(username: String, projectName: String) = runBlocking(errorHandler) {
-        authenticationUseCase.isUserExists(username).let {
-            if (!it) {
-                outputPrinter.showMessage("User does not exist")
-                return@runBlocking
-            }
-        }
-        getProjectsUseCase.getProjectByName(projectName).let { project ->
-            manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
-                if (it) {
-                    outputPrinter.showMessage("User assigned successfully")
+    private fun assignUserToProject(username: String, projectName: String): Boolean {
+        return runBlocking(errorHandler) {
+            try {
+                getProjectsUseCase.getProjectByName(projectName).let { project ->
+                    manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
+                        if (it) {
+                            outputPrinter.showMessage("User assigned successfully")
+                            true
 
-                } else {
-                    outputPrinter.showMessage("Failed to assign user to project")
+                        } else {
+                            outputPrinter.showMessage("Failed to assign user to project")
+                            false
+                        }
+                    }
                 }
+
+            } catch (e: Exception) {
+                outputPrinter.showMessage(e.message!!)
+                false
             }
+
         }
     }
 
@@ -82,19 +91,23 @@ class AddUserToProjectUIImp(
         outputPrinter.showMessage("Enter project name to view assigned users (leave blank to cancel): ")
         inputReader.readStringOrNull()?.let { input ->
             runBlocking(errorHandler) {
-                getProjectsUseCase.getProjectByName(input).let { project ->
-                    manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).let { users ->
-                        if (users.isEmpty()) {
-                            outputPrinter.showMessage("No users assigned to this project")
+                try {
+                    getProjectsUseCase.getProjectByName(input).let { project ->
+                        manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).let { users ->
+                            if (users.isEmpty()) {
+                                outputPrinter.showMessage("No users assigned to this project")
 
-                        } else {
-                            outputPrinter.showMessage("Users assigned to project '$input':")
-                            users.forEachIndexed { index, user ->
-                                outputPrinter.showMessage("${index + 1}. ${user.username}")
+                            } else {
+                                outputPrinter.showMessage("Users assigned to project '$input':")
+                                users.forEachIndexed { index, user ->
+                                    outputPrinter.showMessage("${index + 1}. ${user.username}")
 
+                                }
                             }
                         }
                     }
+                } catch (e: Exception) {
+                    outputPrinter.showMessage(e.message!!)
                 }
             }
         }
@@ -106,7 +119,11 @@ class AddUserToProjectUIImp(
             inputReader.readStringOrNull()?.let { projectName ->
                 outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
                 inputReader.readStringOrNull()?.let { username ->
-                    manageUsersAssignedToProjectUseCase.deleteUserFromProject(projectName, username)
+                    try {
+                        manageUsersAssignedToProjectUseCase.deleteUserFromProject(projectName, username)
+                    } catch (e: Exception) {
+                        outputPrinter.showMessage(e.message!!)
+                    }
                 }
             }
         }

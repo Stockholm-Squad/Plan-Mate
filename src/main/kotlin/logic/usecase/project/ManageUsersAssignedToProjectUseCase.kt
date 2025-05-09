@@ -1,6 +1,7 @@
 package org.example.logic.usecase.project
 
 import logic.models.entities.User
+import logic.models.exceptions.UserExceptions
 import logic.usecase.login.LoginUseCase
 import org.example.logic.repository.UserRepository
 import java.util.*
@@ -18,14 +19,22 @@ class ManageUsersAssignedToProjectUseCase(
 
 
     suspend fun addUserToProject(projectId: UUID, userName: String): Boolean {
-        return userRepository.addUserToProject(projectId = projectId, userName = userName)
+        return loginUseCase.isUserExists(userName).let {
+            if (it)
+                userRepository.addUserToProject(projectId = projectId, userName = userName)
+            else
+                throw UserExceptions.UserDoesNotExistException()
+        }
     }
 
 
     suspend fun deleteUserFromProject(projectName: String, username: String): Boolean {
         return getProjectsUseCase.getProjectByName(projectName).let { project ->
             loginUseCase.isUserExists(username).let { success ->
-                userRepository.deleteUserFromProject(projectId = project.id, userName = username)
+                if (success)
+                    userRepository.deleteUserFromProject(projectId = project.id, userName = username)
+                else
+                    throw UserExceptions.UserDoesNotExistException()
             }
         }
     }
