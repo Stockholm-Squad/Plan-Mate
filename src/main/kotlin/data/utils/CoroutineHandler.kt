@@ -21,10 +21,10 @@ suspend fun <T> executeSafelyWithContext(
 
 suspend fun <T> tryToExecute(
     function: suspend () -> T,
-    onSuccess: (T) -> Unit,
-    onFailure: (exception: Exception) -> Unit,
+    onSuccess: (T) -> T,
+    onFailure: (exception: Exception) -> T,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) = withContext(dispatcher) {
+): T = withContext(dispatcher) {
     try {
         val result = function()
         onSuccess(result)

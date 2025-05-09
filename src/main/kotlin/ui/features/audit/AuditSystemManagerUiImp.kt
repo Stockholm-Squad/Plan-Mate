@@ -7,7 +7,7 @@ import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
-//TODO: Use case Throw Exception now we need to use Try catch
+
 class AuditSystemManagerUiImp(
     private val useCase: GetAuditSystemUseCase,
     private val printer: OutputPrinter,
@@ -18,7 +18,7 @@ class AuditSystemManagerUiImp(
     }
     private var user: User? = null
 
-    override fun invoke(user: User?) { //TODO: Put the invoke function into coroutine scope
+    override fun invoke(user: User?) {
         this.user = user
         if (user == null) return
         do {
@@ -35,16 +35,15 @@ class AuditSystemManagerUiImp(
     }
 
 
-    private fun displayAuditsByProjectName() { //TODO: Switch to IO Dispatcher using with context
+    private fun displayAuditsByProjectName() {
         printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
         reader.readStringOrNull()?.let { input ->
-            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-                val auditsDeferred = async {
-                    useCase.getProjectAuditsByName(input)
-                }
-                val audits = auditsDeferred.await()
-                withContext(Dispatchers.Main) {
+            runBlocking(errorHandler) {
+                try{
+                    val audits = useCase.getProjectAuditsByName(input)
                     printer.showAudits(audits, user!!.username)
+                } catch (e: Exception) {
+                    printer.showMessage(e.message ?: "Unknown error")
                 }
             }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
@@ -53,13 +52,13 @@ class AuditSystemManagerUiImp(
     private fun displayAuditsByTaskName() {
         printer.showMessage(UiMessages.PROMPT_TASK_NAME)
         reader.readStringOrNull()?.let { input ->
-            CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-                val auditsDeferred = async {
-                    useCase.getTaskAuditsByName(input)
-                }
-                val audits = auditsDeferred.await()
-                withContext(Dispatchers.Main) {
+            runBlocking {
+                try {
+                    val audits = useCase.getTaskAuditsByName(input)
                     printer.showAudits(audits, user!!.username)
+
+                }catch (e: Exception) {
+                    printer.showMessage(e.message ?: "Unknown error")
                 }
             }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
@@ -68,13 +67,12 @@ class AuditSystemManagerUiImp(
 
 
     private fun displayAllAudits() {
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-            val auditsDeferred = async {
-                useCase.getAuditsByUserId(user!!.id)
-            }
-            val audits = auditsDeferred.await()
-            withContext(Dispatchers.Main) {
+        runBlocking(errorHandler) {
+            try{
+                val audits = useCase.getAuditsByUserId(user!!.id)
                 printer.showAudits(audits, user!!.username)
+            }catch (e: Exception){
+                printer.showMessage(e.message ?: "Unknown error")
             }
         }
     }
