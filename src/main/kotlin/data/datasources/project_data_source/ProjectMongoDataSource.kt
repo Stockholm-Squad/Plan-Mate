@@ -1,40 +1,47 @@
 package org.example.data.datasources.project_data_source
 
-import com.mongodb.client.result.DeleteResult
-import com.mongodb.client.result.InsertManyResult
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.example.data.models.ProjectModel
 import org.example.data.database.PROJECTS_COLLECTION_NAME
+import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectDataSource
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.eq
+import org.litote.kmongo.`in`
+import org.litote.kmongo.setValue
 
-class ProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : IProjectDataSource {
+class ProjectMongoDataSource(
+    mongoDatabase: CoroutineDatabase,
+    private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource
+) : ProjectDataSource {
 
     private val collection = mongoDatabase.getCollection<ProjectModel>(PROJECTS_COLLECTION_NAME)
-
-    override suspend fun read(): List<ProjectModel> = withContext(Dispatchers.IO) {
-        collection.find().toList()
+    override suspend fun addProject(project: ProjectModel): Boolean {
+        val result = collection.insertOne(project)
+        return result.wasAcknowledged()
     }
 
-    override suspend fun overWrite(projects: List<ProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        val deleteResult: DeleteResult = collection.deleteMany()
-        if (!deleteResult.wasAcknowledged()) {
-            return@withContext false
-        }
-
-        if (projects.isEmpty()) {
-            return@withContext true
-        }
-
-        val insertResult: InsertManyResult = collection.insertMany(projects)
-        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == projects.size
+    override suspend fun editProject(updatedProject: ProjectModel): Boolean {
+        val result = collection.updateOne(
+            filter = ProjectModel::id eq updatedProject.id,
+            update = setValue(ProjectModel::name, updatedProject.name)
+        )
+        return result.matchedCount > 0
     }
 
-    override suspend fun append(projects: List<ProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        if (projects.isEmpty()) {
-            return@withContext true
-        }
-        val insertResult: InsertManyResult = collection.insertMany(projects)
-        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == projects.size
+    override suspend fun deleteProject(projectToDelete: ProjectModel): Boolean {
+        val result = collection.deleteOne(ProjectModel::id eq projectToDelete.id)
+        return result.deletedCount > 0
     }
+
+    override suspend fun getAllProjects(): List<ProjectModel> {
+        return collection.find().toList()
+    }
+
+    override suspend fun getProjectsByUsername(username: String): List<ProjectModel> {
+        val projectIds = userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName(username).map {
+            it.projectId
+        }
+        val filter = ProjectModel::id `in` projectIds
+        return collection.find(filter).toList()
+    }
+
 }
