@@ -59,22 +59,20 @@ class AddUserToProjectUIImp(
         }
     }
 
-    private fun assignUserToProject(username: String, projectName: String) {
+    private fun assignUserToProject(username: String, projectName: String) = runBlocking(errorHandler) {
         authenticationUseCase.isUserExists(username).let {
             if (!it) {
                 outputPrinter.showMessage("User does not exist")
-                return
+                return@runBlocking
             }
         }
-        runBlocking(errorHandler) {
-            getProjectsUseCase.getProjectByName(projectName).let { project ->
-                manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
-                    if (it) {
-                        outputPrinter.showMessage("User assigned successfully")
+        getProjectsUseCase.getProjectByName(projectName).let { project ->
+            manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
+                if (it) {
+                    outputPrinter.showMessage("User assigned successfully")
 
-                    } else {
-                        outputPrinter.showMessage("Failed to assign user to project")
-                    }
+                } else {
+                    outputPrinter.showMessage("Failed to assign user to project")
                 }
             }
         }

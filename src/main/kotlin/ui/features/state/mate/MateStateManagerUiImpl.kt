@@ -7,7 +7,7 @@ class MateStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
 ) : MateStateManagerUi, UserStateManagerUi {
 
-    override suspend fun launchUi(user: User?) {
+    override fun launchUi(user: User?) {
         this.showAllStates()
     }
 
