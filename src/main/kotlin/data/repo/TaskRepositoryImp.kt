@@ -3,7 +3,7 @@ package org.example.data.repo
 import data.models.TaskInProjectModel
 import logic.models.entities.Task
 import logic.models.exceptions.TaskExceptions
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentDataSource
 import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
 import org.example.data.datasources.task_data_source.ITaskDataSource
 import org.example.data.mapper.mapToTaskEntity
@@ -14,7 +14,7 @@ import java.util.*
 
 class TaskRepositoryImp(
     private val taskDataSource: ITaskDataSource,
-    private val mateTaskAssignment: IMateTaskAssignmentDataSource,
+    private val mateTaskAssignment: MateTaskAssignmentDataSource,
     private val taskInProjectDataSource: ITaskInProjectDataSource,
 ) : TaskRepository {
 
@@ -90,10 +90,11 @@ class TaskRepositoryImp(
     override suspend fun getAllTasksByUserName(userName: String): List<Task> =
         executeSafelyWithContext(
             onSuccess = {
-                val assignments = mateTaskAssignment.read()
-                val assignedTaskIds = assignments.filter { it.userName == userName }.map { it.taskId }
+                val mateTaskAssignments =
+                    mateTaskAssignment.getMateTaskAssignmentByUserName(userName)?.map { it.taskId }
+                        ?: throw TaskExceptions.TasksNotFoundException()
                 val tasks = taskDataSource.read()
-                tasks.filter { assignedTaskIds.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
+                tasks.filter { mateTaskAssignments.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }
             },
             onFailure = { throw TaskExceptions.TasksNotFoundException() }
         )

@@ -1,42 +1,58 @@
 package org.example.data.datasources.mate_task_assignment_data_source
 
-import com.mongodb.client.result.DeleteResult
-import com.mongodb.client.result.InsertManyResult
 import data.models.MateTaskAssignmentModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import org.bson.Document
 import org.example.data.database.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.eq
 
 
-class MateTaskAssignmentMongoDataSource(mongoDatabase: CoroutineDatabase) : IMateTaskAssignmentDataSource {
+class MateTaskAssignmentMongoDataSource(mongoDatabase: CoroutineDatabase) : MateTaskAssignmentDataSource {
 
     private val collection =
         mongoDatabase.getCollection<MateTaskAssignmentModel>(MATE_TASK_ASSIGNMENT_COLLECTION_NAME)
 
-    override suspend fun read(): List<MateTaskAssignmentModel> = withContext(Dispatchers.IO) {
-        collection.find().toList()
+    override suspend fun getMateTaskAssignmentByUserName(userName: String): List<MateTaskAssignmentModel>? {
+        return collection.find(MateTaskAssignmentModel::userName eq userName).toList()
     }
 
-    override suspend fun overWrite(mateTasks: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
-        val deleteResult: DeleteResult = collection.deleteMany()
-        if (!deleteResult.wasAcknowledged()) {
-            return@withContext false
-        }
-
-        if (mateTasks.isEmpty()) {
-            return@withContext true
-        }
-
-        val insertResult: InsertManyResult = collection.insertMany(mateTasks)
-        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == mateTasks.size
+    override suspend fun getMateTaskAssignmentByTaskId(taskId: String): List<MateTaskAssignmentModel>? {
+        return collection.find(MateTaskAssignmentModel::taskId eq taskId).toList()
     }
 
-    override suspend fun append(mateTasks: List<MateTaskAssignmentModel>): Boolean = withContext(Dispatchers.IO) {
-        if (mateTasks.isEmpty()) {
-            return@withContext true
+    override suspend fun getMateTaskAssignment(mateTaskAssignmentModel: MateTaskAssignmentModel): MateTaskAssignmentModel? {
+        val filter = Document(MateTaskAssignmentModel::userName.toString(), mateTaskAssignmentModel.userName)
+            .append(MateTaskAssignmentModel::taskId.toString(), mateTaskAssignmentModel.taskId)
+        val result = collection.find(filter).first()
+
+        return result?.let {
+            MateTaskAssignmentModel(
+                userName = it.userName,
+                taskId = it.taskId
+            )
         }
-        val insertResult: InsertManyResult = collection.insertMany(mateTasks)
-        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == mateTasks.size
     }
+
+    override suspend fun addMateTaskAssignment(mateTaskAssignmentModel: MateTaskAssignmentModel): Boolean {
+        val result = collection.insertOne(mateTaskAssignmentModel)
+        return result.wasAcknowledged()
+    }
+
+    override suspend fun deleteMateTaskAssignmentByUserName(userName: String): Boolean {
+        val result = collection.deleteMany(MateTaskAssignmentModel::userName eq userName)
+        return result.deletedCount > 0
+    }
+
+    override suspend fun deleteMateTaskAssignmentByTaskId(taskId: String): Boolean {
+        val result = collection.deleteMany(MateTaskAssignmentModel::taskId eq taskId)
+        return result.deletedCount > 0
+    }
+
+    override suspend fun deleteMateTaskAssignment(mateTaskAssignmentModel: MateTaskAssignmentModel): Boolean {
+        val filter = Document(MateTaskAssignmentModel::userName.toString(), mateTaskAssignmentModel.userName)
+            .append(MateTaskAssignmentModel::taskId.toString(), mateTaskAssignmentModel.taskId)
+
+        return collection.deleteOne(filter).deletedCount > 0
+    }
+
 }

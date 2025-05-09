@@ -3,7 +3,7 @@ package org.example.di
 import org.example.data.database.MongoSetup
 import org.example.data.datasources.audit_system_data_source.AuditSystemMongoDataSource
 import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentDataSource
 import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentMongoDataSource
 import org.example.data.datasources.project_data_source.IProjectDataSource
 import org.example.data.datasources.project_data_source.ProjectMongoDataSource
@@ -29,6 +29,6 @@ val dataBaseModule = module {
     single<IStateDataSource> { StateMongoDataSource(get()) }
     single<IUserDataSource> { UserMongoDataSource(get()) }
     single<ITaskInProjectDataSource> { TaskInProjectMongoDataSource(get()) }
-    single<IMateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource(get()) }
+    single<MateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource(get()) }
     single<IUserAssignedToProjectDataSource> { UserAssignedToProjectMongoDataSource(get()) }
 }
