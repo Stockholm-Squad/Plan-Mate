@@ -1,11 +1,7 @@
 package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import logic.models.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
@@ -30,20 +26,18 @@ class ProjectManagerUiImp(
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
     }
 
-    override fun showAllProjects() {
-
-        runBlocking(errorHandler) {
-            getProjectsUseCase.getAllProjects().let { projects ->
-                if (projects.isEmpty()) {
-                    outputPrinter.showMessage("No projects found")
-                } else {
-                    projects.forEachIndexed { index, project ->
-                        outputPrinter.showMessage("${index + 1}. ${project.name}")
-                    }
+    override fun showAllProjects() = runBlocking(errorHandler) {
+        getProjectsUseCase.getAllProjects().let { projects ->
+            if (projects.isEmpty()) {
+                outputPrinter.showMessage("No projects found")
+            } else {
+                projects.forEachIndexed { index, project ->
+                    outputPrinter.showMessage("${index + 1}. ${project.name}")
                 }
             }
         }
     }
+
 
     override fun showProjectByName() {
         var projectName: String?
@@ -108,51 +102,47 @@ class ProjectManagerUiImp(
         }
     }
 
-    override fun editProject() {
+    override fun editProject() = runBlocking(errorHandler) {
 
         outputPrinter.showMessage("Enter project Name to edit or leave it black to back: ")
-        val projectName = inputReader.readStringOrNull() ?: return
+        val projectName = inputReader.readStringOrNull() ?: return@runBlocking
 
 
-        CoroutineScope(Dispatchers.IO).launch(errorHandler) {
-            getProjectsUseCase.getProjectByName(projectName).let { project ->
-                withContext(Dispatchers.Main) {
-                    val projectStateName: String =
-                        manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
-                    outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
+        getProjectsUseCase.getProjectByName(projectName).let { project ->
+            val projectStateName: String =
+                manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+            outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
 
-                    val newName = inputReader.readStringOrNull()
+            val newName = inputReader.readStringOrNull()
 
-                    outputPrinter.showMessage("Current state: $projectStateName")
+            outputPrinter.showMessage("Current state: $projectStateName")
 
-                    outputPrinter.showMessage("Available states:")
+            outputPrinter.showMessage("Available states:")
 
-                    stateManagerUi.showAllStates()
+            stateManagerUi.showAllStates()
 
-                    outputPrinter.showMessage("Enter new state Name (leave blank to keep '${projectStateName}'): ")
+            outputPrinter.showMessage("Enter new state Name (leave blank to keep '${projectStateName}'): ")
 
-                    val newProjectStateName = inputReader.readStringOrNull()
+            val newProjectStateName = inputReader.readStringOrNull()
 
-                    val userId = currentUser?.id
-                        ?: return@withContext outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+            val userId = currentUser?.id
+                ?: return@runBlocking outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
-                    if (newName != null || newProjectStateName != null)
-                        manageProjectUseCase.updateProject(
-                            project.id,
-                            newName ?: projectName,
-                            newProjectStateName ?: projectStateName,
-                            userId
-                        ).let { success ->
-                            if (success) {
-                                outputPrinter.showMessage("Project updated successfully")
-                            } else {
-                                outputPrinter.showMessage("Failed to update project")
-                            }
+            if (newName != null || newProjectStateName != null)
+                manageProjectUseCase.updateProject(
+                    project.id,
+                    newName ?: projectName,
+                    newProjectStateName ?: projectStateName,
+                    userId
+                ).let { success ->
+                    if (success) {
+                        outputPrinter.showMessage("Project updated successfully")
+                    } else {
+                        outputPrinter.showMessage("Failed to update project")
+                    }
 
-                        }
-                    else outputPrinter.showMessage("project doesn't changed")
                 }
-            }
+            else outputPrinter.showMessage("project doesn't changed")
         }
     }
 
@@ -173,7 +163,7 @@ class ProjectManagerUiImp(
         }
     }
 
-    override suspend fun launchUi(user: User?) {
+    override fun launchUi(user: User?) {
         this.currentUser = user
 
         if (currentUser == null) {

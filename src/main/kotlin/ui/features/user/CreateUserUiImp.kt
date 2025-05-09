@@ -1,5 +1,6 @@
 package org.example.ui.features.user
 
+import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
 import org.example.logic.usecase.user.CreateUserUseCase
 import org.example.ui.input_output.input.InputReader
@@ -11,7 +12,7 @@ class CreateUserUiImp(
     private val inputReader: InputReader
 ) : CreateUserUi {
 
-    private suspend fun createUser(username: String, password: String) {
+    private fun createUser(username: String, password: String) = runBlocking {
         try {
             createUserUseCase.createUser(username, password).also { isSuccess ->
                 if (isSuccess) {
@@ -25,7 +26,7 @@ class CreateUserUiImp(
         }
     }
 
-    override suspend fun launchUi(user: User?) {
+    override fun launchUi(user: User?) {
         printer.showMessage("➕ Adding new user...")
 
         printer.showMessage("Enter username:")
@@ -34,10 +35,12 @@ class CreateUserUiImp(
         printer.showMessage("Enter password:")
         val password = inputReader.readStringOrNull()
 
-        if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
-            createUser(username, password)
-        } else {
-            printer.showMessage("Username and password cannot be empty")
+        runBlocking {
+            if (username?.isNotEmpty() == true && password?.isNotEmpty() == true) {
+                createUser(username, password)
+            } else {
+                printer.showMessage("Username and password cannot be empty")
+            }
         }
     }
 }

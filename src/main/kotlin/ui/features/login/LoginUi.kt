@@ -5,5 +5,5 @@ import logic.models.entities.User
 import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface LoginUi:UiLauncher{
-   suspend fun authenticateUser(): User?
+   fun authenticateUser(): User?
 }

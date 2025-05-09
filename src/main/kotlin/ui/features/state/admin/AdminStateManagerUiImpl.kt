@@ -22,7 +22,7 @@ class AdminStateManagerUiImpl(
         printer.showMessage(throwable.message ?: "Unknown error")
     }
 
-    override suspend fun launchUi(user: User?) {
+    override fun launchUi(user: User?) {
         while (true) {
             showMenu()
             if (handleMenuChoice()) break
