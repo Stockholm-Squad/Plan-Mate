@@ -1,41 +1,32 @@
 package org.example.data.datasources.task_In_project_data_source
 
-import com.mongodb.client.result.DeleteResult
-import com.mongodb.client.result.InsertManyResult
+
 import data.models.TaskInProjectModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.example.data.database.TASK_IN_PROJECT_COLLECTION_NAME
+import org.example.data.datasources.project_data_source.ProjectMongoDataSource
+import org.example.data.models.ProjectStateModel
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class TaskInProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : ITaskInProjectDataSource {
+class TaskInProjectMongoDataSource(mongoDatabase: CoroutineDatabase,
+    private val projectMongoDataSource: ProjectMongoDataSource) : TaskInProjectDataSource{
 
     private val collection = mongoDatabase.getCollection<TaskInProjectModel>(TASK_IN_PROJECT_COLLECTION_NAME)
-
-
-    override suspend fun read(): List<TaskInProjectModel> = withContext(Dispatchers.IO) {
-        collection.find().toList()
+    override  suspend fun addTaskInProject(projectId: String, taskId: String): Boolean {
+         val project = projectMongoDataSource.getAllProjects().find { it.id==projectId }
+          collection.insertOne()
     }
 
-    override suspend fun overWrite(tasks: List<TaskInProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        val deleteResult: DeleteResult = collection.deleteMany()
-        if (!deleteResult.wasAcknowledged()) {
-            return@withContext false
-        }
+    override suspend fun deleteTaskFromProject(projectId: String, taskId: String): Boolean {
 
-        if (tasks.isEmpty()) {
-            return@withContext true
-        }
-
-        val insertResult: InsertManyResult = collection.insertMany(tasks)
-        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == tasks.size
     }
 
-    override suspend fun append(tasks: List<TaskInProjectModel>): Boolean = withContext(Dispatchers.IO) {
-        if (tasks.isEmpty()) {
-            return@withContext true
-        }
-        val insertResult: InsertManyResult = collection.insertMany(tasks)
-        return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == tasks.size
+    override suspend fun getAllTasksInProject(): List<TaskInProjectModel> {
+        TODO("Not yet implemented")
     }
+
+    override suspend fun getTaskInProjectByProjectId(projectId: String): ProjectStateModel {
+        TODO("Not yet implemented")
+    }
+
+
 }
