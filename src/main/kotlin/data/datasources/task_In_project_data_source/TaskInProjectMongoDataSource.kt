@@ -2,31 +2,32 @@ package org.example.data.datasources.task_In_project_data_source
 
 
 import data.models.TaskInProjectModel
-import org.example.data.database.TASK_IN_PROJECT_COLLECTION_NAME
-import org.example.data.datasources.project_data_source.ProjectMongoDataSource
-import org.example.data.models.ProjectStateModel
+import org.example.data.database.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.eq
 
-class TaskInProjectMongoDataSource(mongoDatabase: CoroutineDatabase,
-    private val projectMongoDataSource: ProjectMongoDataSource) : TaskInProjectDataSource{
 
-    private val collection = mongoDatabase.getCollection<TaskInProjectModel>(TASK_IN_PROJECT_COLLECTION_NAME)
-    override  suspend fun addTaskInProject(projectId: String, taskId: String): Boolean {
-         val project = projectMongoDataSource.getAllProjects().find { it.id==projectId }
-          collection.insertOne()
+class TaskInProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : TaskInProjectDataSource {
+
+    private val collection = mongoDatabase.getCollection<TaskInProjectModel>(MATE_TASK_ASSIGNMENT_COLLECTION_NAME)
+
+    override suspend fun addTaskInProject(projectId: String, taskId: String): Boolean {
+        val taskInProject = TaskInProjectModel(taskId, projectId)
+        collection.insertOne(taskInProject)
+        return true
     }
 
     override suspend fun deleteTaskFromProject(projectId: String, taskId: String): Boolean {
-
+        val result =
+            collection.deleteOne(TaskInProjectModel::projectId eq projectId, TaskInProjectModel::taskId eq taskId)
+        return result.deletedCount > 0
     }
 
     override suspend fun getAllTasksInProject(): List<TaskInProjectModel> {
-        TODO("Not yet implemented")
+        return collection.find().toList()
     }
 
-    override suspend fun getTaskInProjectByProjectId(projectId: String): ProjectStateModel {
-        TODO("Not yet implemented")
+    override suspend fun getTasksInProjectByProjectId(projectId: String): List<TaskInProjectModel> {
+        return collection.find(TaskInProjectModel::projectId eq projectId).toList()
     }
-
-
 }
