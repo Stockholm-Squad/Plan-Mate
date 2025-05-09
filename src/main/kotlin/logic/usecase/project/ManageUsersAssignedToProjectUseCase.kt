@@ -19,8 +19,8 @@ class ManageUsersAssignedToProjectUseCase(
 
 
     suspend fun addUserToProject(projectId: UUID, userName: String): Boolean {
-        return loginUseCase.isUserExists(userName).let {
-            if (it)
+        return loginUseCase.isUserExists(userName).let {success->
+            if (success)
                 userRepository.addUserToProject(projectId = projectId, userName = userName)
             else
                 throw UserExceptions.UserDoesNotExistException()

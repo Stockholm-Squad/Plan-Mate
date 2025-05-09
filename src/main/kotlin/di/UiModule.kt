@@ -32,7 +32,7 @@ val uiModule = module {
     factory<LoginUi> { LoginUiImp(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
     factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get()) }
-    factory<AddUserToProjectUI> { AddUserToProjectUIImp(get(), get(), get(), get(), get(), get(), get()) }
+    factory<AddUserToProjectUI> { AddUserToProjectUIImp(get(), get(), get(), get(), get()) }
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }

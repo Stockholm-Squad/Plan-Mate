@@ -1,10 +1,7 @@
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
-import logic.models.exceptions.ProjectExceptions
-import logic.usecase.login.LoginUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.user.CreateUserUi
@@ -17,8 +14,6 @@ class AddUserToProjectUIImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
     private val createUserUiImp: CreateUserUi,
-    private val authenticationUseCase: LoginUseCase,
-    private val manageProjectUseCase: ManageProjectUseCase
 ) : AddUserToProjectUI {
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
@@ -49,16 +44,12 @@ class AddUserToProjectUIImp(
                 if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
                     createUserUiImp.launchUi(user)
                 }
-
                 outputPrinter.showMessage("Enter username to assign or leave it blank to back: ")
                 val username = inputReader.readStringOrNull() ?: return@runBlocking
                 if (username.equals("done", ignoreCase = true)) break
-
                 outputPrinter.showMessage("Enter project Name: ")
                 val projectName = inputReader.readStringOrNull() ?: continue
-
-                if (assignUserToProject(username, projectName))
-                    return@runBlocking
+                if (assignUserToProject(username, projectName)) return@runBlocking
             } while (true)
         }
     }
@@ -67,23 +58,20 @@ class AddUserToProjectUIImp(
         return runBlocking(errorHandler) {
             try {
                 getProjectsUseCase.getProjectByName(projectName).let { project ->
-                    manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let {
-                        if (it) {
+                    manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let { success ->
+                        if (success) {
                             outputPrinter.showMessage("User assigned successfully")
                             true
-
                         } else {
                             outputPrinter.showMessage("Failed to assign user to project")
                             false
                         }
                     }
                 }
-
             } catch (e: Exception) {
                 outputPrinter.showMessage(e.message!!)
                 false
             }
-
         }
     }
 
@@ -96,12 +84,10 @@ class AddUserToProjectUIImp(
                         manageUsersAssignedToProjectUseCase.getUsersByProjectId(project.id).let { users ->
                             if (users.isEmpty()) {
                                 outputPrinter.showMessage("No users assigned to this project")
-
                             } else {
                                 outputPrinter.showMessage("Users assigned to project '$input':")
                                 users.forEachIndexed { index, user ->
                                     outputPrinter.showMessage("${index + 1}. ${user.username}")
-
                                 }
                             }
                         }
