@@ -26,7 +26,7 @@ val dataBaseModule = module {
     single<IAuditSystemDataSource> { AuditSystemMongoDataSource(get()) }
     single<IProjectDataSource> { ProjectMongoDataSource(get()) }
     single<ITaskDataSource> { TaskMongoDataSource(get()) }
-    single<IStateDataSource> { StateMongoDataSource(get()) }
+    single<StateDataSource> { StateMongoDataSource(get()) }
     single<UserDataSource> { UserMongoDataSource(get(),get(),) }
     single<ITaskInProjectDataSource> { TaskInProjectMongoDataSource(get()) }
     single<MateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource(get()) }
