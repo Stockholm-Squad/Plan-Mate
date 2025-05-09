@@ -25,11 +25,17 @@ class ManageTasksUseCase(
     suspend fun getTaskIdByName(taskName: String): UUID =
         getTaskByName(taskName).id
 
-    suspend fun addTask(task: Task, userId: UUID): Boolean =
-        taskRepository.addTask(task).also { isAdded ->
+    suspend fun addTask(task: Task, userId: UUID, projectId: UUID): Boolean {
+        val isDuplicate = taskRepository.getTasksInProject(projectId = projectId)
+            .filter { it.name.equals(task.name, ignoreCase = true) } !== emptyList<Task>()
+
+        if (isDuplicate) throw TaskExceptions.DuplicateTaskNameException()
+
+        return taskRepository.addTask(task).also { isAdded ->
             if (isAdded) logAudit(task, userId)
             else throw TaskExceptions.TaskNotAddedException()
         }
+    }
 
     suspend fun editTask(updatedTask: Task, userId: UUID): Boolean =
         taskRepository.editTask(updatedTask).also { isUpdated ->
