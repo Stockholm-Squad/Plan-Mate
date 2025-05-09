@@ -6,7 +6,7 @@ import logic.models.entities.User
 import logic.models.exceptions.UserExceptions
 import logic.models.exceptions.UserToProjectExceptions
 import logic.models.exceptions.UserToTaskExceptions
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_data_source.IUserDataSource
 import org.example.data.mapper.mapToUserEntity
@@ -19,7 +19,7 @@ import java.util.*
 class UserRepositoryImp(
     private val userDataSource: IUserDataSource,
     private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
-    private val mateTaskAssignment: IMateTaskAssignmentDataSource,
+    private val mateTaskAssignment: MateTaskAssignmentDataSource,
 ) : UserRepository {
     override suspend fun addUser(user: User): Boolean =
         executeSafelyWithContext(
@@ -89,10 +89,8 @@ class UserRepositoryImp(
     override suspend fun addUserToTask(mateName: String, taskId: UUID): Boolean =
         executeSafelyWithContext(
             onSuccess = {
-                mateTaskAssignment.append(
-                    listOf(
-                        MateTaskAssignmentModel(userName = mateName, taskId = taskId.toString())
-                    )
+                mateTaskAssignment.addMateTaskAssignment(
+                    MateTaskAssignmentModel(userName = mateName, taskId = taskId.toString())
                 )
             }, onFailure = {
                 throw UserToTaskExceptions.UserNotAddedToTaskException()
@@ -102,16 +100,9 @@ class UserRepositoryImp(
     override suspend fun deleteUserFromTask(mateName: String, taskId: UUID): Boolean =
         executeSafelyWithContext(
             onSuccess = {
-                val originalAssignments = mateTaskAssignment.read()
-                val newAssignments = mateTaskAssignment.read().filterNot {
-                    it.userName == mateName && it.taskId == taskId.toString()
-                }
-                return@executeSafelyWithContext if (newAssignments.size != originalAssignments.size) {
-                    mateTaskAssignment.overWrite(newAssignments)
-                    true
-                } else {
-                    false
-                }
+                mateTaskAssignment.deleteMateTaskAssignment(
+                    MateTaskAssignmentModel(mateName, taskId.toString())
+                )
             },
             onFailure = {
                 throw UserToTaskExceptions.UserNotDeletedFromTaskException()
