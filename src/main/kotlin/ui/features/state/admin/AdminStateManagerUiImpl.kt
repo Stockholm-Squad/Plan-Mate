@@ -1,6 +1,5 @@
 package org.example.ui.features.state.admin
 
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -18,10 +17,6 @@ class AdminStateManagerUiImpl(
     private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
 
-    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
-        printer.showMessage(throwable.message ?: "Unknown error")
-    }
-
     override fun launchUi(user: User?) {
         while (true) {
             showMenu()
@@ -30,10 +25,12 @@ class AdminStateManagerUiImpl(
     }
 
     private fun showMenu() {
+        printer.showMessage("-------------------------------------")
         printer.showMessage(UiMessages.WHAT_DO_YOU_NEED)
         StateMenuChoice.entries.forEach { item ->
             printer.showMessage("${item.choiceNumber} ${item.choiceMessage}")
         }
+        printer.showMessage("-------------------------------------")
     }
 
     private fun handleMenuChoice(): Boolean {
@@ -53,9 +50,13 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
-                runBlocking(errorHandler) {
-                    manageStatesUseCase.addProjectState(stateName = stateName)
-                    printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
+                runBlocking {
+                    try {
+                        manageStatesUseCase.addProjectState(stateName = stateName)
+                        printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
+                    } catch (exception: Exception) {
+                        printer.showMessage("Failed to delete state: ${exception.message}")
+                    }
                 }
             } ?: printer.showMessage(UiMessages.INVALID_INPUT)
     }
@@ -74,12 +75,16 @@ class AdminStateManagerUiImpl(
                 printer.showMessage(UiMessages.INVALID_INPUT)
                 return
             }
-        runBlocking(errorHandler) {
-            manageStatesUseCase.editProjectStateByName(
-                stateName = currentStateName,
-                newStateName = newStateName
-            )
-            printer.showMessage(UiMessages.STATE_UPDATED_SUCCESSFULLY)
+        runBlocking {
+            try {
+                manageStatesUseCase.editProjectStateByName(
+                    stateName = currentStateName,
+                    newStateName = newStateName
+                )
+                printer.showMessage(UiMessages.STATE_UPDATED_SUCCESSFULLY)
+            } catch (exception: Exception) {
+                printer.showMessage("Failed to update state: ${exception.message}")
+            }
         }
     }
 
@@ -88,9 +93,13 @@ class AdminStateManagerUiImpl(
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
-            runBlocking(errorHandler) {
-                manageStatesUseCase.deleteProjectState(stateName = stateName)
-                showStateDeletedMessage()
+            runBlocking {
+                try {
+                    manageStatesUseCase.deleteProjectState(stateName = stateName)
+                    showStateDeletedMessage()
+                } catch (exception: Exception) {
+                    printer.showMessage("Failed to delete state: ${exception.message}")
+                }
             }
         } ?: printer.showMessage(UiMessages.INVALID_INPUT)
     }
