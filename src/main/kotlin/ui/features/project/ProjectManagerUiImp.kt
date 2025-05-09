@@ -3,6 +3,8 @@ package org.example.ui.features.project
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 import logic.models.entities.User
+import logic.models.exceptions.ProjectExceptions
+import logic.models.exceptions.StateExceptions
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -51,12 +53,16 @@ class ProjectManagerUiImp(
         } while (projectName.isNullOrBlank())
 
         runBlocking(errorHandler) {
-            getProjectsUseCase.getProjectByName(projectName).let { project ->
-                outputPrinter.showMessage("Project Details:")
-                outputPrinter.showMessage("Name: ${project.name}")
-                val stateName: String =
-                    manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
-                outputPrinter.showMessage("State: $stateName")
+            try {
+                getProjectsUseCase.getProjectByName(projectName).let { project ->
+                    outputPrinter.showMessage("Project Details:")
+                    outputPrinter.showMessage("Name: ${project.name}")
+                    val stateName: String =
+                        manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+                    outputPrinter.showMessage("State: $stateName")
+                }
+            } catch (e: Exception) {
+                outputPrinter.showMessage("No Project with that name")
             }
 
         }
@@ -91,13 +97,17 @@ class ProjectManagerUiImp(
         }
 
         runBlocking(errorHandler) {
-            manageProjectUseCase.addProject(projectName, stateName, userId).let { success ->
-
-                if (success)
-                    outputPrinter.showMessage("Project added successfully")
-                else
-                    outputPrinter.showMessage("Failed to add project")
-
+            try {
+                manageProjectUseCase.addProject(projectName, stateName, userId).let { success ->
+                    if (success)
+                        outputPrinter.showMessage("Project added successfully")
+                    else
+                        outputPrinter.showMessage("Failed to add project")
+                }
+            } catch (e: ProjectExceptions) {
+                outputPrinter.showMessage("Project name already exists")
+            } catch (e: StateExceptions) {
+                outputPrinter.showMessage("No State with that name")
             }
         }
     }
@@ -107,42 +117,47 @@ class ProjectManagerUiImp(
         outputPrinter.showMessage("Enter project Name to edit or leave it black to back: ")
         val projectName = inputReader.readStringOrNull() ?: return@runBlocking
 
+        try {
+            getProjectsUseCase.getProjectByName(projectName).let { project ->
+                val projectStateName: String =
+                    manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+                outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
 
-        getProjectsUseCase.getProjectByName(projectName).let { project ->
-            val projectStateName: String =
-                manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
-            outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
+                val newName = inputReader.readStringOrNull()
 
-            val newName = inputReader.readStringOrNull()
+                outputPrinter.showMessage("Current state: $projectStateName")
 
-            outputPrinter.showMessage("Current state: $projectStateName")
+                outputPrinter.showMessage("Available states:")
 
-            outputPrinter.showMessage("Available states:")
+                stateManagerUi.showAllStates()
 
-            stateManagerUi.showAllStates()
+                outputPrinter.showMessage("Enter new state Name (leave blank to keep '${projectStateName}'): ")
 
-            outputPrinter.showMessage("Enter new state Name (leave blank to keep '${projectStateName}'): ")
+                val newProjectStateName = inputReader.readStringOrNull()
 
-            val newProjectStateName = inputReader.readStringOrNull()
+                val userId = currentUser?.id
+                    ?: return@runBlocking outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
-            val userId = currentUser?.id
-                ?: return@runBlocking outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+                if (newName != null || newProjectStateName != null)
+                    manageProjectUseCase.updateProject(
+                        project.id,
+                        newName ?: projectName,
+                        newProjectStateName ?: projectStateName,
+                        userId
+                    ).let { success ->
+                        if (success) {
+                            outputPrinter.showMessage("Project updated successfully")
+                        } else {
+                            outputPrinter.showMessage("Failed to update project")
+                        }
 
-            if (newName != null || newProjectStateName != null)
-                manageProjectUseCase.updateProject(
-                    project.id,
-                    newName ?: projectName,
-                    newProjectStateName ?: projectStateName,
-                    userId
-                ).let { success ->
-                    if (success) {
-                        outputPrinter.showMessage("Project updated successfully")
-                    } else {
-                        outputPrinter.showMessage("Failed to update project")
                     }
-
-                }
-            else outputPrinter.showMessage("project doesn't changed")
+                else outputPrinter.showMessage("project doesn't changed")
+            }
+        } catch (e: ProjectExceptions) {
+            outputPrinter.showMessage(e.message)
+        } catch (e: StateExceptions) {
+            outputPrinter.showMessage(e.message)
         }
     }
 
@@ -151,14 +166,18 @@ class ProjectManagerUiImp(
         val projectName = inputReader.readStringOrNull() ?: return
 
         runBlocking(errorHandler) {
-            manageProjectUseCase.removeProjectByName(projectName).let { success ->
+            try {
+                manageProjectUseCase.removeProjectByName(projectName).let { success ->
 
-                if (success) {
-                    outputPrinter.showMessage("Project deleted successfully")
-                } else {
-                    outputPrinter.showMessage("Failed to delete project")
+                    if (success) {
+                        outputPrinter.showMessage("Project deleted successfully")
+                    } else {
+                        outputPrinter.showMessage("Failed to delete project")
+                    }
+
                 }
-
+            } catch (e: ProjectExceptions) {
+                outputPrinter.showMessage(e.message)
             }
         }
     }
