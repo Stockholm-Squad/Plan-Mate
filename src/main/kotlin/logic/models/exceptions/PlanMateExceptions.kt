@@ -28,6 +28,7 @@ open class TaskExceptions(message: String) : LogicExceptions(message) {
     class TaskNotAddedException(message: String = "Failed to add task.") : TaskExceptions(message)
     class TaskNotEditException(message: String = "Failed to edit task.") : TaskExceptions(message)
     class TaskNotDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
+    class DuplicateTaskNameException(message: String = "Duplicated task name.") : TaskExceptions(message)
 }
 
 open class ProjectExceptions(message: String) : LogicExceptions(message) {

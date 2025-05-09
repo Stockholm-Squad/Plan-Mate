@@ -16,6 +16,7 @@ import org.example.data.datasources.task_data_source.ITaskDataSource
 import org.example.data.datasources.task_data_source.TaskMongoDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectMongoDataSource
+import org.example.data.datasources.user_data_source.IUserDataSource
 import org.example.data.datasources.user_data_source.UserMongoDataSource
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.CoroutineDatabase
