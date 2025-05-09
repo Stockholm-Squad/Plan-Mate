@@ -7,6 +7,7 @@ import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSou
 import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentDataSource
 import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentMongoDataSource
 import org.example.data.datasources.project_data_source.IProjectDataSource
+import org.example.data.datasources.project_data_source.ProjectDataSource
 import org.example.data.datasources.project_data_source.ProjectMongoDataSource
 import org.example.data.datasources.state_data_source.StateDataSource
 import org.example.data.datasources.state_data_source.StateMongoDataSource
@@ -23,7 +24,7 @@ import org.litote.kmongo.coroutine.CoroutineDatabase
 val dataBaseModule = module {
     single<CoroutineDatabase> { MongoSetup.database }
     single<IAuditSystemDataSource> { AuditSystemMongoDataSource(get()) }
-    single<IProjectDataSource> { ProjectMongoDataSource(get()) }
+    single<ProjectDataSource> { ProjectMongoDataSource(get(),get()) }
     single<ITaskDataSource> { TaskMongoDataSource(get()) }
     single<StateDataSource> { StateMongoDataSource(get()) }
     single<UserDataSource> { UserMongoDataSource(get(),get(),) }

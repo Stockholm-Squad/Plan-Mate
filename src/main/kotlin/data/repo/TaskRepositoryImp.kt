@@ -91,7 +91,7 @@ class TaskRepositoryImp(
         executeSafelyWithContext(
             onSuccess = {
                 val mateTaskAssignments =
-                    mateTaskAssignment.getMateTaskAssignmentByUserName(userName)?.map { it.taskId }
+                    mateTaskAssignment.getUsersMateTaskByUserName(userName)?.map { it.taskId }
                         ?: throw TaskExceptions.TasksNotFoundException()
                 val tasks = taskDataSource.read()
                 tasks.filter { mateTaskAssignments.contains(it.id) }.mapNotNull { it.mapToTaskEntity() }

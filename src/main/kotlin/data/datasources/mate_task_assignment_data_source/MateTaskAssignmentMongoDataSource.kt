@@ -37,7 +37,7 @@ class MateTaskAssignmentMongoDataSource(mongoDatabase: CoroutineDatabase) : Mate
         return collection.find(filter).toList()
     }
 
-    override suspend fun getUsersMateTaskByUserNameId(nuserName: String): List<MateTaskAssignmentModel> {
+    override suspend fun getUsersMateTaskByUserName(nuserName: String): List<MateTaskAssignmentModel> {
         val filter = MateTaskAssignmentModel::userName eq nuserName
         return collection.find(filter).toList()
     }
