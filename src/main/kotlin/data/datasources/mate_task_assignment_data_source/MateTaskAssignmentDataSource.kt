@@ -6,7 +6,7 @@ interface MateTaskAssignmentDataSource {
     suspend fun addUserToTask(mateName: String, taskId: String): Boolean
     suspend fun deleteUserFromTask(mateName: String, taskId: String): Boolean
     suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentModel>
-    suspend fun getUsersMateTaskByUserNameId(userName: String): List<MateTaskAssignmentModel>
+    suspend fun getUsersMateTaskByUserName(userName: String): List<MateTaskAssignmentModel>
 
     suspend fun getMateTaskAssignmentByUserName(userName: String): List<MateTaskAssignmentModel>?
     suspend fun getMateTaskAssignmentByTaskId(taskId: String): List<MateTaskAssignmentModel>?
