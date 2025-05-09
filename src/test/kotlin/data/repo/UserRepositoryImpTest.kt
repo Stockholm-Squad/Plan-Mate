@@ -5,8 +5,8 @@ import data.models.UserAssignedToProjectModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.UsersDataAreEmpty
 import logic.models.exceptions.WriteDataException

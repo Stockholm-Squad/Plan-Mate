@@ -1,7 +1,7 @@
 package modle
 
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 
 fun buildUser(
     username: String?,

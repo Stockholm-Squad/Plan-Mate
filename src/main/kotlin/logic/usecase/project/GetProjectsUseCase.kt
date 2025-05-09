@@ -1,7 +1,7 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.Project
-import logic.models.exceptions.ProjectExceptions
+import org.example.logic.entities.Project
+import org.example.logic.ProjectExceptions
 import org.example.logic.repository.ProjectRepository
 
 class GetProjectsUseCase(

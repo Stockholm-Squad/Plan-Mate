@@ -3,7 +3,7 @@ package data.repo
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.models.entities.ProjectState
+import org.example.logic.entities.ProjectState
 import logic.models.exceptions.FileNotExistException
 import org.example.data.datasources.state_data_source.IStateDataSource
 import org.example.data.models.ProjectStateModel

@@ -1,7 +1,7 @@
 package org.example.ui.features.state.common
 
 import kotlinx.coroutines.runBlocking
-import logic.models.entities.ProjectState
+import org.example.logic.entities.ProjectState
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.input_output.output.OutputPrinter
 

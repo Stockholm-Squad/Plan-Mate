@@ -1,9 +1,9 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.Project
-import logic.models.entities.AuditSystem
-import logic.models.entities.EntityType
-import logic.models.exceptions.ProjectExceptions
+import org.example.logic.entities.Project
+import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
+import org.example.logic.ProjectExceptions
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.audit.AddAuditSystemUseCase

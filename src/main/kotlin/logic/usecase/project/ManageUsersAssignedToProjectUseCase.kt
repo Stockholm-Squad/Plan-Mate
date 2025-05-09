@@ -1,7 +1,7 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.User
-import logic.models.exceptions.UserExceptions
+import org.example.logic.entities.User
+import org.example.logic.UserExceptions
 import logic.usecase.login.LoginUseCase
 import org.example.logic.repository.UserRepository
 import java.util.*

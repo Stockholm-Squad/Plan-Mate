@@ -1,7 +1,7 @@
 package org.example.ui.features.state.admin
 
 import kotlinx.coroutines.runBlocking
-import logic.models.entities.User
+import org.example.logic.entities.User
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.common.UserStateManagerUi

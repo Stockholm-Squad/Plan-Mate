@@ -1,7 +1,7 @@
 package org.example.data.repo
 
-import logic.models.entities.ProjectState
-import logic.models.exceptions.StateExceptions
+import org.example.logic.entities.ProjectState
+import org.example.logic.StateExceptions
 import org.example.data.datasources.state_data_source.StateDataSource
 import org.example.data.mapper.mapToStateEntity
 import org.example.data.mapper.mapToStateModel

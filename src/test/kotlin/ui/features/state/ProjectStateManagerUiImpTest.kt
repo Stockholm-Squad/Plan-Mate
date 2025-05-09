@@ -1,8 +1,8 @@
 package ui.features.state
 
 import io.mockk.*
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import org.example.ui.features.state.StateManagerUiImp
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi
@@ -23,13 +23,13 @@ class ProjectStateManagerUiImpTest {
         mateStateManagerUi = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         stateManagerUiImp = StateManagerUiImp(adminStateManagerUi, mateStateManagerUi, printer = printer)
-        user=User(UUID.randomUUID(),"name","hash password")
+        user= User(UUID.randomUUID(),"name","hash password")
     }
 
     @Test
     fun `launchStateManagerUi() should launch adminStateManagerUi when role is ADMIN`() {
         //Given
-        val user =User(UUID.randomUUID(),"name","hash password", UserRole.ADMIN)
+        val user = User(UUID.randomUUID(),"name","hash password", UserRole.ADMIN)
         every { adminStateManagerUi.launchUi(user) } just runs
 
         //When

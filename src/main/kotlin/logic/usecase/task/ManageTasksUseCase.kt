@@ -1,9 +1,9 @@
 package org.example.logic.usecase.task
 
-import logic.models.entities.AuditSystem
-import logic.models.entities.EntityType
-import logic.models.entities.Task
-import logic.models.exceptions.TaskExceptions
+import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
+import org.example.logic.entities.Task
+import org.example.logic.TaskExceptions
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.repository.TaskRepository

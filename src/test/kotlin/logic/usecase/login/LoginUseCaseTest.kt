@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.entities.UserRole
+import org.example.logic.entities.UserRole
 import logic.models.exceptions.*
 import logic.usecase.validation.ValidateUserDataUseCase
 import modle.buildUser

@@ -1,4 +1,4 @@
-package logic.models.exceptions
+package org.example.logic
 
 open class DataException(override val message: String) : Exception(message) {
     class ReadDataException(message: String = "Error while reading data!") : DataException(message)
@@ -64,6 +64,7 @@ open class AuditExceptions(message: String) : LogicExceptions(message) {
 open class UserToProjectExceptions(message: String) : LogicExceptions(message) {
     class UserNotAddedToProjectException(message: String = "User not added to project") :
         UserToProjectExceptions(message)
+
     class UserNotDeletedFromProjectException(message: String = "User not deleted from project") :
         UserToProjectExceptions(message)
 }
@@ -71,6 +72,7 @@ open class UserToProjectExceptions(message: String) : LogicExceptions(message) {
 open class UserToTaskExceptions(message: String) : LogicExceptions(message) {
     class UserNotAddedToTaskException(message: String = "User not added to task") :
         UserToTaskExceptions(message)
+
     class UserNotDeletedFromTaskException(message: String = "User not deleted from task") :
         UserToTaskExceptions(message)
 }

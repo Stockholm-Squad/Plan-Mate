@@ -1,7 +1,7 @@
 package org.example.data.repo
 
-import logic.models.entities.Project
-import logic.models.exceptions.ProjectExceptions
+import org.example.logic.entities.Project
+import org.example.logic.ProjectExceptions
 import org.example.data.datasources.project_data_source.ProjectDataSource
 
 import org.example.data.mapper.mapToProjectEntity

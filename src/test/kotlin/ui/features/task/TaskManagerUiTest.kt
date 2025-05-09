@@ -5,8 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import logic.models.entities.Task
-import logic.models.entities.UserRole
+import org.example.logic.entities.Task
+import org.example.logic.entities.UserRole
 import modle.buildUser
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase

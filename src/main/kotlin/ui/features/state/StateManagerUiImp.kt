@@ -1,7 +1,7 @@
 package org.example.ui.features.state
 
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.admin.AdminStateManagerUi
 import org.example.ui.features.state.mate.MateStateManagerUi

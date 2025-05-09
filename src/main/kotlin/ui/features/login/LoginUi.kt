@@ -1,6 +1,6 @@
 package org.example.ui.features.login
 
-import logic.models.entities.User
+import org.example.logic.entities.User
 
 import org.example.ui.features.common.ui_launcher.UiLauncher
 

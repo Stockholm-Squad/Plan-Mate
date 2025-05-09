@@ -1,8 +1,8 @@
 package logic.usecase.login
 
 
-import logic.models.entities.User
-import logic.models.exceptions.UserExceptions
+import org.example.logic.entities.User
+import org.example.logic.UserExceptions
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.UserRepository

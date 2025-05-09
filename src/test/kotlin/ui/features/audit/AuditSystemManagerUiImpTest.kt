@@ -1,8 +1,8 @@
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
 import org.example.ui.features.audit.AuditSystemManagerUiImp
 import org.example.ui.input_output.input.InputReader

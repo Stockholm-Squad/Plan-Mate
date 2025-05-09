@@ -1,4 +1,4 @@
-package logic.models.entities
+package org.example.logic.entities
 
 import java.util.*
 
@@ -9,3 +9,7 @@ data class User(
     val hashedPassword: String,
     val userRole: UserRole = UserRole.MATE
 )
+
+enum class UserRole {
+    ADMIN, MATE
+}

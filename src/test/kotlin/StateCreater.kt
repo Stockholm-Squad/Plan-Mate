@@ -1,4 +1,4 @@
-import logic.models.entities.ProjectState
+import org.example.logic.entities.ProjectState
 import org.example.logic.usecase.extention.toSafeUUID
 
 fun createState(

@@ -1,8 +1,8 @@
 package utils
 
 import kotlinx.datetime.LocalDateTime
-import logic.models.entities.AuditSystem
-import logic.models.entities.EntityType
+import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
 import org.example.data.models.AuditSystemModel
 import java.util.*
 

@@ -1,6 +1,6 @@
 package org.example.ui.features.task
 
-import logic.models.entities.Task
+import org.example.logic.entities.Task
 import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface TaskManagerUi : UiLauncher {

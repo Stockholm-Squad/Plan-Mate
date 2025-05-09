@@ -1,7 +1,7 @@
 package utils
 
 import kotlinx.datetime.LocalDateTime
-import logic.models.entities.Task
+import org.example.logic.entities.Task
 import org.example.data.models.TaskModel
 import org.example.data.utils.DateHandlerImp
 import java.util.*

@@ -1,4 +1,4 @@
-package logic.models.entities
+package org.example.logic.entities
 import java.util.*
 
 data class Project(

@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.models.entities.Task
+import org.example.logic.entities.Task
 import java.util.*
 
 interface TaskRepository {

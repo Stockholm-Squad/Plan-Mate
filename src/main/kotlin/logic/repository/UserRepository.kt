@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.models.entities.User
+import org.example.logic.entities.User
 import java.util.*
 
 interface UserRepository {

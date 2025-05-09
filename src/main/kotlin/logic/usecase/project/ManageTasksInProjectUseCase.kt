@@ -1,7 +1,7 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.Task
-import logic.models.exceptions.TaskExceptions
+import org.example.logic.entities.Task
+import org.example.logic.TaskExceptions
 import org.example.logic.repository.TaskRepository
 import java.util.*
 

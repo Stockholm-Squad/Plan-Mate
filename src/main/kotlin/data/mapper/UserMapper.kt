@@ -1,7 +1,7 @@
 package org.example.data.mapper
 
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import org.example.data.models.UserModel
 import org.example.logic.usecase.extention.toSafeUUID
 

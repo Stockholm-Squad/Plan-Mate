@@ -2,8 +2,8 @@ package org.example.ui.features.task
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
-import logic.models.entities.Task
-import logic.models.entities.User
+import org.example.logic.entities.Task
+import org.example.logic.entities.User
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase

@@ -1,7 +1,7 @@
 package org.example.ui.features.audit
 
 import kotlinx.coroutines.*
-import logic.models.entities.User
+import org.example.logic.entities.User
 import org.example.logic.usecase.audit.GetAuditSystemUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader

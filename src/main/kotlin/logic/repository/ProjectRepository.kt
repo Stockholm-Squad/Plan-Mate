@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.models.entities.Project
+import org.example.logic.entities.Project
 
 interface ProjectRepository {
     suspend fun addProject(project: Project): Boolean

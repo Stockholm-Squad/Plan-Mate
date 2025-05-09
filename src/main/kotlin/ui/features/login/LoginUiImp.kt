@@ -1,7 +1,7 @@
 package org.example.ui.features.login
 
 import kotlinx.coroutines.runBlocking
-import logic.models.entities.User
+import org.example.logic.entities.User
 import logic.usecase.login.LoginUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter

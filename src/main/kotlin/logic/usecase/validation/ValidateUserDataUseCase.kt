@@ -1,6 +1,6 @@
 package logic.usecase.validation
 
-import logic.models.exceptions.UserExceptions
+import org.example.logic.UserExceptions
 
 
 class ValidateUserDataUseCase {

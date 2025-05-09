@@ -1,6 +1,6 @@
 package org.example.logic.usecase.audit
 
-import logic.models.entities.AuditSystem
+import org.example.logic.entities.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase

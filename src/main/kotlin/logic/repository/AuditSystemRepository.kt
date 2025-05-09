@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.models.entities.AuditSystem
+import org.example.logic.entities.AuditSystem
 
 interface AuditSystemRepository {
     suspend fun addAuditsEntries(auditSystem: List<AuditSystem>): Boolean

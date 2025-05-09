@@ -1,4 +1,4 @@
-package logic.models.entities
+package org.example.logic.entities
 
 import kotlinx.datetime.LocalDateTime
 import java.util.*
@@ -11,3 +11,7 @@ data class AuditSystem(
     val userId: UUID,
     val dateTime: LocalDateTime
 )
+
+enum class EntityType {
+    TASK, PROJECT
+}

@@ -1,7 +1,7 @@
 package org.example.logic.usecase.user
 
-import logic.models.entities.User
-import logic.models.exceptions.UserExceptions
+import org.example.logic.entities.User
+import org.example.logic.UserExceptions
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5

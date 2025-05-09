@@ -1,8 +1,8 @@
 package org.example.ui.input_output.output
 
-import logic.models.entities.AuditSystem
-import logic.models.entities.ProjectState
-import logic.models.entities.Task
+import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.ProjectState
+import org.example.logic.entities.Task
 
 class OutputPrinterImplementation : OutputPrinter {
 
@@ -46,7 +46,7 @@ class OutputPrinterImplementation : OutputPrinter {
         println("└──────────────────────────────┘")
     }
 
-    override fun showAudits(audits: List<AuditSystem> , username : String) {
+    override fun showAudits(audits: List<AuditSystem>, username : String) {
         if (audits.isEmpty()) {
             println("No audits to display.")
             return

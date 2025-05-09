@@ -1,28 +1,19 @@
 package org.example.data.repo
 
 import data.datasources.user_data_source.UserDataSource
-import data.models.MateTaskAssignmentModel
-import data.models.UserAssignedToProjectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import logic.models.entities.User
-import logic.models.exceptions.StateExceptions
-import logic.models.exceptions.UserExceptions
-import logic.models.exceptions.UserToProjectExceptions
-import logic.models.exceptions.UserToTaskExceptions
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
+import org.example.logic.entities.User
+import org.example.logic.UserExceptions
+import org.example.logic.UserToProjectExceptions
+import org.example.logic.UserToTaskExceptions
 import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
 import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectDataSource
-import org.example.data.datasources.user_data_source.IUserDataSource
-import org.example.data.mapper.mapToStateModel
 import org.example.data.mapper.mapToUserEntity
 import org.example.data.mapper.mapToUserModel
-import org.example.data.utils.executeSafelyWithContext
 import org.example.data.utils.tryToExecute
 import org.example.logic.repository.UserRepository
-import org.example.logic.usecase.extention.toSafeUUID
 import java.util.*
 
 class UserRepositoryImp(

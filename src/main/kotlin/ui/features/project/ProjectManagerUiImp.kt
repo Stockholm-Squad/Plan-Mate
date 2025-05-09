@@ -2,9 +2,9 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
-import logic.models.entities.User
-import logic.models.exceptions.ProjectExceptions
-import logic.models.exceptions.StateExceptions
+import org.example.logic.entities.User
+import org.example.logic.ProjectExceptions
+import org.example.logic.StateExceptions
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase

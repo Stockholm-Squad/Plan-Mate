@@ -1,6 +1,6 @@
 package org.example.logic.repository
 
-import logic.models.entities.ProjectState
+import org.example.logic.entities.ProjectState
 import java.util.UUID
 
 interface ProjectStateRepository {
