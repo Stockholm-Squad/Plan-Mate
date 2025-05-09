@@ -47,13 +47,13 @@ object UiMessages {
     const val INVALID_INPUT = "Invalid input"
     const val USER_NOT_LOGGED_IN = "user not loged in"
     const val INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid task name entered. Press Enter to return to the main menu."
+        "Invalid task name entered.\nPress Enter to return to the main menu or 'y' to try again."
     const val INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid project name entered. Press Enter to return to the main menu."
+        "Invalid project name entered.\nPress 'Enter' to return to the main menu or 'y' to try again."
     const val INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid description entered. Press Enter to return to the main menu."
+        "Invalid description entered.\nPress Enter to return to the main menu or 'y' to try again."
     const val INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid state name entered. Press Enter to return to the main menu."
+        "Invalid state name entered.\nPress Enter to return to the main menu or 'y' to try again."
 
     //audit system constants
     val SHOW_AUDIT_SYSTEM_OPTIONS = """
