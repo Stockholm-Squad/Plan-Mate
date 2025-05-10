@@ -5,8 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.example.logic.entities.User
 import org.example.logic.ProjectExceptions
 import org.example.logic.StateExceptions
-import org.example.logic.entities.EntityType
-import org.example.logic.usecase.audit.AddAuditSystemUseCase
+import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -23,7 +22,6 @@ class ProjectManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
-    private val auditSystemUseCase: AddAuditSystemUseCase
 ) : ProjectManagerUi {
     private var currentUser: User? = null
 

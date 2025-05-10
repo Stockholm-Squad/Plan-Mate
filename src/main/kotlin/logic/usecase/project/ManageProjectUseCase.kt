@@ -7,7 +7,7 @@ import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
-import org.example.logic.usecase.audit.AddAuditSystemUseCase
+import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import java.util.*
 
@@ -15,7 +15,7 @@ class ManageProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val manageProjectStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val auditSystemRepository: AddAuditSystemUseCase,
+    private val auditSystemRepository: AddAuditUseCase,
 ) {
 
     suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
