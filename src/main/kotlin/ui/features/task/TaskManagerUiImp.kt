@@ -6,7 +6,6 @@ import logic.usecase.login.LoginUseCase
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
-import org.example.logic.entities.User
 import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
@@ -52,7 +51,7 @@ class TaskManagerUiImp(
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
             TaskOptions.SHOW_TASK_BY_NAME -> getTaskByName()
-            TaskOptions.CREATE_TASK -> addTask()
+            TaskOptions.CREATE_TASK -> addTask(null)
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
             TaskOptions.SHOW_TASKS_BY_PROJECT_NAME -> showAllTasksInProject()
@@ -79,8 +78,8 @@ class TaskManagerUiImp(
         }
     }
 
-    override fun addTask() {
-        val projectName = getProjectByName()
+    override fun addTask(passedProjectName: String?) {
+        val projectName = passedProjectName ?: getProjectByName()
         if (projectName.isEmpty()) return
 
         val (name, description, stateName) = readCreateTaskInput()

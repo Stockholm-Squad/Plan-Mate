@@ -6,7 +6,7 @@ import org.example.ui.features.common.ui_launcher.UiLauncher
 interface TaskManagerUi : UiLauncher {
     fun showAllTasks()
     fun getTaskByName()
-    fun addTask()
+    fun addTask(passedProjectName: String?)
     fun editTask()
     fun deleteTask()
     fun showAllTasksInProject(): List<Task>

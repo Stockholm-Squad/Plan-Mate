@@ -102,10 +102,14 @@ class ProjectManagerUiImp(
                 manageProjectUseCase.addProject(projectName, stateName).let { success ->
                     if (success) {
                         outputPrinter.showMessage("Project added successfully")
-                        outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
-                        if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                            taskManagerUi.addTask()
-                        }
+                        do {
+                            outputPrinter.showMessage("Would you like to add tasks to this project? (Y/N): ")
+                            val userInput = inputReader.readStringOrNull()
+                            if (userInput.equals("N", ignoreCase = true)) break
+                            if (userInput.equals("Y", ignoreCase = true)) {
+                                taskManagerUi.addTask(projectName)
+                            }
+                        }while (true)
                     }
                     else
                         outputPrinter.showMessage("Failed to add project")

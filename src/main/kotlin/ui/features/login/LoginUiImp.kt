@@ -14,6 +14,9 @@ class LoginUiImp(
 ) : LoginUi {
 
     override fun authenticateUser(): User? {
+        val user = loginUseCase.getCurrentUser()
+        if (user != null) return user
+
         printer.showMessage("Please enter your user name: ")
         val username = reader.readStringOrNull() ?: return null
 
@@ -22,8 +25,6 @@ class LoginUiImp(
 
         return runBlocking {
             try {
-                val user = loginUseCase.getCurrentUser()
-                if (user != null) return@runBlocking user
                 loginUseCase.loginUser(username, password)
             } catch (e: Exception) {
                 handleFailure(e.message ?: "Unknown error occurred")
