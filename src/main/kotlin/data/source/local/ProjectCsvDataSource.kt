@@ -2,7 +2,7 @@ package org.example.data.source.local
 
 
 import org.example.data.datasources.IProjectDataSource
-import data.dto.ProjectModel
+import data.dto.ProjectDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -15,7 +15,7 @@ import java.io.File
 class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<ProjectModel> {
+    override suspend fun read(): List<ProjectDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -27,21 +27,21 @@ class ProjectCsvDataSource(private val filePath: String) : IProjectDataSource {
         }
 
         return DataFrame.readCSV(file)
-            .cast<ProjectModel>()
+            .cast<ProjectDto>()
             .toList()
     }
 
-    override suspend fun overWrite(projects: List<ProjectModel>): Boolean {
+    override suspend fun overWrite(projects: List<ProjectDto>): Boolean {
         projects.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(projects: List<ProjectModel>): Boolean {
+    override suspend fun append(projects: List<ProjectDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<ProjectModel>().toDataFrame()
+            emptyList<ProjectDto>().toDataFrame()
         }
 
         val newData = projects.toDataFrame()

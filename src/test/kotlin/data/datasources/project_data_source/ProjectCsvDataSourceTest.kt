@@ -3,7 +3,7 @@ package data.datasources.project_data_source
 import logic.models.exceptions.FileNotExistException
 import logic.models.exceptions.ReadDataException
 import org.example.data.source.local.ProjectCsvDataSource
-import data.dto.ProjectModel
+import data.dto.ProjectDto
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
@@ -86,8 +86,8 @@ class ProjectCsvDataSourceTest {
         @Test
         fun `write should create file with correct content`() {
             val projects = listOf(
-                ProjectModel(id = "1", name = "Project A", stateId = "State A"),
-                ProjectModel(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
+                ProjectDto(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.overWrite(projects)
@@ -130,8 +130,8 @@ class ProjectCsvDataSourceTest {
         @Test
         fun `append should add records to empty file`() {
             val projects = listOf(
-                ProjectModel(id = "1", name = "Project A", stateId = "State A"),
-                ProjectModel(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
+                ProjectDto(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.append(projects)
@@ -147,12 +147,12 @@ class ProjectCsvDataSourceTest {
         @Test
         fun `append should add records to existing file`() {
             val initialProjects = listOf(
-                ProjectModel(id = "1", name = "Project A", stateId = "State A")
+                ProjectDto(id = "1", name = "Project A", stateId = "State A")
             )
             dataSource.overWrite(initialProjects)
 
             val newProjects = listOf(
-                ProjectModel(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.append(newProjects)

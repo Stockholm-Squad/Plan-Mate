@@ -1,7 +1,7 @@
 package data.datasources
 
 import org.example.data.source.local.StateCsvDataSource
-import data.dto.ProjectStateModel
+import data.dto.ProjectStateDto
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
@@ -90,8 +90,8 @@ class ProjectStateCsvDataSourceTest {
         @Test
         fun `write should create file with correct content`() {
             val states = listOf(
-                ProjectStateModel(id = "1", name = "TODO"),
-                ProjectStateModel(id = "2", name = "Progress")
+                ProjectStateDto(id = "1", name = "TODO"),
+                ProjectStateDto(id = "2", name = "Progress")
             )
 
             val result = dataSource.overWrite(states)

@@ -1,10 +1,10 @@
 package org.example.data.mapper
 
 import org.example.logic.entities.ProjectState
-import data.dto.ProjectStateModel
+import data.dto.ProjectStateDto
 import org.example.logic.usecase.extention.toSafeUUID
 
-fun ProjectStateModel.mapToStateEntity(): ProjectState? {
+fun ProjectStateDto.mapToStateEntity(): ProjectState? {
     return try {
         ProjectState(id.toSafeUUID(), name)
     } catch (throwable: Throwable) {
@@ -12,7 +12,7 @@ fun ProjectStateModel.mapToStateEntity(): ProjectState? {
     }
 }
 
-fun ProjectState.mapToStateModel(): ProjectStateModel =
-    ProjectStateModel(id.toString(), name)
+fun ProjectState.mapToStateModel(): ProjectStateDto =
+    ProjectStateDto(id.toString(), name)
 
 

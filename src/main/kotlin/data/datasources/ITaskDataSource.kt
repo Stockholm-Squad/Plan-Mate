@@ -1,9 +1,9 @@
 package org.example.data.datasources
 
-import data.dto.TaskModel
+import data.dto.TaskDto
 
 interface ITaskDataSource {
-    suspend fun read(): List<TaskModel>
-    suspend fun overWrite(tasks: List<TaskModel>): Boolean
-    suspend fun append(tasks: List<TaskModel>): Boolean
+    suspend fun read(): List<TaskDto>
+    suspend fun overWrite(tasks: List<TaskDto>): Boolean
+    suspend fun append(tasks: List<TaskDto>): Boolean
 }

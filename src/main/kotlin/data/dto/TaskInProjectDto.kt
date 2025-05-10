@@ -1,6 +1,6 @@
 package data.dto
 
-data class TaskInProjectModel(
+data class TaskInProjectDto(
     val taskId: String,
     val projectId: String,
 )

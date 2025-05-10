@@ -11,7 +11,7 @@ import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class UserProjectProjectStateModelManagerUiImpImpTest {
+class UserProjectProjectStateDtoManagerUiImpImpTest {
 
     private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var userStateManagerUi: UserStateManagerUi

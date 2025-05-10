@@ -1,11 +1,11 @@
 package org.example.data.source
 
-import data.dto.ProjectModel
+import data.dto.ProjectDto
 
 interface ProjectDataSource {
-    suspend fun addProject(project: ProjectModel): Boolean
-    suspend fun editProject(updatedProject: ProjectModel): Boolean
-    suspend fun deleteProject(projectToDelete: ProjectModel): Boolean
-    suspend fun getAllProjects(): List<ProjectModel>
-    suspend fun getProjectsByUsername(username: String): List<ProjectModel>
+    suspend fun addProject(project: ProjectDto): Boolean
+    suspend fun editProject(updatedProject: ProjectDto): Boolean
+    suspend fun deleteProject(projectToDelete: ProjectDto): Boolean
+    suspend fun getAllProjects(): List<ProjectDto>
+    suspend fun getProjectsByUsername(username: String): List<ProjectDto>
 }

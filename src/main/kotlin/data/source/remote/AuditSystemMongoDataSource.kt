@@ -6,19 +6,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.utils.AUDITS_COLLECTION_NAME
 import org.example.data.datasources.IAuditSystemDataSource
-import data.dto.AuditSystemModel
+import data.dto.AuditSystemDto
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 
 class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSystemDataSource {
 
-    private val collection = mongoDatabase.getCollection<AuditSystemModel>(AUDITS_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<AuditSystemDto>(AUDITS_COLLECTION_NAME)
 
-    override suspend fun read(): List<AuditSystemModel> = withContext(Dispatchers.IO) {
+    override suspend fun read(): List<AuditSystemDto> = withContext(Dispatchers.IO) {
         collection.find().toList()
     }
 
-    override suspend fun overWrite(audits: List<AuditSystemModel>): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun overWrite(audits: List<AuditSystemDto>): Boolean = withContext(Dispatchers.IO) {
         val deleteResult: DeleteResult = collection.deleteMany()
         if (!deleteResult.wasAcknowledged()) {
             return@withContext false
@@ -32,7 +32,7 @@ class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSyste
         return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == audits.size
     }
 
-    override suspend fun append(audits: List<AuditSystemModel>): Boolean = withContext(Dispatchers.IO) {
+    override suspend fun append(audits: List<AuditSystemDto>): Boolean = withContext(Dispatchers.IO) {
         if (audits.isEmpty()) {
             return@withContext true
         }

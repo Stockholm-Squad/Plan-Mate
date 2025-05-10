@@ -1,6 +1,6 @@
 package data.dto
 
-data class UserAssignedToProjectModel(
+data class UserAssignedToProjectDto(
     val userName: String,
     val projectId: String
 )

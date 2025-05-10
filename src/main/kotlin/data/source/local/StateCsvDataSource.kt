@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.IStateDataSource
-import data.dto.ProjectStateModel
+import data.dto.ProjectStateDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -14,7 +14,7 @@ import java.io.File
 class StateCsvDataSource(private val filePath: String) : IStateDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<ProjectStateModel> {
+    override suspend fun read(): List<ProjectStateDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -24,22 +24,22 @@ class StateCsvDataSource(private val filePath: String) : IStateDataSource {
             return emptyList()
 
         val users = DataFrame.readCSV(file)
-            .cast<ProjectStateModel>()
+            .cast<ProjectStateDto>()
             .toList()
         return users
 
     }
 
-    override suspend fun overWrite(state: List<ProjectStateModel>): Boolean {
+    override suspend fun overWrite(state: List<ProjectStateDto>): Boolean {
         state.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(state: List<ProjectStateModel>): Boolean {
+    override suspend fun append(state: List<ProjectStateDto>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
-            } else emptyList<ProjectStateModel>().toDataFrame()
+            } else emptyList<ProjectStateDto>().toDataFrame()
 
             val newData = state.toDataFrame()
             (existing.concat(newData)).writeCSV(file)

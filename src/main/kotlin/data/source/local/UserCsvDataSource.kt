@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.IUserDataSource
-import data.dto.UserModel
+import data.dto.UserDto
 import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -16,7 +16,7 @@ import java.util.*
 class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<UserModel> {
+    override suspend fun read(): List<UserDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -25,7 +25,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
 
         createAdminIfNotExist()
         return DataFrame.readCSV(file)
-            .cast<UserModel>()
+            .cast<UserDto>()
             .toList()
     }
 
@@ -33,7 +33,7 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
     private suspend fun createAdminIfNotExist(): Boolean {
         if (File(filePath).readLines().size < 2) {
             val adminUser = listOf(
-                UserModel(
+                UserDto(
                     id = UUID.randomUUID().toString(),
                     username = "rodina",
                     hashedPassword = hashToMd5("admin123"),
@@ -45,16 +45,16 @@ class UserCsvDataSource(private val filePath: String) : IUserDataSource {
         return true
     }
 
-    override suspend fun overWrite(users: List<UserModel>): Boolean {
+    override suspend fun overWrite(users: List<UserDto>): Boolean {
         users.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(users: List<UserModel>): Boolean {
+    override suspend fun append(users: List<UserDto>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
-            } else emptyList<UserModel>().toDataFrame()
+            } else emptyList<UserDto>().toDataFrame()
 
             val newData = users.toDataFrame()
             (existing.concat(newData)).writeCSV(file)

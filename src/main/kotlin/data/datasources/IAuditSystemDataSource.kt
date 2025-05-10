@@ -1,9 +1,9 @@
 package org.example.data.datasources
 
-import data.dto.AuditSystemModel
+import data.dto.AuditSystemDto
 
 interface IAuditSystemDataSource {
-    suspend fun read(): List<AuditSystemModel>
-    suspend fun overWrite(audits: List<AuditSystemModel>): Boolean
-    suspend fun append(audits: List<AuditSystemModel>): Boolean
+    suspend fun read(): List<AuditSystemDto>
+    suspend fun overWrite(audits: List<AuditSystemDto>): Boolean
+    suspend fun append(audits: List<AuditSystemDto>): Boolean
 }

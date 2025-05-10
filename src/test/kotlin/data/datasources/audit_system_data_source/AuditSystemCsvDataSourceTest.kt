@@ -5,7 +5,7 @@ import logic.models.exceptions.FileNotExistException
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
 import org.example.data.source.local.AuditSystemCsvDataSource
-import data.dto.AuditSystemModel
+import data.dto.AuditSystemDto
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -76,8 +76,8 @@ class AuditSystemCsvDataSourceTest {
     @Test
     fun `overWrite should write data and return success`() {
         val models = listOf(
-            AuditSystemModel("u1", "Add", "Success", "Admin", "test", "test"),
-            AuditSystemModel("u2", "Delete", "Failed", "User", "2023-01-02", "test")
+            AuditSystemDto("u1", "Add", "Success", "Admin", "test", "test"),
+            AuditSystemDto("u2", "Delete", "Failed", "User", "2023-01-02", "test")
         )
 
         val result = dataSource.overWrite(models)
@@ -98,7 +98,7 @@ class AuditSystemCsvDataSourceTest {
     @Test
     fun `append should write data to empty file`() {
         val models = listOf(
-            AuditSystemModel("u1", "Update", "Success", "Admin", "test", "test")
+            AuditSystemDto("u1", "Update", "Success", "Admin", "test", "test")
         )
 
         val result = dataSource.append(models)
@@ -110,12 +110,12 @@ class AuditSystemCsvDataSourceTest {
     @Test
     fun `append should append to existing data`() {
         val initialData = listOf(
-            AuditSystemModel("u1", "Update", "Success", "Admin", "test", "test")
+            AuditSystemDto("u1", "Update", "Success", "Admin", "test", "test")
         )
         dataSource.overWrite(initialData)
 
         val moreData = listOf(
-            AuditSystemModel("u2", "Delete", "Failed", "Admin", "test", "test")
+            AuditSystemDto("u2", "Delete", "Failed", "Admin", "test", "test")
         )
         val result = dataSource.append(moreData)
 

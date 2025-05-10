@@ -2,10 +2,10 @@ package org.example.data.mapper
 
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
-import data.dto.UserModel
+import data.dto.UserDto
 import org.example.logic.usecase.extention.toSafeUUID
 
-fun UserModel.mapToUserEntity(): User? {
+fun UserDto.mapToUserEntity(): User? {
     return try {
         User(
             id.toSafeUUID(),
@@ -18,7 +18,7 @@ fun UserModel.mapToUserEntity(): User? {
     }
 }
 
-fun User.mapToUserModel(): UserModel = UserModel(
+fun User.mapToUserModel(): UserDto = UserDto(
     id.toString(),
     username,
     hashedPassword,

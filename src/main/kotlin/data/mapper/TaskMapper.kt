@@ -1,11 +1,11 @@
 package org.example.data.mapper
 
 import org.example.logic.entities.Task
-import data.dto.TaskModel
+import data.dto.TaskDto
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 
-fun TaskModel.mapToTaskEntity(): Task? {
+fun TaskDto.mapToTaskEntity(): Task? {
     return try {
         Task(
             id.toSafeUUID(),
@@ -21,7 +21,7 @@ fun TaskModel.mapToTaskEntity(): Task? {
     }
 }
 
-fun Task.mapToTaskModel(): TaskModel = TaskModel(
+fun Task.mapToTaskModel(): TaskDto = TaskDto(
     id.toString(),
     projectName,
     name,

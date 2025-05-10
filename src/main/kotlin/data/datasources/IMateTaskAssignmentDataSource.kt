@@ -1,9 +1,9 @@
 package org.example.data.datasources
 
-import data.dto.MateTaskAssignmentModel
+import data.dto.MateTaskAssignmentDto
 
 interface IMateTaskAssignmentDataSource {
-    suspend fun read(): List<MateTaskAssignmentModel>
-    suspend fun overWrite(mateTasks: List<MateTaskAssignmentModel>): Boolean
-    suspend fun append(mateTasks: List<MateTaskAssignmentModel>): Boolean
+    suspend fun read(): List<MateTaskAssignmentDto>
+    suspend fun overWrite(mateTasks: List<MateTaskAssignmentDto>): Boolean
+    suspend fun append(mateTasks: List<MateTaskAssignmentDto>): Boolean
 }

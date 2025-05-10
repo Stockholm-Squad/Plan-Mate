@@ -2,12 +2,12 @@ package data.mapper
 
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
-import data.dto.AuditSystemModel
+import data.dto.AuditSystemDto
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 
 
-fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem? {
+fun AuditSystemDto.mapToAuditSystemEntity(): AuditSystem? {
     return try {
         AuditSystem(
             id.toSafeUUID(),
@@ -23,8 +23,8 @@ fun AuditSystemModel.mapToAuditSystemEntity(): AuditSystem? {
 }
 
 
-fun AuditSystem.mapToAuditSystemModel(): AuditSystemModel {
-    return AuditSystemModel(
+fun AuditSystem.mapToAuditSystemModel(): AuditSystemDto {
+    return AuditSystemDto(
         id.toString(),
         entityType = entityType.toString(),
         entityTypeId = entityTypeId.toString(),

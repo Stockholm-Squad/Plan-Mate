@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import data.dto.MateTaskAssignmentModel
+import data.dto.MateTaskAssignmentDto
 import org.example.data.datasources.IMateTaskAssignmentDataSource
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -16,7 +16,7 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
 
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<MateTaskAssignmentModel> {
+    override suspend fun read(): List<MateTaskAssignmentDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -28,21 +28,21 @@ class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskA
         }
 
         return DataFrame.readCSV(file)
-            .cast<MateTaskAssignmentModel>()
+            .cast<MateTaskAssignmentDto>()
             .toList()
     }
 
-    override suspend fun overWrite(mateTasks: List<MateTaskAssignmentModel>): Boolean {
+    override suspend fun overWrite(mateTasks: List<MateTaskAssignmentDto>): Boolean {
         mateTasks.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(mateTasks: List<MateTaskAssignmentModel>): Boolean {
+    override suspend fun append(mateTasks: List<MateTaskAssignmentDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<MateTaskAssignmentModel>().toDataFrame()
+            emptyList<MateTaskAssignmentDto>().toDataFrame()
         }
 
         val newData = mateTasks.toDataFrame()

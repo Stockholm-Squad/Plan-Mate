@@ -1,9 +1,9 @@
 package org.example.data.datasources
 
-import data.dto.ProjectModel
+import data.dto.ProjectDto
 
 interface IProjectDataSource {
-    suspend fun read(): List<ProjectModel>
-    suspend fun overWrite(projects: List<ProjectModel>): Boolean
-    suspend fun append(projects: List<ProjectModel>): Boolean
+    suspend fun read(): List<ProjectDto>
+    suspend fun overWrite(projects: List<ProjectDto>): Boolean
+    suspend fun append(projects: List<ProjectDto>): Boolean
 }

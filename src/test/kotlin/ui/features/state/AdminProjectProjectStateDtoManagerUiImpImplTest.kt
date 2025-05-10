@@ -14,7 +14,7 @@ import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AdminProjectProjectStateModelManagerUiImpImplTest {
+class AdminProjectProjectStateDtoManagerUiImpImplTest {
     private lateinit var manageStatesUseCase: ManageStatesUseCase
     private lateinit var adminStateManagerUi: AdminStateManagerUiImpl
     private lateinit var userStateManagerUi: UserStateManagerUi
@@ -53,7 +53,7 @@ class AdminProjectProjectStateModelManagerUiImpImplTest {
         val stateName = "TODO"
         val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
-        every { this@AdminProjectProjectStateModelManagerUiImpImplTest.manageStatesUseCase.editProjectStateByName(stateName,newState) } returns Result.success(true)
+        every { this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.editProjectStateByName(stateName,newState) } returns Result.success(true)
 
         //When
         adminStateManagerUi.editState()

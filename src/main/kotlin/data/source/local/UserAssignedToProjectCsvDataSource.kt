@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import data.dto.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectDto
 import org.example.data.datasources.IUserAssignedToProjectDataSource
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -14,7 +14,7 @@ import java.io.File
 class UserAssignedToProjectCsvDataSource(private val filePath: String) : IUserAssignedToProjectDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<UserAssignedToProjectModel> {
+    override suspend fun read(): List<UserAssignedToProjectDto> {
         val file = resolveFile()
 
         if (!file.exists()) {
@@ -25,21 +25,21 @@ class UserAssignedToProjectCsvDataSource(private val filePath: String) : IUserAs
             return emptyList()
 
         val users = DataFrame.readCSV(file)
-            .cast<UserAssignedToProjectModel>()
+            .cast<UserAssignedToProjectDto>()
             .toList()
         return users
     }
 
-    override suspend fun overWrite(users: List<UserAssignedToProjectModel>): Boolean {
+    override suspend fun overWrite(users: List<UserAssignedToProjectDto>): Boolean {
         users.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(users: List<UserAssignedToProjectModel>): Boolean {
+    override suspend fun append(users: List<UserAssignedToProjectDto>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
-            } else emptyList<UserAssignedToProjectModel>().toDataFrame()
+            } else emptyList<UserAssignedToProjectDto>().toDataFrame()
 
             val newData = users.toDataFrame()
             (existing.concat(newData)).writeCSV(file)

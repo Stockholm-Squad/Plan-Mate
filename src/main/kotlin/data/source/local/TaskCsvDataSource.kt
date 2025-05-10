@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.ITaskDataSource
-import data.dto.TaskModel
+import data.dto.TaskDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -16,7 +16,7 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
 
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<TaskModel> {
+    override suspend fun read(): List<TaskDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -28,21 +28,21 @@ class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
         }
 
         return DataFrame.readCSV(file)
-            .cast<TaskModel>()
+            .cast<TaskDto>()
             .toList()
     }
 
-    override suspend fun overWrite(tasks: List<TaskModel>): Boolean {
+    override suspend fun overWrite(tasks: List<TaskDto>): Boolean {
         tasks.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(tasks: List<TaskModel>): Boolean {
+    override suspend fun append(tasks: List<TaskDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<TaskModel>().toDataFrame()
+            emptyList<TaskDto>().toDataFrame()
         }
 
         val newData = tasks.toDataFrame()

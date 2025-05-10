@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.IAuditSystemDataSource
-import data.dto.AuditSystemModel
+import data.dto.AuditSystemDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -15,7 +15,7 @@ import java.io.File
 class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataSource {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<AuditSystemModel> {
+    override suspend fun read(): List<AuditSystemDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -27,21 +27,21 @@ class AuditSystemCsvDataSource(private val filePath: String) : IAuditSystemDataS
         }
 
         return DataFrame.readCSV(file)
-            .cast<AuditSystemModel>()
+            .cast<AuditSystemDto>()
             .toList()
     }
 
-    override suspend fun overWrite(audits: List<AuditSystemModel>): Boolean {
+    override suspend fun overWrite(audits: List<AuditSystemDto>): Boolean {
         audits.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(audits: List<AuditSystemModel>): Boolean {
+    override suspend fun append(audits: List<AuditSystemDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<AuditSystemModel>().toDataFrame()
+            emptyList<AuditSystemDto>().toDataFrame()
         }
 
         val newData = audits.toDataFrame()
