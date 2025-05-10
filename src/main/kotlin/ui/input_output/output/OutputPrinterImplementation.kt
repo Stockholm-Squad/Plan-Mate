@@ -83,7 +83,7 @@ class OutputPrinterImplementation : OutputPrinter {
         taskId: UUID,
         projectName: String
     ): String {
-        return "added a new $entityType  '$taskName' (ID: $taskId) to the '$projectName' project."
+        return "added a new $entityType '$taskName' (ID: $taskId) to the '$projectName' project."
     }
 
 }

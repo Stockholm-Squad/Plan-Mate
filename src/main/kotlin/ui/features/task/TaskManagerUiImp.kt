@@ -2,9 +2,11 @@ package org.example.ui.features.task
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import org.example.data.utils.DateHandlerImp
+import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
 import org.example.logic.entities.User
-import org.example.data.utils.DateHandlerImp
+import org.example.logic.usecase.audit.LogAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -23,11 +25,12 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
+    private val logAuditUseCase: LogAuditUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessage(throwable.message ?: "Unknown error")
     }
-
+    val timestamp = DateHandlerImp().getCurrentDateTime()
     private var currentUser: User? = null
 
     override fun launchUi(user: User?) {
@@ -102,12 +105,14 @@ class TaskManagerUiImp(
                     name = name,
                     description = description,
                     stateId = stateId,
-                    createdDate = DateHandlerImp().getCurrentDateTime(),
-                    updatedDate = DateHandlerImp().getCurrentDateTime()
+                    createdDate = timestamp,
+                    updatedDate = timestamp
                 )
 
-                manageTasksUseCase.addTask(task, userId, project.id)
+                manageTasksUseCase.addTask(task, project.id)
                 manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
+                val taskDescription = printer.printAddTaskDescription(EntityType.TASK, task.name, task.id, projectName)
+                logAuditUseCase.logAudit(userId, EntityType.TASK, task.id, taskDescription, timestamp)
                 printer.printTask(task)
             } catch (ex: Exception) {
                 printer.showMessage(ex.message ?: "Unknown Error")
@@ -135,10 +140,13 @@ class TaskManagerUiImp(
                 name = newName,
                 description = newDescription,
                 stateId = newStateId,
-                updatedDate = DateHandlerImp().getCurrentDateTime()
+                updatedDate = timestamp
             )
 
-            manageTasksUseCase.editTask(updatedTask, userId)
+            manageTasksUseCase.editTask(updatedTask)
+            val description =
+                "Updated -> ${currentUser?.username} change ${EntityType.TASK} ${existingTask.name} (${existingTask.id}) to ${"New name: $newName, New description: $newDescription, New state: $newStateName"}at $timestamp"
+            logAuditUseCase.logAudit(userId, EntityType.TASK, updatedTask.id, description, timestamp)
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error.")

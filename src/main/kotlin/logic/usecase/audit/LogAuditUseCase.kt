@@ -16,8 +16,6 @@ class LogAuditUseCase(
         description: String,
         timestamp: LocalDateTime,
     ): Boolean {
-
-
         val auditEntry = AuditSystem(
             userId = userId,
             entityType = entityType,
