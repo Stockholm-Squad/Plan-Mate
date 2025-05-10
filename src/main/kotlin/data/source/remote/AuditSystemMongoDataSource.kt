@@ -2,24 +2,22 @@ package org.example.data.source.remote
 
 import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
+import data.dto.AuditSystemDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.utils.AUDITS_COLLECTION_NAME
 import org.example.data.datasources.IAuditSystemDataSource
-import data.dto.AuditSystemDto
-import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.coroutine.CoroutineCollection
 
-
-class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSystemDataSource {
-
-    private val collection = mongoDatabase.getCollection<AuditSystemDto>(AUDITS_COLLECTION_NAME)
+class AuditSystemMongoDataSource(
+    private val auditsCollection: CoroutineCollection<AuditSystemDto>
+) : IAuditSystemDataSource {
 
     override suspend fun read(): List<AuditSystemDto> = withContext(Dispatchers.IO) {
-        collection.find().toList()
+        auditsCollection.find().toList()
     }
 
     override suspend fun overWrite(audits: List<AuditSystemDto>): Boolean = withContext(Dispatchers.IO) {
-        val deleteResult: DeleteResult = collection.deleteMany()
+        val deleteResult: DeleteResult = auditsCollection.deleteMany()
         if (!deleteResult.wasAcknowledged()) {
             return@withContext false
         }
@@ -28,7 +26,7 @@ class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSyste
             return@withContext true
         }
 
-        val insertResult: InsertManyResult = collection.insertMany(audits)
+        val insertResult: InsertManyResult = auditsCollection.insertMany(audits)
         return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == audits.size
     }
 
@@ -36,7 +34,7 @@ class AuditSystemMongoDataSource(mongoDatabase: CoroutineDatabase) : IAuditSyste
         if (audits.isEmpty()) {
             return@withContext true
         }
-        val insertResult: InsertManyResult = collection.insertMany(audits)
+        val insertResult: InsertManyResult = auditsCollection.insertMany(audits)
         return@withContext insertResult.wasAcknowledged() && insertResult.insertedIds.size == audits.size
     }
 }
