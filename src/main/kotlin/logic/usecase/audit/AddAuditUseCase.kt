@@ -10,8 +10,7 @@ import java.util.*
 class AddAuditUseCase(
     private val auditRepository: AuditRepository,
 ) {
-    suspend fun addAuditsEntries(auditEntry: List<Audit>): Boolean =
-        auditRepository.addAuditsEntries(auditEntry)
+
 
     suspend fun addEntityChangeHistory(
         userId: UUID,
