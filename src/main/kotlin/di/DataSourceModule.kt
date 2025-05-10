@@ -1,16 +1,16 @@
 package di
 
-import data.network.provider.AuditsMongoProvider
-import data.network.provider.ProjectMongoProvider
-import data.network.provider.StateMongoProvider
-import data.network.provider.TaskMongoProvider
-import data.network.provider.UserMongoProvider
-import data.network.provider.TaskInProjectMongoProvider
-import data.network.provider.MateTaskAssignmentMongoProvider
-import data.network.provider.UserAssignedToProjectMongoProvider
+import data.source.remote.mongo.*
+import org.example.data.source.remote.provider.AuditsMongoProvider
+import org.example.data.source.remote.provider.ProjectMongoProvider
+import org.example.data.source.remote.provider.StateMongoProvider
+import org.example.data.source.remote.provider.TaskMongoProvider
+import org.example.data.source.remote.provider.UserMongoProvider
+import org.example.data.source.remote.provider.TaskInProjectMongoProvider
+import org.example.data.source.remote.provider.MateTaskAssignmentMongoProvider
+import org.example.data.source.remote.provider.UserAssignedToProjectMongoProvider
 
 import org.example.data.source.*
-import org.example.data.source.remote.*
 import org.koin.dsl.module
 
 val remoteDataSourceModule = module {
