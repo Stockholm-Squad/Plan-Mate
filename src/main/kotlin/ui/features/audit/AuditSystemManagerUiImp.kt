@@ -2,14 +2,14 @@ package org.example.ui.features.audit
 
 import kotlinx.coroutines.*
 import org.example.logic.entities.User
-import org.example.logic.usecase.audit.GetAuditSystemUseCase
+import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 
 class AuditSystemManagerUiImp(
-    private val useCase: GetAuditSystemUseCase,
+    private val useCase: GetAuditUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
 ) : AuditSystemManagerUi {

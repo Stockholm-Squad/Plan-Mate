@@ -6,7 +6,7 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import java.util.*
 
-class GetAuditSystemUseCase(
+class GetAuditUseCase(
     private val auditRepository: AuditRepository,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksUseCase: ManageTasksUseCase

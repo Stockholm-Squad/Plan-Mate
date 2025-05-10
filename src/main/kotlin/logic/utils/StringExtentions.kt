@@ -1,4 +1,4 @@
-package org.example.logic.usecase.extention
+package org.example.logic.utils
 
 import java.util.UUID
 

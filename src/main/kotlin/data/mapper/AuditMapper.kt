@@ -4,7 +4,7 @@ import data.dto.AuditDto
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
-import org.example.logic.usecase.extention.toSafeUUID
+import org.example.logic.utils.toSafeUUID
 
 
 fun AuditDto.mapToAuditEntity(): Audit? {

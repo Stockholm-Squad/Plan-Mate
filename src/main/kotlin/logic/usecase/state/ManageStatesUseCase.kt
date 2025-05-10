@@ -4,8 +4,8 @@ import org.example.logic.NotAllowedStateNameException
 import org.example.logic.StateAlreadyExistException
 import org.example.logic.entities.ProjectState
 import org.example.logic.repository.ProjectStateRepository
-import org.example.logic.usecase.extention.isLetterOrWhiteSpace
-import org.example.logic.usecase.extention.isValidLength
+import org.example.logic.utils.isLetterOrWhiteSpace
+import org.example.logic.utils.isValidLength
 import java.util.*
 
 class ManageStatesUseCase(

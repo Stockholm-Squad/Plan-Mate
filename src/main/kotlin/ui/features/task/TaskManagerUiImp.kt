@@ -6,7 +6,7 @@ import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
 import org.example.logic.entities.User
-import org.example.logic.usecase.audit.AddAuditSystemUseCase
+import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -25,7 +25,7 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val auditSystemUseCase: AddAuditSystemUseCase
+    private val auditSystemUseCase: AddAuditUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessage(throwable.message ?: "Unknown error")

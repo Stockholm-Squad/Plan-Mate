@@ -7,11 +7,11 @@ import org.example.logic.repository.AuditRepository
 
 import java.util.*
 
-class AddAuditSystemUseCase(
-    private val auditSystemRepository: AuditRepository,
+class AddAuditUseCase(
+    private val auditRepository: AuditRepository,
 ) {
     suspend fun addAuditsEntries(auditEntry: List<Audit>): Boolean =
-        auditSystemRepository.addAuditsEntries(auditEntry)
+        auditRepository.addAuditsEntries(auditEntry)
 
     suspend fun addEntityChangeHistory(
         userId: UUID,
@@ -26,6 +26,6 @@ class AddAuditSystemUseCase(
             description = description,
             dateTime = DateHandlerImp().getCurrentDateTime(),
         )
-        return auditSystemRepository.addAuditsEntries(listOf(auditEntry))
+        return auditRepository.addAuditsEntries(listOf(auditEntry))
     }
 }

@@ -2,8 +2,8 @@ package org.example.di
 
 import logic.usecase.login.LoginUseCase
 import logic.usecase.validation.ValidateUserDataUseCase
-import org.example.logic.usecase.audit.AddAuditSystemUseCase
-import org.example.logic.usecase.audit.GetAuditSystemUseCase
+import org.example.logic.usecase.audit.AddAuditUseCase
+import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
@@ -17,8 +17,8 @@ import org.koin.dsl.module
 val useCaseModule = module {
 
     single<CreateUserUseCase> { CreateUserUseCase(get(), get()) }
-    single<GetAuditSystemUseCase> { GetAuditSystemUseCase(get(), get(), get()) }
-    single<AddAuditSystemUseCase> { AddAuditSystemUseCase(get()) }
+    single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }
+    single<AddAuditUseCase> { AddAuditUseCase(get()) }
     single<LoginUseCase> { LoginUseCase(get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get()) }
     factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get(), get()) }
