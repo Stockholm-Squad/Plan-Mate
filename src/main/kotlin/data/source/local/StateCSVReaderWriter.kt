@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import org.example.data.datasources.IStateDataSource
+import org.example.data.datasources.IStateCSVReaderWriter
 import data.dto.ProjectStateDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -11,7 +11,7 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-class StateCsvDataSource(private val filePath: String) : IStateDataSource {
+class StateCSVReaderWriter(private val filePath: String) : IStateCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<ProjectStateDto> {

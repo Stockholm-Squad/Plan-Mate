@@ -15,14 +15,14 @@ import org.example.data.source.remote.*
 import org.koin.dsl.module
 
 val localDatasourceModule = module {
-    factory<IAuditDataSource> { AuditCsvDataSource(filePath = "audits.csv") }
-    factory<IProjectDataSource> { ProjectCsvDataSource(filePath = "projects.csv") }
-    factory<IStateDataSource> { StateCsvDataSource(filePath = "state.csv") }
-    factory<ITaskDataSource> { TaskCsvDataSource(filePath = "task.csv") }
-    factory<IUserDataSource> { UserCsvDataSource(filePath = "users.csv") }
-    factory<ITaskInProjectDataSource> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
-    factory<IUserAssignedToProjectDataSource> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
-    factory<IMateTaskAssignmentDataSource> { MateTaskAssignmentCsvDataSource(filePath = "mate_task_assignment.csv") }
+    factory<IAuditCSVReaderWriter> { AuditCSVReaderWriter(filePath = "audits.csv") }
+    factory<IProjectCSVReaderWriter> { ProjectCSVReaderWriter(filePath = "projects.csv") }
+    factory<IStateCSVReaderWriter> { StateCSVReaderWriter(filePath = "state.csv") }
+    factory<ITaskCSVReaderWriter> { TaskCSVReaderWriter(filePath = "task.csv") }
+    factory<IUserCSVReaderWriter> { UserCSVReaderWriter(filePath = "users.csv") }
+    factory<ITaskInProjectCSVReaderWriter> { TaskInProjectCSVReaderWriter(filePath = "task_in_project.csv") }
+    factory<IUserAssignedToProjectCSVReaderWriter> { UserAssignedToProjectCSVReaderWriter(filePath = "user_assigned_to_project.csv") }
+    factory<IMateTaskAssignmentCSVReaderWriter> { MateTaskAssignmentCSVReaderWriter(filePath = "mate_task_assignment.csv") }
 }
 
 val remoteDataSourceModule = module {

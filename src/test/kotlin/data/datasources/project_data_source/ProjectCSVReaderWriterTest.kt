@@ -2,7 +2,7 @@ package data.datasources.project_data_source
 
 import logic.models.exceptions.FileNotExistException
 import logic.models.exceptions.ReadDataException
-import org.example.data.source.local.ProjectCsvDataSource
+import org.example.data.source.local.ProjectCSVReaderWriter
 import data.dto.ProjectDto
 import org.junit.jupiter.api.*
 import java.io.File
@@ -11,17 +11,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class ProjectCsvDataSourceTest {
+class ProjectCSVReaderWriterTest {
 
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
-    private lateinit var dataSource: ProjectCsvDataSource
+    private lateinit var dataSource: ProjectCSVReaderWriter
 
     @BeforeEach
     fun setUp() {
         tempFile = Files.createTempFile("tst", ".csv").toFile()
         testFilePath = tempFile.path
-        dataSource = ProjectCsvDataSource(testFilePath)
+        dataSource = ProjectCSVReaderWriter(testFilePath)
     }
 
     @AfterEach

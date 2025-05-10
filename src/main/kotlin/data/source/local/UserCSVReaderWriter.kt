@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import org.example.data.datasources.IUserDataSource
+import org.example.data.datasources.IUserCSVReaderWriter
 import data.dto.UserDto
 import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
@@ -13,7 +13,7 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 import java.util.*
 
-class UserCsvDataSource(private val filePath: String) : IUserDataSource {
+class UserCSVReaderWriter(private val filePath: String) : IUserCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<UserDto> {

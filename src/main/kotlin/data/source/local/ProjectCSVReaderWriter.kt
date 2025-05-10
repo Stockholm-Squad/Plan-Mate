@@ -1,7 +1,8 @@
 package org.example.data.source.local
 
-import org.example.data.datasources.IAuditDataSource
-import data.dto.AuditDto
+
+import org.example.data.datasources.IProjectCSVReaderWriter
+import data.dto.ProjectDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -11,11 +12,10 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-
-class AuditCsvDataSource(private val filePath: String) : IAuditDataSource {
+class ProjectCSVReaderWriter(private val filePath: String) : IProjectCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<AuditDto> {
+    override suspend fun read(): List<ProjectDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -27,24 +27,24 @@ class AuditCsvDataSource(private val filePath: String) : IAuditDataSource {
         }
 
         return DataFrame.readCSV(file)
-            .cast<AuditDto>()
+            .cast<ProjectDto>()
             .toList()
     }
 
-    override suspend fun overWrite(audits: List<AuditDto>): Boolean {
-        audits.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(projects: List<ProjectDto>): Boolean {
+        projects.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(audits: List<AuditDto>): Boolean {
+    override suspend fun append(projects: List<ProjectDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<AuditDto>().toDataFrame()
+            emptyList<ProjectDto>().toDataFrame()
         }
 
-        val newData = audits.toDataFrame()
+        val newData = projects.toDataFrame()
         (existing.concat(newData)).writeCSV(file)
         return true
     }

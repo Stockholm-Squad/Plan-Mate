@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import data.dto.MateTaskAssignmentDto
-import org.example.data.datasources.IMateTaskAssignmentDataSource
+import org.example.data.datasources.IMateTaskAssignmentCSVReaderWriter
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -12,7 +12,7 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
 
-class MateTaskAssignmentCsvDataSource(private val filePath: String) : IMateTaskAssignmentDataSource {
+class MateTaskAssignmentCSVReaderWriter(private val filePath: String) : IMateTaskAssignmentCSVReaderWriter {
 
     private fun resolveFile(): File = File(filePath)
 

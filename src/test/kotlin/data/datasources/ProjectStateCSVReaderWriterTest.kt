@@ -1,6 +1,6 @@
 package data.datasources
 
-import org.example.data.source.local.StateCsvDataSource
+import org.example.data.source.local.StateCSVReaderWriter
 import data.dto.ProjectStateDto
 import org.junit.jupiter.api.*
 import java.io.File
@@ -9,16 +9,16 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ProjectStateCsvDataSourceTest {
+class ProjectStateCSVReaderWriterTest {
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
-    private lateinit var dataSource: StateCsvDataSource
+    private lateinit var dataSource: StateCSVReaderWriter
 
     @BeforeEach
     fun setUp() {
         tempFile = Files.createTempFile("tst", ".csv").toFile()
         testFilePath = tempFile.path
-        dataSource = StateCsvDataSource(testFilePath)
+        dataSource = StateCSVReaderWriter(testFilePath)
     }
 
     @AfterEach
@@ -41,7 +41,7 @@ class ProjectStateCsvDataSourceTest {
         @Test
         fun `read should return Throwable when read from file not exist`() {
             File(testFilePath).writeText("")
-            dataSource = StateCsvDataSource("")
+            dataSource = StateCSVReaderWriter("")
             val result = dataSource.read()
             assertThrows<Throwable> { result.getOrThrow() }
         }

@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import data.dto.TaskInProjectDto
-import org.example.data.datasources.ITaskInProjectDataSource
+import org.example.data.datasources.ITaskInProjectCSVReaderWriter
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -12,7 +12,7 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
 
-class TaskInProjectCsvDataSource(private val filePath: String) : ITaskInProjectDataSource {
+class TaskInProjectCSVReaderWriter(private val filePath: String) : ITaskInProjectCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<TaskInProjectDto> {

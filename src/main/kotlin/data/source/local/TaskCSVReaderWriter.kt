@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import org.example.data.datasources.ITaskDataSource
+import org.example.data.datasources.ITaskCSVReaderWriter
 import data.dto.TaskDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -12,7 +12,7 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
 
-class TaskCsvDataSource(private val filePath: String) : ITaskDataSource {
+class TaskCSVReaderWriter(private val filePath: String) : ITaskCSVReaderWriter {
 
     private fun resolveFile(): File = File(filePath)
 
