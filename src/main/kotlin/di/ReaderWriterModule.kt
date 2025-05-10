@@ -1,21 +1,21 @@
 package org.example.di
 
-import org.example.data.csv_reader_writer.audits.AuditCSVReaderWriter
-import org.example.data.csv_reader_writer.audits.IAuditCSVReaderWriter
-import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
-import org.example.data.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
-import org.example.data.csv_reader_writer.project.IProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.project.ProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.state.IStateCSVReaderWriter
-import org.example.data.csv_reader_writer.state.StateCSVReaderWriter
-import org.example.data.csv_reader_writer.task.ITaskCSVReaderWriter
-import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
-import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.user.IUserCSVReaderWriter
-import org.example.data.csv_reader_writer.user.UserCSVReaderWriter
-import org.example.data.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.user_assigned_to_project.UserAssignedToProjectCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.audits.AuditCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.audits.IAuditCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.project.IProjectCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.project.ProjectCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.state.IStateCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.state.StateCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.task.ITaskCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.task.TaskCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.user.IUserCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.user.UserCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
+import org.example.data.utils.csv_reader_writer.user_assigned_to_project.UserAssignedToProjectCSVReaderWriter
 import org.koin.dsl.module
 
 val localDatasourceModule = module {

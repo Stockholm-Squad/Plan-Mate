@@ -1,7 +1,7 @@
 package org.example.di
 
-import data.network.provider.*
-import data.network.MongoSetup
+import org.example.data.source.remote.MongoSetup
+import org.example.data.source.remote.provider.*
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
