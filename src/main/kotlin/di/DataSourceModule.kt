@@ -15,7 +15,7 @@ import org.example.data.source.remote.*
 import org.koin.dsl.module
 
 val localDatasourceModule = module {
-    factory<IAuditSystemDataSource> { AuditSystemCsvDataSource(filePath = "audits.csv") }
+    factory<IAuditDataSource> { AuditCsvDataSource(filePath = "audits.csv") }
     factory<IProjectDataSource> { ProjectCsvDataSource(filePath = "projects.csv") }
     factory<IStateDataSource> { StateCsvDataSource(filePath = "state.csv") }
     factory<ITaskDataSource> { TaskCsvDataSource(filePath = "task.csv") }
@@ -26,7 +26,7 @@ val localDatasourceModule = module {
 }
 
 val remoteDataSourceModule = module {
-    single<IAuditSystemDataSource> { AuditSystemMongoDataSource(get<AuditsMongoProvider>().provideAuditsCollection()) }
+    single<IAuditDataSource> { AuditMongoDataSource(get<AuditsMongoProvider>().provideAuditsCollection()) }
     single<ProjectDataSource> { ProjectMongoDataSource(get<ProjectMongoProvider>().provideProjectCollection(), get()) }
     single<TaskDataSource> { TaskMongoDataSource(get<TaskMongoProvider>().provideTaskCollection()) }
     single<StateDataSource> { StateMongoDataSource(get<StateMongoProvider>().provideStatesCollection()) }

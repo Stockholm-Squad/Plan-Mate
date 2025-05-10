@@ -1,6 +1,6 @@
 package data.dto
 
-data class AuditSystemDto(
+data class AuditDto(
     val id: String,
     val entityType: String,
     val entityTypeId: String,

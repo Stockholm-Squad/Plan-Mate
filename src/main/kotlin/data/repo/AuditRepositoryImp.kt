@@ -1,21 +1,21 @@
 package org.example.data.repo
 
-import data.mapper.mapToAuditSystemEntity
-import data.mapper.mapToAuditSystemModel
-import org.example.data.datasources.IAuditSystemDataSource
+import data.mapper.mapToAuditEntity
+import data.mapper.mapToAuditModel
+import org.example.data.datasources.IAuditDataSource
 import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.AuditSystemNotAddedException
 import org.example.logic.NoAuditsFoundedException
 import org.example.logic.entities.AuditSystem
-import org.example.logic.repository.AuditSystemRepository
+import org.example.logic.repository.AuditRepository
 
-class AuditSystemRepositoryImp(
-    private val auditSystemDataSource: IAuditSystemDataSource,
-) : AuditSystemRepository {
+class AuditRepositoryImp(
+    private val auditSystemDataSource: IAuditDataSource,
+) : AuditRepository {
     override suspend fun addAuditsEntries(auditSystem: List<AuditSystem>): Boolean =
         executeSafelyWithContext(
             onSuccess = {
-                auditSystemDataSource.append(auditSystem.map { it.mapToAuditSystemModel() })
+                auditSystemDataSource.append(auditSystem.map { it.mapToAuditModel() })
             },
             onFailure = { throw AuditSystemNotAddedException() }
         )
@@ -24,7 +24,7 @@ class AuditSystemRepositoryImp(
     override suspend fun getAllAuditEntries(): List<AuditSystem> =
         executeSafelyWithContext(
             onSuccess = {
-                auditSystemDataSource.read().mapNotNull { it.mapToAuditSystemEntity() }
+                auditSystemDataSource.read().mapNotNull { it.mapToAuditEntity() }
             },
             onFailure = { throw NoAuditsFoundedException() }
         )
