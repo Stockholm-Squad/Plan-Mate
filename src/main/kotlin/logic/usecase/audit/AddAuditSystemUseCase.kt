@@ -1,15 +1,16 @@
 package org.example.logic.usecase.audit
 
 import org.example.data.utils.DateHandlerImp
-import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
-import org.example.logic.repository.AuditSystemRepository
+import org.example.logic.repository.AuditRepository
+
 import java.util.*
 
 class AddAuditSystemUseCase(
-    private val auditSystemRepository: AuditSystemRepository,
-    ) {
-    suspend fun addAuditsEntries(auditEntry: List<AuditSystem>): Boolean =
+    private val auditSystemRepository: AuditRepository,
+) {
+    suspend fun addAuditsEntries(auditEntry: List<Audit>): Boolean =
         auditSystemRepository.addAuditsEntries(auditEntry)
 
     suspend fun addEntityChangeHistory(
@@ -18,7 +19,7 @@ class AddAuditSystemUseCase(
         entityId: UUID,
         description: String,
     ): Boolean {
-        val auditEntry = AuditSystem(
+        val auditEntry = Audit(
             userId = userId,
             entityType = entityType,
             entityTypeId = entityId,
