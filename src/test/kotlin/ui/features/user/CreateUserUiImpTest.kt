@@ -9,14 +9,14 @@ import org.example.logic.model.exceptions.UsersDataAreEmpty
 import org.example.logic.usecase.extention.toSafeUUID
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.usecase.user.CreateUserUseCase
+import org.example.logic.usecase.user.AddUserUseCase
 import org.example.ui.features.user.CreateUserUiImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
 
 class CreateUserUiImpTest {
-    private val mockCreateUserUseCase: CreateUserUseCase = mockk(relaxed = true)
+    private val mockCreateUserUseCase: AddUserUseCase = mockk(relaxed = true)
     private val mockPrinter: OutputPrinter = mockk(relaxed = true)
     private val mockInputReader: InputReader = mockk()
     private lateinit var createUserUiImp: CreateUserUiImp
@@ -92,7 +92,7 @@ class CreateUserUiImpTest {
         val username = "testUser"
         val password = "testPass123"
         every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        every { mockCreateUserUseCase.createUser(username, password) } returns Result.success(true)
+        every { mockCreateUserUseCase.addUser(username, password) } returns Result.success(true)
 
         // When
         createUserUiImp.launchUi(user)
@@ -107,7 +107,7 @@ class CreateUserUiImpTest {
         val username = "testUser"
         val password = "testPass123"
         every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        every { mockCreateUserUseCase.createUser(username, password) } returns Result.success(false)
+        every { mockCreateUserUseCase.addUser(username, password) } returns Result.success(false)
 
         // When
         createUserUiImp.launchUi(user)
@@ -122,7 +122,7 @@ class CreateUserUiImpTest {
         val username = "testUser"
         val password = "testPass123"
         every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        every { mockCreateUserUseCase.createUser(username, password) } returns
+        every { mockCreateUserUseCase.addUser(username, password) } returns
                 Result.failure(UsersDataAreEmpty())
 
         // When
@@ -139,7 +139,7 @@ class CreateUserUiImpTest {
         val username = "testUser"
         val password = "testPass123"
         every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        every { mockCreateUserUseCase.createUser(username, password) } returns Result.success(true)
+        every { mockCreateUserUseCase.addUser(username, password) } returns Result.success(true)
 
         // When
         createUserUiImp.launchUi(
@@ -148,7 +148,7 @@ class CreateUserUiImpTest {
 
 
         // Then
-        verify { mockCreateUserUseCase.createUser(username, password) }
+        verify { mockCreateUserUseCase.addUser(username, password) }
     }
 
     @Test
@@ -160,7 +160,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify(exactly = 0) { mockCreateUserUseCase.createUser(any(), any()) }
+        verify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
         verify { mockPrinter.showMessage("Username and password cannot be empty") }
     }
 
@@ -173,7 +173,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify(exactly = 0) { mockCreateUserUseCase.createUser(any(), any()) }
+        verify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
         verify { mockPrinter.showMessage("Username and password cannot be empty") }
     }
 

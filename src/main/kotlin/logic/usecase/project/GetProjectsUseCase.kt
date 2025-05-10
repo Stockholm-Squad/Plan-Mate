@@ -1,29 +1,27 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.Project
-import logic.models.exceptions.ProjectNotFoundException
+import org.example.logic.ProjectNotFoundException
+import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
 
 class GetProjectsUseCase(
     private val projectRepository: ProjectRepository,
 ) {
 
-    fun getAllProjects(): Result<List<Project>> {
+    suspend fun getAllProjects(): List<Project> {
         return projectRepository.getAllProjects()
     }
 
-    fun getProjectByName(projectName: String): Result<Project> {
-        return projectRepository.getAllProjects().fold(
-            onFailure = { Result.failure(it) },
-            onSuccess = { allProjects -> getProjectFromList(projectName, allProjects) }
+    suspend fun getProjectByName(projectName: String): Project {
+        return getProjectFromList(
+            projectName,
+            projectRepository.getAllProjects(),
         )
     }
 
-    private fun getProjectFromList(projectName: String, allProjects: List<Project>): Result<Project> {
+    private fun getProjectFromList(projectName: String, allProjects: List<Project>): Project {
         return allProjects.find { project ->
             project.name == projectName
-        }?.let { foundProject ->
-            Result.success(foundProject)
-        } ?: Result.failure(ProjectNotFoundException())
+        } ?: throw ProjectNotFoundException()
     }
 }

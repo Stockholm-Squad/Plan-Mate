@@ -1,16 +1,16 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import data.models.MateTaskAssignmentModel
-import data.models.TaskInProjectModel
+import data.dto.MateTaskAssignmentDto
+import data.dto.TaskInProjectDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
-import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
-import org.example.data.datasources.task_data_source.TaskCsvDataSource
+import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
 import org.example.data.repo.TaskRepositoryImp
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.TaskRepository
@@ -25,9 +25,9 @@ import java.util.*
 
 class TaskRepositoryImpTest {
 
-    private lateinit var taskDataSource: TaskCsvDataSource
-    private lateinit var mateTaskAssignmentCsvDataSource: IMateTaskAssignmentDataSource
-    private lateinit var taskInProjectDataSource: ITaskInProjectDataSource
+    private lateinit var taskDataSource: TaskCSVReaderWriter
+    private lateinit var mateTaskAssignmentCsvDataSource: IMateTaskAssignmentCSVReaderWriter
+    private lateinit var taskInProjectDataSource: ITaskInProjectCSVReaderWriter
     private lateinit var taskRepository: TaskRepository
     private lateinit var dataHandler: DateHandlerImp
     private val projectUUID1 = UUID.randomUUID()
@@ -35,11 +35,11 @@ class TaskRepositoryImpTest {
     private val taskUUID1 = UUID.randomUUID()
     private val taskUUID2 = UUID.randomUUID()
     private val testTaskInProject =
-        TaskInProjectModel(projectId = projectUUID1.toString(), taskId = taskUUID1.toString())
+        TaskInProjectDto(projectId = projectUUID1.toString(), taskId = taskUUID1.toString())
     private val taskInProjectWithDifferentTaskId =
-        TaskInProjectModel(projectId = projectUUID1.toString(), taskId = taskUUID2.toString())
+        TaskInProjectDto(projectId = projectUUID1.toString(), taskId = taskUUID2.toString())
     private val taskInProjectWithDifferentProjectId =
-        TaskInProjectModel(projectId = projectUUID2.toString(), taskId = taskUUID1.toString())
+        TaskInProjectDto(projectId = projectUUID2.toString(), taskId = taskUUID1.toString())
 
 
     @BeforeEach
@@ -185,7 +185,7 @@ class TaskRepositoryImpTest {
     fun `getAllMateTaskAssignment should return success when read is successful`() {
         // Given
         val mateName = "Ali"
-        val assignments = listOf(MateTaskAssignmentModel("task1", "Ali"), MateTaskAssignmentModel("task2", "Ali"))
+        val assignments = listOf(MateTaskAssignmentDto("task1", "Ali"), MateTaskAssignmentDto("task2", "Ali"))
         every { mateTaskAssignmentCsvDataSource.read() } returns Result.success(assignments)
 
         // When
@@ -226,7 +226,7 @@ class TaskRepositoryImpTest {
         @Test
         fun `getTasksInProject should return empty list when no tasks for project`() {
             every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(TaskInProjectModel(projectId = "2", taskId = "201"))
+                listOf(TaskInProjectDto(projectId = "2", taskId = "201"))
             )
 
             val result = taskRepository.getTasksInProject(projectUUID1)
@@ -252,7 +252,7 @@ class TaskRepositoryImpTest {
             val result = taskRepository.addTaskInProject(projectUUID1, taskUUID1)
 
             assertThat(result.getOrThrow()).isTrue()
-            verify { taskInProjectDataSource.append(listOf(TaskInProjectModel(projectId = "1", taskId = "101"))) }
+            verify { taskInProjectDataSource.append(listOf(TaskInProjectDto(projectId = "1", taskId = "101"))) }
         }
 
         @Test

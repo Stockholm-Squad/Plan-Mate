@@ -5,6 +5,7 @@ import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.audit.AuditSystemManagerUi
 import org.example.ui.features.audit.AuditSystemManagerUiImp
+import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.login.LoginUiImp
 import org.example.ui.features.project.ProjectManagerUi
@@ -21,7 +22,6 @@ import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.features.user.CreateUserUiImp
-import org.example.ui.features.common.utils.UiUtils
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -31,12 +31,12 @@ val uiModule = module {
     factory<AuditSystemManagerUi> { AuditSystemManagerUiImp(get(), get(), get()) }
     factory<LoginUi> { LoginUiImp(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
-    factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get()) }
-    factory<AddUserToProjectUI> { AddUserToProjectUIImp(get(), get(), get(), get(), get(), get()) }
+    factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get()) }
+    factory<AddUserToProjectUI> { AddUserToProjectUIImp(get(), get(), get(), get(), get()) }
     factory<UserStateManagerUi> { UserStateManagerUiImp(get(), get()) }
     factory<MateStateManagerUi> { MateStateManagerUiImpl(get()) }
     factory<AdminStateManagerUi> { AdminStateManagerUiImpl(get(), get(), get(), get()) }
-    factory<TaskManagerUi> { TaskManagerUiImp(get(), get(), get(), get(), get(), get(), get()) }
+    factory<TaskManagerUi> { TaskManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory<StateManageUi> { StateManagerUiImp(get(), get(), get()) }
     factory<UiUtils> { UiUtils(get()) }
 }

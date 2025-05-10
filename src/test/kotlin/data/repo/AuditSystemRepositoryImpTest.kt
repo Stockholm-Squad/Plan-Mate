@@ -7,10 +7,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.datetime.LocalDateTime
-import logic.models.entities.AuditSystem
-import logic.models.entities.EntityType
-import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
-import org.example.data.models.AuditSystemModel
+import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
+import org.example.data.source.local.AuditSystemCsvDataSource
+import data.dto.AuditSystemDto
 import org.example.data.repo.AuditSystemRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,7 +21,7 @@ class AuditSystemRepositoryImpTest {
     private lateinit var auditSystemRepositoryImp: AuditSystemRepositoryImp
     private lateinit var auditSystemDataSource: AuditSystemCsvDataSource
 
-    private lateinit var auditListModel: List<AuditSystemModel>
+    private lateinit var auditListModel: List<AuditSystemDto>
     private lateinit var auditListEntity: List<AuditSystem>
 
     @BeforeEach
@@ -46,7 +46,7 @@ class AuditSystemRepositoryImpTest {
         )
 
         auditListModel = listOf(
-            AuditSystemModel(
+            AuditSystemDto(
                 id = id.toString(),
                 entityType = "TASK",
                 entityTypeId = entityId.toString(),

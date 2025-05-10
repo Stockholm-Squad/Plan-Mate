@@ -1,0 +1,69 @@
+package org.example.logic
+
+open class DataException(override val message: String) : Exception(message)
+class ReadDataException(message: String = "Error while reading data!") : DataException(message)
+
+
+open class PlanMateExceptions(override val message: String) : Exception(message)
+
+open class UserExceptions(message: String) : PlanMateExceptions(message)
+class InvalidUserNameException(message: String = "Invalid username") : UserExceptions(message)
+class InvalidPasswordException(message: String = "Invalid password") : UserExceptions(message)
+class IncorrectPasswordException(message: String = "Incorrect password") : UserExceptions(message)
+class UserDoesNotExistException(message: String = "User does not exist") : UserExceptions(message)
+class UsersDoesNotExistException(message: String = "Users does not exist") : UserExceptions(message)
+class UserExistException(message: String = "User already exists") : UserExceptions(message)
+class UsersDataAreEmptyException(message: String = "Users data are empty") : UserExceptions(message)
+class UserNotAddedException(message: String = "User not added") : UserExceptions(message)
+
+
+open class TaskExceptions(message: String) : PlanMateExceptions(message)
+class TasksNotFoundException(message: String = "No tasks found.") : TaskExceptions(message)
+class TaskNotFoundException(message: String = "Task Not found.") : TaskExceptions(message)
+class TaskNotAddedException(message: String = "Failed to add task.") : TaskExceptions(message)
+class TaskNotEditException(message: String = "Failed to edit task.") : TaskExceptions(message)
+class TaskNotDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
+class DuplicateTaskNameException(message: String = "Duplicated task name.") : TaskExceptions(message)
+
+
+open class ProjectExceptions(message: String) : PlanMateExceptions(message)
+class ProjectNotFoundException(message: String = "Project not found.") : ProjectExceptions(message)
+class NoProjectAddedException(message: String = "No project added.") : ProjectExceptions(message)
+class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
+class NoProjectEditedException(message: String = "The project hasn't edited") : ProjectExceptions(message)
+class NoProjectDeletedException(message: String = "The project hasn't deleted") : ProjectExceptions(message)
+class ProjectAlreadyExistException(message: String = "The project is already exists") : ProjectExceptions(message)
+
+
+open class StateExceptions(message: String) : PlanMateExceptions(message)
+class StateAlreadyExistException(message: String = "The state already exists.") : StateExceptions(message)
+class NoStatesFoundedException(message: String = "There are no states.") : StateExceptions(message)
+class NotAllowedStateNameException(message: String = "Only letters are allowed!") : StateExceptions(message)
+class ProjectStateNotAddedException(message: String = "Project State Not Added") : StateExceptions(message)
+class ProjectStateNotEditedException(message: String = "Project State Not Edited") : StateExceptions(message)
+class ProjectStateNotDeletedException(message: String = "Project State Not Deleted") : StateExceptions(message)
+class NoProjectStateFoundException(message: String = "No Project State Found") : StateExceptions(message)
+
+
+open class AuditExceptions(message: String) : PlanMateExceptions(message)
+class NoAuditsFoundedException(message: String = "There are no audits.") : AuditExceptions(message)
+class AuditSystemNotAddedException(message: String = "Audit system not added.") : AuditExceptions(message)
+
+
+open class UserToProjectExceptions(message: String) : PlanMateExceptions(message)
+class UserNotAddedToProjectException(message: String = "User not added to project") :
+    UserToProjectExceptions(message)
+
+class UserNotDeletedFromProjectException(message: String = "User not deleted from project") :
+    UserToProjectExceptions(message)
+
+
+open class UserToTaskExceptions(message: String) : PlanMateExceptions(message)
+class UserNotAddedToTaskException(message: String = "User not added to task") :
+    UserToTaskExceptions(message)
+
+class UserNotDeletedFromTaskException(message: String = "User not deleted from task") :
+    UserToTaskExceptions(message)
+
+
+

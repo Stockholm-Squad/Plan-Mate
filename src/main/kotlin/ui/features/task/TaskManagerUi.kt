@@ -1,12 +1,14 @@
 package org.example.ui.features.task
 
+import org.example.logic.entities.Task
 import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface TaskManagerUi : UiLauncher {
     fun showAllTasks()
+    fun getTaskByName()
     fun createTask()
     fun editTask()
     fun deleteTask()
-    fun showAllTasksInProject()
+    fun showAllTasksInProject(): List<Task>
     fun showAllMateTaskAssignment()
 }

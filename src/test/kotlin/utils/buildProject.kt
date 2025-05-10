@@ -1,6 +1,6 @@
 package utils
 
-import logic.models.entities.Project
+import org.example.logic.entities.Project
 import java.util.*
 
 fun buildProject(

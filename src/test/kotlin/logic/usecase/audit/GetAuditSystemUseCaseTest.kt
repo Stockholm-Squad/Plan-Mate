@@ -6,8 +6,8 @@ import data.mapper.mapToAuditSystemModel
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.LocalDateTime
-import logic.models.entities.AuditSystem
-import logic.models.entities.EntityType
+import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.usecase.audit.GetAuditSystemUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase

@@ -3,7 +3,7 @@ package logic.usecase.state
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import logic.models.entities.ProjectState
+import org.example.logic.entities.ProjectState
 import logic.models.exceptions.*
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.state.ManageStatesUseCase

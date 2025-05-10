@@ -1,8 +1,8 @@
 package utils
 
 import kotlinx.datetime.LocalDateTime
-import logic.models.entities.Task
-import org.example.data.models.TaskModel
+import org.example.logic.entities.Task
+import data.dto.TaskDto
 import org.example.data.utils.DateHandlerImp
 import java.util.*
 
@@ -30,6 +30,6 @@ fun buildTaskModel(
     stateId: String = "",
     createdDate: String = DateHandlerImp().getCurrentDateTime().toString(),
     updatedDate: String = DateHandlerImp().getCurrentDateTime().toString()
-): TaskModel {
-    return TaskModel(id, projectName, name, description, stateId, createdDate, updatedDate)
+): TaskDto {
+    return TaskDto(id, projectName, name, description, stateId, createdDate, updatedDate)
 }

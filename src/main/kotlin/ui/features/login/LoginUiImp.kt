@@ -1,26 +1,31 @@
 package org.example.ui.features.login
 
-import logic.models.entities.User
+import kotlinx.coroutines.runBlocking
+import org.example.logic.entities.User
 import logic.usecase.login.LoginUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 
 class LoginUiImp(
-    private val getAuthenticationUseCase: LoginUseCase,
+    private val loginUseCase: LoginUseCase,
     private val printer: OutputPrinter,
     private var reader: InputReader
-) : LoginUi{
+) : LoginUi {
+
     override fun authenticateUser(): User? {
         printer.showMessage("Please enter your user name: ")
-        return reader.readStringOrNull()?.let { username ->
-            printer.showMessage("Please enter your Password: ")
-            reader.readStringOrNull()?.let { password ->
-                getAuthenticationUseCase.loginUser(username = username, password = password)
-                    .fold(onSuccess = { user -> user }, onFailure = {
-                        handleFailure(it.message.toString())
-                        null
-                    })
+        val username = reader.readStringOrNull() ?: return null
+
+        printer.showMessage("Please enter your Password: ")
+        val password = reader.readStringOrNull() ?: return null
+
+        return runBlocking {
+            try {
+                loginUseCase.loginUser(username, password)
+            } catch (e: Exception) {
+                handleFailure(e.message ?: "Unknown error occurred")
+                null
             }
         }
     }

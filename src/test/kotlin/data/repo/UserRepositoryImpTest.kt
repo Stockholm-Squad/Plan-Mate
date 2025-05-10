@@ -1,19 +1,18 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import data.models.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.entities.User
-import logic.models.entities.UserRole
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.UsersDataAreEmpty
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentCsvDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectCsvDataSource
-import org.example.data.datasources.user_data_source.UserCsvDataSource
-import org.example.data.models.UserModel
+import org.example.data.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
+import org.example.data.csv_reader_writer.user_assigned_to_project.UserAssignedToProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.user.UserCSVReaderWriter
+import data.dto.UserDto
 import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.UsersDataAreEmptyException
@@ -30,17 +29,17 @@ import java.util.*
 class UserRepositoryImpTest {
 
     private lateinit var userRepository: UserRepositoryImp
-    private lateinit var userCsvDataSource: UserCsvDataSource
-    private lateinit var userAssignedToProjectCsvDataSource: UserAssignedToProjectCsvDataSource
-    private lateinit var mateTaskAssignmentCsvDataSource: MateTaskAssignmentCsvDataSource
+    private lateinit var userCsvDataSource: UserCSVReaderWriter
+    private lateinit var userAssignedToProjectCsvDataSource: UserAssignedToProjectCSVReaderWriter
+    private lateinit var mateTaskAssignmentCSVReaderWriter: MateTaskAssignmentCSVReaderWriter
 
     private val projectUUID1 = UUID.randomUUID()
     private val projectUUID2 = UUID.randomUUID()
-    private val testUserAssigned = UserAssignedToProjectModel(projectId = projectUUID1.toString(), userName = "user1")
+    private val testUserAssigned = UserAssignedToProjectDto(projectId = projectUUID1.toString(), userName = "user1")
     private val userAssignedWithDifferentUserName =
-        UserAssignedToProjectModel(projectId = projectUUID1.toString(), userName = "user2")
+        UserAssignedToProjectDto(projectId = projectUUID1.toString(), userName = "user2")
     private val userAssignedWithDifferentProjectId =
-        UserAssignedToProjectModel(projectId = projectUUID2.toString(), userName = "user1")
+        UserAssignedToProjectDto(projectId = projectUUID2.toString(), userName = "user1")
 
     private val testUserUUID1 = UUID.randomUUID()
     private val testUserEntity1 = User(
@@ -49,7 +48,7 @@ class UserRepositoryImpTest {
         hashedPassword = "hashedPassword",
         userRole = UserRole.MATE
     )
-    private val testUserModel1 = UserModel(
+    private val testUserDto1 = UserDto(
         id = testUserUUID1.toString(),
         username = "testUser",
         hashedPassword = "hashedPassword",
@@ -63,7 +62,7 @@ class UserRepositoryImpTest {
         hashedPassword = "hashedPassword",
         userRole = UserRole.MATE
     )
-    private val testUserModel2 = UserModel(
+    private val testUserDto2 = UserDto(
         id = testUserUUID2.toString(),
         username = "testUser",
         hashedPassword = "hashedPassword",
@@ -74,15 +73,15 @@ class UserRepositoryImpTest {
     fun setUp() {
         userCsvDataSource = mockk(relaxed = true)
         userAssignedToProjectCsvDataSource = mockk(relaxed = true)
-        mateTaskAssignmentCsvDataSource = mockk(relaxed = true)
+        mateTaskAssignmentCSVReaderWriter = mockk(relaxed = true)
         userRepository =
-            UserRepositoryImp(userCsvDataSource, userAssignedToProjectCsvDataSource, mateTaskAssignmentCsvDataSource)
+            UserRepositoryImp(userCsvDataSource, userAssignedToProjectCsvDataSource, mateTaskAssignmentCSVReaderWriter)
     }
 
     @Test
     fun `addUser should return success when datasource writes successfully`() {
         // Given
-        every { userCsvDataSource.append(listOf(testUserModel1)) } returns Result.success(true)
+        every { userCsvDataSource.append(listOf(testUserDto1)) } returns Result.success(true)
 
         // When
         val result = userRepository.addUser(testUserEntity1)
@@ -90,14 +89,14 @@ class UserRepositoryImpTest {
         // Then
         assertTrue(result.isSuccess)
         assertEquals(true, result.getOrNull())
-        verify { userCsvDataSource.append(listOf(testUserModel1)) }
+        verify { userCsvDataSource.append(listOf(testUserDto1)) }
     }
 
     @Test
     fun `addUser should return failure when datasource write fails`() {
         // Given
         val expectedException = IOException("Write failed")
-        every { userCsvDataSource.append(listOf(testUserModel1)) } returns Result.failure(expectedException)
+        every { userCsvDataSource.append(listOf(testUserDto1)) } returns Result.failure(expectedException)
 
         // When
         val result = userRepository.addUser(testUserEntity1)
@@ -105,13 +104,13 @@ class UserRepositoryImpTest {
         // Then
         assertTrue(result.isFailure)
         assertEquals(expectedException, result.exceptionOrNull())
-        verify { userCsvDataSource.append(listOf(testUserModel1)) }
+        verify { userCsvDataSource.append(listOf(testUserDto1)) }
     }
 
     @Test
     fun `getAllUsers should return success with users when datasource reads successfully`() {
         // Given
-        val expectedUsers = listOf(testUserModel1, testUserModel2)
+        val expectedUsers = listOf(testUserDto1, testUserDto2)
         every { userCsvDataSource.read() } returns Result.success(expectedUsers)
 
         // When
@@ -155,7 +154,7 @@ class UserRepositoryImpTest {
     @Test
     fun `addUser should propagate false when datasource returns false`() {
         // Given
-        every { userCsvDataSource.append(listOf(testUserModel1)) } returns Result.success(false)
+        every { userCsvDataSource.append(listOf(testUserDto1)) } returns Result.success(false)
 
         // When
         val result = userRepository.addUser(testUserEntity1)
@@ -163,7 +162,7 @@ class UserRepositoryImpTest {
         // Then
         assertTrue(result.isSuccess)
         assertEquals(false, result.getOrNull())
-        verify { userCsvDataSource.append(listOf(testUserModel1)) }
+        verify { userCsvDataSource.append(listOf(testUserDto1)) }
     }
 
     @Nested
@@ -182,7 +181,7 @@ class UserRepositoryImpTest {
         @Test
         fun `getUsersAssignedToProject should return empty list when no users for project`() {
             every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(UserAssignedToProjectModel(projectId = "2", userName = "user3"))
+                listOf(UserAssignedToProjectDto(projectId = "2", userName = "user3"))
             )
 
             val result = userRepository.getUsersByProjectId(projectUUID1)
@@ -210,7 +209,7 @@ class UserRepositoryImpTest {
             assertThat(result.isSuccess).isTrue()
             verify {
                 userAssignedToProjectCsvDataSource.append(
-                    listOf(UserAssignedToProjectModel(projectId = "1", userName = "user1"))
+                    listOf(UserAssignedToProjectDto(projectId = "1", userName = "user1"))
                 )
             }
         }

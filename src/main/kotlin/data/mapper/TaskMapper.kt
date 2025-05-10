@@ -1,33 +1,30 @@
 package org.example.data.mapper
 
-import logic.models.entities.Task
-import org.example.data.models.TaskModel
+import data.dto.TaskDto
 import org.example.data.utils.DateHandlerImp
-import org.example.logic.usecase.extention.toSafeUUID
+import org.example.logic.entities.Task
+import org.example.logic.utils.toSafeUUID
 
-fun TaskModel.mapToTaskEntity(): Task? {
-    return try {
-        Task(
-            id.toSafeUUID(),
-            projectName,
-            name,
-            description,
-            stateId.toSafeUUID(),
-            DateHandlerImp().getLocalDateTimeFromString(createdDate),
-            DateHandlerImp().getLocalDateTimeFromString(updatedDate)
-        )
-    } catch (throwable: Throwable) {
-        null
-    }
+fun TaskDto.mapToTaskEntity(): Task? {
+    return Task(
+        id.toSafeUUID() ?: return null,
+        projectName,
+        name,
+        description,
+        stateId.toSafeUUID() ?: return null,
+        DateHandlerImp().getLocalDateTimeFromString(createdDate),
+        DateHandlerImp().getLocalDateTimeFromString(updatedDate)
+    )
 }
 
-fun Task.mapToTaskModel(): TaskModel = TaskModel(
-    id.toString(),
-    projectName,
-    name,
-    description,
-    stateId.toString(),
-    createdDate.toString(),
-    updatedDate.toString(),
-)
-
+fun Task.mapToTaskModel(): TaskDto {
+    return TaskDto(
+        id.toString(),
+        projectName,
+        name,
+        description,
+        stateId.toString(),
+        createdDate.toString(),
+        updatedDate.toString(),
+    )
+}

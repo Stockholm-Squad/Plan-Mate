@@ -1,11 +1,11 @@
 package org.example.logic.repository
 
-import logic.models.entities.Project
+import org.example.logic.entities.Project
 
 interface ProjectRepository {
-    fun addProject(project: Project): Result<Boolean>
-    fun editProject(updatedProject: Project): Result<Boolean>
-    fun deleteProject(projectToDelete: Project): Result<Boolean>
-    fun getAllProjects(): Result<List<Project>>
-    fun getProjectsByUsername(username: String): Result<List<Project>>
+    suspend fun addProject(project: Project): Boolean
+    suspend fun editProject(updatedProject: Project): Boolean
+    suspend fun deleteProject(projectToDelete: Project): Boolean
+    suspend fun getAllProjects(): List<Project>
+    suspend fun getProjectsByUsername(username: String): List<Project>
 }

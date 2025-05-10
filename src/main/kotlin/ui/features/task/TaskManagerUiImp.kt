@@ -1,18 +1,21 @@
 package org.example.ui.features.task
 
-import logic.models.entities.Task
-import logic.models.entities.User
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.runBlocking
 import org.example.data.utils.DateHandlerImp
+import org.example.logic.entities.EntityType
+import org.example.logic.entities.Task
+import org.example.logic.entities.User
+import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.ui.features.common.utils.TaskOptions
+import org.example.logic.usecase.task.TaskOptions
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-
 
 class TaskManagerUiImp(
     private val reader: InputReader,
@@ -22,7 +25,12 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
+    private val auditSystemUseCase: AddAuditUseCase
 ) : TaskManagerUi {
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        printer.showMessage(throwable.message ?: "Unknown error")
+    }
+    val timestamp = DateHandlerImp().getCurrentDateTime()
     private var currentUser: User? = null
 
     override fun launchUi(user: User?) {
@@ -43,7 +51,7 @@ class TaskManagerUiImp(
     private fun enteredTaskOption(option: TaskOptions?): Boolean {
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
-            TaskOptions.SHOW_TASK_BY_ID -> getTaskByName()
+            TaskOptions.SHOW_TASK_BY_NAME -> getTaskByName()
             TaskOptions.CREATE_TASK -> createTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
@@ -60,124 +68,144 @@ class TaskManagerUiImp(
     }
 
     override fun showAllTasks() {
-        manageTasksUseCase.getAllTasks().fold(
-            onSuccess = ::handleGetAllTasksSuccess,
-            onFailure = ::handleFailure
-        )
-    }
-
-    private fun handleGetAllTasksSuccess(tasks: List<Task>) {
-        tasks.takeIf { it.isNotEmpty() }
-            ?.let { printer.printTaskList(it) }
-            ?: printer.showMessage(UiMessages.NO_TASK_FOUND)
-    }
-
-    private fun getTaskByName() {
-        val taskName = getTaskName()
-        manageTasksUseCase.getTaskByName(taskName).fold(
-            onSuccess = { task -> printer.printTask(task) },
-            onFailure = ::handleFailure
-        )
+        runBlocking(coroutineExceptionHandler) {
+            try {
+                manageTasksUseCase.getAllTasks().also {
+                    printer.printTaskList(it)
+                }
+            } catch (ex: Exception) {
+                printer.showMessage(ex.message ?: "Unknown Error")
+            }
+        }
     }
 
     override fun createTask() {
-
         val projectName = getProjectByName()
         if (projectName.isEmpty()) return
+
         val (name, description, stateName) = readCreateTaskInput()
             ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
 
-        val stateId = manageStateUseCase.getProjectStateIdByName(stateName)
-            ?: return printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT)
-
-        val task = Task(
-            projectName = projectName,
-            name = name,
-            description = description,
-            stateId = stateId,
-            createdDate = DateHandlerImp().getCurrentDateTime(),
-            updatedDate = DateHandlerImp().getCurrentDateTime()
-        )
-
-        val userId = currentUser?.id
-            ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
-
-        getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                manageTasksUseCase.createTask(task, userId).fold(
-                    onSuccess = {
-                        printer.printTask(task)
-                        manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
-                    },
-                    onFailure = ::handleFailure
-                )
-            },
-            onFailure = {
-                printer.showMessage(UiMessages.NO_PROJECT_FOUNDED)
-                return
+        val stateId = runBlocking(coroutineExceptionHandler) {
+            try {
+                manageStateUseCase.getProjectStateIdByName(stateName)
+            } catch (ex: Exception) {
+                printer.showMessage(ex.message ?: "Unknown Error")
+                null
             }
-        )
-    }
+        } ?: return
 
-    override fun editTask() {
-        val taskName = getTaskName()
+        val userId = currentUser?.id ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
-        val existingTask = manageTasksUseCase.getTaskByName(taskName).getOrNull()
-            ?: return printer.showMessage(UiMessages.NO_TASK_FOUND)
+        runBlocking(coroutineExceptionHandler) {
+            try {
+                val project = getProjectsUseCase.getProjectByName(projectName)
+                val task = Task(
+                    projectName = projectName,
+                    name = name,
+                    description = description,
+                    stateId = stateId,
+                    createdDate = timestamp,
+                    updatedDate = timestamp
+                )
 
-        val (newName, newDescription, newStateName) = readEditTaskInput()
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
-
-        val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
-            ?: return printer.showMessage(UiMessages.INVALID_STATE_NAME)
-
-        val userId = currentUser?.id
-            ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
-
-        val updatedTask = existingTask.copy(
-            name = newName,
-            description = newDescription,
-            stateId = newStateId,
-            updatedDate = DateHandlerImp().getCurrentDateTime()
-        )
-
-        manageTasksUseCase.editTask(updatedTask, userId).fold(
-            onSuccess = { printer.printTask(updatedTask) },
-            onFailure = ::handleFailure
-        )
-    }
-
-    override fun deleteTask() {
-        val taskName = getTaskName()
-
-        if (manageTasksUseCase.getTaskByName(taskName).getOrNull() == null) {
-            return printer.showMessage(UiMessages.NO_TASK_FOUND)
+                manageTasksUseCase.addTask(task, project.id)
+                manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
+                val auditDescription = printer.printAddTaskDescription(EntityType.TASK, task.name, task.id, projectName)
+                auditSystemUseCase.addEntityChangeHistory(userId, EntityType.TASK, task.id, auditDescription)
+                printer.printTask(task)
+            } catch (ex: Exception) {
+                printer.showMessage(ex.message ?: "Unknown Error")
+            }
         }
-
-        manageTasksUseCase.deleteTaskByName(taskName).fold(
-            onSuccess = { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY) },
-            onFailure = ::handleFailure
-        )
     }
 
-    override fun showAllTasksInProject() {
-        val projectName = getProjectByName()
-        manageTasksInProjectUseCase.getTasksInProjectByName(projectName).fold(
-            onSuccess = { tasks: List<Task> ->
-                tasks.takeUnless { it.isEmpty() }
-                    ?.let { printer.printTaskList(it) }
-                    ?: printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT)
-            },
-            onFailure = ::handleFailure
-        )
+    override fun editTask() = runBlocking(coroutineExceptionHandler) {
+        try {
+            val taskName = getTaskName()
+
+            val existingTask = manageTasksUseCase.getTaskByName(taskName)
+
+            val editInput = readEditTaskInput()
+                ?: return@runBlocking printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
+
+            val (newName, newDescription, newStateName) = editInput
+
+            val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
+
+            val userId = currentUser?.id
+                ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+
+            val updatedTask = existingTask.copy(
+                name = newName,
+                description = newDescription,
+                stateId = newStateId,
+                updatedDate = timestamp
+            )
+
+            manageTasksUseCase.editTask(updatedTask)
+            val auditDescription =
+                printer.printUpdateTaskDescription(EntityType.TASK, existingTask.name, newDescription, newStateName)
+            auditSystemUseCase.addEntityChangeHistory(userId, EntityType.TASK, existingTask.id, auditDescription)
+            printer.printTask(updatedTask)
+        } catch (ex: Exception) {
+            printer.showMessage(ex.message ?: "Unknown Error.")
+        }
     }
 
-    override fun showAllMateTaskAssignment() {
-        val userName = getUserName()
-        manageTasksInProjectUseCase.getAllTasksByUserName(userName).fold(
-            onSuccess = { assignments -> printer.printMateTaskAssignments(assignments) },
-            onFailure = ::handleFailure
-        )
+    override fun deleteTask() = runBlocking(coroutineExceptionHandler) {
+        try {
+            val projectName = getProjectByName()
+            if (projectName.isEmpty()) return@runBlocking
+
+            val taskName = getTaskName()
+
+            val task = manageTasksUseCase.getTaskByName(taskName)
+            manageTasksUseCase.deleteTaskByName(taskName)
+
+            val project = getProjectsUseCase.getProjectByName(projectName)
+            manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
+            val userId = currentUser?.id
+                ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+
+            val auditDescription = printer.printDeleteTaskDescription(EntityType.TASK, task.name, task.id, projectName)
+            auditSystemUseCase.addEntityChangeHistory(userId, EntityType.TASK, task.id, auditDescription)
+            printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY)
+        } catch (ex: Exception) {
+            printer.showMessage(ex.message ?: "Unknown Error")
+        }
+    }
+
+    override fun showAllTasksInProject(): List<Task> = runBlocking(coroutineExceptionHandler) {
+        try {
+            val projectName = getProjectByName()
+            val tasks = manageTasksInProjectUseCase.getTasksInProjectByName(projectName)
+            printer.printTaskList(tasks)
+            tasks
+        } catch (ex: Exception) {
+            printer.showMessage(ex.message ?: "Unknown Error")
+            emptyList()
+        }
+    }
+
+    override fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
+        try {
+            val userName = getUserName()
+            val assignments = manageTasksInProjectUseCase.getAllTasksByUserName(userName)
+            printer.printMateTaskAssignments(assignments)
+        } catch (ex: Exception) {
+            printer.showMessage(ex.message ?: "Unknown Error")
+        }
+    }
+
+    override fun getTaskByName() = runBlocking(coroutineExceptionHandler) {
+        try {
+            val taskName = getTaskName()
+            val task = manageTasksUseCase.getTaskByName(taskName)
+            printer.printTask(task)
+        } catch (ex: Exception) {
+            printer.showMessage(ex.message ?: "Unknown Error")
+        }
     }
 
     private fun readCreateTaskInput(): Triple<String, String, String>? {
@@ -215,8 +243,8 @@ class TaskManagerUiImp(
         if (name == null) {
             printer.showMessage(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readEditTaskInput()
+            if (confirm.equals("y", ignoreCase = true)) return readEditTaskInput()
+            return null
         }
 
         printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
@@ -224,8 +252,8 @@ class TaskManagerUiImp(
         if (description == null) {
             printer.showMessage(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readEditTaskInput()
+            if (confirm.equals("y", ignoreCase = true)) return readEditTaskInput()
+            return null
         }
 
         printer.showMessage(UiMessages.TASK_STATE_PROMPT)
@@ -233,8 +261,8 @@ class TaskManagerUiImp(
         if (stateName == null) {
             printer.showMessage(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readEditTaskInput()
+            if (confirm.equals("y", ignoreCase = true)) return readEditTaskInput()
+            return null
         }
 
         return Triple(name, description, stateName)
@@ -244,22 +272,32 @@ class TaskManagerUiImp(
         while (true) {
             printer.showMessage(UiMessages.PROJECT_NAME_PROMPT)
             val projectNameInput = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+
             if (projectNameInput == null) {
                 printer.showMessage(UiMessages.EMPTY_PROJECT_NAME_INPUT)
                 continue
             }
 
-            val project = getProjectsUseCase.getProjectByName(projectNameInput).getOrNull()
-            if (project != null) {
+            val isValidProject = runBlocking {
+                try {
+                    getProjectsUseCase.getProjectByName(projectNameInput)
+                    true
+                } catch (ex: Exception) {
+                    printer.showMessage(ex.message ?: "Unknown Error")
+                    false
+                }
+            }
+
+            if (isValidProject) {
                 return projectNameInput
-            } else {
-                printer.showMessage(UiMessages.NO_PROJECT_FOUNDED)
             }
 
             printer.showMessage(UiMessages.INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val userInput = reader.readStringOrNull()
             if (userInput.isNullOrBlank()) {
                 return ""
+            } else if (userInput.equals("y", ignoreCase = true)) {
+                continue
             }
         }
     }
@@ -288,10 +326,6 @@ class TaskManagerUiImp(
         }
     }
 
-    private fun handleFailure(throwable: Throwable) {
-        printer.showMessage(throwable.message ?: UiMessages.NO_TASK_FOUND)
-    }
-
     private fun getEnteredOption(option: Int?) = TaskOptions.entries.find { it.option == option }
 
 
@@ -299,8 +333,7 @@ class TaskManagerUiImp(
         printer.showMessage("========================= Tasks Option =========================")
         printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
 
-        TaskOptions.entries
-            .forEach { println("${it.option}. ${it.label}") }
+        TaskOptions.entries.forEach { println("${it.option}. ${it.label}") }
 
         printer.showMessage("-----------------------------------------------------")
         printer.showMessage("Choose an option: ")

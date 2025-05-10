@@ -1,15 +1,15 @@
 package org.example.logic.repository
 
-import logic.models.entities.Task
+import org.example.logic.entities.Task
 import java.util.*
 
 interface TaskRepository {
-    fun getAllTasks(): Result<List<Task>>
-    fun addTask(task: Task): Result<Boolean>
-    fun editTask(task: Task): Result<Boolean>
-    fun deleteTask(id: UUID?): Result<Boolean>
-    fun getTasksInProject(projectId: UUID): Result<List<Task>>
-    fun addTaskInProject(projectId: UUID, taskId: UUID): Result<Boolean>
-    fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean>
-    fun getAllTasksByUserName(userName: String): Result<List<Task>>
+    suspend fun getAllTasks(): List<Task>
+    suspend fun addTask(task: Task): Boolean
+    suspend fun editTask(task: Task): Boolean
+    suspend fun deleteTask(id: UUID?): Boolean
+    suspend fun getTasksInProject(projectId: UUID): List<Task>
+    suspend fun addTaskInProject(projectId: UUID, taskId: UUID): Boolean
+    suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean
+    suspend fun getAllTasksByUserName(userName: String): List<Task>
 }

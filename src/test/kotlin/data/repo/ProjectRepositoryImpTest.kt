@@ -5,10 +5,10 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.project_data_source.IProjectDataSource
-import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
-import org.example.data.models.ProjectModel
+import org.example.data.csv_reader_writer.project.IProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
+import data.dto.ProjectDto
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -17,13 +17,13 @@ import kotlin.test.Test
 
 class ProjectRepositoryImpTest {
 
-    private lateinit var projectDataSource: IProjectDataSource
-    private lateinit var taskInProjectDataSource: TaskInProjectCsvDataSource
-    private lateinit var userAssignedToProjectDataSource: IUserAssignedToProjectDataSource
+    private lateinit var projectDataSource: IProjectCSVReaderWriter
+    private lateinit var taskInProjectDataSource: TaskInProjectCSVReaderWriter
+    private lateinit var userAssignedToProjectDataSource: IUserAssignedToProjectCSVReaderWriter
     private lateinit var projectRepositoryImp: ProjectRepositoryImp
     private val testProject = buildProject(name = "Test Project")
     private val anotherProject = buildProject(name = "Another Project")
-    private val projectModel = ProjectModel("1", "name", "12")
+    private val projectDto = ProjectDto("1", "name", "12")
 
     @BeforeEach
     fun setUp() {
@@ -36,7 +36,7 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `getAllProjects() should read from data source if cache is empty`() {
-        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
+        every { projectDataSource.read() } returns Result.success(listOf(projectDto))
 
         val result = projectRepositoryImp.getAllProjects()
 
@@ -67,7 +67,7 @@ class ProjectRepositoryImpTest {
     @Test
     fun `addProject() should return failure when write fails`() {
         //Given
-        every { projectDataSource.append(listOf(projectModel)) } returns Result.failure(
+        every { projectDataSource.append(listOf(projectDto)) } returns Result.failure(
             WriteDataException()
         )
 
@@ -80,8 +80,8 @@ class ProjectRepositoryImpTest {
     @Test
     fun `editProject() should update existing project and write to data source`() {
         //Given
-        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
-        every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.success(true)
+        every { projectDataSource.read() } returns Result.success(listOf(projectDto))
+        every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.success(true)
 
         //When
         val updated = testProject.copy(name = "Updated")
@@ -107,8 +107,8 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `editProject() should return failure when write fails`() {
-        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
-        every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.failure(WriteDataException())
+        every { projectDataSource.read() } returns Result.success(listOf(projectDto))
+        every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.failure(WriteDataException())
 
         val result = projectRepositoryImp.editProject(testProject)
 
@@ -117,8 +117,8 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `deleteProject() should remove from list and write to data source`() {
-        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
-        every { projectDataSource.overWrite(listOf(projectModel)) } returns Result.success(true)
+        every { projectDataSource.read() } returns Result.success(listOf(projectDto))
+        every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.success(true)
 
 
         val result = projectRepositoryImp.deleteProject(testProject)
@@ -138,7 +138,7 @@ class ProjectRepositoryImpTest {
 
     @Test
     fun `getAllProjects() should return cached list if not empty`() {
-        every { projectDataSource.read() } returns Result.success(listOf(projectModel))
+        every { projectDataSource.read() } returns Result.success(listOf(projectDto))
 
         val result = projectRepositoryImp.getAllProjects()
 

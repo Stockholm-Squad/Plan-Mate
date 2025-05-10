@@ -1,12 +1,9 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.Project
-import logic.models.exceptions.StateNotExistException
-import logic.models.entities.AuditSystem
-import logic.models.entities.EntityType
-import org.example.data.utils.DateHandlerImp
+import org.example.logic.ProjectAlreadyExistException
+import org.example.logic.ProjectNotFoundException
+import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
-import org.example.logic.usecase.audit.AddAuditSystemUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import java.util.*
 
@@ -14,63 +11,51 @@ class ManageProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val manageProjectStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val auditSystemRepository: AddAuditSystemUseCase,
 ) {
-    fun addProject(projectName: String, stateName: String, userId: UUID): Result<Boolean> {
-        val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
-            ?: return Result.failure(StateNotExistException())
-        val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
-        return projectRepository.addProject(newProject)
-            .fold(
-                onSuccess = {
-                    logAudit(newProject, userId)
-                    Result.success(it)
-                },
-                onFailure = { Result.failure(it) }
-            )
+    suspend fun addProject(projectName: String, stateName: String): Boolean {
+        return isProjectExists(projectName).let { success ->
+            if (!success) {
+                val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
+                val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
+
+                projectRepository.addProject(newProject)
+            } else {
+                throw ProjectAlreadyExistException()
+            }
+
+        }
     }
 
-    fun updateProject(
+    suspend fun updateProject(
         projectId: UUID,
         newProjectName: String,
         newProjectStateName: String,
-        userId: UUID
-    ): Result<Boolean> {
-        val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
-            ?: return Result.failure(StateNotExistException())
-        val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
-        return projectRepository.editProject(updatedProject)
-            .fold(
-                onSuccess = {
-                    logAudit(updatedProject, userId)
-                    Result.success(it)
-                }, onFailure = { Result.failure(it) }
-            )
+    ): Boolean {
+        return isProjectExists(newProjectName).let { success ->
+            if (success) {
+                val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
+                val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
+                projectRepository.editProject(updatedProject)
+            } else
+                throw ProjectNotFoundException()
+        }
     }
 
-    fun removeProjectByName(projectName: String): Result<Boolean> {
-        return getProjectsUseCase.getProjectByName(projectName).fold(
-            onFailure = { Result.failure(it) },
-            onSuccess = { project -> projectRepository.deleteProject(project) }
-        )
+    suspend fun removeProjectByName(projectName: String): Boolean {
+        return getProjectsUseCase.getProjectByName(projectName).let {
+            projectRepository.deleteProject(it)
+        }
     }
 
-    fun isProjectExists(projectName: String): Result<Boolean> {
-        return getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { Result.success(true) },
-            onFailure = { Result.failure(it) }
-        )
+    suspend fun isProjectExists(projectName: String): Boolean {
+        return try {
+            getProjectsUseCase.getProjectByName(projectName)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 
-    private fun logAudit(updatedProject: Project, userId: UUID) {
-        val auditEntry = AuditSystem(
-            entityType = EntityType.PROJECT,
-            description = "update project ${updatedProject.name}",
-            userId = userId,
-            dateTime = DateHandlerImp().getCurrentDateTime(),
-            entityTypeId = updatedProject.id
-        )
-        auditSystemRepository.addAuditsEntries(listOf(auditEntry))
-    }
+
 }

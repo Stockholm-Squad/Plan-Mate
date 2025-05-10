@@ -5,10 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import logic.models.entities.Task
-import logic.models.entities.UserRole
-import logic.models.exceptions.NoTaskAssignmentFound
-import logic.models.exceptions.NoTasksFound
+import org.example.logic.entities.Task
+import org.example.logic.entities.UserRole
 import modle.buildUser
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
@@ -175,14 +173,14 @@ class TaskManagerUiTest {
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
         every { manageStateUseCase.getProjectStateIdByName(stateName) } returns stateId
-        every { manageTasksUseCase.createTask(any()) } returns Result.success(true)
+        every { manageTasksUseCase.addTask(any()) } returns Result.success(true)
 
         // When
         taskManagerUi.createTask()
 
         // Then
         verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
-        verify(exactly = 1) { manageTasksUseCase.createTask(any()) }
+        verify(exactly = 1) { manageTasksUseCase.addTask(any()) }
         verify(exactly = 1) { printer.printTask(any()) }
     }
 
@@ -197,7 +195,7 @@ class TaskManagerUiTest {
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
         verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
-        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+        verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
     @Test
@@ -213,7 +211,7 @@ class TaskManagerUiTest {
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
         verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
-        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+        verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
     @Test
@@ -232,7 +230,7 @@ class TaskManagerUiTest {
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT) }
         verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
-        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+        verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
     @Test
@@ -247,7 +245,7 @@ class TaskManagerUiTest {
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
         verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
-        verify(exactly = 0) { manageTasksUseCase.createTask(any()) }
+        verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
     //endregion

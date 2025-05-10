@@ -1,6 +1,9 @@
 package org.example.logic.usecase.project
 
-import logic.models.entities.Task
+import org.example.logic.TaskNotAddedException
+import org.example.logic.TaskNotDeletedException
+import org.example.logic.TasksNotFoundException
+import org.example.logic.entities.Task
 import org.example.logic.repository.TaskRepository
 import java.util.*
 
@@ -9,29 +12,32 @@ class ManageTasksInProjectUseCase(
     private val taskRepository: TaskRepository
 ) {
 
-    fun getTasksInProjectByName(projectName: String): Result<List<Task>> {
-        return getProjectsUseCase.getProjectByName(projectName).fold(
-            onSuccess = { project ->
-                taskRepository.getTasksInProject(project.id)
-            },
-            onFailure = { throwable -> Result.failure(throwable) }
-        )
+    suspend fun getTasksInProjectByName(projectName: String): List<Task> {
+        return getProjectsUseCase.getProjectByName(projectName).let { project ->
+            taskRepository.getTasksInProject(project.id).takeIf { it.isNotEmpty() }
+                ?: throw TasksNotFoundException()
+        }
     }
 
-    fun getTasksInProjectById(projectId: UUID): Result<List<Task>> {
-        return taskRepository.getTasksInProject(projectId)
+    suspend fun getTasksInProjectById(projectId: UUID): List<Task> {
+        return taskRepository.getTasksInProject(projectId).takeIf { it.isNotEmpty() }
+            ?: throw TasksNotFoundException()
     }
 
-    fun addTaskToProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskRepository.addTaskInProject(projectId = projectId, taskId = taskId)
+    suspend fun addTaskToProject(projectId: UUID, taskId: UUID): Boolean =
+        taskRepository.addTaskInProject(projectId, taskId).also { isAdded ->
+            if (!isAdded) throw TaskNotAddedException()
+        }
+
+    suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean {
+        return taskRepository.deleteTaskFromProject(projectId, taskId).also { isDeleted ->
+            if (!isDeleted) throw TaskNotDeletedException()
+        }
     }
 
-    fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Result<Boolean> {
-        return taskRepository.deleteTaskFromProject(projectId, taskId)
-    }
-
-    fun getAllTasksByUserName(userName: String): Result<List<Task>> {
-        return taskRepository.getAllTasksByUserName(userName)
+    suspend fun getAllTasksByUserName(userName: String): List<Task> {
+        return taskRepository.getAllTasksByUserName(userName).takeIf { it.isNotEmpty() }
+            ?: throw TasksNotFoundException()
     }
 
 }

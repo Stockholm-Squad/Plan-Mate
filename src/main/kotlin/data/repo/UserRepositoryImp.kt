@@ -1,89 +1,96 @@
 package org.example.data.repo
 
-import data.models.MateTaskAssignmentModel
-import data.models.UserAssignedToProjectModel
-import logic.models.entities.User
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
-import org.example.data.datasources.user_data_source.IUserDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import org.example.data.mapper.mapToUserEntity
 import org.example.data.mapper.mapToUserModel
+import org.example.data.source.MateTaskAssignmentDataSource
+import org.example.data.source.UserAssignedToProjectDataSource
+import org.example.data.source.UserDataSource
+import org.example.data.utils.tryToExecute
+import org.example.logic.*
+import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
-import org.example.logic.usecase.extention.toSafeUUID
 import java.util.*
 
 class UserRepositoryImp(
-    private val userDataSource: IUserDataSource,
-    private val userAssignedToProjectDataSource: IUserAssignedToProjectDataSource,
-    private val mateTaskAssignment: IMateTaskAssignmentDataSource,
+    private val userDataSource: UserDataSource,
+    private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
+    private val mateTaskAssignment: MateTaskAssignmentDataSource,
 ) : UserRepository {
-    override fun addUser(user: User): Result<Boolean> {
-        return userDataSource.append(listOf(user.mapToUserModel()))
-    }
 
-    override fun getAllUsers(): Result<List<User>> {
-        return userDataSource.read().fold(
-            onSuccess = { userModels -> Result.success(userModels.mapNotNull { it.mapToUserEntity() }) },
-            onFailure = { Result.failure(it) })
-    }
+    override suspend fun addUser(user: User): Boolean =
+        tryToExecute(
+            { userDataSource.addUser(user.mapToUserModel()) },
+            onSuccess = { it },
+            onFailure = { throw UserNotAddedException() }
+        )
 
-    override fun getUsersByProjectId(projectId: UUID): Result<List<User>> {
-        return userAssignedToProjectDataSource.read().fold(
-            onSuccess = { userAssignedToProject ->
-                userDataSource.read().fold(
-                    onSuccess = { users ->
-                        userAssignedToProject.filter {
-                            projectId == it.projectId.toSafeUUID()
-                        }.map { it.userName }
-                            .let { userNames ->
-                                users.filter { user -> userNames.contains(user.username) }.mapNotNull { userModel ->
-                                    userModel.mapToUserEntity()
-                                }.let {
-                                    Result.success(it)
-                                }
-                            }
-                    },
-                    onFailure = { Result.failure(it) }
+    override suspend fun getAllUsers(): List<User> =
+        tryToExecute(
+            { userDataSource.getAllUsers() },
+            onSuccess = { it.mapNotNull { userModel -> userModel.mapToUserEntity() } },
+            onFailure = { throw UsersDoesNotExistException() }
+        )
+
+
+    override suspend fun getUsersByProjectId(projectId: UUID): List<User> =
+        withContext(Dispatchers.IO) {
+            val assignedUsersDeferred = async {
+                tryToExecute(
+                    function = { userDataSource.getUsersByProjectId(projectId.toString()) },
+                    onSuccess = { it },
+                    onFailure = { throw UserDoesNotExistException() }
                 )
-
-            }, onFailure = { Result.failure(it) })
-    }
-
-    override fun addUserToProject(projectId: UUID, userName: String): Result<Boolean> {
-        return userAssignedToProjectDataSource.append(
-            listOf(UserAssignedToProjectModel(projectId = projectId.toString(), userName = userName))
-        )
-    }
-
-    override fun deleteUserFromProject(projectId: UUID, userName: String): Result<Boolean> {
-        return userAssignedToProjectDataSource.read().fold(onSuccess = { usersAssignedToProject ->
-            usersAssignedToProject.filterNot { userAssignedToProject ->
-                (userAssignedToProject.projectId.toSafeUUID() == projectId) && (userAssignedToProject.userName == userName)
-            }.let { newUsersAssignedToProject ->
-                userAssignedToProjectDataSource.overWrite(newUsersAssignedToProject)
             }
-        }, onFailure = { Result.failure(it) })
-    }
 
-    override fun addUserToTask(mateName: String, taskId: UUID): Result<Boolean> {
-        return mateTaskAssignment.append(
-            listOf(MateTaskAssignmentModel(userName = mateName, taskId = taskId.toString()))
+            val allUsersDeferred = async {
+                tryToExecute(
+                    function = { userDataSource.getAllUsers() },
+                    onSuccess = { it },
+                    onFailure = { throw UserDoesNotExistException() }
+                )
+            }
+
+            val assignedUsers = assignedUsersDeferred.await()
+            val allUsers = allUsersDeferred.await()
+
+            val usersIds = assignedUsers.map { it.username }
+            allUsers.filter { it.username in usersIds }
+                .mapNotNull { it.mapToUserEntity() }
+        }
+
+
+    override suspend fun addUserToProject(projectId: UUID, userName: String): Boolean =
+        tryToExecute(
+            { userAssignedToProjectDataSource.addUserToProject(projectId.toString(), userName) },
+            onSuccess = { it },
+            onFailure = { throw UserNotAddedToProjectException() }
         )
-    }
 
-    override fun deleteUserFromTask(mateName: String, taskId: UUID): Result<Boolean> {
-        return mateTaskAssignment.read().fold(
-            onSuccess = { assignments ->
-                val newAssignments = assignments.filterNot {
-                    it.userName == mateName && it.taskId == taskId.toString()
-                }
-                when (newAssignments.size == assignments.size) {
-                    true -> Result.success(false)
-                    false -> mateTaskAssignment.overWrite(newAssignments)
-                }
-            },
-            onFailure = { Result.failure(it) }
+
+    override suspend fun deleteUserFromProject(projectId: UUID, userName: String): Boolean =
+        tryToExecute(
+            { userAssignedToProjectDataSource.deleteUserFromProject(projectId.toString(), userName) },
+            onSuccess = { it },
+            onFailure = { throw UserNotDeletedFromProjectException() }
         )
-    }
 
+
+    override suspend fun addUserToTask(mateName: String, taskId: UUID): Boolean =
+        tryToExecute(
+            { mateTaskAssignment.addUserToTask(mateName, taskId.toString()) },
+            onSuccess = { it },
+            onFailure = {
+                throw UserNotAddedToTaskException()
+            }
+        )
+
+    override suspend fun deleteUserFromTask(mateName: String, taskId: UUID): Boolean =
+        tryToExecute(
+            { mateTaskAssignment.deleteUserFromTask(mateName, taskId.toString()) },
+            onSuccess = { it },
+            onFailure = { throw UserNotDeletedFromTaskException() }
+        )
 }

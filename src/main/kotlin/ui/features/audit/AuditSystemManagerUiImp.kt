@@ -1,21 +1,26 @@
 package org.example.ui.features.audit
 
-import logic.models.entities.User
-import org.example.logic.usecase.audit.GetAuditSystemUseCase
+import kotlinx.coroutines.*
+import org.example.logic.entities.User
+import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
+
 class AuditSystemManagerUiImp(
-    private val useCase: GetAuditSystemUseCase,
+    private val useCase: GetAuditUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
 ) : AuditSystemManagerUi {
-
+    private val errorHandler = CoroutineExceptionHandler { _, throwable ->
+        printer.showMessage(throwable.message ?: "Unknown error")
+    }
     private var user: User? = null
 
     override fun invoke(user: User?) {
         this.user = user
+        if (user == null) return
         do {
             printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
             when (getMainMenuOption()) {
@@ -32,33 +37,44 @@ class AuditSystemManagerUiImp(
 
     private fun displayAuditsByProjectName() {
         printer.showMessage(UiMessages.PROMPT_PROJECT_NAME)
-        reader.readStringOrNull()?.let {
-            useCase.getProjectAuditsByName(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits,user!!.username) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
+        reader.readStringOrNull()?.let { input ->
+            runBlocking(errorHandler) {
+                try{
+                    val audits = useCase.getProjectAuditsByName(input)
+                    printer.showAudits(audits, user!!.username)
+                } catch (e: Exception) {
+                    printer.showMessage(e.message ?: "Unknown error")
+                }
+            }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
     }
 
     private fun displayAuditsByTaskName() {
         printer.showMessage(UiMessages.PROMPT_TASK_NAME)
-        reader.readStringOrNull()?.let {
-            useCase.getTaskAuditsByName(it).fold(
-                onSuccess = { audits -> printer.showAudits(audits,user!!.username) },
-                onFailure = { printer.showMessage(it.message.toString()) }
-            )
+        reader.readStringOrNull()?.let { input ->
+            runBlocking {
+                try {
+                    val audits = useCase.getTaskAuditsByName(input)
+                    printer.showAudits(audits, user!!.username)
+
+                }catch (e: Exception) {
+                    printer.showMessage(e.message ?: "Unknown error")
+                }
+            }
         } ?: printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE)
 
     }
 
 
     private fun displayAllAudits() {
-
-        user?.id ?: return
-        useCase.getAuditsByUserId(user?.id!!).fold(
-            onSuccess = { audits -> printer.showAudits(audits, user!!.username) },
-            onFailure = { printer.showMessage(it.message.toString()) }
-        )
+        runBlocking(errorHandler) {
+            try{
+                val audits = useCase.getAuditsByUserId(user!!.id)
+                printer.showAudits(audits, user!!.username)
+            }catch (e: Exception){
+                printer.showMessage(e.message ?: "Unknown error")
+            }
+        }
     }
 
     private fun askSearchAgain(): Boolean? {
