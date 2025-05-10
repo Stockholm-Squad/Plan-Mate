@@ -4,7 +4,7 @@ import com.mongodb.client.result.DeleteResult
 import com.mongodb.client.result.InsertManyResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.example.data.database.AUDITS_COLLECTION_NAME
+import org.example.data.utils.AUDITS_COLLECTION_NAME
 import org.example.data.datasources.IAuditSystemDataSource
 import org.example.data.models.AuditSystemModel
 import org.litote.kmongo.coroutine.CoroutineDatabase

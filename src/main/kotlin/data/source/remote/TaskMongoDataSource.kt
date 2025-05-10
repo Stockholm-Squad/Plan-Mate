@@ -1,6 +1,6 @@
 package org.example.data.source.remote
 
-import org.example.data.database.TASKS_COLLECTION_NAME
+import org.example.data.utils.TASKS_COLLECTION_NAME
 import org.example.data.models.TaskModel
 import org.example.data.source.TaskDataSource
 import org.litote.kmongo.coroutine.CoroutineDatabase

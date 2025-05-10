@@ -1,7 +1,7 @@
 package org.example.data.source.remote
 
 import data.models.UserAssignedToProjectModel
-import org.example.data.database.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
+import org.example.data.utils.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
@@ -9,7 +9,9 @@ import org.litote.kmongo.eq
 
 class UserAssignedToProjectMongoDataSource(mongoDatabase: CoroutineDatabase) : UserAssignedToProjectDataSource {
 
-    private val collection = mongoDatabase.getCollection<UserAssignedToProjectModel>(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME)
+    private val collection = mongoDatabase.getCollection<UserAssignedToProjectModel>(
+        USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
+    )
 
     override suspend fun addUserToProject(projectId: String, userName: String): Boolean {
         val document = UserAssignedToProjectModel(

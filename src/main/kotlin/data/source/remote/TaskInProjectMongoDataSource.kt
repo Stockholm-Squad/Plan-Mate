@@ -2,7 +2,7 @@ package org.example.data.source.remote
 
 
 import data.models.TaskInProjectModel
-import org.example.data.database.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
+import org.example.data.utils.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
 import org.example.data.source.TaskInProjectDataSource
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq

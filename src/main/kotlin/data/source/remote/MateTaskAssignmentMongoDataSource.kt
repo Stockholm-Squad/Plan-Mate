@@ -2,7 +2,7 @@ package org.example.data.source.remote
 
 import data.models.MateTaskAssignmentModel
 import org.bson.Document
-import org.example.data.database.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
+import org.example.data.utils.MATE_TASK_ASSIGNMENT_COLLECTION_NAME
 import org.example.data.source.MateTaskAssignmentDataSource
 import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
