@@ -11,13 +11,13 @@ import kotlin.test.assertTrue
 class ProjectStateCSVReaderWriterTest {
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
-    private lateinit var dataSource: org.example.data.source.local.csv_reader_writer.state.StateCSVReaderWriter
+    private lateinit var dataSource: org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter
 
     @BeforeEach
     fun setUp() {
         tempFile = Files.createTempFile("tst", ".csv").toFile()
         testFilePath = tempFile.path
-        dataSource = org.example.data.source.local.csv_reader_writer.state.StateCSVReaderWriter(testFilePath)
+        dataSource = org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter(testFilePath)
     }
 
     @AfterEach
@@ -40,7 +40,7 @@ class ProjectStateCSVReaderWriterTest {
         @Test
         fun `read should return Throwable when read from file not exist`() {
             File(testFilePath).writeText("")
-            dataSource = org.example.data.source.local.csv_reader_writer.state.StateCSVReaderWriter("")
+            dataSource = org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter("")
             val result = dataSource.read()
             assertThrows<Throwable> { result.getOrThrow() }
         }

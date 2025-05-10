@@ -10,8 +10,8 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-class StateCSVReaderWriter(private val filePath: String) :
-    IStateCSVReaderWriter {
+class EntityStateCSVReaderWriter(private val filePath: String) :
+    IEntityStateCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<EntityStateDto> {
