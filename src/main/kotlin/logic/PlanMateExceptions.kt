@@ -2,10 +2,6 @@ package org.example.logic
 
 open class DataException(override val message: String) : Exception(message)
 class ReadDataException(message: String = "Error while reading data!") : DataException(message)
-class WriteDataException(message: String = "Error while writing data!") : DataException(message)
-class EmptyDataException(message: String = "No data available") : DataException(message)
-class FileNotExistException(message: String = "Error file not found!") : DataException(message)
-class NoObjectFound(message: String = "The file is empty") : DataException(message)
 
 
 open class PlanMateExceptions(override val message: String) : Exception(message)
@@ -19,7 +15,6 @@ class UsersDoesNotExistException(message: String = "Users does not exist") : Use
 class UserExistException(message: String = "User already exists") : UserExceptions(message)
 class UsersDataAreEmptyException(message: String = "Users data are empty") : UserExceptions(message)
 class UserNotAddedException(message: String = "User not added") : UserExceptions(message)
-class UserNotDeletedException(message: String = "User not deleted") : UserExceptions(message)
 
 
 open class TaskExceptions(message: String) : PlanMateExceptions(message)
@@ -33,9 +28,6 @@ class DuplicateTaskNameException(message: String = "Duplicated task name.") : Ta
 
 open class ProjectExceptions(message: String) : PlanMateExceptions(message)
 class ProjectNotFoundException(message: String = "Project not found.") : ProjectExceptions(message)
-class ProjectNotAddedException(message: String = "Project not added.") : ProjectExceptions(message)
-class ProjectNotEditedException(message: String = "Project not edited.") : ProjectExceptions(message)
-class ProjectNotDeletedException(message: String = "Project not deleted.") : ProjectExceptions(message)
 class NoProjectAddedException(message: String = "No project added.") : ProjectExceptions(message)
 class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
 class NoProjectEditedException(message: String = "The project hasn't edited") : ProjectExceptions(message)
@@ -44,9 +36,7 @@ class ProjectAlreadyExistException(message: String = "The project is already exi
 
 
 open class StateExceptions(message: String) : PlanMateExceptions(message)
-class StateNotExistException(message: String = "The state does not exist.") : StateExceptions(message)
 class StateAlreadyExistException(message: String = "The state already exists.") : StateExceptions(message)
-class StateNameLengthException(message: String = "The state name is too long.") : StateExceptions(message)
 class NoStatesFoundedException(message: String = "There are no states.") : StateExceptions(message)
 class NotAllowedStateNameException(message: String = "Only letters are allowed!") : StateExceptions(message)
 class ProjectStateNotAddedException(message: String = "Project State Not Added") : StateExceptions(message)
