@@ -1,4 +1,4 @@
-package org.example.data.mongo
+package data.network
 
 import org.example.data.utils.CONNECTION_STRING
 import org.example.data.utils.DATABASE_NAME
