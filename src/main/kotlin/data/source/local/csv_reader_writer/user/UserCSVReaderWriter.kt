@@ -1,4 +1,4 @@
-package org.example.data.utils.csv_reader_writer.user
+package org.example.data.source.local.csv_reader_writer.user
 
 import data.dto.UserDto
 import org.example.logic.utils.hashToMd5
@@ -13,7 +13,7 @@ import java.io.File
 import java.util.*
 
 class UserCSVReaderWriter(private val filePath: String) :
-    org.example.data.utils.csv_reader_writer.user.IUserCSVReaderWriter {
+    org.example.data.source.local.csv_reader_writer.user.IUserCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<UserDto> {

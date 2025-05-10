@@ -1,4 +1,4 @@
-package org.example.data.utils.csv_reader_writer.mate_task_assignment
+package org.example.data.source.local.csv_reader_writer.mate_task_assignment
 
 import data.dto.MateTaskAssignmentDto
 

@@ -1,4 +1,4 @@
-package org.example.data.utils.csv_reader_writer.state
+package org.example.data.source.local.csv_reader_writer.state
 
 import data.dto.ProjectStateDto
 

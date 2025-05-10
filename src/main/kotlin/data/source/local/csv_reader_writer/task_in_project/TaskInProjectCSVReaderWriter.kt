@@ -1,4 +1,4 @@
-package org.example.data.utils.csv_reader_writer.task_in_project
+package org.example.data.source.local.csv_reader_writer.task_in_project
 
 import data.dto.TaskInProjectDto
 import org.jetbrains.kotlinx.dataframe.DataFrame

@@ -1,4 +1,4 @@
-package org.example.data.utils.csv_reader_writer.user_assigned_to_project
+package org.example.data.source.local.csv_reader_writer.user_assigned_to_project
 
 import data.dto.UserAssignedToProjectDto
 

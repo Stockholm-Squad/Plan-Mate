@@ -1,6 +1,6 @@
-package org.example.data.utils.csv_reader_writer.audits
+package org.example.data.source.local.csv_reader_writer.mate_task_assignment
 
-import data.dto.AuditDto
+import data.dto.MateTaskAssignmentDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -11,10 +11,11 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
 
-class AuditCSVReaderWriter(private val filePath: String) : IAuditCSVReaderWriter {
+class MateTaskAssignmentCSVReaderWriter(private val filePath: String) : IMateTaskAssignmentCSVReaderWriter {
+
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<AuditDto> {
+    override suspend fun read(): List<MateTaskAssignmentDto> {
         val file = resolveFile()
         if (!file.exists()) {
             file.createNewFile()
@@ -26,24 +27,24 @@ class AuditCSVReaderWriter(private val filePath: String) : IAuditCSVReaderWriter
         }
 
         return DataFrame.readCSV(file)
-            .cast<AuditDto>()
+            .cast<MateTaskAssignmentDto>()
             .toList()
     }
 
-    override suspend fun overWrite(audits: List<AuditDto>): Boolean {
-        audits.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(mateTasks: List<MateTaskAssignmentDto>): Boolean {
+        mateTasks.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(audits: List<AuditDto>): Boolean {
+    override suspend fun append(mateTasks: List<MateTaskAssignmentDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<AuditDto>().toDataFrame()
+            emptyList<MateTaskAssignmentDto>().toDataFrame()
         }
 
-        val newData = audits.toDataFrame()
+        val newData = mateTasks.toDataFrame()
         (existing.concat(newData)).writeCSV(file)
         return true
     }
