@@ -2,7 +2,7 @@ package logic.usecase.login
 
 
 import logic.usecase.validation.ValidateUserDataUseCase
-import org.example.data.utils.executeSafelyWithContext
+import org.example.data.utils.tryToExecute
 import org.example.logic.IncorrectPasswordException
 import org.example.logic.UserDoesNotExistException
 import org.example.logic.UsersDataAreEmptyException
@@ -11,70 +11,51 @@ import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
 
 class LoginUseCase(
-    private val userRepository: UserRepository,
-    private val validateUserDataUseCase: ValidateUserDataUseCase
+    private val userRepository: UserRepository, private val validateUserDataUseCase: ValidateUserDataUseCase
 ) {
 
-    suspend fun loginUser(username: String, password: String): User =
-        executeSafelyWithContext(
-            onSuccess = {
-                validateUserDataUseCase.validateUserName(username)
-                validateUserDataUseCase.validatePassword(password)
-                userRepository.getAllUsers().let {
-                    handleSuccess(
-                        username = username,
-                        password = password,
-                        users = it
-                    )
-                }
+    suspend fun loginUser(username: String, password: String): User {
+        return tryToExecute({
+            validateUserDataUseCase.validateUserName(username)
+            validateUserDataUseCase.validatePassword(password)
+            handleSuccess(
+                username = username, password = password, users = userRepository.getAllUsers()
+            )
+        }, onSuccess = { it }, onFailure = { throw UsersDataAreEmptyException() })
+    }
 
-            }, onFailure = {
-                throw UsersDataAreEmptyException()
-            }
-        )
-
-    private suspend fun handleSuccess(username: String, password: String, users: List<User>): User =
-        executeSafelyWithContext(
-            onSuccess = {
+    private suspend fun handleSuccess(username: String, password: String, users: List<User>): User {
+        return tryToExecute(
+            {
                 val user = checkUserExists(users, username)
                 checkPassword(password, user)
-            }, onFailure = {
-                throw UsersDataAreEmptyException()
-            }
-        )
-
-    private suspend fun checkUserExists(users: List<User>, username: String): User =
-        executeSafelyWithContext(
-            onSuccess = {
-                users.find { it.username == username }!!
-            }, onFailure = {
-                throw UserDoesNotExistException()
-            }
-        )
-
-    private suspend fun checkPassword(password: String, user: User): User =
-        executeSafelyWithContext(
-            onSuccess = {
-                if (hashToMd5(password) == user.hashedPassword) {
-                    user
-                } else {
-                    throw IncorrectPasswordException()
-                }
             },
-            onFailure = {
+            onSuccess = { it },
+            onFailure = { throw UsersDataAreEmptyException() },
+        )
+    }
+
+    private suspend fun checkUserExists(users: List<User>, username: String): User {
+        return tryToExecute({
+            users.find { it.username == username }!!
+        }, onSuccess = { it }, onFailure = { throw UserDoesNotExistException() })
+    }
+
+    private suspend fun checkPassword(password: String, user: User): User {
+        return tryToExecute({
+            if (hashToMd5(password) == user.hashedPassword) {
+                user
+            } else {
                 throw IncorrectPasswordException()
             }
-        )
+        }, onSuccess = { it }, onFailure = { throw IncorrectPasswordException() })
+    }
 
-    suspend fun isUserExists(userName: String): Boolean =
-        executeSafelyWithContext(
-            onSuccess = {
-                userRepository.getAllUsers().any { it.username == userName }
-            },
-            onFailure = {
-                throw UserDoesNotExistException()
-            }
-        )
-
+    suspend fun isUserExists(userName: String): Boolean {
+        return tryToExecute(
+            { userRepository.getAllUsers().any { it.username == userName } },
+            onSuccess = { it },
+            onFailure = { throw UserDoesNotExistException() })
+    }
 
 }
