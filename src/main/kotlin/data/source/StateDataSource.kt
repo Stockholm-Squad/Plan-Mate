@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import org.example.data.models.ProjectStateModel
+import data.dto.ProjectStateModel
 
 interface StateDataSource {
     suspend fun addProjectState(projectState: ProjectStateModel): Boolean

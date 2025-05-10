@@ -1,6 +1,6 @@
 package org.example.data.source.remote
 
-import org.example.data.models.ProjectModel
+import data.dto.ProjectModel
 import org.example.data.utils.PROJECTS_COLLECTION_NAME
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.ProjectDataSource

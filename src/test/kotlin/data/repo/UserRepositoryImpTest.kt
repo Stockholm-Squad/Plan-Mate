@@ -1,7 +1,7 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import data.models.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -12,7 +12,7 @@ import logic.models.exceptions.WriteDataException
 import org.example.data.source.local.MateTaskAssignmentCsvDataSource
 import org.example.data.source.local.UserAssignedToProjectCsvDataSource
 import org.example.data.source.local.UserCsvDataSource
-import org.example.data.models.UserModel
+import data.dto.UserModel
 import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
 import org.example.logic.model.exceptions.UsersDataAreEmptyException

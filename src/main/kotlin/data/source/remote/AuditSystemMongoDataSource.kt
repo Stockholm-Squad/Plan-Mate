@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.data.utils.AUDITS_COLLECTION_NAME
 import org.example.data.datasources.IAuditSystemDataSource
-import org.example.data.models.AuditSystemModel
+import data.dto.AuditSystemModel
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 

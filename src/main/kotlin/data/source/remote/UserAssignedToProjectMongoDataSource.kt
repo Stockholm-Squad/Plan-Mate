@@ -1,6 +1,6 @@
 package org.example.data.source.remote
 
-import data.models.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectModel
 import org.example.data.utils.USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.litote.kmongo.and

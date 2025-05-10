@@ -2,7 +2,7 @@ package org.example.data.mapper
 
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
-import org.example.data.models.UserModel
+import data.dto.UserModel
 import org.example.logic.usecase.extention.toSafeUUID
 
 fun UserModel.mapToUserEntity(): User? {

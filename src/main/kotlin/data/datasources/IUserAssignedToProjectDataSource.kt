@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import data.models.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectModel
 
 interface IUserAssignedToProjectDataSource {
     suspend fun read(): List<UserAssignedToProjectModel>

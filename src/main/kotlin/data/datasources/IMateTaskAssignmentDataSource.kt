@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import data.models.MateTaskAssignmentModel
+import data.dto.MateTaskAssignmentModel
 
 interface IMateTaskAssignmentDataSource {
     suspend fun read(): List<MateTaskAssignmentModel>

@@ -1,8 +1,8 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import data.models.MateTaskAssignmentModel
-import data.models.TaskInProjectModel
+import data.dto.MateTaskAssignmentModel
+import data.dto.TaskInProjectModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

@@ -1,4 +1,4 @@
-package data.models
+package data.dto
 
 data class MateTaskAssignmentModel(
     val userName: String,

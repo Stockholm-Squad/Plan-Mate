@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import data.models.TaskInProjectModel
+import data.dto.TaskInProjectModel
 
 
 interface TaskInProjectDataSource {

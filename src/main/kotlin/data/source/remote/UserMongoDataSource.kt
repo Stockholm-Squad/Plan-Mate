@@ -3,7 +3,7 @@ package org.example.data.source.remote
 import org.example.data.source.UserDataSource
 import org.example.data.utils.USERS_COLLECTION_NAME
 import org.example.data.source.UserAssignedToProjectDataSource
-import org.example.data.models.UserModel
+import data.dto.UserModel
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`

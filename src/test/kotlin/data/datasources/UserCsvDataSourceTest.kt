@@ -2,7 +2,7 @@
 //
 //import com.google.common.truth.Truth.assertThat
 //import org.example.data.source.local.UserCsvDataSource
-//import org.example.data.models.UserModel
+//import data.dto.UserModel
 //import org.example.logic.model.exceptions.FileNotExistException
 //import org.example.logic.model.exceptions.ReadDataException
 //import org.junit.jupiter.api.AfterEach

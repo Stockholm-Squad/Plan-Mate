@@ -1,6 +1,6 @@
 package utils
 
-import data.models.MateTaskAssignmentModel
+import data.dto.MateTaskAssignmentModel
 
 fun buildMateTaskAssignment(
     userName: String = "",

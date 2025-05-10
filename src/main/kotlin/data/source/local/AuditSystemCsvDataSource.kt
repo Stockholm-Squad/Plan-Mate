@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.IAuditSystemDataSource
-import org.example.data.models.AuditSystemModel
+import data.dto.AuditSystemModel
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat

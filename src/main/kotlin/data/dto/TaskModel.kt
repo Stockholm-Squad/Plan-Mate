@@ -1,4 +1,4 @@
-package org.example.data.models
+package data.dto
 
 data class TaskModel(
     val id: String ,

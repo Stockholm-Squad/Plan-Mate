@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import data.models.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectModel
 import org.example.data.datasources.IUserAssignedToProjectDataSource
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

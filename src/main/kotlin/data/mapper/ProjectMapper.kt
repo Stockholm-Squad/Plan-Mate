@@ -1,7 +1,7 @@
 package org.example.data.mapper
 
 import org.example.logic.entities.Project
-import org.example.data.models.ProjectModel
+import data.dto.ProjectModel
 import org.example.logic.usecase.extention.toSafeUUID
 
 fun ProjectModel.mapToProjectEntity(): Project? =

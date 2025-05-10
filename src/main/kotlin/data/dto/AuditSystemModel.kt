@@ -1,4 +1,4 @@
-package org.example.data.models
+package data.dto
 
 data class AuditSystemModel(
     val id: String,

@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import data.models.MateTaskAssignmentModel
+import data.dto.MateTaskAssignmentModel
 
 interface MateTaskAssignmentDataSource {
     suspend fun addUserToTask(mateName: String, taskId: String): Boolean

@@ -1,7 +1,7 @@
 package org.example.data.mapper
 
 import org.example.logic.entities.ProjectState
-import org.example.data.models.ProjectStateModel
+import data.dto.ProjectStateModel
 import org.example.logic.usecase.extention.toSafeUUID
 
 fun ProjectStateModel.mapToStateEntity(): ProjectState? {

@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import org.example.data.models.ProjectModel
+import data.dto.ProjectModel
 
 interface ProjectDataSource {
     suspend fun addProject(project: ProjectModel): Boolean

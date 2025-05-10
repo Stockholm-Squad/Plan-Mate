@@ -3,7 +3,7 @@ package utils
 import kotlinx.datetime.LocalDateTime
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
-import org.example.data.models.AuditSystemModel
+import data.dto.AuditSystemModel
 import java.util.*
 
 

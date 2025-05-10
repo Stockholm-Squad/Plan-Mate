@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.ITaskDataSource
-import org.example.data.models.TaskModel
+import data.dto.TaskModel
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat

@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import org.example.data.models.TaskModel
+import data.dto.TaskModel
 
 interface TaskDataSource {
     suspend fun getAllTasks(): List<TaskModel>

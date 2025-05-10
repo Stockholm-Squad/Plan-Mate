@@ -1,7 +1,7 @@
 package org.example.data.source.remote
 
 import org.example.data.utils.STATES_COLLECTION_NAME
-import org.example.data.models.ProjectStateModel
+import data.dto.ProjectStateModel
 import org.example.data.source.StateDataSource
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq

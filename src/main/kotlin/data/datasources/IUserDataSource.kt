@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import org.example.data.models.UserModel
+import data.dto.UserModel
 
 interface IUserDataSource {
     suspend fun read(): List<UserModel>

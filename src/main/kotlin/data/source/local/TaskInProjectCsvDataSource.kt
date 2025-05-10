@@ -1,6 +1,6 @@
 package org.example.data.source.local
 
-import data.models.TaskInProjectModel
+import data.dto.TaskInProjectModel
 import org.example.data.datasources.ITaskInProjectDataSource
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

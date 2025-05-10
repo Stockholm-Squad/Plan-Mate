@@ -5,7 +5,7 @@ import logic.models.exceptions.FileNotExistException
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
 import org.example.data.source.local.AuditSystemCsvDataSource
-import org.example.data.models.AuditSystemModel
+import data.dto.AuditSystemModel
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

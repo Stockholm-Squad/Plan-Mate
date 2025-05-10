@@ -6,7 +6,7 @@ import io.mockk.mockk
 import org.example.logic.entities.ProjectState
 import logic.models.exceptions.FileNotExistException
 import org.example.data.datasources.IStateDataSource
-import org.example.data.models.ProjectStateModel
+import data.dto.ProjectStateModel
 import org.example.data.repo.ProjectStateRepositoryImp
 import org.example.logic.repository.ProjectStateRepository
 import org.junit.jupiter.api.BeforeEach
@@ -27,7 +27,7 @@ class ProjectStateRepositoryImpTest {
         projectState = ProjectState(name = "In-Progress")
         every { projectStateDataSource.read() } returns Result.success(listOf())
         stateRepository = ProjectStateRepositoryImp(projectStateDataSource)
-        projectStateModel=ProjectStateModel("id","project name")
+        projectStateModel= ProjectStateModel("id","project name")
     }
 
     @Test

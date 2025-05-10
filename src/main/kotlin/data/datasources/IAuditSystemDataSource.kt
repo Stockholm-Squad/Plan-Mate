@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import org.example.data.models.AuditSystemModel
+import data.dto.AuditSystemModel
 
 interface IAuditSystemDataSource {
     suspend fun read(): List<AuditSystemModel>

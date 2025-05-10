@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import data.models.TaskInProjectModel
+import data.dto.TaskInProjectModel
 
 interface ITaskInProjectDataSource {
     suspend fun read(): List<TaskInProjectModel>

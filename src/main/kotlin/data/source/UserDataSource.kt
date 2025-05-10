@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import org.example.data.models.UserModel
+import data.dto.UserModel
 
 interface UserDataSource {
     suspend fun addUser(user: UserModel): Boolean

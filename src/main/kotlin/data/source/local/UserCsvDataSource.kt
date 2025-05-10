@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.IUserDataSource
-import org.example.data.models.UserModel
+import data.dto.UserModel
 import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

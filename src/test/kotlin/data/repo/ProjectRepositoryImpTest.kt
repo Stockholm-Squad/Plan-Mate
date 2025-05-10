@@ -8,7 +8,7 @@ import logic.models.exceptions.WriteDataException
 import org.example.data.datasources.IProjectDataSource
 import org.example.data.source.local.TaskInProjectCsvDataSource
 import org.example.data.datasources.IUserAssignedToProjectDataSource
-import org.example.data.models.ProjectModel
+import data.dto.ProjectModel
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows

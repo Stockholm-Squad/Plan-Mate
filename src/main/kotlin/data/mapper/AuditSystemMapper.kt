@@ -2,7 +2,7 @@ package data.mapper
 
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
-import org.example.data.models.AuditSystemModel
+import data.dto.AuditSystemModel
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.usecase.extention.toSafeUUID
 

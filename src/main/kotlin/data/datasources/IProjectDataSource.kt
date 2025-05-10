@@ -1,6 +1,6 @@
 package org.example.data.datasources
 
-import org.example.data.models.ProjectModel
+import data.dto.ProjectModel
 
 interface IProjectDataSource {
     suspend fun read(): List<ProjectModel>

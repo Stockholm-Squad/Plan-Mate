@@ -1,7 +1,7 @@
 package org.example.data.source.local
 
 import org.example.data.datasources.IStateDataSource
-import org.example.data.models.ProjectStateModel
+import data.dto.ProjectStateModel
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat

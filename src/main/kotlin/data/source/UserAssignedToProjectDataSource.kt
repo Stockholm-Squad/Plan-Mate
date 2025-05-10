@@ -1,6 +1,6 @@
 package org.example.data.source
 
-import data.models.UserAssignedToProjectModel
+import data.dto.UserAssignedToProjectModel
 
 interface UserAssignedToProjectDataSource {
     suspend fun addUserToProject(projectId: String, userName: String): Boolean

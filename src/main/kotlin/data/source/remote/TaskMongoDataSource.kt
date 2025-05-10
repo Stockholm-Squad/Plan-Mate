@@ -1,7 +1,7 @@
 package org.example.data.source.remote
 
 import org.example.data.utils.TASKS_COLLECTION_NAME
-import org.example.data.models.TaskModel
+import data.dto.TaskModel
 import org.example.data.source.TaskDataSource
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
