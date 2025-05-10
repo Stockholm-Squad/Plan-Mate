@@ -15,7 +15,7 @@ class ManageProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val manageProjectStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val auditSystemRepository: AddAuditUseCase,
+    private val auditRepository: AddAuditUseCase,
 ) {
 
     suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
@@ -75,6 +75,6 @@ class ManageProjectUseCase(
             dateTime = DateHandlerImp().getCurrentDateTime(),
             entityTypeId = updatedProject.id
         )
-        auditSystemRepository.addAuditsEntries(listOf(auditEntry))
+        auditRepository.addAuditsEntries(listOf(auditEntry))
     }
 }
