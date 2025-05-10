@@ -13,7 +13,7 @@ interface OutputPrinter {
     fun printTaskList(tasks: List<Task>)
     fun printMateTaskAssignments(tasks: List<Task>)
     fun showStates(projectStates: List<ProjectState>)
-    fun showAudits(audits: List<AuditSystem>, username : String)
+    fun showAudits(audits: List<AuditSystem>, username: String)
     fun printAddTaskDescription(entityType: EntityType, taskName: String, taskId: UUID, projectName: String): String
     fun printUpdateTaskDescription(
         entityType: EntityType,
@@ -21,4 +21,7 @@ interface OutputPrinter {
         newDescription: String,
         newStateName: String
     ): String
+
+    fun printDeleteTaskDescription(entityType: EntityType, taskName: String, taskId: UUID, projectName: String): String
 }
+

@@ -97,4 +97,14 @@ class OutputPrinterImplementation : OutputPrinter {
                 "Description '${newDescription.take(30)}'. " +
                 "State updated to '$newStateName'."
     }
+
+    override fun printDeleteTaskDescription(
+        entityType: EntityType,
+        taskName: String,
+        taskId: UUID,
+        projectName: String
+    ): String {
+        return "$entityType: Task '$taskName' (ID: $taskId) was deleted from project '$projectName'."
+    }
+
 }
