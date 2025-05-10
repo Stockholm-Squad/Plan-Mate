@@ -26,7 +26,7 @@ val localDatasourceModule = module {
 }
 
 val remoteDataSourceModule = module {
-    single<IAuditDataSource> { AuditMongoDataSource(get<AuditsMongoProvider>().provideAuditsCollection()) }
+    single<AuditDataSource> { AuditMongoDataSource(get<AuditsMongoProvider>().provideAuditsCollection()) }
     single<ProjectDataSource> { ProjectMongoDataSource(get<ProjectMongoProvider>().provideProjectCollection(), get()) }
     single<TaskDataSource> { TaskMongoDataSource(get<TaskMongoProvider>().provideTaskCollection()) }
     single<StateDataSource> { StateMongoDataSource(get<StateMongoProvider>().provideStatesCollection()) }

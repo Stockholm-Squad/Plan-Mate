@@ -3,7 +3,7 @@ package org.example.logic.usecase.project
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.ProjectAlreadyExistException
 import org.example.logic.ProjectNotFoundException
-import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
@@ -68,7 +68,7 @@ class ManageProjectUseCase(
     }
 
     private suspend fun logAudit(updatedProject: Project, userId: UUID) {
-        val auditEntry = AuditSystem(
+        val auditEntry = Audit(
             entityType = EntityType.PROJECT,
             description = "update project ${updatedProject.name}",
             userId = userId,

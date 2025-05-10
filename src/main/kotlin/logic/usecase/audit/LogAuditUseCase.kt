@@ -1,7 +1,7 @@
 package org.example.logic.usecase.audit
 
 import kotlinx.datetime.LocalDateTime
-import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import java.util.*
 
@@ -16,7 +16,7 @@ class LogAuditUseCase(
         description: String,
         timestamp: LocalDateTime,
     ): Boolean {
-        val auditEntry = AuditSystem(
+        val auditEntry = Audit(
             userId = userId,
             entityType = entityType,
             entityTypeId = entityId,

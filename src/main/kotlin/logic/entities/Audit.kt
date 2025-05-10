@@ -3,7 +3,7 @@ package org.example.logic.entities
 import kotlinx.datetime.LocalDateTime
 import java.util.*
 
-data class AuditSystem(
+data class Audit(
     val id: UUID = UUID.randomUUID(),
     val entityType: EntityType,
     val entityTypeId: UUID,
