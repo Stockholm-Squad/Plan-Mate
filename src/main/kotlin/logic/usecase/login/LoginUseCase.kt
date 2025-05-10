@@ -54,8 +54,8 @@ class LoginUseCase(
     suspend fun isUserExists(userName: String): Boolean {
         return tryToExecute(
             { userRepository.getAllUsers().any { it.username == userName } },
-            onSuccess = { it },
-            onFailure = { throw UserDoesNotExistException() })
+            onSuccess = {it},
+            onFailure = { false})
     }
 
 }

@@ -2,19 +2,19 @@ package org.example.ui.features.user
 
 import kotlinx.coroutines.runBlocking
 import org.example.logic.entities.User
-import org.example.logic.usecase.user.CreateUserUseCase
+import org.example.logic.usecase.user.AddUserUseCase
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 class CreateUserUiImp(
-    private val createUserUseCase: CreateUserUseCase,
+    private val createUserUseCase: AddUserUseCase,
     private val printer: OutputPrinter,
     private val inputReader: InputReader
 ) : CreateUserUi {
 
     private fun createUser(username: String, password: String) = runBlocking {
         try {
-            createUserUseCase.createUser(username, password).also { isSuccess ->
+            createUserUseCase.addUser(username, password).also { isSuccess ->
                 if (isSuccess) {
                     printer.showMessage("✅ User $username added successfully!")
                 } else {

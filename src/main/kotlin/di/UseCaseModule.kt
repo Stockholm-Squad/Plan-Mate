@@ -10,13 +10,13 @@ import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.logic.usecase.user.CreateUserUseCase
+import org.example.logic.usecase.user.AddUserUseCase
 import org.koin.dsl.module
 
 
 val useCaseModule = module {
 
-    single<CreateUserUseCase> { CreateUserUseCase(get(), get()) }
+    single<AddUserUseCase> { AddUserUseCase(get(), get(), get()) }
     single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }
     single<AddAuditUseCase> { AddAuditUseCase(get()) }
     single<LoginUseCase> { LoginUseCase(get(), get()) }
