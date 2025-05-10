@@ -1,10 +1,8 @@
-package org.example.ui.features.addusertoProject
-
-import org.example.logic.entities.User
+package org.example.ui.features.addusertoproject
 
 interface AddUserToProjectUI {
-    fun invoke(user: User?)
-    fun assignUsersToProject(user: User?)
+    fun invoke()
+    fun assignUsersToProject()
     fun showUsersAssignedToProject()
     fun removeUserFromProject()
 }

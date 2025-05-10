@@ -2,6 +2,7 @@ package org.example.ui.features.task
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import logic.usecase.login.LoginUseCase
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
@@ -25,7 +26,8 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val auditSystemUseCase: AddAuditUseCase
+    private val auditSystemUseCase: AddAuditUseCase,
+    private val loginUseCase: LoginUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessage(throwable.message ?: "Unknown error")
@@ -33,8 +35,8 @@ class TaskManagerUiImp(
     val timestamp = DateHandlerImp().getCurrentDateTime()
     private var currentUser: User? = null
 
-    override fun launchUi(user: User?) {
-        this.currentUser = user
+    override fun launchUi() {
+        this.currentUser = loginUseCase.getCurrentUser()
 
         if (currentUser == null) {
             printer.showMessage(UiMessages.INVALID_USER)

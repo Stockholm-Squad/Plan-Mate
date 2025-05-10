@@ -17,7 +17,7 @@ class AdminStateManagerUiImpl(
     private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
 
-    override fun launchUi(user: User?) {
+    override fun launchUi() {
         while (true) {
             showMenu()
             if (handleMenuChoice()) break

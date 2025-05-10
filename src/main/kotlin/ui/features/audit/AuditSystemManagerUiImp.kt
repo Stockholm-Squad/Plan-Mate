@@ -1,6 +1,7 @@
 package org.example.ui.features.audit
 
 import kotlinx.coroutines.*
+import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.User
 import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.ui.features.common.utils.UiMessages
@@ -12,15 +13,14 @@ class AuditSystemManagerUiImp(
     private val useCase: GetAuditUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
+    private val loginUseCase: LoginUseCase,
 ) : AuditSystemManagerUi {
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessage(throwable.message ?: "Unknown error")
     }
-    private var user: User? = null
 
-    override fun invoke(user: User?) {
-        this.user = user
-        if (user == null) return
+    override fun invoke() {
+        if (loginUseCase.getCurrentUser() == null) return
         do {
             printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
             when (getMainMenuOption()) {
@@ -41,7 +41,7 @@ class AuditSystemManagerUiImp(
             runBlocking(errorHandler) {
                 try{
                     val audits = useCase.getProjectAuditsByName(input)
-                    printer.showAudits(audits, user!!.username)
+                    printer.showAudits(audits, loginUseCase.getCurrentUser()!!.username)
                 } catch (e: Exception) {
                     printer.showMessage(e.message ?: "Unknown error")
                 }
@@ -55,7 +55,7 @@ class AuditSystemManagerUiImp(
             runBlocking {
                 try {
                     val audits = useCase.getTaskAuditsByName(input)
-                    printer.showAudits(audits, user!!.username)
+                    printer.showAudits(audits, loginUseCase.getCurrentUser()!!.username)
 
                 }catch (e: Exception) {
                     printer.showMessage(e.message ?: "Unknown error")
@@ -69,8 +69,8 @@ class AuditSystemManagerUiImp(
     private fun displayAllAudits() {
         runBlocking(errorHandler) {
             try{
-                val audits = useCase.getAuditsByUserId(user!!.id)
-                printer.showAudits(audits, user!!.username)
+                val audits = useCase.getAuditsByUserId(loginUseCase.getCurrentUser()!!.id)
+                printer.showAudits(audits, loginUseCase.getCurrentUser()!!.username)
             }catch (e: Exception){
                 printer.showMessage(e.message ?: "Unknown error")
             }

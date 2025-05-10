@@ -2,6 +2,7 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import logic.usecase.login.LoginUseCase
 import org.example.logic.ProjectExceptions
 import org.example.logic.StateExceptions
 import org.example.logic.entities.User
@@ -21,9 +22,8 @@ class ProjectManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
+    private val loginUseCase: LoginUseCase
 ) : ProjectManagerUi {
-    private var currentUser: User? = null
-
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
     }
@@ -89,7 +89,7 @@ class ProjectManagerUiImp(
         }
 
 
-        val userId = currentUser?.id
+        val userId = loginUseCase.getCurrentUser()?.id
 
         if (userId == null) {
             outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
@@ -182,10 +182,9 @@ class ProjectManagerUiImp(
         }
     }
 
-    override fun launchUi(user: User?) {
-        this.currentUser = user
+    override fun launchUi() {
 
-        if (currentUser == null) {
+        if (loginUseCase.getCurrentUser() == null) {
             outputPrinter.showMessage(UiMessages.INVALID_USER)
             return
         }
