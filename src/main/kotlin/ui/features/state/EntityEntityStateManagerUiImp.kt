@@ -8,14 +8,14 @@ import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
 
 class EntityEntityStateManagerUiImp(
-    private val adminStateManagerUi: AdminEntityStateManagerUi,
-    private val mateStateManagerUi: MateEntityStateManagerUi,
+    private val adminEntityStateManagerUi: AdminEntityStateManagerUi,
+    private val mateEntityStateManagerUi: MateEntityStateManagerUi,
     private val printer: OutputPrinter
 ) : EntityStateManageUi {
     override fun launchStateManagerUi(user: User?) {
         when (user?.userRole) {
-            UserRole.ADMIN -> adminStateManagerUi.launchUi(user)
-            UserRole.MATE -> mateStateManagerUi.launchUi(user)
+            UserRole.ADMIN -> adminEntityStateManagerUi.launchUi(user)
+            UserRole.MATE -> mateEntityStateManagerUi.launchUi(user)
             else -> printer.showMessage(UiMessages.INVALID_USER)
         }
     }
