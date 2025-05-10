@@ -6,4 +6,5 @@ import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface LoginUi:UiLauncher{
    fun authenticateUser(): User?
+   fun logout()
 }

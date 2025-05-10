@@ -13,6 +13,7 @@ import org.example.logic.utils.hashToMd5
 class LoginUseCase(
     private val userRepository: UserRepository, private val validateUserDataUseCase: ValidateUserDataUseCase
 ) {
+    private var currentUser: User? = null
 
     suspend fun loginUser(username: String, password: String): User {
         return tryToExecute({
@@ -21,7 +22,10 @@ class LoginUseCase(
             handleSuccess(
                 username = username, password = password, users = userRepository.getAllUsers()
             )
-        }, onSuccess = { it }, onFailure = { throw UsersDataAreEmptyException() })
+        }, onSuccess = {
+            currentUser = it
+            it
+        }, onFailure = { throw UsersDataAreEmptyException() })
     }
 
     private suspend fun handleSuccess(username: String, password: String, users: List<User>): User {
@@ -54,8 +58,15 @@ class LoginUseCase(
     suspend fun isUserExists(userName: String): Boolean {
         return tryToExecute(
             { userRepository.getAllUsers().any { it.username == userName } },
-            onSuccess = {it},
-            onFailure = { false})
+            onSuccess = { it },
+            onFailure = { false })
     }
 
+    fun logout() {
+        currentUser = null
+    }
+
+    fun getCurrentUser(): User? {
+        return currentUser
+    }
 }

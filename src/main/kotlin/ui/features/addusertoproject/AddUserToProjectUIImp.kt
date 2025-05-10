@@ -1,9 +1,9 @@
+package org.example.ui.features.addusertoproject
+
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
-import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.example.ui.features.addusertoProject.AddUserToProjectUI
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -19,7 +19,7 @@ class AddUserToProjectUIImp(
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
     }
 
-    override fun invoke(user: User?) {
+    override fun invoke() {
         while (true) {
             outputPrinter.showMessage("\nUsers In Project Management:")
             outputPrinter.showMessage("1. Assign users to project")
@@ -28,7 +28,7 @@ class AddUserToProjectUIImp(
             outputPrinter.showMessage("0. Back")
 
             when (inputReader.readStringOrNull()) {
-                "1" -> assignUsersToProject(user)
+                "1" -> assignUsersToProject()
                 "2" -> showUsersAssignedToProject()
                 "3" -> removeUserFromProject()
                 "0" -> return
@@ -37,12 +37,12 @@ class AddUserToProjectUIImp(
         }
     }
 
-    override fun assignUsersToProject(user: User?) {
+    override fun assignUsersToProject() {
         runBlocking(errorHandler) {
             do {
                 outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
                 if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
-                    createUserUiImp.launchUi(user)
+                    createUserUiImp.launchUi()
                 }
                 outputPrinter.showMessage("Enter username to assign or leave it blank to back: ")
                 val username = inputReader.readStringOrNull() ?: return@runBlocking

@@ -14,6 +14,9 @@ class LoginUiImp(
 ) : LoginUi {
 
     override fun authenticateUser(): User? {
+        val user = loginUseCase.getCurrentUser()
+        if (user != null) return user
+
         printer.showMessage("Please enter your user name: ")
         val username = reader.readStringOrNull() ?: return null
 
@@ -30,11 +33,15 @@ class LoginUiImp(
         }
     }
 
+    override fun logout() {
+        loginUseCase.logout()
+    }
+
     private fun handleFailure(message: String) {
         printer.showMessage(message)
     }
 
-    override fun launchUi(user: User?) {
+    override fun launchUi() {
         authenticateUser()
     }
 }

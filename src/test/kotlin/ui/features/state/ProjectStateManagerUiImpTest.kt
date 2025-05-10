@@ -3,7 +3,7 @@ package ui.features.state
 import io.mockk.*
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
-import org.example.ui.features.state.EntityEntityStateManagerUiImp
+import org.example.ui.features.state.EntityStateManagerUiImp
 import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
@@ -14,7 +14,7 @@ import java.util.*
 class ProjectStateManagerUiImpTest {
     private lateinit var adminStateManagerUi: AdminEntityStateManagerUi
     private lateinit var mateStateManagerUi: MateEntityStateManagerUi
-    private lateinit var stateManagerUiImp: EntityEntityStateManagerUiImp
+    private lateinit var stateManagerUiImp: EntityStateManagerUiImp
     private lateinit var printer: OutputPrinter
     private lateinit var  user: User
     @BeforeEach
@@ -22,7 +22,7 @@ class ProjectStateManagerUiImpTest {
         adminStateManagerUi = mockk(relaxed = true)
         mateStateManagerUi = mockk(relaxed = true)
         printer = mockk(relaxed = true)
-        stateManagerUiImp = EntityEntityStateManagerUiImp(adminStateManagerUi, mateStateManagerUi, printer = printer)
+        stateManagerUiImp = EntityStateManagerUiImp(adminStateManagerUi, mateStateManagerUi, printer = printer)
         user= User(UUID.randomUUID(),"name","hash password")
     }
 

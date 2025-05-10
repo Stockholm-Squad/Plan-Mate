@@ -176,7 +176,7 @@ class TaskManagerUiTest {
         every { manageTasksUseCase.addTask(any()) } returns Result.success(true)
 
         // When
-        taskManagerUi.createTask()
+        taskManagerUi.addTask()
 
         // Then
         verify(exactly = 1) { manageStateUseCase.getEntityStateIdByName(stateName) }
@@ -190,7 +190,7 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns "" // Empty name
 
         // When
-        taskManagerUi.createTask()
+        taskManagerUi.addTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
@@ -206,7 +206,7 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns name andThen description andThen ""
 
         // When
-        taskManagerUi.createTask()
+        taskManagerUi.addTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
@@ -225,7 +225,7 @@ class TaskManagerUiTest {
         every { manageStateUseCase.getEntityStateIdByName(stateName) } returns null
 
         // When
-        taskManagerUi.createTask()
+        taskManagerUi.addTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT) }
@@ -240,7 +240,7 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns name andThen "" // Empty description
 
         // When
-        taskManagerUi.createTask()
+        taskManagerUi.addTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }

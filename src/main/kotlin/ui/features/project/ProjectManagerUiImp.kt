@@ -2,6 +2,7 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import logic.usecase.login.LoginUseCase
 import org.example.logic.EntityStateExceptions
 import org.example.logic.ProjectExceptions
 import org.example.logic.entities.User
@@ -9,6 +10,7 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
+import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -21,9 +23,9 @@ class ProjectManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminEntityStateManagerUi,
     private val manageStatesUseCase: ManageEntityStatesUseCase,
+    private val loginUseCase: LoginUseCase,
+    private val taskManagerUi: TaskManagerUi
 ) : ProjectManagerUi {
-    private var currentUser: User? = null
-
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
     }
@@ -89,7 +91,7 @@ class ProjectManagerUiImp(
         }
 
 
-        val userId = currentUser?.id
+        val userId = loginUseCase.getCurrentUser()?.id
 
         if (userId == null) {
             outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
@@ -99,8 +101,17 @@ class ProjectManagerUiImp(
         runBlocking(errorHandler) {
             try {
                 manageProjectUseCase.addProject(projectName, stateName).let { success ->
-                    if (success)
+                    if (success) {
                         outputPrinter.showMessage("Project added successfully")
+                        do {
+                            outputPrinter.showMessage("Would you like to add tasks to this project? (Y/N): ")
+                            val userInput = inputReader.readStringOrNull()
+                            if (userInput.equals("N", ignoreCase = true)) break
+                            if (userInput.equals("Y", ignoreCase = true)) {
+                                taskManagerUi.addTask(projectName)
+                            }
+                        }while (true)
+                    }
                     else
                         outputPrinter.showMessage("Failed to add project")
                 }
@@ -182,10 +193,9 @@ class ProjectManagerUiImp(
         }
     }
 
-    override fun launchUi(user: User?) {
-        this.currentUser = user
+    override fun launchUi() {
 
-        if (currentUser == null) {
+        if (loginUseCase.getCurrentUser() == null) {
             outputPrinter.showMessage(UiMessages.INVALID_USER)
             return
         }

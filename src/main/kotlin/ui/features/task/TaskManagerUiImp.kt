@@ -2,10 +2,10 @@ package org.example.ui.features.task
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import logic.usecase.login.LoginUseCase
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
-import org.example.logic.entities.User
 import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
@@ -25,18 +25,17 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val auditSystemUseCase: AddAuditUseCase
+    private val auditSystemUseCase: AddAuditUseCase,
+    private val loginUseCase: LoginUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessage(throwable.message ?: "Unknown error")
     }
     val timestamp = DateHandlerImp().getCurrentDateTime()
-    private var currentUser: User? = null
 
-    override fun launchUi(user: User?) {
-        this.currentUser = user
+    override fun launchUi() {
 
-        if (currentUser == null) {
+        if (loginUseCase.getCurrentUser() == null) {
             printer.showMessage(UiMessages.INVALID_USER)
             return
         }
@@ -52,7 +51,7 @@ class TaskManagerUiImp(
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
             TaskOptions.SHOW_TASK_BY_NAME -> getTaskByName()
-            TaskOptions.CREATE_TASK -> createTask()
+            TaskOptions.CREATE_TASK -> addTask(null)
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
             TaskOptions.SHOW_TASKS_BY_PROJECT_NAME -> showAllTasksInProject()
@@ -79,8 +78,8 @@ class TaskManagerUiImp(
         }
     }
 
-    override fun createTask() {
-        val projectName = getProjectByName()
+    override fun addTask(passedProjectName: String?) {
+        val projectName = passedProjectName ?: getProjectByName()
         if (projectName.isEmpty()) return
 
         val (name, description, stateName) = readCreateTaskInput()
@@ -95,7 +94,7 @@ class TaskManagerUiImp(
             }
         } ?: return
 
-        val userId = currentUser?.id ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+        val userId = loginUseCase.getCurrentUser()?.id ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
         runBlocking(coroutineExceptionHandler) {
             try {
@@ -133,7 +132,7 @@ class TaskManagerUiImp(
 
             val newStateId = manageStateUseCase.getEntityStateIdByName(newStateName)
 
-            val userId = currentUser?.id
+            val userId = loginUseCase.getCurrentUser()?.id
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
             val updatedTask = existingTask.copy(
@@ -165,7 +164,7 @@ class TaskManagerUiImp(
 
             val project = getProjectsUseCase.getProjectByName(projectName)
             manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
-            val userId = currentUser?.id
+            val userId = loginUseCase.getCurrentUser()?.id
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
             val auditDescription = printer.printDeleteTaskDescription(EntityType.TASK, task.name, task.id, projectName)
