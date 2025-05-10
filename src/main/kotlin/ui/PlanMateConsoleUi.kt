@@ -4,21 +4,21 @@ import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.ui.features.addusertoproject.AddUserToProjectUI
 import org.example.ui.features.audit.AuditSystemManagerUi
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
-import org.example.ui.features.state.StateManageUi
+import org.example.ui.features.state.EntityStateManageUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.features.common.utils.UiMessages
 
 
 class PlanMateConsoleUi(
     private val loginUi: LoginUi,
     private val manageAuditSystemUi: AuditSystemManagerUi,
     private val manageProjectUi: ProjectManagerUi,
-    private val stateManagerUi: StateManageUi,
+    private val stateManagerUi: EntityStateManageUi,
     private val taskManagerUi: TaskManagerUi,
     private val addUserToProjectUI: AddUserToProjectUI,
     private val createUserUi: CreateUserUi,

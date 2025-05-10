@@ -5,12 +5,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
+import modle.buildUser
 import org.example.logic.entities.Task
 import org.example.logic.entities.UserRole
-import modle.buildUser
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
@@ -28,7 +28,7 @@ class TaskManagerUiTest {
     private lateinit var printer: OutputPrinter
     private lateinit var uiUtils: UiUtils
     private lateinit var manageTasksUseCase: ManageTasksUseCase
-    private lateinit var manageStateUseCase: ManageStatesUseCase
+    private lateinit var manageStateUseCase: ManageEntityStatesUseCase
     private lateinit var getProjectUseCase: GetProjectsUseCase
     private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
     private lateinit var taskManagerUi: TaskManagerUi
@@ -172,14 +172,14 @@ class TaskManagerUiTest {
         val stateId = UUID.randomUUID()
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
-        every { manageStateUseCase.getProjectStateIdByName(stateName) } returns stateId
+        every { manageStateUseCase.getEntityStateIdByName(stateName) } returns stateId
         every { manageTasksUseCase.addTask(any()) } returns Result.success(true)
 
         // When
         taskManagerUi.addTask()
 
         // Then
-        verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
+        verify(exactly = 1) { manageStateUseCase.getEntityStateIdByName(stateName) }
         verify(exactly = 1) { manageTasksUseCase.addTask(any()) }
         verify(exactly = 1) { printer.printTask(any()) }
     }
@@ -194,7 +194,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
-        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getEntityStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
@@ -210,7 +210,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
-        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getEntityStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
@@ -222,14 +222,14 @@ class TaskManagerUiTest {
         val stateName = "Invalid State"
 
         every { reader.readStringOrNull() } returns name andThen description andThen stateName
-        every { manageStateUseCase.getProjectStateIdByName(stateName) } returns null
+        every { manageStateUseCase.getEntityStateIdByName(stateName) } returns null
 
         // When
         taskManagerUi.addTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT) }
-        verify(exactly = 1) { manageStateUseCase.getProjectStateIdByName(stateName) }
+        verify(exactly = 1) { manageStateUseCase.getEntityStateIdByName(stateName) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
@@ -244,7 +244,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
-        verify(exactly = 0) { manageStateUseCase.getProjectStateIdByName(any()) }
+        verify(exactly = 0) { manageStateUseCase.getEntityStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
 
@@ -269,7 +269,7 @@ class TaskManagerUiTest {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskByName(taskName) } returns Result.success(existingTask)
-        every { manageStateUseCase.getProjectStateIdByName(newStateName) } returns newStateId
+        every { manageStateUseCase.getEntityStateIdByName(newStateName) } returns newStateId
         every { manageTasksUseCase.editTask(any()) } returns Result.success(true)
 
         // When
@@ -480,7 +480,7 @@ class TaskManagerUiTest {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskByName(taskName) } returns Result.success(existingTask)
-        every { manageStateUseCase.getProjectStateIdByName(newStateName) } returns null
+        every { manageStateUseCase.getEntityStateIdByName(newStateName) } returns null
 
         // When
         taskManagerUi.editTask()

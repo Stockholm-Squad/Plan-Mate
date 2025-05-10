@@ -6,7 +6,8 @@ import org.example.data.source.local.csv_reader_writer.mate_task_assignment.IMat
 import org.example.data.source.local.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
 import org.example.data.source.local.csv_reader_writer.project.IProjectCSVReaderWriter
 import org.example.data.source.local.csv_reader_writer.project.ProjectCSVReaderWriter
-import org.example.data.source.local.csv_reader_writer.state.IStateCSVReaderWriter
+import org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter
+import org.example.data.source.local.csv_reader_writer.state.IEntityStateCSVReaderWriter
 import org.example.data.source.local.csv_reader_writer.task.ITaskCSVReaderWriter
 import org.example.data.source.local.csv_reader_writer.task.TaskCSVReaderWriter
 import org.example.data.source.local.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
@@ -20,7 +21,7 @@ import org.koin.dsl.module
 val localDatasourceModule = module {
     factory<IAuditCSVReaderWriter> { AuditCSVReaderWriter(filePath = "audits.csv") }
     factory<IProjectCSVReaderWriter> { ProjectCSVReaderWriter(filePath = "projects.csv") }
-    factory<IStateCSVReaderWriter> { org.example.data.source.local.csv_reader_writer.state.StateCSVReaderWriter(filePath = "state.csv") }
+    factory<IEntityStateCSVReaderWriter> { EntityStateCSVReaderWriter(filePath = "state.csv") }
     factory<ITaskCSVReaderWriter> { TaskCSVReaderWriter(filePath = "task.csv") }
     factory<IUserCSVReaderWriter> { UserCSVReaderWriter(filePath = "users.csv") }
     factory<ITaskInProjectCSVReaderWriter> { TaskInProjectCSVReaderWriter(filePath = "task_in_project.csv") }

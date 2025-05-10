@@ -6,18 +6,18 @@ import io.mockk.verify
 import logic.models.exceptions.NotAllowedStateNameException
 import logic.models.exceptions.StateAlreadyExistException
 import logic.models.exceptions.StateNotExistException
-import org.example.logic.usecase.state.ManageStatesUseCase
-import org.example.ui.features.state.admin.AdminStateManagerUiImpl
-import org.example.ui.features.state.common.UserStateManagerUi
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
+import org.example.ui.features.state.admin.AdminEntityStateManagerUiImpl
+import org.example.ui.features.state.common.UserEntityStateManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AdminProjectProjectStateDtoManagerUiImpImplTest {
-    private lateinit var manageStatesUseCase: ManageStatesUseCase
-    private lateinit var adminStateManagerUi: AdminStateManagerUiImpl
-    private lateinit var userStateManagerUi: UserStateManagerUi
+    private lateinit var manageStatesUseCase: ManageEntityStatesUseCase
+    private lateinit var adminStateManagerUi: AdminEntityStateManagerUiImpl
+    private lateinit var userStateManagerUi: UserEntityStateManagerUi
     private lateinit var printer: OutputPrinter
     private lateinit var reader: InputReader
 
@@ -28,9 +28,9 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         userStateManagerUi = mockk(relaxed = true)
 
         manageStatesUseCase = mockk(relaxed = true)
-        adminStateManagerUi = AdminStateManagerUiImpl(
-            userStateManagerUi = userStateManagerUi,
-            manageStatesUseCase = manageStatesUseCase,
+        adminStateManagerUi = AdminEntityStateManagerUiImpl(
+            userEntityStateManagerUi = userStateManagerUi,
+            manageEntityStatesUseCase = manageStatesUseCase,
             reader = reader,
             printer = printer
         )
@@ -41,7 +41,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         every { reader.readStringOrNull() } returns "ExistingState"
         every { reader.readStringOrNull() } returns "NewState"
 
-        every { manageStatesUseCase.editProjectStateByName("ExistingState","NewState") } returns Result.success(true)
+        every { manageStatesUseCase.editEntityStateByName("ExistingState", "NewState") } returns Result.success(true)
 
         adminStateManagerUi.editState()
 
@@ -53,7 +53,12 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         val stateName = "TODO"
         val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
-        every { this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.editProjectStateByName(stateName,newState) } returns Result.success(true)
+        every {
+            this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.editEntityStateByName(
+                stateName,
+                newState
+            )
+        } returns Result.success(true)
 
         //When
         adminStateManagerUi.editState()
@@ -70,7 +75,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         every { reader.readStringOrNull() } returns stateName
         every { reader.readStringOrNull() } returns newState
 
-        every { manageStatesUseCase.editProjectStateByName(any(),any()) } returns Result.failure(
+        every { manageStatesUseCase.editEntityStateByName(any(), any()) } returns Result.failure(
            NotAllowedStateNameException()
         )
 
@@ -105,7 +110,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     @Test
     fun `deleteState()  should show success message on valid input`() {
         every { reader.readStringOrNull() } returns "StateToDelete"
-        every { manageStatesUseCase.deleteProjectState("StateToDelete") } returns Result.success(true)
+        every { manageStatesUseCase.deleteEntityState("StateToDelete") } returns Result.success(true)
 
         adminStateManagerUi.deleteState()
 
@@ -115,7 +120,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     @Test
     fun `deleteState() should show error message on failure`() {
         every { reader.readStringOrNull() } returns "BadState"
-        every { manageStatesUseCase.deleteProjectState("BadState") } returns Result.failure(Exception("some error"))
+        every { manageStatesUseCase.deleteEntityState("BadState") } returns Result.failure(Exception("some error"))
 
         adminStateManagerUi.deleteState()
 
@@ -137,7 +142,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         // Given
         val stateName = "TODO"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.deleteProjectState(any()) } returns Result.success(true)
+        every { manageStatesUseCase.deleteEntityState(any()) } returns Result.success(true)
 
         //When
         adminStateManagerUi.deleteState()
@@ -152,7 +157,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         // Given
         val stateName = "In-Progress"
         every { reader.readStringOrNull() } returns stateName andThen "yes"
-        every { manageStatesUseCase.deleteProjectState(any()) } returns Result.failure(
+        every { manageStatesUseCase.deleteEntityState(any()) } returns Result.failure(
             StateNotExistException()
         )
 
@@ -165,7 +170,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     @Test
     fun `addState should succeed with valid input`() {
         every { reader.readStringOrNull() } returns "NewState"
-        every { manageStatesUseCase.addProjectState(any()) } returns Result.success(true)
+        every { manageStatesUseCase.addEntityState(any()) } returns Result.success(true)
 
         adminStateManagerUi.addState()
 
@@ -186,7 +191,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         //Given
         val stateName = "do"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addProjectState(stateName) } returns Result.success(true)
+        every { manageStatesUseCase.addEntityState(stateName) } returns Result.success(true)
 
         //When
         adminStateManagerUi.addState()
@@ -201,7 +206,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         // Given
         val stateName = "do"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addProjectState(stateName) } returns Result.failure(
+        every { manageStatesUseCase.addEntityState(stateName) } returns Result.failure(
           StateAlreadyExistException()
         )
         //When
@@ -216,7 +221,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         // Given
         val stateName = "1in review!"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addProjectState(stateName) } returns Result.failure(
+        every { manageStatesUseCase.addEntityState(stateName) } returns Result.failure(
             StateAlreadyExistException()
         )
         //When
@@ -230,7 +235,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         // Given
         val stateName = "hi in this state this is too long state"
         every { reader.readStringOrNull() } returns stateName
-        every { manageStatesUseCase.addProjectState(stateName) } returns Result.failure(
+        every { manageStatesUseCase.addEntityState(stateName) } returns Result.failure(
             StateAlreadyExistException()
         )
         //When

@@ -4,16 +4,16 @@ import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.state.admin.AdminStateManagerUi
-import org.example.ui.features.state.mate.MateStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityStateManagerUi
+import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
 
-class StateManagerUiImp(
-    private val adminStateManagerUi: AdminStateManagerUi,
-    private val mateStateManagerUi: MateStateManagerUi,
+class EntityEntityStateManagerUiImp(
+    private val adminStateManagerUi: AdminEntityStateManagerUi,
+    private val mateStateManagerUi: MateEntityStateManagerUi,
     private val printer: OutputPrinter,
     private val loginUseCase: LoginUseCase,
-) : StateManageUi {
+) : EntityStateManageUi {
     override fun launchStateManagerUi() {
         val user = loginUseCase.getCurrentUser()
         when (user?.userRole) {

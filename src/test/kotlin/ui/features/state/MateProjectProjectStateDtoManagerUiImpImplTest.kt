@@ -1,20 +1,19 @@
 package ui.features.state
 
-import io.mockk.*
-import org.example.ui.features.state.common.UserStateManagerUi
-import org.example.ui.features.state.mate.MateStateManagerUi
-import org.example.ui.features.state.mate.MateStateManagerUiImpl
+import io.mockk.mockk
+import org.example.ui.features.state.common.UserEntityStateManagerUi
+import org.example.ui.features.state.mate.MateEntityEntityStateManagerUiImpl
+import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 
 class MateProjectProjectStateDtoManagerUiImpImplTest {
-    private lateinit var mateStateManagerUi: MateStateManagerUi
-    private lateinit var userStateManagerUi: UserStateManagerUi
+    private lateinit var mateStateManagerUi: MateEntityStateManagerUi
+    private lateinit var userStateManagerUi: UserEntityStateManagerUi
 
     @BeforeEach
     fun setUp() {
         userStateManagerUi = mockk(relaxed = true)
-        mateStateManagerUi = MateStateManagerUiImpl(userStateManagerUi)
+        mateStateManagerUi = MateEntityEntityStateManagerUiImpl(userStateManagerUi)
 
     }
 

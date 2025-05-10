@@ -9,7 +9,7 @@ import org.example.logic.model.exceptions.NoObjectFound
 import org.example.logic.model.exceptions.NoProjectAddedException
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.junit.jupiter.api.*
 import utils.buildProject
 import java.util.*
@@ -17,7 +17,7 @@ import java.util.*
 class ManageProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var manageProjectUseCase: ManageProjectUseCase
-    private lateinit var manageStatesUseCase : ManageStatesUseCase
+    private lateinit var manageStatesUseCase: ManageEntityStatesUseCase
 
     @BeforeEach
     fun setUp() {
@@ -88,7 +88,7 @@ class ManageProjectUseCaseTest {
         @Test
         fun `should return failure when project does not exist`() {
             // Given
-            val projectId = UUID.randomUUID()
+            UUID.randomUUID()
             val allProjects = listOf(
                 buildProject(id = UUID.randomUUID(), name = "Project 1"),
                 buildProject(id = UUID.randomUUID(), name = "Project 2")
@@ -176,7 +176,7 @@ class ManageProjectUseCaseTest {
         @Test
         fun `should return failure when project does not exist`() {
             // Given
-            val projectId = "non-existent"
+            "non-existent"
             val existingProject = buildProject(id = UUID.randomUUID(), name = "Existing Project")
             every { projectRepository.editProject(existingProject) } returns Result.failure(NoObjectFound())
 
