@@ -1,6 +1,6 @@
 package org.example.logic.usecase.audit
 
-import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.Audit
 import org.example.logic.repository.AuditRepository
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
@@ -12,7 +12,7 @@ class GetAuditSystemUseCase(
     private val manageTasksUseCase: ManageTasksUseCase
 ) {
 
-    suspend fun getProjectAuditsByName(projectName: String): List<AuditSystem> =
+    suspend fun getProjectAuditsByName(projectName: String): List<Audit> =
         auditRepository.getAllAuditEntries().also { audits ->
             getProjectsUseCase.getProjectByName(projectName).also { project ->
                 return audits.filter { audit ->
@@ -22,7 +22,7 @@ class GetAuditSystemUseCase(
         }
 
 
-    suspend fun getTaskAuditsByName(taskName: String): List<AuditSystem> =
+    suspend fun getTaskAuditsByName(taskName: String): List<Audit> =
         auditRepository.getAllAuditEntries().also { audits ->
             manageTasksUseCase.getTaskIdByName(taskName).also { taskId ->
                 return audits.filter { audit ->
@@ -34,7 +34,7 @@ class GetAuditSystemUseCase(
 
 
 
-    suspend fun getAuditsByUserId(userId: UUID): List<AuditSystem> =
+    suspend fun getAuditsByUserId(userId: UUID): List<Audit> =
         auditRepository.getAllAuditEntries().also { audits ->
             return audits.filter { it.userId == userId }
         }

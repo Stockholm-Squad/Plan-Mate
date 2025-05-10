@@ -1,7 +1,7 @@
 package utils
 
 import kotlinx.datetime.LocalDateTime
-import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import data.dto.AuditDto
 import java.util.*
@@ -14,7 +14,7 @@ fun createAuditSystemEntity(
     userId: UUID,
     description: String,
     createdAt: LocalDateTime
-): AuditSystem = AuditSystem(id = id, entityType = entityType, entityTypeId = entityTypeId, userId = userId, description = description, dateTime = createdAt)
+): Audit = Audit(id = id, entityType = entityType, entityTypeId = entityTypeId, userId = userId, description = description, dateTime = createdAt)
 
 fun createAuditSystemModel(
     id: String,
