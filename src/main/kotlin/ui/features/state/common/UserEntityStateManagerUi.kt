@@ -1,5 +1,5 @@
 package org.example.ui.features.state.common
 
-interface UserStateManagerUi {
+interface UserEntityStateManagerUi {
     fun showAllStates()
 }

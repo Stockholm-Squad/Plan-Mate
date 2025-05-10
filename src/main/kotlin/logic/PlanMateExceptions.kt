@@ -35,14 +35,16 @@ class NoProjectDeletedException(message: String = "The project hasn't deleted") 
 class ProjectAlreadyExistException(message: String = "The project is already exists") : ProjectExceptions(message)
 
 
-open class StateExceptions(message: String) : PlanMateExceptions(message)
-class StateAlreadyExistException(message: String = "The state already exists.") : StateExceptions(message)
-class NoStatesFoundedException(message: String = "There are no states.") : StateExceptions(message)
-class NotAllowedStateNameException(message: String = "Only letters are allowed!") : StateExceptions(message)
-class ProjectStateNotAddedException(message: String = "Project State Not Added") : StateExceptions(message)
-class ProjectStateNotEditedException(message: String = "Project State Not Edited") : StateExceptions(message)
-class ProjectStateNotDeletedException(message: String = "Project State Not Deleted") : StateExceptions(message)
-class NoProjectStateFoundException(message: String = "No Project State Found") : StateExceptions(message)
+open class EntityStateExceptions(message: String) : PlanMateExceptions(message)
+class EntityStateAlreadyExistException(message: String = "The state already exists.") : EntityStateExceptions(message)
+class NoEntityStatesFoundedException(message: String = "There are no states.") : EntityStateExceptions(message)
+class NotAllowedEntityStateNameException(message: String = "Only letters are allowed!") : EntityStateExceptions(message)
+class EntityEntityStateNotAddedException(message: String = "Project State Not Added") : EntityStateExceptions(message)
+class EntityEntityStateNotEditedException(message: String = "Project State Not Edited") : EntityStateExceptions(message)
+class EntityEntityStateNotDeletedException(message: String = "Project State Not Deleted") :
+    EntityStateExceptions(message)
+
+class NoEntityEntityStateFoundException(message: String = "No Project State Found") : EntityStateExceptions(message)
 
 
 open class AuditExceptions(message: String) : PlanMateExceptions(message)

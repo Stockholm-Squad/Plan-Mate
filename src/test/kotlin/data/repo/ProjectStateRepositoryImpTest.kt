@@ -1,14 +1,14 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
+import data.dto.EntityStateDto
 import io.mockk.every
 import io.mockk.mockk
-import org.example.logic.entities.ProjectState
 import logic.models.exceptions.FileNotExistException
 import org.example.data.csv_reader_writer.state.IStateCSVReaderWriter
-import data.dto.ProjectStateDto
-import org.example.data.repo.ProjectStateRepositoryImp
-import org.example.logic.repository.ProjectStateRepository
+import org.example.data.repo.EntityStateRepositoryImp
+import org.example.logic.entities.EntityState
+import org.example.logic.repository.EntityStateRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -16,18 +16,18 @@ import org.junit.jupiter.api.assertThrows
 class ProjectStateRepositoryImpTest {
 
     private lateinit var projectStateDataSource: IStateCSVReaderWriter
-    private lateinit var stateRepository: ProjectStateRepository
-    private lateinit var projectState: ProjectState
-    private lateinit var projectStateDto: ProjectStateDto
+    private lateinit var stateRepository: EntityStateRepository
+    private lateinit var projectState: EntityState
+    private lateinit var projectStateDto: EntityStateDto
 
 
     @BeforeEach
     fun setUp() {
         projectStateDataSource = mockk(relaxed = true)
-        projectState = ProjectState(name = "In-Progress")
+        projectState = EntityState(name = "In-Progress")
         every { projectStateDataSource.read() } returns Result.success(listOf())
-        stateRepository = ProjectStateRepositoryImp(projectStateDataSource)
-        projectStateDto= ProjectStateDto("id","project name")
+        stateRepository = EntityStateRepositoryImp(projectStateDataSource)
+        projectStateDto = EntityStateDto("id", "project name")
     }
 
     @Test
@@ -39,7 +39,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.editProjectState(ProjectState(name = "In-Progress"))
+        val result = stateRepository.editEntityState(EntityState(name = "In-Progress"))
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -54,7 +54,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.editProjectState(projectState)
+        val result = stateRepository.editEntityState(projectState)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -69,7 +69,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.failure(FileNotExistException())
 
         //When
-        val result = stateRepository.editProjectState(projectState)
+        val result = stateRepository.editEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -84,7 +84,7 @@ class ProjectStateRepositoryImpTest {
         )
 
         //When
-        val result = stateRepository.editProjectState(projectState)
+        val result = stateRepository.editEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -99,7 +99,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.deleteProjectState(projectState)
+        val result = stateRepository.deleteEntityState(projectState)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -114,7 +114,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.deleteProjectState(projectState)
+        val result = stateRepository.deleteEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -129,7 +129,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.deleteProjectState(projectState)
+        val result = stateRepository.deleteEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -141,7 +141,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.failure(Throwable())
 
         //When
-        val result = stateRepository.deleteProjectState(projectState)
+        val result = stateRepository.deleteEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -150,11 +150,11 @@ class ProjectStateRepositoryImpTest {
     @Test
     fun `addState() should return success result with true when the state add successfully`() {
         //Given
-        val projectState = ProjectState(name = "Done")
+        val projectState = EntityState(name = "Done")
         every { projectStateDataSource.append(any()) } returns Result.success(true)
 
         //When
-        val result = stateRepository.addProjectState(projectState.name)
+        val result = stateRepository.addEntityState(projectState.name)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -163,12 +163,12 @@ class ProjectStateRepositoryImpTest {
     @Test
     fun `addState() should return failure result with throwable when error happens while writing into the csv file`() {
         //Given
-        val projectState = ProjectState(name = "In Review")
+        val projectState = EntityState(name = "In Review")
         every { projectStateDataSource.append(any()) } returns Result.failure(
             Throwable()
         )
         //When
-        val result = stateRepository.addProjectState(projectState.name)
+        val result = stateRepository.addEntityState(projectState.name)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -198,10 +198,10 @@ class ProjectStateRepositoryImpTest {
         )
 
         // When
-        val result = stateRepository.getAllProjectStates()
+        val result = stateRepository.getAllEntityStates()
 
         //Then
-        assertThat(result.getOrNull()).isEqualTo(listOf<ProjectState>())
+        assertThat(result.getOrNull()).isEqualTo(listOf<EntityState>())
     }
 
     @Test
@@ -212,7 +212,7 @@ class ProjectStateRepositoryImpTest {
         )
 
         // When
-        val result = stateRepository.getAllProjectStates()
+        val result = stateRepository.getAllEntityStates()
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }

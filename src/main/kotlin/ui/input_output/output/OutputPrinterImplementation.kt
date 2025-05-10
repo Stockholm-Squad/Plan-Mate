@@ -1,8 +1,8 @@
 package org.example.ui.input_output.output
 
 import org.example.logic.entities.Audit
+import org.example.logic.entities.EntityState
 import org.example.logic.entities.EntityType
-import org.example.logic.entities.ProjectState
 import org.example.logic.entities.Task
 import java.util.*
 
@@ -34,11 +34,11 @@ class OutputPrinterImplementation : OutputPrinter {
         }
     }
 
-    override fun showStates(projectStates: List<ProjectState>) {
+    override fun showStates(projectStates: List<EntityState>) {
         this.printStateUsingSwimlaneUi(projectStates)
     }
 
-    private fun printStateUsingSwimlaneUi(projectStates: List<ProjectState>) {
+    private fun printStateUsingSwimlaneUi(projectStates: List<EntityState>) {
         println("┌──────────────────────────────┐")
         println("│ State                        │")
         println("├──────────────────────────────┤")

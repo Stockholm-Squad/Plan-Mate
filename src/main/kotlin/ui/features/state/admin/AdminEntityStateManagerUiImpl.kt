@@ -2,20 +2,20 @@ package org.example.ui.features.state.admin
 
 import kotlinx.coroutines.runBlocking
 import org.example.logic.entities.User
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.state.common.UserStateManagerUi
-import org.example.ui.features.state.model.StateMenuChoice
+import org.example.ui.features.state.common.UserEntityStateManagerUi
+import org.example.ui.features.state.model.EntityStateMenuChoice
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 
-class AdminStateManagerUiImpl(
-    private val userStateManagerUi: UserStateManagerUi,
-    private val manageStatesUseCase: ManageStatesUseCase,
+class AdminEntityStateManagerUiImpl(
+    private val userEntityStateManagerUi: UserEntityStateManagerUi,
+    private val manageEntityStatesUseCase: ManageEntityStatesUseCase,
     private val reader: InputReader,
     private val printer: OutputPrinter,
-) : AdminStateManagerUi, UserStateManagerUi {
+) : AdminEntityStateManagerUi, UserEntityStateManagerUi {
 
     override fun launchUi(user: User?) {
         while (true) {
@@ -27,7 +27,7 @@ class AdminStateManagerUiImpl(
     private fun showMenu() {
         printer.showMessage("-------------------------------------")
         printer.showMessage(UiMessages.WHAT_DO_YOU_NEED)
-        StateMenuChoice.entries.forEach { item ->
+        EntityStateMenuChoice.entries.forEach { item ->
             printer.showMessage("${item.choiceNumber} ${item.choiceMessage}")
         }
         printer.showMessage("-------------------------------------")
@@ -35,11 +35,11 @@ class AdminStateManagerUiImpl(
 
     private fun handleMenuChoice(): Boolean {
         when (reader.readIntOrNull()) {
-            StateMenuChoice.SHOW_ALL.choiceNumber -> this.showAllStates()
-            StateMenuChoice.ADD_STATE.choiceNumber -> this.addState()
-            StateMenuChoice.EDIT_STATE.choiceNumber -> this.editState()
-            StateMenuChoice.DELETE_STATE.choiceNumber -> this.deleteState()
-            StateMenuChoice.BACK.choiceNumber -> return true
+            EntityStateMenuChoice.SHOW_ALL.choiceNumber -> this.showAllStates()
+            EntityStateMenuChoice.ADD_STATE.choiceNumber -> this.addState()
+            EntityStateMenuChoice.EDIT_STATE.choiceNumber -> this.editState()
+            EntityStateMenuChoice.DELETE_STATE.choiceNumber -> this.deleteState()
+            EntityStateMenuChoice.BACK.choiceNumber -> return true
             else -> printer.showMessage("Please enter a valid choice!!")
         }
         return false
@@ -52,7 +52,7 @@ class AdminStateManagerUiImpl(
             ?.let { stateName ->
                 runBlocking {
                     try {
-                        manageStatesUseCase.addProjectState(stateName = stateName)
+                        manageEntityStatesUseCase.addEntityState(stateName = stateName)
                         printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
                     } catch (exception: Exception) {
                         printer.showMessage("Failed to delete state: ${exception.message}")
@@ -77,7 +77,7 @@ class AdminStateManagerUiImpl(
             }
         runBlocking {
             try {
-                manageStatesUseCase.editProjectStateByName(
+                manageEntityStatesUseCase.editEntityStateByName(
                     stateName = currentStateName,
                     newStateName = newStateName
                 )
@@ -95,7 +95,7 @@ class AdminStateManagerUiImpl(
         }?.let { stateName ->
             runBlocking {
                 try {
-                    manageStatesUseCase.deleteProjectState(stateName = stateName)
+                    manageEntityStatesUseCase.deleteEntityState(stateName = stateName)
                     showStateDeletedMessage()
                 } catch (exception: Exception) {
                     printer.showMessage("Failed to delete state: ${exception.message}")
@@ -109,6 +109,6 @@ class AdminStateManagerUiImpl(
     }
 
     override fun showAllStates() {
-        userStateManagerUi.showAllStates()
+        userEntityStateManagerUi.showAllStates()
     }
 }

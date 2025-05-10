@@ -2,14 +2,14 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import org.example.logic.EntityStateExceptions
 import org.example.logic.ProjectExceptions
-import org.example.logic.StateExceptions
 import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.state.admin.AdminStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
@@ -19,8 +19,8 @@ class ProjectManagerUiImp(
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val stateManagerUi: AdminStateManagerUi,
-    private val manageStatesUseCase: ManageStatesUseCase,
+    private val stateManagerUi: AdminEntityStateManagerUi,
+    private val manageStatesUseCase: ManageEntityStatesUseCase,
 ) : ProjectManagerUi {
     private var currentUser: User? = null
 
@@ -58,7 +58,7 @@ class ProjectManagerUiImp(
                     outputPrinter.showMessage("Project Details:")
                     outputPrinter.showMessage("Name: ${project.name}")
                     val stateName: String =
-                        manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+                        manageStatesUseCase.getEntityStateNameByStateId(project.stateId) ?: "not exist state"
                     outputPrinter.showMessage("State: $stateName")
                 }
             } catch (e: Exception) {
@@ -106,7 +106,7 @@ class ProjectManagerUiImp(
                 }
             } catch (e: ProjectExceptions) {
                 outputPrinter.showMessage("Project name already exists")
-            } catch (e: StateExceptions) {
+            } catch (e: EntityStateExceptions) {
                 outputPrinter.showMessage("No State with that name")
             }
         }
@@ -120,7 +120,7 @@ class ProjectManagerUiImp(
         try {
             getProjectsUseCase.getProjectByName(projectName).let { project ->
                 val projectStateName: String =
-                    manageStatesUseCase.getProjectStateNameByStateId(project.stateId) ?: "not exist state"
+                    manageStatesUseCase.getEntityStateNameByStateId(project.stateId) ?: "not exist state"
                 outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
 
                 val newName = inputReader.readStringOrNull()
@@ -155,7 +155,7 @@ class ProjectManagerUiImp(
             }
         } catch (e: ProjectExceptions) {
             outputPrinter.showMessage(e.message)
-        } catch (e: StateExceptions) {
+        } catch (e: EntityStateExceptions) {
             outputPrinter.showMessage(e.message)
         }
     }
