@@ -8,11 +8,10 @@ import io.mockk.verify
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.UsersDataAreEmpty
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentCsvDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectCsvDataSource
-import org.example.data.datasources.user_data_source.UserCsvDataSource
+import org.example.data.source.local.MateTaskAssignmentCsvDataSource
+import org.example.data.source.local.UserAssignedToProjectCsvDataSource
+import org.example.data.source.local.UserCsvDataSource
 import org.example.data.models.UserModel
 import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException

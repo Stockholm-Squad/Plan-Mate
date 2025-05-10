@@ -11,5 +11,12 @@ data class User(
 )
 
 enum class UserRole {
-    ADMIN, MATE
+    ADMIN,
+    MATE;
+
+    companion object {
+        fun find(roleName: String): UserRole? {
+            return entries.find { it.name == roleName }
+        }
+    }
 }

@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import logic.models.exceptions.FileNotExistException
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
+import org.example.data.source.local.AuditSystemCsvDataSource
 import org.example.data.models.AuditSystemModel
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

@@ -2,7 +2,7 @@ package data.datasources.project_data_source
 
 import logic.models.exceptions.FileNotExistException
 import logic.models.exceptions.ReadDataException
-import org.example.data.datasources.project_data_source.ProjectCsvDataSource
+import org.example.data.source.local.ProjectCsvDataSource
 import org.example.data.models.ProjectModel
 import org.junit.jupiter.api.*
 import java.io.File

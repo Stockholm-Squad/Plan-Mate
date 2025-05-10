@@ -4,7 +4,7 @@ import data.mapper.mapToAuditSystemEntity
 import data.mapper.mapToAuditSystemModel
 import org.example.logic.entities.AuditSystem
 import org.example.logic.AuditExceptions
-import org.example.data.datasources.audit_system_data_source.IAuditSystemDataSource
+import org.example.data.datasources.IAuditSystemDataSource
 import org.example.data.utils.executeSafelyWithContext
 import org.example.logic.repository.AuditSystemRepository
 

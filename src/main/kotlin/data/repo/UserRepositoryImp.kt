@@ -1,6 +1,6 @@
 package org.example.data.repo
 
-import data.datasources.user_data_source.UserDataSource
+import org.example.data.source.UserDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -8,8 +8,8 @@ import org.example.logic.entities.User
 import org.example.logic.UserExceptions
 import org.example.logic.UserToProjectExceptions
 import org.example.logic.UserToTaskExceptions
-import org.example.data.datasources.mate_task_assignment_data_source.MateTaskAssignmentDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.UserAssignedToProjectDataSource
+import org.example.data.source.MateTaskAssignmentDataSource
+import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.mapper.mapToUserEntity
 import org.example.data.mapper.mapToUserModel
 import org.example.data.utils.tryToExecute

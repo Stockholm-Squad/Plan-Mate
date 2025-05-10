@@ -1,6 +1,6 @@
 package data.datasources
 
-import org.example.data.datasources.state_data_source.StateCsvDataSource
+import org.example.data.source.local.StateCsvDataSource
 import org.example.data.models.ProjectStateModel
 import org.junit.jupiter.api.*
 import java.io.File

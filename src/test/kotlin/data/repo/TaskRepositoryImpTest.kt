@@ -8,9 +8,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.mate_task_assignment_data_source.IMateTaskAssignmentDataSource
-import org.example.data.datasources.task_In_project_data_source.ITaskInProjectDataSource
-import org.example.data.datasources.task_data_source.TaskCsvDataSource
+import org.example.data.datasources.IMateTaskAssignmentDataSource
+import org.example.data.datasources.ITaskInProjectDataSource
+import org.example.data.source.local.TaskCsvDataSource
 import org.example.data.repo.TaskRepositoryImp
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.TaskRepository

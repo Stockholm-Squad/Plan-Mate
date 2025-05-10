@@ -9,7 +9,7 @@ import io.mockk.verify
 import kotlinx.datetime.LocalDateTime
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
-import org.example.data.datasources.audit_system_data_source.AuditSystemCsvDataSource
+import org.example.data.source.local.AuditSystemCsvDataSource
 import org.example.data.models.AuditSystemModel
 import org.example.data.repo.AuditSystemRepositoryImp
 import org.junit.jupiter.api.BeforeEach

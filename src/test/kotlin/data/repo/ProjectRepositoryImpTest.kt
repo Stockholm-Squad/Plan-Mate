@@ -5,9 +5,9 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.project_data_source.IProjectDataSource
-import org.example.data.datasources.task_In_project_data_source.TaskInProjectCsvDataSource
-import org.example.data.datasources.user_assigned_to_project_data_source.IUserAssignedToProjectDataSource
+import org.example.data.datasources.IProjectDataSource
+import org.example.data.source.local.TaskInProjectCsvDataSource
+import org.example.data.datasources.IUserAssignedToProjectDataSource
 import org.example.data.models.ProjectModel
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach

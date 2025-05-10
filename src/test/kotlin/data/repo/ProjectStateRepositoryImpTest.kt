@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.example.logic.entities.ProjectState
 import logic.models.exceptions.FileNotExistException
-import org.example.data.datasources.state_data_source.IStateDataSource
+import org.example.data.datasources.IStateDataSource
 import org.example.data.models.ProjectStateModel
 import org.example.data.repo.ProjectStateRepositoryImp
 import org.example.logic.repository.ProjectStateRepository
