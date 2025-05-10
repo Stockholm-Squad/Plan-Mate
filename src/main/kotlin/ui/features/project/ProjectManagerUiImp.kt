@@ -99,7 +99,7 @@ class ProjectManagerUiImp(
 
         runBlocking(errorHandler) {
             try {
-                manageProjectUseCase.addProject(projectName, stateName, userId).let { success ->
+                manageProjectUseCase.addProject(projectName, stateName).let { success ->
                     if (success)
                         outputPrinter.showMessage("Project added successfully")
                     else
@@ -136,7 +136,6 @@ class ProjectManagerUiImp(
 
                 val newProjectStateName = inputReader.readStringOrNull()
 
-                val userId = currentUser?.id
                     ?: return@runBlocking outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
                 if (newName != null || newProjectStateName != null)
@@ -144,7 +143,7 @@ class ProjectManagerUiImp(
                         project.id,
                         newName ?: projectName,
                         newProjectStateName ?: projectStateName,
-                        userId
+
                     ).let { success ->
                         if (success) {
                             outputPrinter.showMessage("Project updated successfully")
