@@ -9,6 +9,8 @@ import org.litote.kmongo.reactivestreams.KMongo
 
 object MongoSetup {
 
-    val client: CoroutineClient = KMongo.createClient(CONNECTION_STRING).coroutine
-    val database: CoroutineDatabase = client.getDatabase(DATABASE_NAME)
+    fun createDataBase(): CoroutineDatabase {
+        val client: CoroutineClient = KMongo.createClient(CONNECTION_STRING).coroutine
+        return client.getDatabase(DATABASE_NAME)
+    }
 }

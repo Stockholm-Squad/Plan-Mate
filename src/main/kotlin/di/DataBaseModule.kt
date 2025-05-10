@@ -21,7 +21,7 @@ import org.koin.dsl.module
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
 val dataBaseModule = module {
-    single<CoroutineDatabase> { MongoSetup.database }
+    single<CoroutineDatabase> { MongoSetup.createDataBase() }
     single<IAuditSystemDataSource> { AuditSystemMongoDataSource(get()) }
     single<ProjectDataSource> { ProjectMongoDataSource(get(),get()) }
     single<TaskDataSource> { TaskMongoDataSource(get()) }
