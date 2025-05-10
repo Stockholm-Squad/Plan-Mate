@@ -1,4 +1,4 @@
-package org.example.data.source.remote.impl
+package data.source.remote.mongo
 
 import data.dto.UserAssignedToProjectDto
 import org.example.data.source.UserAssignedToProjectDataSource

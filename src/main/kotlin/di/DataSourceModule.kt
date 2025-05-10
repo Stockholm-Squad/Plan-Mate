@@ -1,5 +1,6 @@
 package di
 
+import data.source.remote.mongo.*
 import org.example.data.source.remote.provider.AuditsMongoProvider
 import org.example.data.source.remote.provider.ProjectMongoProvider
 import org.example.data.source.remote.provider.StateMongoProvider
@@ -10,7 +11,6 @@ import org.example.data.source.remote.provider.MateTaskAssignmentMongoProvider
 import org.example.data.source.remote.provider.UserAssignedToProjectMongoProvider
 
 import org.example.data.source.*
-import org.example.data.source.remote.impl.*
 import org.koin.dsl.module
 
 val remoteDataSourceModule = module {
