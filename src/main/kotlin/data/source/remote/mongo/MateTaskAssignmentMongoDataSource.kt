@@ -41,48 +41,4 @@ class MateTaskAssignmentMongoDataSource(
         val filter = MateTaskAssignmentDto::userName eq userName
         return mateTaskAssignmentCollection.find(filter).toList()
     }
-
-    override suspend fun getMateTaskAssignmentByUserName(userName: String): List<MateTaskAssignmentDto>? {
-        return mateTaskAssignmentCollection.find(MateTaskAssignmentDto::userName eq userName).toList()
-    }
-
-    override suspend fun getMateTaskAssignmentByTaskId(taskId: String): List<MateTaskAssignmentDto>? {
-        return mateTaskAssignmentCollection.find(MateTaskAssignmentDto::taskId eq taskId).toList()
-    }
-
-    override suspend fun getMateTaskAssignment(mateTaskAssignmentDto: MateTaskAssignmentDto): MateTaskAssignmentDto? {
-        val filter = Document(MateTaskAssignmentDto::userName.toString(), mateTaskAssignmentDto.userName)
-            .append(MateTaskAssignmentDto::taskId.toString(), mateTaskAssignmentDto.taskId)
-        val result = mateTaskAssignmentCollection.find(filter).first()
-
-        return result?.let {
-            MateTaskAssignmentDto(
-                userName = it.userName,
-                taskId = it.taskId
-            )
-        }
-    }
-
-    override suspend fun addMateTaskAssignment(mateTaskAssignmentDto: MateTaskAssignmentDto): Boolean {
-        val result = mateTaskAssignmentCollection.insertOne(mateTaskAssignmentDto)
-        return result.wasAcknowledged()
-    }
-
-    override suspend fun deleteMateTaskAssignmentByUserName(userName: String): Boolean {
-        val result = mateTaskAssignmentCollection.deleteMany(MateTaskAssignmentDto::userName eq userName)
-        return result.deletedCount > 0
-    }
-
-    override suspend fun deleteMateTaskAssignmentByTaskId(taskId: String): Boolean {
-        val result = mateTaskAssignmentCollection.deleteMany(MateTaskAssignmentDto::taskId eq taskId)
-        return result.deletedCount > 0
-    }
-
-    override suspend fun deleteMateTaskAssignment(mateTaskAssignmentDto: MateTaskAssignmentDto): Boolean {
-        val filter = Document(MateTaskAssignmentDto::userName.toString(), mateTaskAssignmentDto.userName)
-            .append(MateTaskAssignmentDto::taskId.toString(), mateTaskAssignmentDto.taskId)
-
-        return mateTaskAssignmentCollection.deleteOne(filter).deletedCount > 0
-    }
-
 }
