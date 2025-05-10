@@ -7,8 +7,8 @@ import logic.models.exceptions.NotAllowedStateNameException
 import logic.models.exceptions.StateAlreadyExistException
 import logic.models.exceptions.StateNotExistException
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
-import org.example.ui.features.state.admin.AdminStateManagerUiImpl
-import org.example.ui.features.state.common.UserStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityEntityStateManagerUiImpl
+import org.example.ui.features.state.common.UserEntityStateManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test
 
 class AdminProjectProjectStateDtoManagerUiImpImplTest {
     private lateinit var manageStatesUseCase: ManageEntityStatesUseCase
-    private lateinit var adminStateManagerUi: AdminStateManagerUiImpl
-    private lateinit var userStateManagerUi: UserStateManagerUi
+    private lateinit var adminStateManagerUi: AdminEntityEntityStateManagerUiImpl
+    private lateinit var userStateManagerUi: UserEntityStateManagerUi
     private lateinit var printer: OutputPrinter
     private lateinit var reader: InputReader
 
@@ -28,7 +28,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         userStateManagerUi = mockk(relaxed = true)
 
         manageStatesUseCase = mockk(relaxed = true)
-        adminStateManagerUi = AdminStateManagerUiImpl(
+        adminStateManagerUi = AdminEntityEntityStateManagerUiImpl(
             userStateManagerUi = userStateManagerUi,
             manageStatesUseCase = manageStatesUseCase,
             reader = reader,

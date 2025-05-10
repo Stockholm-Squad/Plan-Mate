@@ -3,15 +3,15 @@ package org.example.ui.features.state
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.state.admin.AdminStateManagerUi
-import org.example.ui.features.state.mate.MateStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityStateManagerUi
+import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
 
-class StateManagerUiImp(
-    private val adminStateManagerUi: AdminStateManagerUi,
-    private val mateStateManagerUi: MateStateManagerUi,
+class EntityEntityStateManagerUiImp(
+    private val adminStateManagerUi: AdminEntityStateManagerUi,
+    private val mateStateManagerUi: MateEntityStateManagerUi,
     private val printer: OutputPrinter
-) : StateManageUi {
+) : EntityStateManageUi {
     override fun launchStateManagerUi(user: User?) {
         when (user?.userRole) {
             UserRole.ADMIN -> adminStateManagerUi.launchUi(user)

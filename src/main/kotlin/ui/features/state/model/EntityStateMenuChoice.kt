@@ -1,6 +1,6 @@
 package org.example.ui.features.state.model
 
-enum class StateMenuChoice(
+enum class EntityStateMenuChoice(
     val choiceNumber: Int,
     val choiceMessage: String
 ) {

@@ -1,25 +1,17 @@
 package ui.features.project
 
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import logic.model.entities.Project
-import org.example.ui.input_output.input.InputReader
-import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.project.ProjectManagerUiImp
-import org.example.ui.features.state.admin.AdminStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUiImp
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import utils.buildProject
+import org.example.ui.input_output.input.InputReader
+import org.example.ui.input_output.output.OutputPrinter
 
 class ProjectManagerUiImpTest {
     private lateinit var manageProjectUseCase: ManageProjectUseCase
-    private lateinit var stateManagerUi: AdminStateManagerUi
+    private lateinit var stateManagerUi: AdminEntityStateManagerUi
     private lateinit var taskManagerUi: TaskManagerUi
     private lateinit var CreateUserUiImp: CreateUserUiImp
     private lateinit var inputReader: InputReader

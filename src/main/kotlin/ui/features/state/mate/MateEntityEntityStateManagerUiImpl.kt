@@ -1,11 +1,11 @@
 package org.example.ui.features.state.mate
 
 import org.example.logic.entities.User
-import org.example.ui.features.state.common.UserStateManagerUi
+import org.example.ui.features.state.common.UserEntityStateManagerUi
 
-class MateStateManagerUiImpl(
-    private val userStateManagerUi: UserStateManagerUi,
-) : MateStateManagerUi, UserStateManagerUi {
+class MateEntityEntityStateManagerUiImpl(
+    private val userStateManagerUi: UserEntityStateManagerUi,
+) : MateEntityStateManagerUi, UserEntityStateManagerUi {
 
     override fun launchUi(user: User?) {
         this.showAllStates()

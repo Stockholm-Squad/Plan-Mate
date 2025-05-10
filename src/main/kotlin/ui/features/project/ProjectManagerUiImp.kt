@@ -9,7 +9,7 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.state.admin.AdminStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
@@ -19,7 +19,7 @@ class ProjectManagerUiImp(
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val stateManagerUi: AdminStateManagerUi,
+    private val stateManagerUi: AdminEntityStateManagerUi,
     private val manageStatesUseCase: ManageEntityStatesUseCase,
 ) : ProjectManagerUi {
     private var currentUser: User? = null

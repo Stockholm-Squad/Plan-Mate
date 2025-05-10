@@ -5,10 +5,10 @@ import org.example.logic.entities.EntityState
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.input_output.output.OutputPrinter
 
-class UserStateManagerUiImp(
+class UserEntityStateManagerUiImp(
     private val manageStatesUseCase: ManageEntityStatesUseCase,
     private val printer: OutputPrinter
-) : UserStateManagerUi {
+) : UserEntityStateManagerUi {
 
     override fun showAllStates() {
         runBlocking {
