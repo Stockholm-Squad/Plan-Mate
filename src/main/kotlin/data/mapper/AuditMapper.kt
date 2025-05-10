@@ -1,16 +1,16 @@
 package data.mapper
 
-import data.dto.AuditSystemDto
+import data.dto.AuditDto
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
 import org.example.logic.usecase.extention.toSafeUUID
 
 
-fun AuditSystemDto.mapToAuditSystemEntity(): AuditSystem? {
+fun AuditDto.mapToAuditEntity(): AuditSystem? {
     return AuditSystem(
         id.toSafeUUID(),
-        entityType = getAuditSystemType(entityType),
+        entityType = getAuditType(entityType),
         entityTypeId = entityTypeId.toSafeUUID(),
         description = description,
         userId = userId.toSafeUUID(),
@@ -19,8 +19,8 @@ fun AuditSystemDto.mapToAuditSystemEntity(): AuditSystem? {
 }
 
 
-fun AuditSystem.mapToAuditSystemModel(): AuditSystemDto =
-    AuditSystemDto(
+fun AuditSystem.mapToAuditModel(): AuditDto =
+    AuditDto(
         id.toString(),
         entityType = entityType.toString(),
         entityTypeId = entityTypeId.toString(),
@@ -30,7 +30,7 @@ fun AuditSystem.mapToAuditSystemModel(): AuditSystemDto =
     )
 
 
-fun getAuditSystemType(auditSystem: String): EntityType = when {
+fun getAuditType(auditSystem: String): EntityType = when {
     auditSystem.equals("TASK", ignoreCase = true) -> EntityType.TASK
     auditSystem.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
     else -> throw Exception("Unknown AuditSystemType: $auditSystem")
