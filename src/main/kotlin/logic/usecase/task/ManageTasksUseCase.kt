@@ -1,10 +1,10 @@
 package org.example.logic.usecase.task
 
+import org.example.data.utils.DateHandlerImp
+import org.example.logic.*
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
-import org.example.logic.TaskExceptions
-import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.AuditSystemRepository
 import org.example.logic.repository.TaskRepository
 import java.util.*
@@ -15,12 +15,12 @@ class ManageTasksUseCase(
 ) {
     suspend fun getAllTasks(): List<Task> {
         return taskRepository.getAllTasks().takeIf { it.isNotEmpty() }
-            ?: throw TaskExceptions.TasksNotFoundException()
+            ?: throw TasksNotFoundException()
     }
 
     suspend fun getTaskByName(taskName: String): Task =
         taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) }
-            ?: throw TaskExceptions.TaskNotFoundException()
+            ?: throw TaskNotFoundException()
 
     suspend fun getTaskIdByName(taskName: String): UUID =
         getTaskByName(taskName).id
@@ -29,23 +29,23 @@ class ManageTasksUseCase(
         val isDuplicate = taskRepository.getTasksInProject(projectId = projectId)
             .filter { it.name.equals(task.name, ignoreCase = true) } !== emptyList<Task>()
 
-        if (isDuplicate) throw TaskExceptions.DuplicateTaskNameException()
+        if (isDuplicate) throw DuplicateTaskNameException()
 
         return taskRepository.addTask(task).also { isAdded ->
             if (isAdded) logAudit(task, userId)
-            else throw TaskExceptions.TaskNotAddedException()
+            else throw TaskNotAddedException()
         }
     }
 
     suspend fun editTask(updatedTask: Task, userId: UUID): Boolean =
         taskRepository.editTask(updatedTask).also { isUpdated ->
             if (isUpdated) logAudit(updatedTask, userId)
-            else throw TaskExceptions.TaskNotEditException()
+            else throw TaskNotEditException()
         }
 
     suspend fun deleteTaskByName(taskName: String): Boolean =
         taskRepository.deleteTask(getTaskIdByName(taskName)).also { isDeleted ->
-            if (!isDeleted) throw TaskExceptions.TaskNotDeletedException()
+            if (!isDeleted) throw TaskNotDeletedException()
         }
 
     private suspend fun logAudit(updatedTask: Task, userId: UUID) {

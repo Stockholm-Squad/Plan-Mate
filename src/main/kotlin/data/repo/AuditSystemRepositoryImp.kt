@@ -2,10 +2,11 @@ package org.example.data.repo
 
 import data.mapper.mapToAuditSystemEntity
 import data.mapper.mapToAuditSystemModel
-import org.example.logic.entities.AuditSystem
-import org.example.logic.AuditExceptions
 import org.example.data.datasources.IAuditSystemDataSource
 import org.example.data.utils.executeSafelyWithContext
+import org.example.logic.AuditSystemNotAddedException
+import org.example.logic.NoAuditsFoundedException
+import org.example.logic.entities.AuditSystem
 import org.example.logic.repository.AuditSystemRepository
 
 class AuditSystemRepositoryImp(
@@ -16,9 +17,8 @@ class AuditSystemRepositoryImp(
             onSuccess = {
                 auditSystemDataSource.append(auditSystem.map { it.mapToAuditSystemModel() })
             },
-            onFailure = { throw AuditExceptions.AuditSystemNotAddedException() }
+            onFailure = { throw AuditSystemNotAddedException() }
         )
-
 
 
     override suspend fun getAllAuditEntries(): List<AuditSystem> =
@@ -26,7 +26,7 @@ class AuditSystemRepositoryImp(
             onSuccess = {
                 auditSystemDataSource.read().mapNotNull { it.mapToAuditSystemEntity() }
             },
-            onFailure = { throw AuditExceptions.NoAuditsFoundedException() }
+            onFailure = { throw NoAuditsFoundedException() }
         )
 
 

@@ -1,8 +1,8 @@
 package org.example.logic.usecase.user
 
-import org.example.logic.entities.User
-import org.example.logic.UserExceptions
 import logic.usecase.validation.ValidateUserDataUseCase
+import org.example.logic.UserExistException
+import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
 
@@ -32,7 +32,7 @@ class CreateUserUseCase(
 
     fun checkUserExists(users: List<User>, username: String) {
         users.forEach {
-            if (it.username == username) throw UserExceptions.UserExistException()
+            if (it.username == username) throw UserExistException()
         }
     }
 

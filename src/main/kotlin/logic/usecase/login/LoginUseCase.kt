@@ -1,10 +1,12 @@
 package logic.usecase.login
 
 
-import org.example.logic.entities.User
-import org.example.logic.UserExceptions
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.data.utils.executeSafelyWithContext
+import org.example.logic.IncorrectPasswordException
+import org.example.logic.UserDoesNotExistException
+import org.example.logic.UsersDataAreEmptyException
+import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
 
@@ -27,7 +29,7 @@ class LoginUseCase(
                 }
 
             }, onFailure = {
-                throw UserExceptions.UsersDataAreEmptyException()
+                throw UsersDataAreEmptyException()
             }
         )
 
@@ -37,7 +39,7 @@ class LoginUseCase(
                 val user = checkUserExists(users, username)
                 checkPassword(password, user)
             }, onFailure = {
-                throw UserExceptions.UsersDataAreEmptyException()
+                throw UsersDataAreEmptyException()
             }
         )
 
@@ -46,7 +48,7 @@ class LoginUseCase(
             onSuccess = {
                 users.find { it.username == username }!!
             }, onFailure = {
-                throw UserExceptions.UserDoesNotExistException()
+                throw UserDoesNotExistException()
             }
         )
 
@@ -56,11 +58,11 @@ class LoginUseCase(
                 if (hashToMd5(password) == user.hashedPassword) {
                     user
                 } else {
-                    throw UserExceptions.IncorrectPasswordException()
+                    throw IncorrectPasswordException()
                 }
             },
             onFailure = {
-                throw UserExceptions.IncorrectPasswordException()
+                throw IncorrectPasswordException()
             }
         )
 
@@ -70,7 +72,7 @@ class LoginUseCase(
                 userRepository.getAllUsers().any { it.username == userName }
             },
             onFailure = {
-                throw UserExceptions.UserDoesNotExistException()
+                throw UserDoesNotExistException()
             }
         )
 

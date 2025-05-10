@@ -1,13 +1,14 @@
 package org.example.data.repo
 
-import org.example.logic.entities.Project
-import org.example.logic.ProjectExceptions
-import org.example.data.source.ProjectDataSource
-
 import org.example.data.mapper.mapToProjectEntity
 import org.example.data.mapper.mapToProjectModel
-
+import org.example.data.source.ProjectDataSource
 import org.example.data.utils.tryToExecute
+import org.example.logic.NoProjectAddedException
+import org.example.logic.NoProjectDeletedException
+import org.example.logic.NoProjectEditedException
+import org.example.logic.NoProjectsFoundException
+import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
@@ -20,7 +21,7 @@ class ProjectRepositoryImp(
             onSuccess = {
                 it.mapNotNull { it.mapToProjectEntity() }
             },
-            onFailure = { throw ProjectExceptions.NoProjectsFoundException() },
+            onFailure = { throw NoProjectsFoundException() },
         )
     }
 
@@ -28,14 +29,14 @@ class ProjectRepositoryImp(
     override suspend fun addProject(project: Project): Boolean {
         return tryToExecute({ projectDataSource.addProject(project.mapToProjectModel()) }, onSuccess = {
             it
-        }, onFailure = { throw ProjectExceptions.NoProjectAddedException() })
+        }, onFailure = { throw NoProjectAddedException() })
     }
 
     override suspend fun editProject(updatedProject: Project): Boolean {
         return tryToExecute({ projectDataSource.editProject(updatedProject.mapToProjectModel()) }, onSuccess = {
             it
         }, onFailure = {
-            throw ProjectExceptions.NoProjectEditedException()
+            throw NoProjectEditedException()
         })
     }
 
@@ -43,7 +44,7 @@ class ProjectRepositoryImp(
         return tryToExecute(
             { projectDataSource.deleteProject(projectToDelete.mapToProjectModel()) },
             onSuccess = { it },
-            onFailure = { throw ProjectExceptions.NoProjectDeletedException() })
+            onFailure = { throw NoProjectDeletedException() })
     }
 
     override suspend fun getAllProjects(): List<Project> {
@@ -52,7 +53,7 @@ class ProjectRepositoryImp(
             onSuccess = {
                 it.mapNotNull { projectModel -> projectModel.mapToProjectEntity() }
             },
-            onFailure = { throw ProjectExceptions.NoProjectsFoundException() },
+            onFailure = { throw NoProjectsFoundException() },
         )
     }
 
