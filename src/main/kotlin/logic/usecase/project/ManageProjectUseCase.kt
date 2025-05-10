@@ -1,13 +1,9 @@
 package org.example.logic.usecase.project
 
-import org.example.data.utils.DateHandlerImp
 import org.example.logic.ProjectAlreadyExistException
 import org.example.logic.ProjectNotFoundException
-import org.example.logic.entities.Audit
-import org.example.logic.entities.EntityType
 import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
-import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import java.util.*
 
@@ -15,18 +11,15 @@ class ManageProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val manageProjectStateUseCase: ManageStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val auditRepository: AddAuditUseCase,
 ) {
 
-    suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
+    suspend fun addProject(projectName: String, stateName: String): Boolean {
         return isProjectExists(projectName).let { success ->
             if (!success) {
                 val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
                 val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
-                projectRepository.addProject(newProject).also {
-                    logAudit(newProject, userId)
-                }
+                projectRepository.addProject(newProject)
             } else {
                 throw ProjectAlreadyExistException()
             }
@@ -38,15 +31,12 @@ class ManageProjectUseCase(
         projectId: UUID,
         newProjectName: String,
         newProjectStateName: String,
-        userId: UUID
     ): Boolean {
         return isProjectExists(newProjectName).let { success ->
             if (success) {
                 val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
                 val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
-                projectRepository.editProject(updatedProject).also {
-                    logAudit(updatedProject, userId)
-                }
+                projectRepository.editProject(updatedProject)
             } else
                 throw ProjectNotFoundException()
         }
@@ -67,14 +57,5 @@ class ManageProjectUseCase(
         }
     }
 
-    private suspend fun logAudit(updatedProject: Project, userId: UUID) {
-        val auditEntry = Audit(
-            entityType = EntityType.PROJECT,
-            description = "update project ${updatedProject.name}",
-            userId = userId,
-            dateTime = DateHandlerImp().getCurrentDateTime(),
-            entityTypeId = updatedProject.id
-        )
-        auditRepository.addAuditsEntries(listOf(auditEntry))
-    }
+
 }

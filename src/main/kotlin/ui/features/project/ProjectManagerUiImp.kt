@@ -2,10 +2,9 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
-import org.example.logic.entities.User
 import org.example.logic.ProjectExceptions
 import org.example.logic.StateExceptions
-import org.example.logic.usecase.audit.AddAuditUseCase
+import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -99,7 +98,7 @@ class ProjectManagerUiImp(
 
         runBlocking(errorHandler) {
             try {
-                manageProjectUseCase.addProject(projectName, stateName, userId).let { success ->
+                manageProjectUseCase.addProject(projectName, stateName).let { success ->
                     if (success)
                         outputPrinter.showMessage("Project added successfully")
                     else
@@ -136,7 +135,6 @@ class ProjectManagerUiImp(
 
                 val newProjectStateName = inputReader.readStringOrNull()
 
-                val userId = currentUser?.id
                     ?: return@runBlocking outputPrinter.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
                 if (newName != null || newProjectStateName != null)
@@ -144,8 +142,8 @@ class ProjectManagerUiImp(
                         project.id,
                         newName ?: projectName,
                         newProjectStateName ?: projectStateName,
-                        userId
-                    ).let { success ->
+
+                        ).let { success ->
                         if (success) {
                             outputPrinter.showMessage("Project updated successfully")
                         } else {
