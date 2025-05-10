@@ -15,4 +15,10 @@ interface OutputPrinter {
     fun showStates(projectStates: List<ProjectState>)
     fun showAudits(audits: List<AuditSystem>, username : String)
     fun printAddTaskDescription(entityType: EntityType, taskName: String, taskId: UUID, projectName: String): String
+    fun printUpdateTaskDescription(
+        entityType: EntityType,
+        newTaskName: String,
+        newDescription: String,
+        newStateName: String
+    ): String
 }

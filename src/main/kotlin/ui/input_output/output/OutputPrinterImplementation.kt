@@ -83,7 +83,18 @@ class OutputPrinterImplementation : OutputPrinter {
         taskId: UUID,
         projectName: String
     ): String {
-        return "added a new $entityType '$taskName' (ID: $taskId) to the '$projectName' project."
+        return "$entityType: added'$taskName' (ID: $taskId) to the '$projectName' project."
     }
 
+    override fun printUpdateTaskDescription(
+        entityType: EntityType,
+        newTaskName: String,
+        newDescription: String,
+        newStateName: String
+    ): String {
+        return "$entityType: " +
+                "Updated Task name '$newTaskName'. " +
+                "Description '${newDescription.take(30)}'. " +
+                "State updated to '$newStateName'."
+    }
 }

@@ -144,9 +144,9 @@ class TaskManagerUiImp(
             )
 
             manageTasksUseCase.editTask(updatedTask)
-            val description =
-                "Updated -> ${currentUser?.username} change ${EntityType.TASK} ${existingTask.name} (${existingTask.id}) to ${"New name: $newName, New description: $newDescription, New state: $newStateName"}at $timestamp"
-            logAuditUseCase.logAudit(userId, EntityType.TASK, updatedTask.id, description, timestamp)
+            val taskDescription =
+                printer.printUpdateTaskDescription(EntityType.TASK, existingTask.name, newDescription, newStateName)
+            logAuditUseCase.logAudit(userId, EntityType.TASK, existingTask.id, taskDescription, timestamp)
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error.")
