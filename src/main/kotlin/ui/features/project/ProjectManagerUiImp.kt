@@ -2,10 +2,9 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
-import org.example.logic.entities.User
 import org.example.logic.ProjectExceptions
 import org.example.logic.StateExceptions
-import org.example.logic.usecase.audit.AddAuditUseCase
+import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -144,7 +143,7 @@ class ProjectManagerUiImp(
                         newName ?: projectName,
                         newProjectStateName ?: projectStateName,
 
-                    ).let { success ->
+                        ).let { success ->
                         if (success) {
                             outputPrinter.showMessage("Project updated successfully")
                         } else {
