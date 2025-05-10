@@ -1,7 +1,7 @@
 package org.example.logic.usecase.task
 
 
-import org.example.logic.TaskExceptions
+import org.example.logic.*
 import org.example.logic.entities.Task
 import org.example.logic.repository.TaskRepository
 import java.util.*
@@ -11,12 +11,12 @@ class ManageTasksUseCase(
 ) {
     suspend fun getAllTasks(): List<Task> {
         return taskRepository.getAllTasks().takeIf { it.isNotEmpty() }
-            ?: throw TaskExceptions.TasksNotFoundException()
+            ?: throw TasksNotFoundException()
     }
 
     suspend fun getTaskByName(taskName: String): Task =
         taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) }
-            ?: throw TaskExceptions.TaskNotFoundException()
+            ?: throw TaskNotFoundException()
 
     suspend fun getTaskIdByName(taskName: String): UUID =
         getTaskByName(taskName).id
@@ -26,16 +26,16 @@ class ManageTasksUseCase(
             taskRepository.getTasksInProject(projectId = projectId).any {
                 it.name.equals(task.name, ignoreCase = true)
             }
-        if (isDuplicate) throw TaskExceptions.DuplicateTaskNameException()
+        if (isDuplicate) throw DuplicateTaskNameException()
 
         return taskRepository.addTask(task).also { isAdded ->
-            if (!isAdded) throw TaskExceptions.TaskNotAddedException()
+            if (!isAdded) throw TaskNotAddedException()
         }
     }
 
     suspend fun editTask(updatedTask: Task): Boolean =
         taskRepository.editTask(updatedTask).also { isUpdated ->
-            if (isUpdated) throw TaskExceptions.TaskNotEditException()
+            if (isUpdated) throw TaskNotEditException()
         }
 
     suspend fun deleteTaskByName(taskName: String): Boolean =
