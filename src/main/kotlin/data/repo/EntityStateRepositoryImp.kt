@@ -17,7 +17,7 @@ class EntityStateRepositoryImp(
         return tryToExecute(
             { entityStateDataSource.addEntityState(entityState.mapToStateModel()) },
             onSuccess = { it },
-            onFailure = { throw EntityStateNotAddedException() }
+            onFailure = { throw EntityEntityStateNotAddedException() }
         )
     }
 
@@ -25,7 +25,7 @@ class EntityStateRepositoryImp(
         return tryToExecute(
             { entityStateDataSource.editEntityState(entityState.mapToStateModel()) },
             onSuccess = { it },
-            onFailure = { throw EntityStateNotEditedException() }
+            onFailure = { throw EntityEntityStateNotEditedException() }
         )
     }
 
@@ -33,7 +33,7 @@ class EntityStateRepositoryImp(
         return tryToExecute(
             { entityStateDataSource.deleteEntityState(entityState.mapToStateModel()) },
             onSuccess = { it },
-            onFailure = { throw EntityStateNotDeletedException() }
+            onFailure = { throw EntityEntityStateNotDeletedException() }
         )
 
     }
@@ -42,7 +42,7 @@ class EntityStateRepositoryImp(
         return tryToExecute(
             { entityStateDataSource.isEntityStateExist(stateName) },
             onSuccess = { it },
-            onFailure = { throw NoEntityStateFoundException() }
+            onFailure = { throw NoEntityEntityStateFoundException() }
         )
     }
 
@@ -58,15 +58,15 @@ class EntityStateRepositoryImp(
         return tryToExecute(
             { entityStateDataSource.getEntityStateByName(stateName) },
             onSuccess = { it },
-            onFailure = { throw NoEntityStateFoundException() }
-        )?.mapToStateEntity() ?: throw NoEntityStateFoundException()
+            onFailure = { throw NoEntityEntityStateFoundException() }
+        )?.mapToStateEntity() ?: throw NoEntityEntityStateFoundException()
     }
 
     override suspend fun getEntityStateByID(stateId: UUID): EntityState {
         return tryToExecute(
             { entityStateDataSource.getEntityStateById(stateId.toString()) },
             onSuccess = { it },
-            onFailure = { throw NoEntityStateFoundException() }
-        )?.mapToStateEntity() ?: throw NoEntityStateFoundException()
+            onFailure = { throw NoEntityEntityStateFoundException() }
+        )?.mapToStateEntity() ?: throw NoEntityEntityStateFoundException()
     }
 }

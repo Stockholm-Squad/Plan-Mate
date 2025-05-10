@@ -1,7 +1,7 @@
 package org.example.logic.usecase.state
 
-import org.example.logic.NotAllowedStateNameException
-import org.example.logic.StateAlreadyExistException
+import org.example.logic.EntityStateAlreadyExistException
+import org.example.logic.NotAllowedEntityStateNameException
 import org.example.logic.entities.EntityState
 import org.example.logic.repository.EntityStateRepository
 import org.example.logic.utils.isLetterOrWhiteSpace
@@ -19,7 +19,7 @@ class ManageEntityStatesUseCase(
         }
             ?.let {
                 entityEntityStateRepository.addEntityState(EntityState(name = it))
-            } ?: throw StateAlreadyExistException()
+            } ?: throw EntityStateAlreadyExistException()
     }
 
 
@@ -66,6 +66,6 @@ class ManageEntityStatesUseCase(
             it.isNotBlank() &&
                     it.isValidLength(30) &&
                     it.isLetterOrWhiteSpace()
-        } ?: throw NotAllowedStateNameException()
+        } ?: throw NotAllowedEntityStateNameException()
     }
 }

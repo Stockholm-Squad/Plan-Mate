@@ -2,8 +2,8 @@ package org.example.ui.features.project
 
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
+import org.example.logic.EntityStateExceptions
 import org.example.logic.ProjectExceptions
-import org.example.logic.StateExceptions
 import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
@@ -106,7 +106,7 @@ class ProjectManagerUiImp(
                 }
             } catch (e: ProjectExceptions) {
                 outputPrinter.showMessage("Project name already exists")
-            } catch (e: StateExceptions) {
+            } catch (e: EntityStateExceptions) {
                 outputPrinter.showMessage("No State with that name")
             }
         }
@@ -155,7 +155,7 @@ class ProjectManagerUiImp(
             }
         } catch (e: ProjectExceptions) {
             outputPrinter.showMessage(e.message)
-        } catch (e: StateExceptions) {
+        } catch (e: EntityStateExceptions) {
             outputPrinter.showMessage(e.message)
         }
     }
