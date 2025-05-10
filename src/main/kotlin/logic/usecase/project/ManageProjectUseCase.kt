@@ -1,10 +1,11 @@
 package org.example.logic.usecase.project
 
-import org.example.logic.entities.Project
+import org.example.data.utils.DateHandlerImp
+import org.example.logic.ProjectAlreadyExistException
+import org.example.logic.ProjectNotFoundException
 import org.example.logic.entities.AuditSystem
 import org.example.logic.entities.EntityType
-import org.example.logic.ProjectExceptions
-import org.example.data.utils.DateHandlerImp
+import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.audit.AddAuditSystemUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
@@ -27,7 +28,7 @@ class ManageProjectUseCase(
                     logAudit(newProject, userId)
                 }
             } else {
-                throw ProjectExceptions.ProjectAlreadyExistException()
+                throw ProjectAlreadyExistException()
             }
 
         }
@@ -47,7 +48,7 @@ class ManageProjectUseCase(
                     logAudit(updatedProject, userId)
                 }
             } else
-                throw ProjectExceptions.ProjectNotFoundException()
+                throw ProjectNotFoundException()
         }
     }
 

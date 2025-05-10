@@ -1,24 +1,20 @@
-package di.datamodule
+package di
 
-import org.example.data.source.local.AuditSystemCsvDataSource
-import org.example.data.datasources.IAuditSystemDataSource
-import org.example.data.datasources.IMateTaskAssignmentDataSource
-import org.example.data.source.local.MateTaskAssignmentCsvDataSource
-import org.example.data.datasources.IProjectDataSource
-import org.example.data.source.local.ProjectCsvDataSource
-import org.example.data.datasources.IStateDataSource
-import org.example.data.source.local.StateCsvDataSource
-import org.example.data.datasources.ITaskInProjectDataSource
-import org.example.data.source.local.TaskInProjectCsvDataSource
-import org.example.data.datasources.ITaskDataSource
-import org.example.data.source.local.TaskCsvDataSource
-import org.example.data.datasources.IUserAssignedToProjectDataSource
-import org.example.data.source.local.UserAssignedToProjectCsvDataSource
-import org.example.data.datasources.IUserDataSource
-import org.example.data.source.local.UserCsvDataSource
+import org.example.data.datasources.*
+import data.network.provider.AuditsMongoProvider
+import data.network.provider.ProjectMongoProvider
+import data.network.provider.StateMongoProvider
+import data.network.provider.TaskMongoProvider
+import data.network.provider.UserMongoProvider
+import data.network.provider.TaskInProjectMongoProvider
+import data.network.provider.MateTaskAssignmentMongoProvider
+import data.network.provider.UserAssignedToProjectMongoProvider
+import org.example.data.source.*
+import org.example.data.source.local.*
+import org.example.data.source.remote.*
 import org.koin.dsl.module
 
-val datasourceModule = module {
+val localDatasourceModule = module {
     factory<IAuditSystemDataSource> { AuditSystemCsvDataSource(filePath = "audits.csv") }
     factory<IProjectDataSource> { ProjectCsvDataSource(filePath = "projects.csv") }
     factory<IStateDataSource> { StateCsvDataSource(filePath = "state.csv") }
@@ -27,4 +23,15 @@ val datasourceModule = module {
     factory<ITaskInProjectDataSource> { TaskInProjectCsvDataSource(filePath = "task_in_project.csv") }
     factory<IUserAssignedToProjectDataSource> { UserAssignedToProjectCsvDataSource(filePath = "user_assigned_to_project.csv") }
     factory<IMateTaskAssignmentDataSource> { MateTaskAssignmentCsvDataSource(filePath = "mate_task_assignment.csv") }
+}
+
+val remoteDataSourceModule = module {
+    single<IAuditSystemDataSource> { AuditSystemMongoDataSource(get<AuditsMongoProvider>().provideAuditsCollection()) }
+    single<ProjectDataSource> { ProjectMongoDataSource(get<ProjectMongoProvider>().provideProjectCollection(), get()) }
+    single<TaskDataSource> { TaskMongoDataSource(get<TaskMongoProvider>().provideTaskCollection()) }
+    single<StateDataSource> { StateMongoDataSource(get<StateMongoProvider>().provideStatesCollection()) }
+    single<UserDataSource> { UserMongoDataSource(get<UserMongoProvider>().provideUserCollection(), get()) }
+    single<TaskInProjectDataSource> { TaskInProjectMongoDataSource(get<TaskInProjectMongoProvider>().provideTaskInProjectCollection()) }
+    single<MateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource(get<MateTaskAssignmentMongoProvider>().provideMateTaskAssignmentCollection()) }
+    single<UserAssignedToProjectDataSource> { UserAssignedToProjectMongoDataSource(get<UserAssignedToProjectMongoProvider>().provideUserAssignedToProjectCollection()) }
 }

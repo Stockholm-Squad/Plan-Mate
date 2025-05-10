@@ -1,7 +1,8 @@
 package org.example.logic.usecase.state
 
+import org.example.logic.NotAllowedStateNameException
+import org.example.logic.StateAlreadyExistException
 import org.example.logic.entities.ProjectState
-import org.example.logic.StateExceptions
 import org.example.logic.repository.ProjectStateRepository
 import org.example.logic.usecase.extention.isLetterOrWhiteSpace
 import org.example.logic.usecase.extention.isValidLength
@@ -18,7 +19,7 @@ class ManageStatesUseCase(
         }
             ?.let {
                 projectStateRepository.addProjectState(ProjectState(name = it))
-            } ?: throw StateExceptions.StateAlreadyExistException()
+            } ?: throw StateAlreadyExistException()
     }
 
 
@@ -65,6 +66,6 @@ class ManageStatesUseCase(
             it.isNotBlank() &&
                     it.isValidLength(30) &&
                     it.isLetterOrWhiteSpace()
-        } ?: throw StateExceptions.NotAllowedStateNameException()
+        } ?: throw NotAllowedStateNameException()
     }
 }

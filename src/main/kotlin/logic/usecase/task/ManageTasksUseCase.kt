@@ -40,6 +40,6 @@ class ManageTasksUseCase(
 
     suspend fun deleteTaskByName(taskName: String): Boolean =
         taskRepository.deleteTask(getTaskIdByName(taskName)).also { isDeleted ->
-            if (!isDeleted) throw TaskExceptions.TaskNotDeletedException()
+            if (!isDeleted) throw TaskNotDeletedException()
         }
 }

@@ -1,11 +1,11 @@
 package org.example.data.repo
 
-import org.example.logic.entities.ProjectState
-import org.example.logic.StateExceptions
-import org.example.data.source.StateDataSource
 import org.example.data.mapper.mapToStateEntity
 import org.example.data.mapper.mapToStateModel
+import org.example.data.source.StateDataSource
 import org.example.data.utils.tryToExecute
+import org.example.logic.*
+import org.example.logic.entities.ProjectState
 import org.example.logic.repository.ProjectStateRepository
 import java.util.*
 
@@ -17,7 +17,7 @@ class ProjectStateRepositoryImp(
         return tryToExecute(
             { stateDataSource.addProjectState(projectState.mapToStateModel()) },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.ProjectStateNotAddedException() }
+            onFailure = { throw ProjectStateNotAddedException() }
         )
     }
 
@@ -25,7 +25,7 @@ class ProjectStateRepositoryImp(
         return tryToExecute(
             { stateDataSource.editProjectState(projectState.mapToStateModel()) },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.ProjectStateNotEditedException() }
+            onFailure = { throw ProjectStateNotEditedException() }
         )
     }
 
@@ -33,15 +33,16 @@ class ProjectStateRepositoryImp(
         return tryToExecute(
             { stateDataSource.deleteProjectState(projectState.mapToStateModel()) },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.ProjectStateNotDeletedException() }
+            onFailure = { throw ProjectStateNotDeletedException() }
         )
+
     }
 
     override suspend fun isProjectStateExist(stateName: String): Boolean {
         return tryToExecute(
             { stateDataSource.isProjectStateExist(stateName) },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.NoProjectStateFoundException() }
+            onFailure = { throw NoProjectStateFoundException() }
         )
     }
 
@@ -49,7 +50,7 @@ class ProjectStateRepositoryImp(
         return tryToExecute(
             { stateDataSource.getAllProjectStates() },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.NoStatesFoundedException() }
+            onFailure = { throw NoStatesFoundedException() }
         ).mapNotNull { it.mapToStateEntity() }
     }
 
@@ -57,15 +58,15 @@ class ProjectStateRepositoryImp(
         return tryToExecute(
             { stateDataSource.getProjectStateByName(stateName) },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.NoProjectStateFoundException() }
-        )?.mapToStateEntity() ?: throw StateExceptions.NoProjectStateFoundException()
+            onFailure = { throw NoProjectStateFoundException() }
+        )?.mapToStateEntity() ?: throw NoProjectStateFoundException()
     }
 
     override suspend fun getProjectStateByID(stateId: UUID): ProjectState {
         return tryToExecute(
             { stateDataSource.getProjectStateById(stateId.toString()) },
             onSuccess = { it },
-            onFailure = { throw StateExceptions.NoProjectStateFoundException() }
-        )?.mapToStateEntity() ?: throw StateExceptions.NoProjectStateFoundException()
+            onFailure = { throw NoProjectStateFoundException() }
+        )?.mapToStateEntity() ?: throw NoProjectStateFoundException()
     }
 }
