@@ -12,8 +12,8 @@ import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.project.ProjectManagerUiImp
 import org.example.ui.features.state.EntityEntityStateManagerUiImp
 import org.example.ui.features.state.EntityStateManageUi
-import org.example.ui.features.state.admin.AdminEntityEntityStateManagerUiImpl
 import org.example.ui.features.state.admin.AdminEntityStateManagerUi
+import org.example.ui.features.state.admin.AdminEntityStateManagerUiImpl
 import org.example.ui.features.state.common.UserEntityStateManagerUi
 import org.example.ui.features.state.common.UserEntityStateManagerUiImp
 import org.example.ui.features.state.mate.MateEntityEntityStateManagerUiImpl
@@ -35,7 +35,7 @@ val uiModule = module {
     factory<AddUserToProjectUI> { AddUserToProjectUIImp(get(), get(), get(), get(), get()) }
     factory<UserEntityStateManagerUi> { UserEntityStateManagerUiImp(get(), get()) }
     factory<MateEntityStateManagerUi> { MateEntityEntityStateManagerUiImpl(get()) }
-    factory<AdminEntityStateManagerUi> { AdminEntityEntityStateManagerUiImpl(get(), get(), get(), get()) }
+    factory<AdminEntityStateManagerUi> { AdminEntityStateManagerUiImpl(get(), get(), get(), get()) }
     factory<TaskManagerUi> { TaskManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory<EntityStateManageUi> { EntityEntityStateManagerUiImp(get(), get(), get()) }
     factory<UiUtils> { UiUtils(get()) }

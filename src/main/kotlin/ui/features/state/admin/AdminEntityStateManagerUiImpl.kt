@@ -10,9 +10,9 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 
-class AdminEntityEntityStateManagerUiImpl(
-    private val userStateManagerUi: UserEntityStateManagerUi,
-    private val manageStatesUseCase: ManageEntityStatesUseCase,
+class AdminEntityStateManagerUiImpl(
+    private val userEntityStateManagerUi: UserEntityStateManagerUi,
+    private val manageEntityStatesUseCase: ManageEntityStatesUseCase,
     private val reader: InputReader,
     private val printer: OutputPrinter,
 ) : AdminEntityStateManagerUi, UserEntityStateManagerUi {
@@ -52,7 +52,7 @@ class AdminEntityEntityStateManagerUiImpl(
             ?.let { stateName ->
                 runBlocking {
                     try {
-                        manageStatesUseCase.addEntityState(stateName = stateName)
+                        manageEntityStatesUseCase.addEntityState(stateName = stateName)
                         printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
                     } catch (exception: Exception) {
                         printer.showMessage("Failed to delete state: ${exception.message}")
@@ -77,7 +77,7 @@ class AdminEntityEntityStateManagerUiImpl(
             }
         runBlocking {
             try {
-                manageStatesUseCase.editEntityStateByName(
+                manageEntityStatesUseCase.editEntityStateByName(
                     stateName = currentStateName,
                     newStateName = newStateName
                 )
@@ -95,7 +95,7 @@ class AdminEntityEntityStateManagerUiImpl(
         }?.let { stateName ->
             runBlocking {
                 try {
-                    manageStatesUseCase.deleteEntityState(stateName = stateName)
+                    manageEntityStatesUseCase.deleteEntityState(stateName = stateName)
                     showStateDeletedMessage()
                 } catch (exception: Exception) {
                     printer.showMessage("Failed to delete state: ${exception.message}")
@@ -109,6 +109,6 @@ class AdminEntityEntityStateManagerUiImpl(
     }
 
     override fun showAllStates() {
-        userStateManagerUi.showAllStates()
+        userEntityStateManagerUi.showAllStates()
     }
 }

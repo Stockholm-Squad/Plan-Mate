@@ -4,7 +4,7 @@ import org.example.logic.entities.User
 import org.example.ui.features.state.common.UserEntityStateManagerUi
 
 class MateEntityEntityStateManagerUiImpl(
-    private val userStateManagerUi: UserEntityStateManagerUi,
+    private val userEntityStateManagerUi: UserEntityStateManagerUi,
 ) : MateEntityStateManagerUi, UserEntityStateManagerUi {
 
     override fun launchUi(user: User?) {
@@ -12,6 +12,6 @@ class MateEntityEntityStateManagerUiImpl(
     }
 
     override fun showAllStates() {
-        userStateManagerUi.showAllStates()
+        userEntityStateManagerUi.showAllStates()
     }
 }
