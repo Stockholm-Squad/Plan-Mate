@@ -11,7 +11,7 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.ui.features.common.utils.TaskOptions
+import org.example.logic.usecase.task.TaskOptions
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.input_output.input.InputReader
