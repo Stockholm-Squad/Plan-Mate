@@ -9,7 +9,7 @@ val remoteDataSourceModule = module {
     single<AuditDataSource> { AuditMongoDataSource(get<AuditsMongoProvider>().provideAuditsCollection()) }
     single<ProjectDataSource> { ProjectMongoDataSource(get<ProjectMongoProvider>().provideProjectCollection(), get()) }
     single<TaskDataSource> { TaskMongoDataSource(get<TaskMongoProvider>().provideTaskCollection()) }
-    single<EntityStateDataSource> { EntityStateMongoDataSource(get<StateMongoProvider>().provideStatesCollection()) }
+    single<EntityStateDataSource> { EntityStateMongoDataSource(get<EntityStateMongoProvider>().provideEntityStatesCollection()) }
     single<UserDataSource> { UserMongoDataSource(get<UserMongoProvider>().provideUserCollection(), get()) }
     single<TaskInProjectDataSource> { TaskInProjectMongoDataSource(get<TaskInProjectMongoProvider>().provideTaskInProjectCollection()) }
     single<MateTaskAssignmentDataSource> { MateTaskAssignmentMongoDataSource(get<MateTaskAssignmentMongoProvider>().provideMateTaskAssignmentCollection()) }

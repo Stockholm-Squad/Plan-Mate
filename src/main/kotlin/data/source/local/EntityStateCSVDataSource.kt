@@ -4,15 +4,15 @@ import data.dto.EntityStateDto
 import org.example.data.source.EntityStateDataSource
 
 class EntityStateCSVDataSource : EntityStateDataSource {
-    override suspend fun addEntityState(projectState: EntityStateDto): Boolean {
+    override suspend fun addEntityState(entityState: EntityStateDto): Boolean {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editEntityState(projectState: EntityStateDto): Boolean {
+    override suspend fun editEntityState(entityState: EntityStateDto): Boolean {
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteEntityState(projectState: EntityStateDto): Boolean {
+    override suspend fun deleteEntityState(entityState: EntityStateDto): Boolean {
         TODO("Not yet implemented")
     }
 

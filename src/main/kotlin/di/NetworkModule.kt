@@ -9,7 +9,7 @@ val networkModule = module {
     single<CoroutineDatabase> { MongoSetup.createDataBase() }
 
     single { ProjectMongoProvider(get()) }
-    single { StateMongoProvider(get()) }
+    single { EntityStateMongoProvider(get()) }
     single { TaskMongoProvider(get()) }
     single { UserMongoProvider(get()) }
     single { AuditsMongoProvider(get()) }

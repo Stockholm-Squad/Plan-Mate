@@ -5,9 +5,9 @@ import org.example.data.utils.STATES_COLLECTION_NAME
 import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class StateMongoProvider(
+class EntityStateMongoProvider(
     private val mongoDataBase: CoroutineDatabase
 ) {
-    fun provideStatesCollection(): CoroutineCollection<EntityStateDto> =
+    fun provideEntityStatesCollection(): CoroutineCollection<EntityStateDto> =
         mongoDataBase.getCollection(STATES_COLLECTION_NAME)
 }
