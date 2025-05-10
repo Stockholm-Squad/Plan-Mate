@@ -8,9 +8,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.IMateTaskAssignmentCSVReaderWriter
-import org.example.data.datasources.ITaskInProjectCSVReaderWriter
-import org.example.data.source.local.TaskCSVReaderWriter
+import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
 import org.example.data.repo.TaskRepositoryImp
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.TaskRepository

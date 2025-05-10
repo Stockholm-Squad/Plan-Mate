@@ -9,9 +9,9 @@ import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.source.local.MateTaskAssignmentCSVReaderWriter
-import org.example.data.source.local.UserAssignedToProjectCSVReaderWriter
-import org.example.data.source.local.UserCSVReaderWriter
+import org.example.data.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
+import org.example.data.csv_reader_writer.user_assigned_to_project.UserAssignedToProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.user.UserCSVReaderWriter
 import data.dto.UserDto
 import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException

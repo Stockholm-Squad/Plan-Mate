@@ -1,6 +1,5 @@
-package org.example.data.source.local
+package org.example.data.csv_reader_writer.task
 
-import org.example.data.datasources.ITaskCSVReaderWriter
 import data.dto.TaskDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

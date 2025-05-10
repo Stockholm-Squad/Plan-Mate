@@ -1,6 +1,5 @@
-package org.example.data.source.local
+package org.example.data.csv_reader_writer.user
 
-import org.example.data.datasources.IUserCSVReaderWriter
 import data.dto.UserDto
 import org.example.logic.utils.hashToMd5
 import org.jetbrains.kotlinx.dataframe.DataFrame

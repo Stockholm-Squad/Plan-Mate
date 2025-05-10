@@ -1,7 +1,6 @@
-package org.example.data.source.local
+package org.example.data.csv_reader_writer.user_assigned_to_project
 
-import data.dto.TaskInProjectDto
-import org.example.data.datasources.ITaskInProjectCSVReaderWriter
+import data.dto.UserAssignedToProjectDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -11,40 +10,37 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-
-class TaskInProjectCSVReaderWriter(private val filePath: String) : ITaskInProjectCSVReaderWriter {
+class UserAssignedToProjectCSVReaderWriter(private val filePath: String) : IUserAssignedToProjectCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<TaskInProjectDto> {
+    override suspend fun read(): List<UserAssignedToProjectDto> {
         val file = resolveFile()
+
         if (!file.exists()) {
             file.createNewFile()
         }
 
-
         if (File(filePath).readLines().size < 2)
             return emptyList()
 
-        val tasks = DataFrame.readCSV(file)
-            .cast<TaskInProjectDto>()
+        val users = DataFrame.readCSV(file)
+            .cast<UserAssignedToProjectDto>()
             .toList()
-        return tasks
+        return users
     }
 
-    override suspend fun overWrite(tasks: List<TaskInProjectDto>): Boolean {
-        tasks.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(users: List<UserAssignedToProjectDto>): Boolean {
+        users.toDataFrame().writeCSV(resolveFile())
         return true
-
     }
 
-    override suspend fun append(tasks: List<TaskInProjectDto>): Boolean {
-
+    override suspend fun append(users: List<UserAssignedToProjectDto>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
-            } else emptyList<TaskInProjectDto>().toDataFrame()
+            } else emptyList<UserAssignedToProjectDto>().toDataFrame()
 
-            val newData = tasks.toDataFrame()
+            val newData = users.toDataFrame()
             (existing.concat(newData)).writeCSV(file)
         }
         return true

@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.example.logic.entities.ProjectState
 import logic.models.exceptions.FileNotExistException
-import org.example.data.datasources.IStateCSVReaderWriter
+import org.example.data.csv_reader_writer.state.IStateCSVReaderWriter
 import data.dto.ProjectStateDto
 import org.example.data.repo.ProjectStateRepositoryImp
 import org.example.logic.repository.ProjectStateRepository

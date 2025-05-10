@@ -1,6 +1,5 @@
-package org.example.data.source.local
+package org.example.data.csv_reader_writer.audits
 
-import org.example.data.datasources.IAuditCSVReaderWriter
 import data.dto.AuditDto
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast

@@ -5,9 +5,9 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.IProjectCSVReaderWriter
-import org.example.data.source.local.TaskInProjectCSVReaderWriter
-import org.example.data.datasources.IUserAssignedToProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.project.IProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
 import data.dto.ProjectDto
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach
