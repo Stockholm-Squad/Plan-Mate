@@ -1,7 +1,7 @@
 package org.example.di
 
 import org.example.data.source.UserDataSource
-import org.example.data.MongoSetup
+import org.example.data.mongo.MongoSetup
 import org.example.data.source.remote.AuditSystemMongoDataSource
 import org.example.data.datasources.IAuditSystemDataSource
 import org.example.data.source.MateTaskAssignmentDataSource
