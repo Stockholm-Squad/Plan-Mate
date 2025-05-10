@@ -1,11 +1,11 @@
 package org.example.logic.usecase.audit
 
 import org.example.logic.entities.AuditSystem
-import org.example.logic.repository.AuditSystemRepository
+import org.example.logic.repository.AuditRepository
 
 class AddAuditSystemUseCase(
-    private val auditSystemRepository: AuditSystemRepository,
+    private val auditRepository: AuditRepository,
     ) {
     suspend fun addAuditsEntries(auditEntry: List<AuditSystem>): Boolean =
-        auditSystemRepository.addAuditsEntries(auditEntry)
+        auditRepository.addAuditsEntries(auditEntry)
 }
