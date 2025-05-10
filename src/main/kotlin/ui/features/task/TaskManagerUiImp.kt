@@ -9,7 +9,7 @@ import org.example.logic.entities.User
 import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.task.TaskOptions
 import org.example.ui.features.common.utils.UiMessages
@@ -22,7 +22,7 @@ class TaskManagerUiImp(
     private val printer: OutputPrinter,
     private val uiUtils: UiUtils,
     private val manageTasksUseCase: ManageTasksUseCase,
-    private val manageStateUseCase: ManageStatesUseCase,
+    private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
     private val auditSystemUseCase: AddAuditUseCase
@@ -88,7 +88,7 @@ class TaskManagerUiImp(
 
         val stateId = runBlocking(coroutineExceptionHandler) {
             try {
-                manageStateUseCase.getProjectStateIdByName(stateName)
+                manageStateUseCase.getEntityStateIdByName(stateName)
             } catch (ex: Exception) {
                 printer.showMessage(ex.message ?: "Unknown Error")
                 null
@@ -131,7 +131,7 @@ class TaskManagerUiImp(
 
             val (newName, newDescription, newStateName) = editInput
 
-            val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
+            val newStateId = manageStateUseCase.getEntityStateIdByName(newStateName)
 
             val userId = currentUser?.id
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)

@@ -1,7 +1,6 @@
 package data.csv_reader_writer
 
-import org.example.data.source.local.csv_reader_writer.state.StateCSVReaderWriter
-import data.dto.ProjectStateDto
+import data.dto.EntityStateDto
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
@@ -90,8 +89,8 @@ class ProjectStateCSVReaderWriterTest {
         @Test
         fun `write should create file with correct content`() {
             val states = listOf(
-                ProjectStateDto(id = "1", name = "TODO"),
-                ProjectStateDto(id = "2", name = "Progress")
+                EntityStateDto(id = "1", name = "TODO"),
+                EntityStateDto(id = "2", name = "Progress")
             )
 
             val result = dataSource.overWrite(states)

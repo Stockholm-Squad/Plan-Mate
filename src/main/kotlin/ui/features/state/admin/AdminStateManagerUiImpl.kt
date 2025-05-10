@@ -2,7 +2,7 @@ package org.example.ui.features.state.admin
 
 import kotlinx.coroutines.runBlocking
 import org.example.logic.entities.User
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.model.StateMenuChoice
@@ -12,7 +12,7 @@ import org.example.ui.input_output.output.OutputPrinter
 
 class AdminStateManagerUiImpl(
     private val userStateManagerUi: UserStateManagerUi,
-    private val manageStatesUseCase: ManageStatesUseCase,
+    private val manageStatesUseCase: ManageEntityStatesUseCase,
     private val reader: InputReader,
     private val printer: OutputPrinter,
 ) : AdminStateManagerUi, UserStateManagerUi {
@@ -52,7 +52,7 @@ class AdminStateManagerUiImpl(
             ?.let { stateName ->
                 runBlocking {
                     try {
-                        manageStatesUseCase.addProjectState(stateName = stateName)
+                        manageStatesUseCase.addEntityState(stateName = stateName)
                         printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
                     } catch (exception: Exception) {
                         printer.showMessage("Failed to delete state: ${exception.message}")
@@ -77,7 +77,7 @@ class AdminStateManagerUiImpl(
             }
         runBlocking {
             try {
-                manageStatesUseCase.editProjectStateByName(
+                manageStatesUseCase.editEntityStateByName(
                     stateName = currentStateName,
                     newStateName = newStateName
                 )
@@ -95,7 +95,7 @@ class AdminStateManagerUiImpl(
         }?.let { stateName ->
             runBlocking {
                 try {
-                    manageStatesUseCase.deleteProjectState(stateName = stateName)
+                    manageStatesUseCase.deleteEntityState(stateName = stateName)
                     showStateDeletedMessage()
                 } catch (exception: Exception) {
                     printer.showMessage("Failed to delete state: ${exception.message}")

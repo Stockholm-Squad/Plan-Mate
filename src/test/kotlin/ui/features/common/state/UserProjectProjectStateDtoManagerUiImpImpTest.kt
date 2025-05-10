@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.exceptions.NoStatesFoundedException
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.state.common.UserStateManagerUi
 import org.example.ui.features.state.common.UserStateManagerUiImp
 import org.example.ui.input_output.output.OutputPrinter
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 
 class UserProjectProjectStateDtoManagerUiImpImpTest {
 
-    private lateinit var manageStatesUseCase: ManageStatesUseCase
+    private lateinit var manageStatesUseCase: ManageEntityStatesUseCase
     private lateinit var userStateManagerUi: UserStateManagerUi
     private lateinit var printer: OutputPrinter
 
@@ -27,7 +27,7 @@ class UserProjectProjectStateDtoManagerUiImpImpTest {
     @Test
     fun `showAllStates() should print no states exist when use case returns No state exist exception`() {
         //Given
-        every { manageStatesUseCase.getAllProjectStates() } returns Result.failure(
+        every { manageStatesUseCase.getAllEntityStates() } returns Result.failure(
             NoStatesFoundedException()
         )
 

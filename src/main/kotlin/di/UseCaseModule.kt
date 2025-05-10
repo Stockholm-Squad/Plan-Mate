@@ -8,7 +8,7 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.user.AddUserUseCase
 import org.koin.dsl.module
@@ -25,6 +25,6 @@ val useCaseModule = module {
     factory<GetProjectsUseCase> { GetProjectsUseCase(get()) }
     factory<ManageTasksInProjectUseCase> { ManageTasksInProjectUseCase(get(), get()) }
     factory<ManageUsersAssignedToProjectUseCase> { ManageUsersAssignedToProjectUseCase(get(), get(), get()) }
-    factory<ManageStatesUseCase> { ManageStatesUseCase(get()) }
+    factory<ManageEntityStatesUseCase> { ManageEntityStatesUseCase(get()) }
     factory<ValidateUserDataUseCase> { ValidateUserDataUseCase() }
 }

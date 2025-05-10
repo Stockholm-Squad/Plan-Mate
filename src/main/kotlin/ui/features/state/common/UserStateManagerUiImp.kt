@@ -1,19 +1,19 @@
 package org.example.ui.features.state.common
 
 import kotlinx.coroutines.runBlocking
-import org.example.logic.entities.ProjectState
-import org.example.logic.usecase.state.ManageStatesUseCase
+import org.example.logic.entities.EntityState
+import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.input_output.output.OutputPrinter
 
 class UserStateManagerUiImp(
-    private val manageStatesUseCase: ManageStatesUseCase,
+    private val manageStatesUseCase: ManageEntityStatesUseCase,
     private val printer: OutputPrinter
 ) : UserStateManagerUi {
 
     override fun showAllStates() {
         runBlocking {
             try {
-                manageStatesUseCase.getAllProjectStates().also {
+                manageStatesUseCase.getAllEntityStates().also {
                     handleSuccess(it)
                 }
             } catch (exception: Exception) {
@@ -26,7 +26,7 @@ class UserStateManagerUiImp(
         printer.showMessage("Failed to Load data, ${throwable.message}")
     }
 
-    private fun handleSuccess(projectStates: List<ProjectState>) {
+    private fun handleSuccess(projectStates: List<EntityState>) {
         printer.showStates(projectStates)
     }
 }

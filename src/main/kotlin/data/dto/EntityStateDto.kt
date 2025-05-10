@@ -1,6 +1,6 @@
 package data.dto
 
-data class ProjectStateDto(
+data class EntityStateDto(
     val id: String,
     val name: String
 )

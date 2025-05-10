@@ -37,12 +37,12 @@ class ProjectAlreadyExistException(message: String = "The project is already exi
 
 open class StateExceptions(message: String) : PlanMateExceptions(message)
 class StateAlreadyExistException(message: String = "The state already exists.") : StateExceptions(message)
-class NoStatesFoundedException(message: String = "There are no states.") : StateExceptions(message)
+class NoEntityStatesFoundedException(message: String = "There are no states.") : StateExceptions(message)
 class NotAllowedStateNameException(message: String = "Only letters are allowed!") : StateExceptions(message)
-class ProjectStateNotAddedException(message: String = "Project State Not Added") : StateExceptions(message)
-class ProjectStateNotEditedException(message: String = "Project State Not Edited") : StateExceptions(message)
-class ProjectStateNotDeletedException(message: String = "Project State Not Deleted") : StateExceptions(message)
-class NoProjectStateFoundException(message: String = "No Project State Found") : StateExceptions(message)
+class EntityStateNotAddedException(message: String = "Project State Not Added") : StateExceptions(message)
+class EntityStateNotEditedException(message: String = "Project State Not Edited") : StateExceptions(message)
+class EntityStateNotDeletedException(message: String = "Project State Not Deleted") : StateExceptions(message)
+class NoEntityStateFoundException(message: String = "No Project State Found") : StateExceptions(message)
 
 
 open class AuditExceptions(message: String) : PlanMateExceptions(message)
