@@ -5,21 +5,23 @@ import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.logic.utils.toSafeUUID
 
-fun UserDto.mapToUserEntity(): User? =
-
-    User(
-        id.toSafeUUID(),
+fun UserDto.mapToUserEntity(): User? {
+    return User(
+        id.toSafeUUID() ?: return null,
         username,
         hashedPassword,
         getRoleType(role)
     )
+}
 
-fun User.mapToUserModel(): UserDto = UserDto(
-    id.toString(),
-    username,
-    hashedPassword,
-    userRole.toString()
-)
+fun User.mapToUserModel(): UserDto {
+    return UserDto(
+        id.toString(),
+        username,
+        hashedPassword,
+        userRole.toString()
+    )
+}
 
 fun getRoleType(role: String): UserRole = when {
     role.equals("MATE", ignoreCase = true) -> UserRole.MATE
