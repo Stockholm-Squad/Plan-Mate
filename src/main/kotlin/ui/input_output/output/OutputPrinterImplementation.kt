@@ -1,8 +1,10 @@
 package org.example.ui.input_output.output
 
 import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
 import org.example.logic.entities.ProjectState
 import org.example.logic.entities.Task
+import java.util.*
 
 class OutputPrinterImplementation : OutputPrinter {
 
@@ -46,7 +48,7 @@ class OutputPrinterImplementation : OutputPrinter {
         println("└──────────────────────────────┘")
     }
 
-    override fun showAudits(audits: List<AuditSystem>, username : String) {
+    override fun showAudits(audits: List<AuditSystem>, username: String) {
         if (audits.isEmpty()) {
             println("No audits to display.")
             return
@@ -56,26 +58,32 @@ class OutputPrinterImplementation : OutputPrinter {
 
         for ((entityType, entries) in groupedByEntityType) {
             println("\n========== $entityType ==========\n")
-            println(
-                String.format(
-                    "| %-15s | %-20s | %-30s |",
-                    "Changed By", "Date", "Change Description"
-                )
-            )
-            println("-".repeat(130))
+
+            println(String.format("| %-15s | %-110s | %-30s |", "Changed By", "Change Description", "Date"))
+            println("-".repeat(165))
 
             for (entry in entries) {
                 println(
                     String.format(
-                        "| %-15s | %-20s | %-30s |",
+                        "| %-15s | %-110s | %-30s |",
                         username,
-                        entry.dateTime,
-                        entry.description.take(30)
+                        entry.description.take(205),
+                        entry.dateTime
                     )
                 )
             }
 
-            println("-".repeat(130)) // Swimlane separator
+            println("-".repeat(165))
         }
     }
+
+    override fun printAddTaskDescription(
+        entityType: EntityType,
+        taskName: String,
+        taskId: UUID,
+        projectName: String
+    ): String {
+        return "added a new $entityType  '$taskName' (ID: $taskId) to the '$projectName' project."
+    }
+
 }

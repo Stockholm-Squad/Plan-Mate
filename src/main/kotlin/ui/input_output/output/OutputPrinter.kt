@@ -1,8 +1,10 @@
 package org.example.ui.input_output.output
 
 import org.example.logic.entities.AuditSystem
+import org.example.logic.entities.EntityType
 import org.example.logic.entities.ProjectState
 import org.example.logic.entities.Task
+import java.util.*
 
 
 interface OutputPrinter {
@@ -12,4 +14,5 @@ interface OutputPrinter {
     fun printMateTaskAssignments(tasks: List<Task>)
     fun showStates(projectStates: List<ProjectState>)
     fun showAudits(audits: List<AuditSystem>, username : String)
+    fun printAddTaskDescription(entityType: EntityType, taskName: String, taskId: UUID, projectName: String): String
 }
