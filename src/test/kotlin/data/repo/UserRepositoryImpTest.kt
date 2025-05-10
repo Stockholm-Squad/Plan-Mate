@@ -9,9 +9,9 @@ import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.source.local.MateTaskAssignmentCsvDataSource
-import org.example.data.source.local.UserAssignedToProjectCsvDataSource
-import org.example.data.source.local.UserCsvDataSource
+import org.example.data.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
+import org.example.data.csv_reader_writer.user_assigned_to_project.UserAssignedToProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.user.UserCSVReaderWriter
 import data.dto.UserDto
 import org.example.data.repo.UserRepositoryImp
 import org.example.logic.model.exceptions.ReadDataException
@@ -29,9 +29,9 @@ import java.util.*
 class UserRepositoryImpTest {
 
     private lateinit var userRepository: UserRepositoryImp
-    private lateinit var userCsvDataSource: UserCsvDataSource
-    private lateinit var userAssignedToProjectCsvDataSource: UserAssignedToProjectCsvDataSource
-    private lateinit var mateTaskAssignmentCsvDataSource: MateTaskAssignmentCsvDataSource
+    private lateinit var userCsvDataSource: UserCSVReaderWriter
+    private lateinit var userAssignedToProjectCsvDataSource: UserAssignedToProjectCSVReaderWriter
+    private lateinit var mateTaskAssignmentCSVReaderWriter: MateTaskAssignmentCSVReaderWriter
 
     private val projectUUID1 = UUID.randomUUID()
     private val projectUUID2 = UUID.randomUUID()
@@ -73,9 +73,9 @@ class UserRepositoryImpTest {
     fun setUp() {
         userCsvDataSource = mockk(relaxed = true)
         userAssignedToProjectCsvDataSource = mockk(relaxed = true)
-        mateTaskAssignmentCsvDataSource = mockk(relaxed = true)
+        mateTaskAssignmentCSVReaderWriter = mockk(relaxed = true)
         userRepository =
-            UserRepositoryImp(userCsvDataSource, userAssignedToProjectCsvDataSource, mateTaskAssignmentCsvDataSource)
+            UserRepositoryImp(userCsvDataSource, userAssignedToProjectCsvDataSource, mateTaskAssignmentCSVReaderWriter)
     }
 
     @Test

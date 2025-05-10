@@ -8,9 +8,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.IMateTaskAssignmentDataSource
-import org.example.data.datasources.ITaskInProjectDataSource
-import org.example.data.source.local.TaskCsvDataSource
+import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
 import org.example.data.repo.TaskRepositoryImp
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.TaskRepository
@@ -25,9 +25,9 @@ import java.util.*
 
 class TaskRepositoryImpTest {
 
-    private lateinit var taskDataSource: TaskCsvDataSource
-    private lateinit var mateTaskAssignmentCsvDataSource: IMateTaskAssignmentDataSource
-    private lateinit var taskInProjectDataSource: ITaskInProjectDataSource
+    private lateinit var taskDataSource: TaskCSVReaderWriter
+    private lateinit var mateTaskAssignmentCsvDataSource: IMateTaskAssignmentCSVReaderWriter
+    private lateinit var taskInProjectDataSource: ITaskInProjectCSVReaderWriter
     private lateinit var taskRepository: TaskRepository
     private lateinit var dataHandler: DateHandlerImp
     private val projectUUID1 = UUID.randomUUID()

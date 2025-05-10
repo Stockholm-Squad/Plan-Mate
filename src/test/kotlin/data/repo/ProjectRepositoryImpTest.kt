@@ -5,9 +5,9 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
-import org.example.data.datasources.IProjectDataSource
-import org.example.data.source.local.TaskInProjectCsvDataSource
-import org.example.data.datasources.IUserAssignedToProjectDataSource
+import org.example.data.csv_reader_writer.project.IProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
+import org.example.data.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
 import data.dto.ProjectDto
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach
@@ -17,9 +17,9 @@ import kotlin.test.Test
 
 class ProjectRepositoryImpTest {
 
-    private lateinit var projectDataSource: IProjectDataSource
-    private lateinit var taskInProjectDataSource: TaskInProjectCsvDataSource
-    private lateinit var userAssignedToProjectDataSource: IUserAssignedToProjectDataSource
+    private lateinit var projectDataSource: IProjectCSVReaderWriter
+    private lateinit var taskInProjectDataSource: TaskInProjectCSVReaderWriter
+    private lateinit var userAssignedToProjectDataSource: IUserAssignedToProjectCSVReaderWriter
     private lateinit var projectRepositoryImp: ProjectRepositoryImp
     private val testProject = buildProject(name = "Test Project")
     private val anotherProject = buildProject(name = "Another Project")
