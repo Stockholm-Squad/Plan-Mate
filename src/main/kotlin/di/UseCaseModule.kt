@@ -21,7 +21,7 @@ val useCaseModule = module {
     single<AddAuditUseCase> { AddAuditUseCase(get()) }
     single<LoginUseCase> { LoginUseCase(get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get()) }
-    factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get(), get()) }
+    factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get()) }
     factory<GetProjectsUseCase> { GetProjectsUseCase(get()) }
     factory<ManageTasksInProjectUseCase> { ManageTasksInProjectUseCase(get(), get()) }
     factory<ManageUsersAssignedToProjectUseCase> { ManageUsersAssignedToProjectUseCase(get(), get(), get()) }
