@@ -13,14 +13,13 @@ class ManageProjectUseCase(
     private val getProjectsUseCase: GetProjectsUseCase,
 ) {
 
-    suspend fun addProject(projectName: String, stateName: String, userId: UUID): Boolean {
+    suspend fun addProject(projectName: String, stateName: String): Boolean {
         return isProjectExists(projectName).let { success ->
             if (!success) {
                 val projectStateId = manageProjectStateUseCase.getProjectStateIdByName(stateName)
                 val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
-                projectRepository.addProject(newProject).also {
-                }
+                projectRepository.addProject(newProject)
             } else {
                 throw ProjectAlreadyExistException()
             }
@@ -37,8 +36,7 @@ class ManageProjectUseCase(
             if (success) {
                 val newProjectStateId = manageProjectStateUseCase.getProjectStateIdByName(newProjectStateName)
                 val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
-                projectRepository.editProject(updatedProject).also {
-                }
+                projectRepository.editProject(updatedProject)
             } else
                 throw ProjectNotFoundException()
         }
