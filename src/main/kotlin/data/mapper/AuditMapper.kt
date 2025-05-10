@@ -10,14 +10,13 @@ import org.example.logic.utils.toSafeUUID
 fun AuditDto.mapToAuditEntity(): Audit? {
     return Audit(
         id.toSafeUUID() ?: return null,
-        entityType = getAuditType(entityType),
+        entityType = getAuditType(entityType) ?: return null,
         entityTypeId = entityTypeId.toSafeUUID() ?: return null,
         description = description,
         userId = userId.toSafeUUID() ?: return null,
         dateTime = DateHandlerImp().getLocalDateTimeFromString(dateTime)
     )
 }
-
 
 fun Audit.mapToAuditModel(): AuditDto {
     return AuditDto(
@@ -30,11 +29,10 @@ fun Audit.mapToAuditModel(): AuditDto {
     )
 }
 
-
-fun getAuditType(auditSystem: String): EntityType {
+fun getAuditType(auditSystem: String): EntityType? {
     return when {
         auditSystem.equals("TASK", ignoreCase = true) -> EntityType.TASK
         auditSystem.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
-        else -> throw Exception("Unknown AuditSystemType: $auditSystem")
+        else -> null
     }
 }
