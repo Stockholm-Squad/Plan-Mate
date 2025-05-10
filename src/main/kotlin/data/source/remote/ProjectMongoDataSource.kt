@@ -23,7 +23,7 @@ class ProjectMongoDataSource(
             filter = ProjectDto::id eq updatedProject.id,
             update = setValue(ProjectDto::name, updatedProject.name)
         )
-        return result.matchedCount > 1
+        return result.matchedCount > 0
     }
 
     override suspend fun deleteProject(projectToDelete: ProjectDto): Boolean {
