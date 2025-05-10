@@ -10,8 +10,8 @@ fun String.isLetterOrWhiteSpace(): Boolean {
     return this.all { char -> char.isLetter() || char.isWhitespace() }
 }
 
-fun String.toSafeUUID(): UUID = try {
+fun String.toSafeUUID(): UUID? = try {
     UUID.fromString(this)
-} catch (ex: IllegalArgumentException) {
-    throw Exception("Invalid UUID format: $this")
+} catch (ex: Exception) {
+    null
 }

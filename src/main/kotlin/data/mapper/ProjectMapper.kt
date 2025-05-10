@@ -4,11 +4,16 @@ import data.dto.ProjectDto
 import org.example.logic.entities.Project
 import org.example.logic.utils.toSafeUUID
 
-fun ProjectDto.mapToProjectEntity(): Project? =
+fun ProjectDto.mapToProjectEntity(): Project? {
+    return Project(
+        id.toSafeUUID() ?: return null,
+        name,
+        stateId.toSafeUUID() ?: return null
+    )
+}
 
-    Project(id.toSafeUUID(), name, stateId.toSafeUUID())
-
-fun Project.mapToProjectModel(): ProjectDto =
-    ProjectDto(id.toString(), name, stateId.toString())
+fun Project.mapToProjectModel(): ProjectDto {
+    return ProjectDto(id.toString(), name, stateId.toString())
+}
 
 
