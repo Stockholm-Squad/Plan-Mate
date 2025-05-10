@@ -33,12 +33,10 @@ class TaskManagerUiImp(
         printer.showMessage(throwable.message ?: "Unknown error")
     }
     val timestamp = DateHandlerImp().getCurrentDateTime()
-    private var currentUser: User? = null
 
     override fun launchUi() {
-        this.currentUser = loginUseCase.getCurrentUser()
 
-        if (currentUser == null) {
+        if (loginUseCase.getCurrentUser() == null) {
             printer.showMessage(UiMessages.INVALID_USER)
             return
         }
@@ -54,7 +52,7 @@ class TaskManagerUiImp(
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
             TaskOptions.SHOW_TASK_BY_NAME -> getTaskByName()
-            TaskOptions.CREATE_TASK -> createTask()
+            TaskOptions.CREATE_TASK -> addTask()
             TaskOptions.EDIT_TASK -> editTask()
             TaskOptions.DELETE_TASK -> deleteTask()
             TaskOptions.SHOW_TASKS_BY_PROJECT_NAME -> showAllTasksInProject()
@@ -81,7 +79,7 @@ class TaskManagerUiImp(
         }
     }
 
-    override fun createTask() {
+    override fun addTask() {
         val projectName = getProjectByName()
         if (projectName.isEmpty()) return
 
@@ -97,7 +95,7 @@ class TaskManagerUiImp(
             }
         } ?: return
 
-        val userId = currentUser?.id ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
+        val userId = loginUseCase.getCurrentUser()?.id ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
         runBlocking(coroutineExceptionHandler) {
             try {
@@ -135,7 +133,7 @@ class TaskManagerUiImp(
 
             val newStateId = manageStateUseCase.getProjectStateIdByName(newStateName)
 
-            val userId = currentUser?.id
+            val userId = loginUseCase.getCurrentUser()?.id
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
             val updatedTask = existingTask.copy(
@@ -167,7 +165,7 @@ class TaskManagerUiImp(
 
             val project = getProjectsUseCase.getProjectByName(projectName)
             manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
-            val userId = currentUser?.id
+            val userId = loginUseCase.getCurrentUser()?.id
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
             val auditDescription = printer.printDeleteTaskDescription(EntityType.TASK, task.name, task.id, projectName)

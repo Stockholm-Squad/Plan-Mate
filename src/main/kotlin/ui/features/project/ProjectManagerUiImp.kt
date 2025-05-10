@@ -5,12 +5,12 @@ import kotlinx.coroutines.runBlocking
 import logic.usecase.login.LoginUseCase
 import org.example.logic.ProjectExceptions
 import org.example.logic.StateExceptions
-import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.admin.AdminStateManagerUi
+import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
@@ -22,7 +22,8 @@ class ProjectManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminStateManagerUi,
     private val manageStatesUseCase: ManageStatesUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val taskManagerUi: TaskManagerUi
 ) : ProjectManagerUi {
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         outputPrinter.showMessage(throwable.message ?: "Unknown error")
@@ -99,8 +100,13 @@ class ProjectManagerUiImp(
         runBlocking(errorHandler) {
             try {
                 manageProjectUseCase.addProject(projectName, stateName).let { success ->
-                    if (success)
+                    if (success) {
                         outputPrinter.showMessage("Project added successfully")
+                        outputPrinter.showMessage("Would you like to add tasks to this project? (yes/no): ")
+                        if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
+                            taskManagerUi.addTask()
+                        }
+                    }
                     else
                         outputPrinter.showMessage("Failed to add project")
                 }
