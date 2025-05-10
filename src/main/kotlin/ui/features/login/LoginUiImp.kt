@@ -30,6 +30,10 @@ class LoginUiImp(
         }
     }
 
+    override fun logout() {
+        loginUseCase.logout()
+    }
+
     private fun handleFailure(message: String) {
         printer.showMessage(message)
     }

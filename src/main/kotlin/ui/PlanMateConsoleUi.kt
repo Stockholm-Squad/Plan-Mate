@@ -48,6 +48,7 @@ class PlanMateConsoleUi(
     private fun logout() {
         printer.showMessage("Thank you for using PlanMate system")
         printer.showMessage("--------------------------")
+        loginUi.logout()
         user = null
     }
 
