@@ -39,12 +39,11 @@ open class EntityStateExceptions(message: String) : PlanMateExceptions(message)
 class EntityStateAlreadyExistException(message: String = "The state already exists.") : EntityStateExceptions(message)
 class NoEntityStatesFoundedException(message: String = "There are no states.") : EntityStateExceptions(message)
 class NotAllowedEntityStateNameException(message: String = "Only letters are allowed!") : EntityStateExceptions(message)
-class EntityEntityStateNotAddedException(message: String = "Project State Not Added") : EntityStateExceptions(message)
-class EntityEntityStateNotEditedException(message: String = "Project State Not Edited") : EntityStateExceptions(message)
-class EntityEntityStateNotDeletedException(message: String = "Project State Not Deleted") :
+class EntityStateNotAddedException(message: String = "Entity State Not Added") : EntityStateExceptions(message)
+class EntityStateNotEditedException(message: String = "Entity State Not Edited") : EntityStateExceptions(message)
+class EntityStateNotDeletedException(message: String = "Entity State Not Deleted") :
     EntityStateExceptions(message)
-
-class NoEntityEntityStateFoundException(message: String = "No Project State Found") : EntityStateExceptions(message)
+class NoEntityStateFoundException(message: String = "No Entity State Found") : EntityStateExceptions(message)
 
 
 open class AuditExceptions(message: String) : PlanMateExceptions(message)

@@ -1,7 +1,7 @@
 package ui.features.state
 
 import io.mockk.mockk
-import org.example.ui.features.state.EntityEntityStateManagerUiImp
+import org.example.ui.features.state.EntityStateManagerUiImp
 import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 class ProjectProjectStateDtoManagerUiImpTest {
     private lateinit var adminStateManagerUi: AdminEntityStateManagerUi
     private lateinit var mateStateManagerUi: MateEntityStateManagerUi
-    private lateinit var stateManagerUiImp: EntityEntityStateManagerUiImp
+    private lateinit var stateManagerUiImp: EntityStateManagerUiImp
     private lateinit var printer: OutputPrinter
 
     @BeforeEach
@@ -18,7 +18,7 @@ class ProjectProjectStateDtoManagerUiImpTest {
         adminStateManagerUi = mockk(relaxed = true)
         mateStateManagerUi = mockk(relaxed = true)
         printer = mockk(relaxed = true)
-        stateManagerUiImp = EntityEntityStateManagerUiImp(adminStateManagerUi, mateStateManagerUi, printer = printer)
+        stateManagerUiImp = EntityStateManagerUiImp(adminStateManagerUi, mateStateManagerUi, printer = printer)
     }
 
 //    @Test
