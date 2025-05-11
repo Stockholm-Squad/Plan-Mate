@@ -16,7 +16,7 @@ class EntityStateRepositoryImp(
     override suspend fun addEntityState(entityState: EntityState): Boolean {
         return tryToExecute(
             { entityStateDataSource.addEntityState(entityState.mapToStateModel()) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw EntityStateNotAddedException() }
         )
     }
@@ -24,7 +24,7 @@ class EntityStateRepositoryImp(
     override suspend fun editEntityState(entityState: EntityState): Boolean {
         return tryToExecute(
             { entityStateDataSource.editEntityState(entityState.mapToStateModel()) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw EntityStateNotEditedException() }
         )
     }
@@ -32,7 +32,7 @@ class EntityStateRepositoryImp(
     override suspend fun deleteEntityState(entityState: EntityState): Boolean {
         return tryToExecute(
             { entityStateDataSource.deleteEntityState(entityState.mapToStateModel()) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw EntityStateNotDeletedException() }
         )
 
@@ -41,7 +41,7 @@ class EntityStateRepositoryImp(
     override suspend fun isEntityStateExist(stateName: String): Boolean {
         return tryToExecute(
             { entityStateDataSource.isEntityStateExist(stateName) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw NoEntityStateFoundException() }
         )
     }
@@ -49,7 +49,7 @@ class EntityStateRepositoryImp(
     override suspend fun getAllEntityStates(): List<EntityState> {
         return tryToExecute(
             { entityStateDataSource.getAllEntityStates() },
-            onSuccess = { it },
+            onSuccess = { listOfEntityState -> listOfEntityState },
             onFailure = { throw NoEntityStatesFoundedException() }
         ).mapNotNull { it.mapToStateEntity() }
     }
@@ -57,7 +57,7 @@ class EntityStateRepositoryImp(
     override suspend fun getEntityStateByName(stateName: String): EntityState {
         return tryToExecute(
             { entityStateDataSource.getEntityStateByName(stateName) },
-            onSuccess = { it },
+            onSuccess = { listOfEntityState -> listOfEntityState },
             onFailure = { throw NoEntityStateFoundException() }
         )?.mapToStateEntity() ?: throw NoEntityStateFoundException()
     }
@@ -65,7 +65,7 @@ class EntityStateRepositoryImp(
     override suspend fun getEntityStateByID(stateId: UUID): EntityState {
         return tryToExecute(
             { entityStateDataSource.getEntityStateById(stateId.toString()) },
-            onSuccess = { it },
+            onSuccess = { entityState -> entityState },
             onFailure = { throw NoEntityStateFoundException() }
         )?.mapToStateEntity() ?: throw NoEntityStateFoundException()
     }

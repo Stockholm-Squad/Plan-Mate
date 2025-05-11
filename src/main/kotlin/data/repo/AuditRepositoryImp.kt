@@ -16,14 +16,14 @@ class AuditRepositoryImp(
 
         return tryToExecute({
             auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
-        }, onSuccess = { it }, onFailure = { throw AuditSystemNotAddedException() })
+        }, onSuccess = { success -> success }, onFailure = { throw AuditSystemNotAddedException() })
 
     }
 
     override suspend fun getAllAuditEntries(): List<Audit> {
         return tryToExecute(
             { auditDataSource.getAllAuditEntries().mapNotNull { it.mapToAuditEntity() } },
-            onSuccess = { it },
+            onSuccess = { listOfAudits -> listOfAudits },
             onFailure = { throw NoAuditsFoundedException() })
     }
 

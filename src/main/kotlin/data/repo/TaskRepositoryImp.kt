@@ -23,7 +23,7 @@ class TaskRepositoryImp(
     override suspend fun getAllTasks(): List<Task> =
         tryToExecute(
             function = { taskDataSource.getAllTasks().mapNotNull { it.mapToTaskEntity() } },
-            onSuccess = { it },
+            onSuccess = { listOfTasks -> listOfTasks },
             onFailure = { throw TasksNotFoundException() }
         )
 
@@ -55,7 +55,7 @@ class TaskRepositoryImp(
                 val taskIds = project.map { it.taskId }
                 taskDataSource.getTasksByIds(taskIds).mapNotNull { it.mapToTaskEntity() }
             },
-            onSuccess = { it },
+            onSuccess = { listOfTasks -> listOfTasks },
             onFailure = { throw TasksNotFoundException() }
         )
 
@@ -90,7 +90,7 @@ class TaskRepositoryImp(
                 val mateTaskAssignments = mateTaskAssignment.getUsersMateTaskByUserName(userName).map { it.taskId }
                 taskDataSource.getTasksByIds(mateTaskAssignments).mapNotNull { it.mapToTaskEntity() }
             },
-            onSuccess = { it },
+            onSuccess = { listOfTasks -> listOfTasks },
             onFailure = { throw TasksNotFoundException() }
         )
 }

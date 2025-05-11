@@ -23,14 +23,14 @@ class UserRepositoryImp(
     override suspend fun addUser(user: User): Boolean =
         tryToExecute(
             { userDataSource.addUser(user.mapToUserModel()) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw UserNotAddedException() }
         )
 
     override suspend fun getAllUsers(): List<User> =
         tryToExecute(
             { userDataSource.getAllUsers() },
-            onSuccess = { it.mapNotNull { userModel -> userModel.mapToUserEntity() } },
+            onSuccess = { listOfUsers -> listOfUsers.mapNotNull { user -> user.mapToUserEntity() } },
             onFailure = { throw UsersDoesNotExistException() }
         )
 
@@ -40,7 +40,7 @@ class UserRepositoryImp(
             val assignedUsersDeferred = async {
                 tryToExecute(
                     function = { userDataSource.getUsersByProjectId(projectId.toString()) },
-                    onSuccess = { it },
+                    onSuccess = { listOfUsers -> listOfUsers },
                     onFailure = { throw UserDoesNotExistException() }
                 )
             }
@@ -48,7 +48,7 @@ class UserRepositoryImp(
             val allUsersDeferred = async {
                 tryToExecute(
                     function = { userDataSource.getAllUsers() },
-                    onSuccess = { it },
+                    onSuccess = { listOfUsers -> listOfUsers },
                     onFailure = { throw UserDoesNotExistException() }
                 )
             }
@@ -56,8 +56,8 @@ class UserRepositoryImp(
             val assignedUsers = assignedUsersDeferred.await()
             val allUsers = allUsersDeferred.await()
 
-            val usersIds = assignedUsers.map { it.username }
-            allUsers.filter { it.username in usersIds }
+            val usersIds = assignedUsers.map { user -> user.username }
+            allUsers.filter { user -> user.username in usersIds }
                 .mapNotNull { it.mapToUserEntity() }
         }
 
@@ -65,7 +65,7 @@ class UserRepositoryImp(
     override suspend fun addUserToProject(projectId: UUID, userName: String): Boolean =
         tryToExecute(
             { userAssignedToProjectDataSource.addUserToProject(projectId.toString(), userName) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw UserNotAddedToProjectException() }
         )
 
@@ -73,7 +73,7 @@ class UserRepositoryImp(
     override suspend fun deleteUserFromProject(projectId: UUID, userName: String): Boolean =
         tryToExecute(
             { userAssignedToProjectDataSource.deleteUserFromProject(projectId.toString(), userName) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw UserNotDeletedFromProjectException() }
         )
 
@@ -81,7 +81,7 @@ class UserRepositoryImp(
     override suspend fun addUserToTask(mateName: String, taskId: UUID): Boolean =
         tryToExecute(
             { mateTaskAssignment.addUserToTask(mateName, taskId.toString()) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = {
                 throw UserNotAddedToTaskException()
             }
@@ -90,7 +90,7 @@ class UserRepositoryImp(
     override suspend fun deleteUserFromTask(mateName: String, taskId: UUID): Boolean =
         tryToExecute(
             { mateTaskAssignment.deleteUserFromTask(mateName, taskId.toString()) },
-            onSuccess = { it },
+            onSuccess = { success -> success },
             onFailure = { throw UserNotDeletedFromTaskException() }
         )
 }
