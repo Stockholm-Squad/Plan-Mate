@@ -5,13 +5,14 @@ import kotlinx.coroutines.runBlocking
 import logic.usecase.login.LoginUseCase
 import org.example.logic.EntityStateExceptions
 import org.example.logic.ProjectExceptions
-import org.example.logic.entities.User
+import org.example.logic.entities.EntityType
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
+import org.example.ui.features.audit.AuditServices
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.state.admin.AdminEntityStateManagerUi
+import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
@@ -23,6 +24,7 @@ class ProjectManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminEntityStateManagerUi,
     private val manageStatesUseCase: ManageEntityStatesUseCase,
+    private val auditServices: AuditServices,
     private val loginUseCase: LoginUseCase,
     private val taskManagerUi: TaskManagerUi
 ) : ProjectManagerUi {
@@ -102,6 +104,13 @@ class ProjectManagerUiImp(
             try {
                 manageProjectUseCase.addProject(projectName, stateName).let { success ->
                     if (success) {
+                        val project = getProjectsUseCase.getProjectByName(projectName)
+                        auditServices.addAuditForAddEntity(
+                            entityType = EntityType.PROJECT,
+                            entityName = projectName,
+                            entityId = project.id,
+                            additionalInfo = stateName
+                        )
                         outputPrinter.showMessage("Project added successfully")
                         do {
                             outputPrinter.showMessage("Would you like to add tasks to this project? (Y/N): ")
@@ -156,6 +165,13 @@ class ProjectManagerUiImp(
 
                         ).let { success ->
                         if (success) {
+                            auditServices.addAuditForUpdateEntity(
+                                entityType = EntityType.PROJECT,
+                                existEntityName = project.name,
+                                newEntityName = newName ?: projectName,
+                                entityId = project.id,
+                                newStateName = newProjectStateName
+                            )
                             outputPrinter.showMessage("Project updated successfully")
                         } else {
                             outputPrinter.showMessage("Failed to update project")
@@ -180,7 +196,12 @@ class ProjectManagerUiImp(
                 manageProjectUseCase.removeProjectByName(projectName).let { success ->
 
                     if (success) {
-
+                        val project = getProjectsUseCase.getProjectByName(projectName)
+                        auditServices.addAuditForDeleteEntity(
+                            entityType = EntityType.PROJECT,
+                            entityName = projectName,
+                            entityId = project.id,
+                        )
                         outputPrinter.showMessage("Project deleted successfully")
                     } else {
                         outputPrinter.showMessage("Failed to delete project")
