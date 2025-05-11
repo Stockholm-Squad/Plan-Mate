@@ -30,21 +30,21 @@ class TaskRepositoryImp(
     override suspend fun addTask(task: Task): Boolean =
         tryToExecute(
             function = { taskDataSource.addTask(task.mapToTaskModel()) },
-            onSuccess = { true },
+            onSuccess = { success -> success  },
             onFailure = { throw TaskNotAddedException() }
         )
 
     override suspend fun editTask(task: Task): Boolean =
         tryToExecute(
             function = { taskDataSource.editTask(task.mapToTaskModel()) },
-            onSuccess = { true },
+            onSuccess = { success -> success  },
             onFailure = { throw TaskNotEditException() }
         )
 
     override suspend fun deleteTask(id: UUID?): Boolean =
         tryToExecute(
             function = { taskDataSource.deleteTask(id.toString()) },
-            onSuccess = { true },
+            onSuccess = { success -> success },
             onFailure = { throw TaskNotDeletedException() }
         )
 
@@ -68,7 +68,7 @@ class TaskRepositoryImp(
                     taskId.toString()
                 )
             },
-            onSuccess = { true },
+            onSuccess = { success -> success  },
             onFailure = { throw TaskNotAddedException() }
         )
 
@@ -80,7 +80,7 @@ class TaskRepositoryImp(
                     taskId.toString()
                 )
             },
-            onSuccess = { true },
+            onSuccess = { success -> success  },
             onFailure = { throw TaskNotDeletedException() }
         )
 
