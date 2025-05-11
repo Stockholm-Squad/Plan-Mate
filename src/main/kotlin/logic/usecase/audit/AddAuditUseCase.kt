@@ -7,12 +7,9 @@ import org.example.logic.repository.AuditRepository
 
 import java.util.*
 
-class AddAuditUseCase(
-    private val auditRepository: AuditRepository,
-) {
+class AddAuditUseCase(private val auditRepository: AuditRepository) {
 
-
-    suspend fun addEntityChangeHistory(
+    suspend fun addAuditEntry(
         userId: UUID,
         entityType: EntityType,
         entityId: UUID,
