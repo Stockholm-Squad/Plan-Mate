@@ -6,10 +6,10 @@ import logic.usecase.login.LoginUseCase
 import org.example.logic.EntityStateExceptions
 import org.example.logic.ProjectExceptions
 import org.example.logic.entities.EntityType
+import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
-import org.example.ui.features.audit.AuditServices
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
@@ -24,7 +24,7 @@ class ProjectManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val stateManagerUi: AdminEntityStateManagerUi,
     private val manageStatesUseCase: ManageEntityStatesUseCase,
-    private val auditServices: AuditServices,
+    private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
     private val taskManagerUi: TaskManagerUi
 ) : ProjectManagerUi {
@@ -105,7 +105,7 @@ class ProjectManagerUiImp(
                 manageProjectUseCase.addProject(projectName, stateName).let { success ->
                     if (success) {
                         val project = getProjectsUseCase.getProjectByName(projectName)
-                        auditServices.addAuditForAddEntity(
+                        auditServicesUseCase.addAuditForAddEntity(
                             entityType = EntityType.PROJECT,
                             entityName = projectName,
                             entityId = project.id,
@@ -165,7 +165,7 @@ class ProjectManagerUiImp(
 
                         ).let { success ->
                         if (success) {
-                            auditServices.addAuditForUpdateEntity(
+                            auditServicesUseCase.addAuditForUpdateEntity(
                                 entityType = EntityType.PROJECT,
                                 existEntityName = project.name,
                                 newEntityName = newName ?: projectName,
@@ -197,7 +197,7 @@ class ProjectManagerUiImp(
 
                     if (success) {
                         val project = getProjectsUseCase.getProjectByName(projectName)
-                        auditServices.addAuditForDeleteEntity(
+                        auditServicesUseCase.addAuditForDeleteEntity(
                             entityType = EntityType.PROJECT,
                             entityName = projectName,
                             entityId = project.id,

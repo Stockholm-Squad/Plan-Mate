@@ -6,12 +6,12 @@ import logic.usecase.login.LoginUseCase
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
+import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.task.TaskOptions
-import org.example.ui.features.audit.AuditServices
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.input_output.input.InputReader
@@ -26,7 +26,7 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val auditServices: AuditServices,
+    private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -109,7 +109,7 @@ class TaskManagerUiImp(
                 )
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
-                auditServices.addAuditForAddEntity(
+                auditServicesUseCase.addAuditForAddEntity(
                     EntityType.TASK, task.name,
                     entityId = task.id,
                     additionalInfo = projectName
@@ -141,7 +141,7 @@ class TaskManagerUiImp(
             )
 
             manageTasksUseCase.editTask(updatedTask)
-            auditServices.addAuditForUpdateEntity(
+            auditServicesUseCase.addAuditForUpdateEntity(
                 entityType = EntityType.TASK,
                 existEntityName = existingTask.name,
                 newEntityName = updatedTask.name,
@@ -167,7 +167,7 @@ class TaskManagerUiImp(
 
             val project = getProjectsUseCase.getProjectByName(projectName)
             manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
-            auditServices.addAuditForDeleteEntity(
+            auditServicesUseCase.addAuditForDeleteEntity(
                 entityType = EntityType.TASK,
                 entityName = taskName,
                 entityId = task.id,
