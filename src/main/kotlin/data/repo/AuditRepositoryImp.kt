@@ -4,7 +4,7 @@ import data.mapper.mapToAuditEntity
 import data.mapper.mapToAuditModel
 import org.example.data.source.AuditDataSource
 import org.example.data.utils.tryToExecute
-import org.example.logic.AuditSystemNotAddedException
+import org.example.logic.AuditNotAddedException
 import org.example.logic.NoAuditsFoundedException
 import org.example.logic.entities.Audit
 import org.example.logic.repository.AuditRepository
@@ -16,7 +16,7 @@ class AuditRepositoryImp(
 
         return tryToExecute({
             auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
-        }, onSuccess = { it }, onFailure = { throw AuditSystemNotAddedException() })
+        }, onSuccess = { it }, onFailure = { throw AuditNotAddedException() })
 
     }
 
