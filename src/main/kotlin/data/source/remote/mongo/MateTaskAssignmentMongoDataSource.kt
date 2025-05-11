@@ -1,15 +1,15 @@
 package data.source.remote.mongo
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.MateTaskAssignmentDto
-import org.bson.Document
+import kotlinx.coroutines.flow.toList
 import org.example.data.source.MateTaskAssignmentDataSource
 import org.litote.kmongo.and
-import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 
 
 class MateTaskAssignmentMongoDataSource(
-    private val mateTaskAssignmentCollection: CoroutineCollection<MateTaskAssignmentDto>
+    private val mateTaskAssignmentCollection: MongoCollection<MateTaskAssignmentDto>,
 ) : MateTaskAssignmentDataSource {
 
     override suspend fun addUserToTask(mateName: String, taskId: String): Boolean {

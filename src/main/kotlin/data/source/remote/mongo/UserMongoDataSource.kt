@@ -1,15 +1,18 @@
 package data.source.remote.mongo
 
+import com.mongodb.client.model.Filters
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.UserDto
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
-import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
 import org.litote.kmongo.setValue
 
 class UserMongoDataSource(
-    private val userCollection: CoroutineCollection<UserDto>,
+    private val userCollection: MongoCollection<UserDto>,
     private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
 ) : UserDataSource {
 
@@ -33,13 +36,13 @@ class UserMongoDataSource(
     }
 
     override suspend fun isUserExist(username: String): Boolean {
-        val filter = UserDto::username eq username
-        return userCollection.findOne(filter) != null
+        val filter = Filters.eq(UserDto::username.name, username)
+        return userCollection.find(filter).firstOrNull() != null
     }
 
     override suspend fun getUserById(userId: String): UserDto? {
-        val filter = UserDto::id eq userId
-        return userCollection.findOne(filter)
+        val filter = Filters.eq(UserDto::id.name, userId)
+        return userCollection.find(filter).firstOrNull()
     }
 
     override suspend fun editUser(user: UserDto): Boolean {
