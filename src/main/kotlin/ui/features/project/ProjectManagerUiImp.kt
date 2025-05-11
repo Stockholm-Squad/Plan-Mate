@@ -226,7 +226,7 @@ class ProjectManagerUiImp(
             outputPrinter.showMessage("1. Show all projects")
             outputPrinter.showMessage("2. Show project details")
             outputPrinter.showMessage("3. Add project")
-            outputPrinter.showMessage("4. Edit project State")
+            outputPrinter.showMessage("4. Update project")
             outputPrinter.showMessage("5. Delete project")
             outputPrinter.showMessage("0. Back")
             outputPrinter.showMessage("Enter your choice: ")
