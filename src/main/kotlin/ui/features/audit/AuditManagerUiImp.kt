@@ -9,12 +9,12 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 
-class AuditSystemManagerUiImp(
+class AuditManagerUiImp(
     private val useCase: GetAuditUseCase,
     private val printer: OutputPrinter,
     private val reader: InputReader,
     private val loginUseCase: LoginUseCase,
-) : AuditSystemManagerUi {
+) : AuditManagerUi {
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessage(throwable.message ?: "Unknown error")
     }
