@@ -13,13 +13,13 @@ class AuditRepositoryImp(private val auditDataSource: AuditDataSource) : AuditRe
 
     override suspend fun addAudit(audit: List<Audit>): Boolean {
         return tryToExecute({
-            auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
+            auditDataSource.addAudit(audit.map { it.mapToAuditModel() })
         }, onSuccess = { it }, onFailure = { throw AuditNotAddedException() })
     }
 
     override suspend fun getAllAudits(): List<Audit> {
         return tryToExecute(
-            { auditDataSource.getAllAuditEntries().mapNotNull { it.mapToAuditEntity() } },
+            { auditDataSource.getAllAudits().mapNotNull { it.mapToAuditEntity() } },
             onSuccess = { it },
             onFailure = { throw NoAuditsFoundedException() })
     }

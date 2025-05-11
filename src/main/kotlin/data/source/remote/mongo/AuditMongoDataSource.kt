@@ -10,11 +10,11 @@ class AuditMongoDataSource(
     private val auditsCollection: CoroutineCollection<AuditDto>
 ) : AuditDataSource {
 
-    override suspend fun addAuditsEntries(audit: List<AuditDto>): Boolean {
+    override suspend fun addAudit(audit: List<AuditDto>): Boolean {
         return auditsCollection.insertMany(audit).wasAcknowledged()
     }
 
-    override suspend fun getAllAuditEntries(): List<AuditDto> {
+    override suspend fun getAllAudits(): List<AuditDto> {
         return auditsCollection.find().toList()
     }
 }
