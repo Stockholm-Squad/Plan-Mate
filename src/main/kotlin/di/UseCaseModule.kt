@@ -13,10 +13,14 @@ import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.utils.HashingService
+import org.example.logic.utils.Md5HashingService
 import org.koin.dsl.module
 
 
 val useCaseModule = module {
+
+    single<HashingService> { Md5HashingService() }
 
     single<AddUserUseCase> { AddUserUseCase(get(), get(), get()) }
     single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }

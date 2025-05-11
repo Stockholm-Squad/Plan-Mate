@@ -1,7 +1,7 @@
 package org.example.data.source.local.csv_reader_writer.user
 
 import data.dto.UserDto
-import org.example.logic.utils.hashToMd5
+import org.example.logic.utils.HashingService
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -12,7 +12,10 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 import java.util.*
 
-class UserCSVReaderWriter(private val filePath: String) :
+class UserCSVReaderWriter(
+    private val filePath: String,
+    private val hashingService: HashingService,
+) :
     org.example.data.source.local.csv_reader_writer.user.IUserCSVReaderWriter {
     private fun resolveFile(): File = File(filePath)
 
@@ -36,7 +39,7 @@ class UserCSVReaderWriter(private val filePath: String) :
                 UserDto(
                     id = UUID.randomUUID().toString(),
                     username = "rodina",
-                    hashedPassword = hashToMd5("admin123"),
+                    hashedPassword = hashingService.hash("admin123"),
                     role = "ADMIN"
                 ),
             )

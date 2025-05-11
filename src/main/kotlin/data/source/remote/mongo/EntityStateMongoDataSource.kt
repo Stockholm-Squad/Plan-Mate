@@ -1,14 +1,17 @@
 package data.source.remote.mongo
 
+import com.mongodb.client.model.Filters
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.EntityStateDto
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import org.example.data.source.EntityStateDataSource
-import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
 
 
 class EntityStateMongoDataSource(
-    private val stateCollection: CoroutineCollection<EntityStateDto>
+    private val stateCollection: MongoCollection<EntityStateDto>,
 ) : EntityStateDataSource {
 
     override suspend fun addEntityState(entityState: EntityStateDto): Boolean {
@@ -30,7 +33,8 @@ class EntityStateMongoDataSource(
     }
 
     override suspend fun isEntityStateExist(stateName: String): Boolean {
-        return stateCollection.findOne(EntityStateDto::name eq stateName) != null
+        val filteredQuery = Filters.eq(EntityStateDto::name.name, stateName)
+        return stateCollection.find(filteredQuery).firstOrNull() != null
     }
 
     override suspend fun getAllEntityStates(): List<EntityStateDto> {
@@ -38,10 +42,12 @@ class EntityStateMongoDataSource(
     }
 
     override suspend fun getEntityStateByName(stateName: String): EntityStateDto? {
-        return stateCollection.findOne(EntityStateDto::name eq stateName)
+        val filteredQuery = Filters.eq(EntityStateDto::name.name, stateName)
+        return stateCollection.find(filteredQuery).firstOrNull()
     }
 
     override suspend fun getEntityStateById(stateId: String): EntityStateDto? {
-        return stateCollection.findOne(EntityStateDto::id eq stateId)
+        val filteredQuery = Filters.eq(EntityStateDto::id.name, stateId)
+        return stateCollection.find(filteredQuery).firstOrNull()
     }
 }
