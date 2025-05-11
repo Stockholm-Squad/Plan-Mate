@@ -43,6 +43,7 @@ class EntityStateNotAddedException(message: String = "Entity State Not Added") :
 class EntityStateNotEditedException(message: String = "Entity State Not Edited") : EntityStateExceptions(message)
 class EntityStateNotDeletedException(message: String = "Entity State Not Deleted") :
     EntityStateExceptions(message)
+
 class NoEntityStateFoundException(message: String = "No Entity State Found") : EntityStateExceptions(message)
 
 

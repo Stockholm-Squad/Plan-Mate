@@ -58,8 +58,9 @@ class AddUserToProjectUIImp(
         return runBlocking(errorHandler) {
             try {
                 getProjectsUseCase.getProjectByName(projectName).let { project ->
-                    manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username).let { success ->
-                        if (success) {
+                    manageUsersAssignedToProjectUseCase.addUserToProject(project.id, username)
+                        .let { isProjectAdded ->
+                        if (isProjectAdded) {
                             outputPrinter.showMessage("User assigned successfully")
                             true
                         } else {

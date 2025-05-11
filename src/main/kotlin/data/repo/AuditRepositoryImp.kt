@@ -9,19 +9,22 @@ import org.example.logic.NoAuditsFoundException
 import org.example.logic.entities.Audit
 import org.example.logic.repository.AuditRepository
 
-class AuditRepositoryImp(private val auditDataSource: AuditDataSource) : AuditRepository {
+class AuditRepositoryImp(
+    private val auditDataSource: AuditDataSource,
+) : AuditRepository {
+    override suspend fun addAudits(audit: Audit): Boolean =
+        tryToExecute(
+            {
+                auditDataSource.addAudit(audit.mapToAuditModel())
+            },
+            onSuccess = { isAdded -> isAdded },
+            onFailure = { throw AuditNotAddedException() }
+        )
 
-    override suspend fun addAudit(audit: Audit): Boolean {
-        return tryToExecute({
-            auditDataSource.addAudit(audit.mapToAuditModel())
-        }, onSuccess = { it }, onFailure = { throw AuditNotAddedException() })
-    }
 
-    override suspend fun getAllAudits(): List<Audit> {
-        return tryToExecute(
-            { auditDataSource.getAllAudits().mapNotNull { it.mapToAuditEntity() } },
-            onSuccess = { it },
-            onFailure = { throw NoAuditsFoundException() })
-    }
-
+    override suspend fun getAllAudit(): List<Audit> = tryToExecute(
+        { auditDataSource.getAllAudits().mapNotNull { it.mapToAuditEntity() } },
+        onSuccess = { listOfAudits -> listOfAudits },
+        onFailure = { throw NoAuditsFoundException() })
 }
+
