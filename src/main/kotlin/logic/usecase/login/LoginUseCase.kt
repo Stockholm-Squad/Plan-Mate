@@ -2,64 +2,45 @@ package logic.usecase.login
 
 
 import logic.usecase.validation.ValidateUserDataUseCase
-import org.example.data.utils.tryToExecute
 import org.example.logic.IncorrectPasswordException
+import org.example.logic.InvalidPasswordException
+import org.example.logic.InvalidUserNameException
 import org.example.logic.UserDoesNotExistException
-import org.example.logic.UsersDataAreEmptyException
 import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.hashToMd5
 
 class LoginUseCase(
-    private val userRepository: UserRepository, private val validateUserDataUseCase: ValidateUserDataUseCase
+    private val userRepository: UserRepository, private val validateUserDataUseCase: ValidateUserDataUseCase,
 ) {
     private var currentUser: User? = null
 
     suspend fun loginUser(username: String, password: String): User {
-        return tryToExecute({
-            validateUserDataUseCase.validateUserName(username)
-            validateUserDataUseCase.validatePassword(password)
-            handleSuccess(
-                username = username, password = password, users = userRepository.getAllUsers()
-            )
-        }, onSuccess = {
-            currentUser = it
-            it
-        }, onFailure = { throw UsersDataAreEmptyException() })
+        if (!validateUserDataUseCase.isValidUserName(username.trim())) throw InvalidUserNameException()
+        if (!validateUserDataUseCase.isValidPassword(password.trim())) throw InvalidPasswordException()
+        return getUserIfExist(username.trim(), password.trim())
     }
 
-    private suspend fun handleSuccess(username: String, password: String, users: List<User>): User {
-        return tryToExecute(
-            {
-                val user = checkUserExists(users, username)
-                checkPassword(password, user)
-            },
-            onSuccess = { it },
-            onFailure = { throw UsersDataAreEmptyException() },
-        )
+    private suspend fun getUserIfExist(userName: String, password: String): User {
+        val user = getUser(userName) ?: throw UserDoesNotExistException()
+        if (user.username != userName) throw UserDoesNotExistException()
+        return if (isCorrectPassword(password, user.hashedPassword)) {
+            currentUser = user
+            user
+        } else throw IncorrectPasswordException()
     }
 
-    private suspend fun checkUserExists(users: List<User>, username: String): User {
-        return tryToExecute({
-            users.find { it.username == username }!!
-        }, onSuccess = { it }, onFailure = { throw UserDoesNotExistException() })
+    private fun isCorrectPassword(passwordToBeLoggedIn: String, userPassword: String): Boolean {
+        return hashToMd5(passwordToBeLoggedIn) == userPassword
     }
 
-    private suspend fun checkPassword(password: String, user: User): User {
-        return tryToExecute({
-            if (hashToMd5(password) == user.hashedPassword) {
-                user
-            } else {
-                throw IncorrectPasswordException()
-            }
-        }, onSuccess = { it }, onFailure = { throw IncorrectPasswordException() })
+    private suspend fun getUser(userName: String): User? {
+        userName.trim()
+        return userRepository.getAllUsers().find { it.username == userName }
     }
 
-    suspend fun isUserExists(userName: String): Boolean {
-        return tryToExecute(
-            { userRepository.getAllUsers().any { it.username == userName } },
-            onSuccess = { it },
-            onFailure = { false })
+    suspend fun isUserExist(userName: String): Boolean {
+        return getUser(userName) != null
     }
 
     fun logout() {

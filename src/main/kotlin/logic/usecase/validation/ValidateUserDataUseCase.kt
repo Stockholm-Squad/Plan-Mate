@@ -1,18 +1,17 @@
 package logic.usecase.validation
 
-import org.example.logic.InvalidPasswordException
-import org.example.logic.InvalidUserNameException
-
 
 class ValidateUserDataUseCase {
 
-    fun validateUserName(username: String) {
-        if (username.isBlank() || username.length > 20 || username.length < 4 || username.first()
-                .isDigit()
-        ) throw InvalidUserNameException()
+    fun isValidUserName(username: String): Boolean {
+        val userNameToBeChecked = username.trim()
+        return !(userNameToBeChecked.isBlank() || userNameToBeChecked.length > 20 || userNameToBeChecked.length < 4 ||
+                userNameToBeChecked.first()
+                    .isDigit())
     }
 
-    fun validatePassword(password: String) {
-        if (password.isBlank() || password.length < 8) throw InvalidPasswordException()
+    fun isValidPassword(password: String): Boolean {
+        val passwordToBeChecked = password.trim()
+        return !(passwordToBeChecked.isBlank() || passwordToBeChecked.length < 8)
     }
 }
