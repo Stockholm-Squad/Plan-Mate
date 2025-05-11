@@ -257,7 +257,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
 
             // When
-            val result = manageProjectUseCase.isProjectExists(projectId)
+            val result = manageProjectUseCase.isProjectNameExists(projectId)
 
             // Then
             assertThat(result.getOrThrow()).isTrue()
@@ -271,7 +271,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.success(emptyList())
 
             // When
-            val result = manageProjectUseCase.isProjectExists(projectId)
+            val result = manageProjectUseCase.isProjectNameExists(projectId)
 
             // Then
             assertThrows<Throwable> { result.getOrThrow() }
@@ -285,7 +285,7 @@ class ManageProjectUseCaseTest {
             every { projectRepository.getAllProjects() } returns Result.failure(Exception("Database error"))
 
             // When
-            val result = manageProjectUseCase.isProjectExists(projectId)
+            val result = manageProjectUseCase.isProjectNameExists(projectId)
 
             // Then
             assertThrows<Throwable> { result.getOrThrow() }
