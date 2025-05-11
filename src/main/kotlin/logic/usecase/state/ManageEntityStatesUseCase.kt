@@ -1,6 +1,5 @@
 package org.example.logic.usecase.state
 
-import org.example.logic.EntityStateAlreadyExistException
 import org.example.logic.NotAllowedEntityStateNameException
 import org.example.logic.entities.EntityState
 import org.example.logic.repository.EntityStateRepository
@@ -13,20 +12,18 @@ class ManageEntityStatesUseCase(
 ) {
     suspend fun addEntityState(stateName: String): Boolean {
         return isStateNameValid(stateName).let { validStateName ->
-            validStateName.takeIf { state ->
-                !entityStateRepository.isEntityStateExist(state)
-            }
+            entityStateRepository.isEntityStateExist(validStateName)
+                .takeIf { isEntityStateExist -> isEntityStateExist }
+                .let { entityStateRepository.addEntityState(EntityState(name = validStateName)) }
         }
-            ?.let {
-                entityStateRepository.addEntityState(EntityState(name = it))
-            } ?: throw EntityStateAlreadyExistException()
     }
 
-
     suspend fun editEntityStateByName(stateName: String, newStateName: String): Boolean {
-        return validateStateNames(stateName, newStateName).let { (validatedStateName, validatedNewStateName) ->
-            entityStateRepository.getEntityStateByName(validatedStateName).let { state ->
-                entityStateRepository.editEntityState(EntityState(state.id, validatedNewStateName))
+        return isStateNameValid(stateName).let { validStateName ->
+            isStateNameValid(newStateName).let { validNewStateName ->
+                entityStateRepository.getEntityStateByName(validStateName).let { state ->
+                    entityStateRepository.editEntityState(EntityState(state.id, validNewStateName))
+                }
             }
         }
     }
@@ -44,21 +41,13 @@ class ManageEntityStatesUseCase(
     }
 
     suspend fun getEntityStateIdByName(stateName: String): UUID {
-        return isStateNameValid(stateName).let {
-            entityStateRepository.getEntityStateByName(stateName).id
+        return isStateNameValid(stateName).let { validStateName ->
+            entityStateRepository.getEntityStateByName(validStateName).id
         }
     }
 
     suspend fun getEntityStateNameByStateId(stateId: UUID): String {
         return entityStateRepository.getEntityStateByID(stateId).name
-    }
-
-    private fun validateStateNames(stateName: String, newStateName: String): Pair<String, String> {
-        return isStateNameValid(stateName).let { validStateName ->
-            isStateNameValid(newStateName).let { validNewName ->
-                validStateName to validNewName
-            }
-        }
     }
 
     private fun isStateNameValid(stateName: String): String {
