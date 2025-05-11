@@ -32,8 +32,8 @@ class LoginUseCase(
         } else throw IncorrectPasswordException()
     }
 
-    private fun isCorrectPassword(passwordToBeLoggedIn: String, userPassword: String): Boolean {
-        return hashingService.verify(passwordToBeLoggedIn, userPassword)
+    private fun isCorrectPassword(passwordToBeLoggedIn: String, hashedUserPassword: String): Boolean {
+        return hashingService.verify(passwordToBeLoggedIn, hashedUserPassword)
     }
 
     private suspend fun getUser(userName: String): User? {
