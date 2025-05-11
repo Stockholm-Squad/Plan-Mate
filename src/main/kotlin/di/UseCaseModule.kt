@@ -22,12 +22,12 @@ val useCaseModule = module {
 
     single<HashingService> { Md5HashingService() }
 
-    single<AddUserUseCase> { AddUserUseCase(get(), get(), get()) }
+    single<AddUserUseCase> { AddUserUseCase(get(), get(), get(), get()) }
     single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }
     single<AddAuditUseCase> { AddAuditUseCase(get()) }
     single<AuditServicesUseCase> { AuditServicesUseCase(get(), get(), get()) }
     single<AuditDescriptionProvider> { AuditDescriptionProvider() }
-    single<LoginUseCase> { LoginUseCase(get(), get()) }
+    single<LoginUseCase> { LoginUseCase(get(), get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get()) }
     factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get()) }
     factory<GetProjectsUseCase> { GetProjectsUseCase(get()) }
