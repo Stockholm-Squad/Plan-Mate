@@ -12,8 +12,8 @@ class GetAuditUseCase(
     private val manageTasksUseCase: ManageTasksUseCase
 ) {
 
-    suspend fun getProjectAuditsByName(projectName: String): List<Audit> =
-        auditRepository.getAllAuditEntries().also { audits ->
+    suspend fun getAuditsForProjectByName(projectName: String): List<Audit> =
+        auditRepository.getAllAudits().also { audits ->
             getProjectsUseCase.getProjectByName(projectName).also { project ->
                 return audits.filter { audit ->
                     audit.entityTypeId == project.id
@@ -21,24 +21,25 @@ class GetAuditUseCase(
             }
         }
 
-
-    suspend fun getTaskAuditsByName(taskName: String): List<Audit> =
-        auditRepository.getAllAuditEntries().also { audits ->
-            manageTasksUseCase.getTaskIdByName(taskName).also { taskId ->
-                return audits.filter { audit ->
-                    audit.entityTypeId == taskId
+    suspend fun getAuditsForTaskByName(taskName: String): List<Audit> {
+        val result = mutableListOf<Audit>()
+        auditRepository.getAllAudits().also { audits ->
+            manageTasksUseCase.getAllTasks().filter { task ->
+                task.name == taskName
+            }.forEach { task ->
+                audits.filter { audit ->
+                    audit.entityTypeId == task.id
+                }.also { filteredAudits ->
+                    result.addAll(filteredAudits)
                 }
             }
         }
+        return result
+    }
 
-
-
-
-    suspend fun getAuditsByUserId(userId: UUID): List<Audit> =
-        auditRepository.getAllAuditEntries().also { audits ->
+    suspend fun getAuditsForUserById(userId: UUID): List<Audit> =
+        auditRepository.getAllAudits().also { audits ->
             return audits.filter { it.userId == userId }
         }
-    
-
 
 }

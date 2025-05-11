@@ -4,27 +4,28 @@ import data.mapper.mapToAuditEntity
 import data.mapper.mapToAuditModel
 import org.example.data.source.AuditDataSource
 import org.example.data.utils.tryToExecute
-import org.example.logic.AuditSystemNotAddedException
-import org.example.logic.NoAuditsFoundedException
+import org.example.logic.AuditNotAddedException
+import org.example.logic.NoAuditsFoundException
 import org.example.logic.entities.Audit
 import org.example.logic.repository.AuditRepository
 
 class AuditRepositoryImp(
     private val auditDataSource: AuditDataSource,
 ) : AuditRepository {
-    override suspend fun addAuditsEntries(audit: List<Audit>): Boolean =
+    override suspend fun addAudit(audit: Audit): Boolean =
         tryToExecute(
             {
-                auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
+                auditDataSource.addAudit(audit.mapToAuditModel())
             },
             onSuccess = { isAdded -> isAdded },
-            onFailure = { throw AuditSystemNotAddedException() }
+            onFailure = { throw AuditNotAddedException() }
         )
 
 
-    override suspend fun getAllAuditEntries(): List<Audit> = tryToExecute(
-        { auditDataSource.getAllAuditEntries().mapNotNull { it.mapToAuditEntity() } },
+    override suspend fun getAllAudits(): List<Audit> = tryToExecute(
+        { auditDataSource.getAllAudits().mapNotNull { it.mapToAuditEntity() } },
         onSuccess = { listOfAudits -> listOfAudits },
-        onFailure = { throw NoAuditsFoundedException() })
+        onFailure = { throw NoAuditsFoundException() })
+
 }
 
