@@ -47,7 +47,7 @@ class NoEntityStateFoundException(message: String = "No Entity State Found") : E
 
 
 open class AuditExceptions(message: String) : PlanMateExceptions(message)
-class NoAuditsFoundedException(message: String = "There are no audits.") : AuditExceptions(message)
+class NoAuditsFoundException(message: String = "There are no audits.") : AuditExceptions(message)
 class AuditNotAddedException(message: String = "Audit not added.") : AuditExceptions(message)
 
 
