@@ -14,8 +14,8 @@ class ManageProjectUseCase(
 ) {
 
     suspend fun addProject(projectName: String, stateName: String): Boolean {
-        return isProjectExists(projectName).let { isProjectExisted ->
-            if (!isProjectExisted) {
+        return isProjectNameExists(projectName).let { isProjectNameExists ->
+            if (!isProjectNameExists) {
                 val projectStateId = manageProjectStateUseCase.getEntityStateIdByName(stateName)
                 val newProject = Project(id = UUID.randomUUID(), projectName, projectStateId)
 
@@ -32,8 +32,8 @@ class ManageProjectUseCase(
         newProjectName: String,
         newProjectStateName: String,
     ): Boolean {
-        return isProjectExists(newProjectName).let { isProjectExisted ->
-            if (isProjectExisted) {
+        return isProjectExists(projectId).let { isProjectExist ->
+            if (isProjectExist) {
                 val newProjectStateId = manageProjectStateUseCase.getEntityStateIdByName(newProjectStateName)
                 val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
                 projectRepository.editProject(updatedProject)
@@ -48,7 +48,7 @@ class ManageProjectUseCase(
         }
     }
 
-    suspend fun isProjectExists(projectName: String): Boolean {
+    suspend fun isProjectNameExists(projectName: String): Boolean {
         return try {
             getProjectsUseCase.getProjectByName(projectName)
             true
@@ -57,5 +57,12 @@ class ManageProjectUseCase(
         }
     }
 
+    private suspend fun isProjectExists(projectId: UUID): Boolean {
+        return try {
+            getProjectsUseCase.getAllProjects().any { project -> project.id == projectId }
+        } catch (e: Exception) {
+            false
+        }
+    }
 
 }

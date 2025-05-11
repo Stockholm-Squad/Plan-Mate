@@ -19,8 +19,8 @@ class ManageUsersAssignedToProjectUseCase(
 
 
     suspend fun addUserToProject(projectId: UUID, userName: String): Boolean {
-        return loginUseCase.isUserExists(userName).let { isUserExists ->
-            if (isUserExists)
+        return loginUseCase.isUserExist(userName).let { isUserExist ->
+            if (isUserExist)
                 userRepository.addUserToProject(projectId = projectId, userName = userName)
             else
                 throw UserDoesNotExistException()
@@ -30,7 +30,7 @@ class ManageUsersAssignedToProjectUseCase(
 
     suspend fun deleteUserFromProject(projectName: String, username: String): Boolean {
         return getProjectsUseCase.getProjectByName(projectName).let { project ->
-            loginUseCase.isUserExists(username).let { isUserExist ->
+            loginUseCase.isUserExist(username).let { isUserExist ->
                 if (isUserExist)
                     userRepository.deleteUserFromProject(projectId = project.id, userName = username)
                 else
