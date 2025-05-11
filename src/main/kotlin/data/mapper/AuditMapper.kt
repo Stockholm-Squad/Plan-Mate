@@ -29,10 +29,10 @@ fun Audit.mapToAuditModel(): AuditDto {
     )
 }
 
-fun getAuditType(auditSystem: String): EntityType? {
+fun getAuditType(audit: String): EntityType? {
     return when {
-        auditSystem.equals("TASK", ignoreCase = true) -> EntityType.TASK
-        auditSystem.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
+        audit.equals("TASK", ignoreCase = true) -> EntityType.TASK
+        audit.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
         else -> null
     }
 }

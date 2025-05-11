@@ -25,7 +25,7 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val auditSystemUseCase: AddAuditUseCase,
+    private val addAuditUseCase: AddAuditUseCase,
     private val loginUseCase: LoginUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -111,7 +111,7 @@ class TaskManagerUiImp(
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
                 val auditDescription = printer.printAddTaskDescription(EntityType.TASK, task.name, task.id, projectName)
-                auditSystemUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
+                addAuditUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
                 printer.printTask(task)
             } catch (ex: Exception) {
                 printer.showMessage(ex.message ?: "Unknown Error")
@@ -145,7 +145,7 @@ class TaskManagerUiImp(
             manageTasksUseCase.editTask(updatedTask)
             val auditDescription =
                 printer.printUpdateTaskDescription(EntityType.TASK, existingTask.name, newDescription, newStateName)
-            auditSystemUseCase.addAuditEntry(userId, EntityType.TASK, existingTask.id, auditDescription)
+            addAuditUseCase.addAuditEntry(userId, EntityType.TASK, existingTask.id, auditDescription)
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error.")
@@ -168,7 +168,7 @@ class TaskManagerUiImp(
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
             val auditDescription = printer.printDeleteTaskDescription(EntityType.TASK, task.name, task.id, projectName)
-            auditSystemUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
+            addAuditUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
             printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error")
