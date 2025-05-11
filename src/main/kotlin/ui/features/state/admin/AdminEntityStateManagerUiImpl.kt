@@ -1,8 +1,9 @@
 package org.example.ui.features.state.admin
 
 import kotlinx.coroutines.runBlocking
-import org.example.logic.entities.User
+import org.example.logic.entities.EntityType
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
+import org.example.ui.features.audit.AuditServices
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.common.UserEntityStateManagerUi
 import org.example.ui.features.state.model.EntityStateMenuChoice
@@ -10,9 +11,11 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 
+
 class AdminEntityStateManagerUiImpl(
     private val userEntityStateManagerUi: UserEntityStateManagerUi,
     private val manageEntityStatesUseCase: ManageEntityStatesUseCase,
+    private val auditServices: AuditServices,
     private val reader: InputReader,
     private val printer: OutputPrinter,
 ) : AdminEntityStateManagerUi, UserEntityStateManagerUi {
@@ -52,7 +55,13 @@ class AdminEntityStateManagerUiImpl(
             ?.let { stateName ->
                 runBlocking {
                     try {
+                        val stateId = manageEntityStatesUseCase.getEntityStateIdByName(stateName)
                         manageEntityStatesUseCase.addEntityState(stateName = stateName)
+                        auditServices.addAuditForAddEntity(
+                            entityType = EntityType.STATE,
+                            entityName = stateName,
+                            entityId = stateId,
+                        )
                         printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
                     } catch (exception: Exception) {
                         printer.showMessage("Failed to delete state: ${exception.message}")
@@ -77,9 +86,16 @@ class AdminEntityStateManagerUiImpl(
             }
         runBlocking {
             try {
+                val stateId = manageEntityStatesUseCase.getEntityStateIdByName(currentStateName)
                 manageEntityStatesUseCase.editEntityStateByName(
                     stateName = currentStateName,
                     newStateName = newStateName
+                )
+                auditServices.addAuditForUpdateEntity(
+                    entityType = EntityType.STATE,
+                    existEntityName = currentStateName,
+                    newEntityName = newStateName,
+                    entityId = stateId
                 )
                 printer.showMessage(UiMessages.STATE_UPDATED_SUCCESSFULLY)
             } catch (exception: Exception) {
@@ -95,7 +111,13 @@ class AdminEntityStateManagerUiImpl(
         }?.let { stateName ->
             runBlocking {
                 try {
+                    val stateId = manageEntityStatesUseCase.getEntityStateIdByName(stateName)
                     manageEntityStatesUseCase.deleteEntityState(stateName = stateName)
+                    auditServices.addAuditForDeleteEntity(
+                        entityType = EntityType.STATE,
+                        entityName = stateName,
+                        entityId = stateId,
+                    )
                     showStateDeletedMessage()
                 } catch (exception: Exception) {
                     printer.showMessage("Failed to delete state: ${exception.message}")
@@ -111,4 +133,5 @@ class AdminEntityStateManagerUiImpl(
     override fun showAllStates() {
         userEntityStateManagerUi.showAllStates()
     }
+
 }
