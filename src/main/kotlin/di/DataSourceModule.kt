@@ -11,7 +11,7 @@ import org.example.data.utils.*
 import org.koin.dsl.module
 
 val remoteDataSourceModule = module {
-    single<MongoDatabase> { MongoSetup.createDataBase() }
+    single<MongoDatabase> { MongoSetup.database }
     single<MongoProvider> { MongoProviderImpl(get()) }
 
     single<AuditDataSource> {

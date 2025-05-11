@@ -10,20 +10,19 @@ import org.example.data.utils.CONNECTION_STRING
 import org.example.data.utils.DATABASE_NAME
 
 object MongoSetup {
+    val database: MongoDatabase
+        get() = MongoClient.create(
+            getClientMongoSettings()
+        ).getDatabase(DATABASE_NAME)
 
-    fun createDataBase(): MongoDatabase {
+    private fun getClientMongoSettings(): MongoClientSettings = MongoClientSettings.builder()
+        .applyConnectionString(ConnectionString(CONNECTION_STRING))
+        .serverApi(
+            getServiceApi()
+        )
+        .build()
 
-        val serverApi = ServerApi.builder()
-            .version(ServerApiVersion.V1)
-            .build()
-
-        val settings = MongoClientSettings.builder()
-            .applyConnectionString(ConnectionString(CONNECTION_STRING))
-            .serverApi(serverApi)
-            .build()
-
-        val client: MongoClient = MongoClient.create(settings)
-
-        return client.getDatabase(DATABASE_NAME)
-    }
+    private fun getServiceApi(): ServerApi = ServerApi.builder()
+        .version(ServerApiVersion.V1)
+        .build()
 }
