@@ -1,4 +1,4 @@
-package org.example.logic.usecase.audit
+package org.example.logic.usecase.audit.utils
 
 import logic.usecase.audit.*
 import org.example.logic.entities.EntityType

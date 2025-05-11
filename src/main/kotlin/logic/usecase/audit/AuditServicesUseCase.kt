@@ -3,6 +3,7 @@ package org.example.logic.usecase.audit
 import logic.usecase.login.LoginUseCase
 import org.example.logic.UsersDoesNotExistException
 import org.example.logic.entities.EntityType
+import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
 import java.util.*
 
 

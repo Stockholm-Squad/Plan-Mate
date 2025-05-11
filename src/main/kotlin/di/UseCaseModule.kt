@@ -3,9 +3,9 @@ package org.example.di
 import logic.usecase.login.LoginUseCase
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.usecase.audit.AddAuditUseCase
-import org.example.logic.usecase.audit.AuditDescriptionProvider
 import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.audit.GetAuditUseCase
+import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
