@@ -77,34 +77,57 @@ class OutputPrinterImplementation : OutputPrinter {
         }
     }
 
-    override fun printAddTaskDescription(
+    override fun printAddEntityDescription(
         entityType: EntityType,
-        taskName: String,
-        taskId: UUID,
-        projectName: String
+        entityName: String,
+        entityId: UUID,
+        additionalInfo: String
     ): String {
-        return "$entityType: added'$taskName' (ID: $taskId) to the '$projectName' project."
+        return when (entityType) {
+            EntityType.TASK -> "$entityType: added '$entityName' (ID: $entityId) to the '$additionalInfo' project."
+            EntityType.PROJECT -> "$entityType: added '$entityName' (ID: $entityId) with state '$additionalInfo'."
+            EntityType.STATE -> "$entityType: added '$entityName' (ID: $entityId)"
+        }
     }
 
-    override fun printUpdateTaskDescription(
+    override fun printUpdateEntityDescription(
         entityType: EntityType,
-        newTaskName: String,
+        existEntityName: String,
+        newEntityName: String,
+        entityId: UUID,
         newDescription: String,
-        newStateName: String
+        newStateName: String,
     ): String {
-        return "$entityType: " +
-                "Updated Task name '$newTaskName'. " +
-                "Description '${newDescription.take(30)}'. " +
-                "State updated to '$newStateName'."
+        return when (entityType) {
+            EntityType.TASK -> {
+                "$entityType: Updated Task name from '$existEntityName' to '$newEntityName'. " +
+                        "(ID: $entityId) Description '${newDescription.take(30)}'. " +
+                        "State updated to '$newStateName'."
+            }
+
+            EntityType.PROJECT -> {
+                "$entityType: Updated Project name from '$existEntityName' to '$newEntityName'. " +
+                        "(ID: $entityId) State updated to '$newStateName'."
+            }
+
+            EntityType.STATE -> {
+                "$entityType: Updated State name from '$existEntityName' to '$newEntityName'. " +
+                        "(ID: $entityId)"
+            }
+        }
     }
 
-    override fun printDeleteTaskDescription(
+    override fun printDeleteEntityDescription(
         entityType: EntityType,
-        taskName: String,
-        taskId: UUID,
-        projectName: String
+        entityName: String,
+        entityId: UUID,
+        additionalInfo: String
     ): String {
-        return "$entityType: Task '$taskName' (ID: $taskId) was deleted from project '$projectName'."
+        return when (entityType) {
+            EntityType.TASK -> "$entityType: deleted '$entityName' (ID: $entityId) was deleted from project '$additionalInfo'."
+            EntityType.PROJECT -> "$entityType: deleted '$entityName' (ID: $entityId) was deleted with state '$additionalInfo'."
+            EntityType.STATE -> "$entityType: deleted'$entityName' (ID: $entityId) was deleted."
+        }
     }
 
 }

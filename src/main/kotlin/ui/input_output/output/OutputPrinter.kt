@@ -13,14 +13,28 @@ interface OutputPrinter {
     fun printTaskList(tasks: List<Task>)
     fun printMateTaskAssignments(tasks: List<Task>)
     fun showStates(projectStates: List<EntityState>)
-    fun showAudits(audits: List<Audit>, username : String)
-    fun printAddTaskDescription(entityType: EntityType, taskName: String, taskId: UUID, projectName: String): String
-    fun printUpdateTaskDescription(
+    fun showAudits(audits: List<Audit>, username: String)
+
+    fun printAddEntityDescription(
         entityType: EntityType,
-        newTaskName: String,
-        newDescription: String,
-        newStateName: String
+        entityName: String,
+        entityId: UUID,
+        additionalInfo: String = ""
     ): String
 
-    fun printDeleteTaskDescription(entityType: EntityType, taskName: String, taskId: UUID, projectName: String): String
+    fun printUpdateEntityDescription(
+        entityType: EntityType,
+        existEntityName: String,
+        newEntityName: String,
+        entityId: UUID,
+        newDescription: String = "",
+        newStateName: String = "",
+    ): String
+
+    fun printDeleteEntityDescription(
+        entityType: EntityType,
+        entityName: String,
+        entityId: UUID,
+        additionalInfo: String = ""
+    ): String
 }
