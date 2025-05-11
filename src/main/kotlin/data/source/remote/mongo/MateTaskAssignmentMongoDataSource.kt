@@ -2,6 +2,7 @@ package data.source.remote.mongo
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.MateTaskAssignmentDto
+
 import kotlinx.coroutines.flow.toList
 import org.example.data.source.MateTaskAssignmentDataSource
 import org.litote.kmongo.and
@@ -27,7 +28,6 @@ class MateTaskAssignmentMongoDataSource(
             MateTaskAssignmentDto::userName eq mateName,
             MateTaskAssignmentDto::taskId eq taskId
         )
-
         val result = mateTaskAssignmentCollection.deleteOne(filter)
         return result.deletedCount > 0
     }

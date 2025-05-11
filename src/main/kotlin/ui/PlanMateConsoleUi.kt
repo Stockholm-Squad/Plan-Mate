@@ -57,7 +57,7 @@ class PlanMateConsoleUi(
     }
 
     private fun handleMateChoice() {
-        reader.readIntOrNull().takeIf { it != null }.let { choice ->
+        reader.readIntOrNull().takeIf { choice -> choice != null }.let { choice ->
             when (choice) {
                 MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
                 MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi()
@@ -70,7 +70,7 @@ class PlanMateConsoleUi(
 
     private fun handleAdminUi() {
         printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
-        reader.readIntOrNull().takeIf { it != null }.let { choice ->
+        reader.readIntOrNull().takeIf { choice -> choice != null }.let { choice ->
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()

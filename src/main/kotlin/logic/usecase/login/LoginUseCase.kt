@@ -17,39 +17,42 @@ class LoginUseCase(
 ) {
     private var currentUser: User? = null
 
-    suspend fun loginUser(username: String, password: String): User {
-        if (!validateUserDataUseCase.isValidUserName(username.trim())) throw InvalidUserNameException()
-        if (!validateUserDataUseCase.isValidPassword(password.trim())) throw InvalidPasswordException()
-        return getUserIfExist(username.trim(), password.trim())
-    }
+    suspend fun loginUser(username: String, password: String): User =
+        validateUserDataUseCase.isValidUserName(username.trim()).takeIf { isValidUserName ->
+            isValidUserName
+        }?.let {
+            validateUserDataUseCase.isValidPassword(password.trim()).takeIf { isValidPassword ->
+                isValidPassword
+            }?.let {
+                getUserIfExist(username.trim(), password.trim())
+            } ?: throw InvalidPasswordException()
+        } ?: throw InvalidUserNameException()
 
-    private suspend fun getUserIfExist(userName: String, password: String): User {
-        val user = getUser(userName) ?: throw UserDoesNotExistException()
-        if (user.username != userName) throw UserDoesNotExistException()
-        return if (isCorrectPassword(password, user.hashedPassword)) {
-            currentUser = user
-            user
-        } else throw IncorrectPasswordException()
-    }
 
-    private fun isCorrectPassword(passwordToBeLoggedIn: String, hashedUserPassword: String): Boolean {
-        return hashingService.verify(passwordToBeLoggedIn, hashedUserPassword)
-    }
+    private suspend fun getUserIfExist(userName: String, password: String): User =
+        getUser(userName)?.let { user ->
+            if (user.username != userName) throw UserDoesNotExistException()
+            if (isCorrectPassword(password, user.hashedPassword)) {
+                currentUser = user
+                user
+            } else throw IncorrectPasswordException()
+        } ?: throw UserDoesNotExistException()
 
-    private suspend fun getUser(userName: String): User? {
-        userName.trim()
-        return userRepository.getAllUsers().find { it.username == userName }
-    }
+    private fun isCorrectPassword(passwordToBeLoggedIn: String, hashedUserPassword: String): Boolean =
+        hashingService.verify(passwordToBeLoggedIn, hashedUserPassword)
 
-    suspend fun isUserExist(userName: String): Boolean {
-        return getUser(userName) != null
-    }
+    private suspend fun getUser(userName: String): User? =
+        userName.trim().let {
+            userRepository.getAllUsers().find { it.username == userName }
+        }
+
+    suspend fun isUserExist(userName: String): Boolean =
+        getUser(userName) != null
 
     fun logout() {
         currentUser = null
     }
 
-    fun getCurrentUser(): User? {
-        return currentUser
-    }
+    fun getCurrentUser(): User? = currentUser
+
 }
