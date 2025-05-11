@@ -36,7 +36,7 @@ class EntityStateRepositoryImp(
 
     override suspend fun isEntityStateExist(stateName: String): Boolean = tryToExecute(
         { entityStateDataSource.isEntityStateExist(stateName) },
-        onSuccess = { isExisted -> isExisted },
+        onSuccess = { isExist -> isExist },
         onFailure = { throw NoEntityStateFoundException() }
     )
 
