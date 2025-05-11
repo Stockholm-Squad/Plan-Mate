@@ -111,7 +111,7 @@ class TaskManagerUiImp(
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
                 val auditDescription = printer.printAddTaskDescription(EntityType.TASK, task.name, task.id, projectName)
-                auditSystemUseCase.addEntityChangeHistory(userId, EntityType.TASK, task.id, auditDescription)
+                auditSystemUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
                 printer.printTask(task)
             } catch (ex: Exception) {
                 printer.showMessage(ex.message ?: "Unknown Error")
@@ -145,7 +145,7 @@ class TaskManagerUiImp(
             manageTasksUseCase.editTask(updatedTask)
             val auditDescription =
                 printer.printUpdateTaskDescription(EntityType.TASK, existingTask.name, newDescription, newStateName)
-            auditSystemUseCase.addEntityChangeHistory(userId, EntityType.TASK, existingTask.id, auditDescription)
+            auditSystemUseCase.addAuditEntry(userId, EntityType.TASK, existingTask.id, auditDescription)
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error.")
@@ -168,7 +168,7 @@ class TaskManagerUiImp(
                 ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
 
             val auditDescription = printer.printDeleteTaskDescription(EntityType.TASK, task.name, task.id, projectName)
-            auditSystemUseCase.addEntityChangeHistory(userId, EntityType.TASK, task.id, auditDescription)
+            auditSystemUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
             printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error")
