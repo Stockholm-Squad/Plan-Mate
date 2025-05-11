@@ -4,7 +4,7 @@ import data.dto.AuditDto
 import org.example.data.source.AuditDataSource
 
 class AuditCSVDataSource : AuditDataSource {
-    override suspend fun addAudit(audit: List<AuditDto>): Boolean {
+    override suspend fun addAudit(audit: AuditDto): Boolean {
         TODO("Not yet implemented")
     }
 

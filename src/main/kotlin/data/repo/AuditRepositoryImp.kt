@@ -11,9 +11,9 @@ import org.example.logic.repository.AuditRepository
 
 class AuditRepositoryImp(private val auditDataSource: AuditDataSource) : AuditRepository {
 
-    override suspend fun addAudit(audit: List<Audit>): Boolean {
+    override suspend fun addAudit(audit: Audit): Boolean {
         return tryToExecute({
-            auditDataSource.addAudit(audit.map { it.mapToAuditModel() })
+            auditDataSource.addAudit(audit.mapToAuditModel())
         }, onSuccess = { it }, onFailure = { throw AuditNotAddedException() })
     }
 
