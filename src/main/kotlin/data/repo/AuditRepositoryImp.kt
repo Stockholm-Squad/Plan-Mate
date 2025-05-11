@@ -12,19 +12,19 @@ import org.example.logic.repository.AuditRepository
 class AuditRepositoryImp(
     private val auditDataSource: AuditDataSource,
 ) : AuditRepository {
-    override suspend fun addAuditsEntries(audit: List<Audit>): Boolean {
+    override suspend fun addAuditsEntries(audit: List<Audit>): Boolean =
+        tryToExecute(
+            {
+                auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
+            },
+            onSuccess = { success -> success },
+            onFailure = { throw AuditSystemNotAddedException() }
+        )
 
-        return tryToExecute({
-            auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
-        }, onSuccess = { success -> success }, onFailure = { throw AuditSystemNotAddedException() })
 
-    }
-
-    override suspend fun getAllAuditEntries(): List<Audit> {
-        return tryToExecute(
-            { auditDataSource.getAllAuditEntries().mapNotNull { it.mapToAuditEntity() } },
-            onSuccess = { listOfAudits -> listOfAudits },
-            onFailure = { throw NoAuditsFoundedException() })
-    }
-
+    override suspend fun getAllAuditEntries(): List<Audit> = tryToExecute(
+        { auditDataSource.getAllAuditEntries().mapNotNull { it.mapToAuditEntity() } },
+        onSuccess = { listOfAudits -> listOfAudits },
+        onFailure = { throw NoAuditsFoundedException() })
 }
+
