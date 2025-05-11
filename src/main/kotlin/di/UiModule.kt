@@ -5,7 +5,6 @@ import org.example.ui.features.addusertoproject.AddUserToProjectUI
 import org.example.ui.features.addusertoproject.AddUserToProjectUIImp
 import org.example.ui.features.audit.AuditManagerUi
 import org.example.ui.features.audit.AuditManagerUiImp
-import org.example.ui.features.audit.AuditServices
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.login.LoginUiImp
@@ -30,7 +29,6 @@ val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
     factory<AuditManagerUi> { AuditManagerUiImp(get(), get(), get(), get()) }
-    factory<AuditServices> { AuditServices(get(), get(), get()) }
     factory<LoginUi> { LoginUiImp(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
     factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
