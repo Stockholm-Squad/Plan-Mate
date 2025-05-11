@@ -13,7 +13,7 @@ class GetAuditUseCase(
 ) {
 
     suspend fun getAuditsForProjectByName(projectName: String): List<Audit> =
-        auditRepository.getAllAuditEntries().also { audits ->
+        auditRepository.getAllAudits().also { audits ->
             getProjectsUseCase.getProjectByName(projectName).also { project ->
                 return audits.filter { audit ->
                     audit.entityTypeId == project.id
@@ -22,7 +22,7 @@ class GetAuditUseCase(
         }
 
     suspend fun getAuditsForTaskByName(taskName: String): List<Audit> =
-        auditRepository.getAllAuditEntries().also { audits ->
+        auditRepository.getAllAudits().also { audits ->
             manageTasksUseCase.getTaskIdByName(taskName).also { taskId ->
                 return audits.filter { audit ->
                     audit.entityTypeId == taskId
@@ -31,7 +31,7 @@ class GetAuditUseCase(
         }
 
     suspend fun getAuditsForUserById(userId: UUID): List<Audit> =
-        auditRepository.getAllAuditEntries().also { audits ->
+        auditRepository.getAllAudits().also { audits ->
             return audits.filter { it.userId == userId }
         }
 

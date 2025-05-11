@@ -22,6 +22,6 @@ class AddAuditUseCase(private val auditRepository: AuditRepository) {
             description = description,
             dateTime = DateHandlerImp().getCurrentDateTime(),
         )
-        return auditRepository.addAuditsEntries(listOf(auditEntry))
+        return auditRepository.addAudit(listOf(auditEntry))
     }
 }
