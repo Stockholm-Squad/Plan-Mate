@@ -1,8 +1,8 @@
 package org.example.ui.features.audit
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.runBlocking
 import logic.usecase.login.LoginUseCase
-import org.example.logic.entities.User
 import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader
@@ -40,7 +40,7 @@ class AuditSystemManagerUiImp(
         reader.readStringOrNull()?.let { input ->
             runBlocking(errorHandler) {
                 try{
-                    val audits = useCase.getProjectAuditsByName(input)
+                    val audits = useCase.getAuditsForProjectByName(input)
                     printer.showAudits(audits, loginUseCase.getCurrentUser()!!.username)
                 } catch (e: Exception) {
                     printer.showMessage(e.message ?: "Unknown error")
@@ -54,7 +54,7 @@ class AuditSystemManagerUiImp(
         reader.readStringOrNull()?.let { input ->
             runBlocking {
                 try {
-                    val audits = useCase.getTaskAuditsByName(input)
+                    val audits = useCase.getAuditsForTaskByName(input)
                     printer.showAudits(audits, loginUseCase.getCurrentUser()!!.username)
 
                 }catch (e: Exception) {
@@ -69,7 +69,7 @@ class AuditSystemManagerUiImp(
     private fun displayAllAudits() {
         runBlocking(errorHandler) {
             try{
-                val audits = useCase.getAuditsByUserId(loginUseCase.getCurrentUser()!!.id)
+                val audits = useCase.getAuditsForUserById(loginUseCase.getCurrentUser()!!.id)
                 printer.showAudits(audits, loginUseCase.getCurrentUser()!!.username)
             }catch (e: Exception){
                 printer.showMessage(e.message ?: "Unknown error")

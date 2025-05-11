@@ -12,7 +12,7 @@ class GetAuditUseCase(
     private val manageTasksUseCase: ManageTasksUseCase
 ) {
 
-    suspend fun getProjectAuditsByName(projectName: String): List<Audit> =
+    suspend fun getAuditsForProjectByName(projectName: String): List<Audit> =
         auditRepository.getAllAuditEntries().also { audits ->
             getProjectsUseCase.getProjectByName(projectName).also { project ->
                 return audits.filter { audit ->
@@ -21,8 +21,7 @@ class GetAuditUseCase(
             }
         }
 
-
-    suspend fun getTaskAuditsByName(taskName: String): List<Audit> =
+    suspend fun getAuditsForTaskByName(taskName: String): List<Audit> =
         auditRepository.getAllAuditEntries().also { audits ->
             manageTasksUseCase.getTaskIdByName(taskName).also { taskId ->
                 return audits.filter { audit ->
@@ -31,14 +30,9 @@ class GetAuditUseCase(
             }
         }
 
-
-
-
-    suspend fun getAuditsByUserId(userId: UUID): List<Audit> =
+    suspend fun getAuditsForUserById(userId: UUID): List<Audit> =
         auditRepository.getAllAuditEntries().also { audits ->
             return audits.filter { it.userId == userId }
         }
-    
-
 
 }
