@@ -63,7 +63,7 @@ class AdminEntityStateManagerUiImpl(
                         )
                         printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
                     } catch (exception: Exception) {
-                        printer.showMessage("Failed to delete state: ${exception.message}")
+                        printer.showMessage("Failed to add state: ${exception.message}")
                     }
                 }
             } ?: printer.showMessage(UiMessages.INVALID_INPUT)
