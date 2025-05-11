@@ -39,9 +39,9 @@ object UiMessages {
     const val INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
         "Invalid state name entered.\nPress Enter to return to the main menu or 'y' to try again."
 
-    //audit system constants
-    val SHOW_AUDIT_SYSTEM_OPTIONS = """
-        |----------- Audit System Menu -----------|
+    //audit constants
+    val SHOW_AUDIT_OPTIONS = """
+        |----------- Audit Menu -----------|
         | 1. Show Project Audits                  |
         | 2. Show Task Audits                     |
         | 3. Show All Audits                      |
@@ -59,7 +59,7 @@ object UiMessages {
         | 3. Manage states                                     |
         | 4. Add Mate                                          |
         | 5. Add Mate To Project                               |
-        | 6. Show Audit system                                 |
+        | 6. Show Audit                                |
         | 7. Log out                                           |
     """.trimIndent()
 
@@ -68,7 +68,7 @@ object UiMessages {
         |-------  Please choose what do you want to do  -------|
         | 1. Manage tasks                                      |
         | 2. Manage states                                     |
-        | 3. Show Audit system                                 |
+        | 3. Show Audit                                 |
         | 4. Log out                                           |
     """.trimIndent()
 }

@@ -22,7 +22,7 @@ class AuditManagerUiImp(
     override fun invoke() {
         if (loginUseCase.getCurrentUser() == null) return
         do {
-            printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS)
+            printer.showMessage(UiMessages.SHOW_AUDIT_OPTIONS)
             when (getMainMenuOption()) {
                 1 -> displayAuditsByProjectName()
                 2 -> displayAuditsByTaskName()
