@@ -5,12 +5,13 @@ import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.UserExistException
 import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
-import org.example.logic.utils.hashToMd5
+import org.example.logic.utils.HashingService
 
 class AddUserUseCase(
     private val userRepository: UserRepository,
     private val validateUserDataUseCase: ValidateUserDataUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val hashingService: HashingService,
 ) {
 
     suspend fun addUser(username: String, password: String): Boolean {
@@ -27,7 +28,7 @@ class AddUserUseCase(
     ): User {
         loginUseCase.isUserExists(username).also { exist ->
             if (!exist) {
-                return User(username = username, hashedPassword = hashToMd5(password))
+                return User(username = username, hashedPassword = hashingService.hash(password))
             } else {
                 throw UserExistException()
             }
