@@ -8,10 +8,12 @@ import org.example.logic.UserDoesNotExistException
 import org.example.logic.UsersDataAreEmptyException
 import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
-import org.example.logic.utils.hashToMd5
+import org.example.logic.utils.HashingService
 
 class LoginUseCase(
-    private val userRepository: UserRepository, private val validateUserDataUseCase: ValidateUserDataUseCase
+    private val userRepository: UserRepository,
+    private val validateUserDataUseCase: ValidateUserDataUseCase,
+    private val hashingService: HashingService,
 ) {
     private var currentUser: User? = null
 
@@ -47,7 +49,7 @@ class LoginUseCase(
 
     private suspend fun checkPassword(password: String, user: User): User {
         return tryToExecute({
-            if (hashToMd5(password) == user.hashedPassword) {
+            if (hashingService.verify(password, user.hashedPassword)) {
                 user
             } else {
                 throw IncorrectPasswordException()
