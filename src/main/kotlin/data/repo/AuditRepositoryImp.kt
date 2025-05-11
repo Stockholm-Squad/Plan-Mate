@@ -17,7 +17,7 @@ class AuditRepositoryImp(
             {
                 auditDataSource.addAuditsEntries(audit.map { it.mapToAuditModel() })
             },
-            onSuccess = { success -> success },
+            onSuccess = { isAdded -> isAdded },
             onFailure = { throw AuditSystemNotAddedException() }
         )
 

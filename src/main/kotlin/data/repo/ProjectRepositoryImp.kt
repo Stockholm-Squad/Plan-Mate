@@ -26,15 +26,15 @@ class ProjectRepositoryImp(
 
     override suspend fun addProject(project: Project): Boolean = tryToExecute(
         { projectDataSource.addProject(project.mapToProjectModel()) },
-        onSuccess = { success ->
-            success
+        onSuccess = { isAdded ->
+            isAdded
         }, onFailure = { throw NoProjectAddedException() })
 
 
     override suspend fun editProject(updatedProject: Project): Boolean = tryToExecute(
         { projectDataSource.editProject(updatedProject.mapToProjectModel()) },
-        onSuccess = { success ->
-            success
+        onSuccess = { isEdited ->
+            isEdited
         }, onFailure = {
             throw NoProjectEditedException()
         })
@@ -42,8 +42,8 @@ class ProjectRepositoryImp(
 
     override suspend fun deleteProject(projectToDelete: Project): Boolean = tryToExecute(
         { projectDataSource.deleteProject(projectToDelete.mapToProjectModel()) },
-        onSuccess = { success ->
-            success
+        onSuccess = { isDeleted ->
+            isDeleted
         },
         onFailure = {
             throw NoProjectDeletedException()

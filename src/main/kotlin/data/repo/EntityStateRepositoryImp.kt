@@ -15,28 +15,28 @@ class EntityStateRepositoryImp(
 
     override suspend fun addEntityState(entityState: EntityState): Boolean = tryToExecute(
         { entityStateDataSource.addEntityState(entityState.mapToStateModel()) },
-        onSuccess = { success -> success },
+        onSuccess = { isAdded -> isAdded },
         onFailure = { throw EntityStateNotAddedException() }
     )
 
 
     override suspend fun editEntityState(entityState: EntityState): Boolean = tryToExecute(
         { entityStateDataSource.editEntityState(entityState.mapToStateModel()) },
-        onSuccess = { success -> success },
+        onSuccess = { isEdited -> isEdited },
         onFailure = { throw EntityStateNotEditedException() }
     )
 
 
     override suspend fun deleteEntityState(entityState: EntityState): Boolean = tryToExecute(
         { entityStateDataSource.deleteEntityState(entityState.mapToStateModel()) },
-        onSuccess = { success -> success },
+        onSuccess = { isDeleted -> isDeleted },
         onFailure = { throw EntityStateNotDeletedException() }
     )
 
 
     override suspend fun isEntityStateExist(stateName: String): Boolean = tryToExecute(
         { entityStateDataSource.isEntityStateExist(stateName) },
-        onSuccess = { success -> success },
+        onSuccess = { isExisted -> isExisted },
         onFailure = { throw NoEntityStateFoundException() }
     )
 

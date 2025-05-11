@@ -23,7 +23,7 @@ class UserRepositoryImp(
     override suspend fun addUser(user: User): Boolean =
         tryToExecute(
             { userDataSource.addUser(user.mapToUserModel()) },
-            onSuccess = { success -> success },
+            onSuccess = { isAdded -> isAdded },
             onFailure = { throw UserNotAddedException() }
         )
 
@@ -65,7 +65,7 @@ class UserRepositoryImp(
     override suspend fun addUserToProject(projectId: UUID, userName: String): Boolean =
         tryToExecute(
             { userAssignedToProjectDataSource.addUserToProject(projectId.toString(), userName) },
-            onSuccess = { success -> success },
+            onSuccess = { isAddedToProject -> isAddedToProject },
             onFailure = { throw UserNotAddedToProjectException() }
         )
 
@@ -73,7 +73,7 @@ class UserRepositoryImp(
     override suspend fun deleteUserFromProject(projectId: UUID, userName: String): Boolean =
         tryToExecute(
             { userAssignedToProjectDataSource.deleteUserFromProject(projectId.toString(), userName) },
-            onSuccess = { success -> success },
+            onSuccess = { isDeletedFormProject -> isDeletedFormProject },
             onFailure = { throw UserNotDeletedFromProjectException() }
         )
 
@@ -81,7 +81,7 @@ class UserRepositoryImp(
     override suspend fun addUserToTask(mateName: String, taskId: UUID): Boolean =
         tryToExecute(
             { mateTaskAssignment.addUserToTask(mateName, taskId.toString()) },
-            onSuccess = { success -> success },
+            onSuccess = { isAddedToTask -> isAddedToTask },
             onFailure = {
                 throw UserNotAddedToTaskException()
             }
@@ -90,7 +90,7 @@ class UserRepositoryImp(
     override suspend fun deleteUserFromTask(mateName: String, taskId: UUID): Boolean =
         tryToExecute(
             { mateTaskAssignment.deleteUserFromTask(mateName, taskId.toString()) },
-            onSuccess = { success -> success },
+            onSuccess = { isDeletedFormTask -> isDeletedFormTask },
             onFailure = { throw UserNotDeletedFromTaskException() }
         )
 }
