@@ -6,16 +6,17 @@ import logic.usecase.login.LoginUseCase
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
-import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.task.TaskOptions
+import org.example.ui.features.audit.AuditServices
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
+
 
 class TaskManagerUiImp(
     private val reader: InputReader,
@@ -25,7 +26,7 @@ class TaskManagerUiImp(
     private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
-    private val addAuditUseCase: AddAuditUseCase,
+    private val auditServices: AuditServices,
     private val loginUseCase: LoginUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -94,11 +95,10 @@ class TaskManagerUiImp(
             }
         } ?: return
 
-        val userId = loginUseCase.getCurrentUser()?.id ?: return printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
-
         runBlocking(coroutineExceptionHandler) {
             try {
                 val project = getProjectsUseCase.getProjectByName(projectName)
+
                 val task = Task(
                     projectName = projectName,
                     name = name,
@@ -107,11 +107,13 @@ class TaskManagerUiImp(
                     createdDate = timestamp,
                     updatedDate = timestamp
                 )
-
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
-                val auditDescription = printer.printAddTaskDescription(EntityType.TASK, task.name, task.id, projectName)
-                addAuditUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
+                auditServices.addAuditForAddEntity(
+                    EntityType.TASK, task.name,
+                    entityId = task.id,
+                    additionalInfo = projectName
+                )
                 printer.printTask(task)
             } catch (ex: Exception) {
                 printer.showMessage(ex.message ?: "Unknown Error")
@@ -131,10 +133,6 @@ class TaskManagerUiImp(
             val (newName, newDescription, newStateName) = editInput
 
             val newStateId = manageStateUseCase.getEntityStateIdByName(newStateName)
-
-            val userId = loginUseCase.getCurrentUser()?.id
-                ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
-
             val updatedTask = existingTask.copy(
                 name = newName,
                 description = newDescription,
@@ -143,9 +141,14 @@ class TaskManagerUiImp(
             )
 
             manageTasksUseCase.editTask(updatedTask)
-            val auditDescription =
-                printer.printUpdateTaskDescription(EntityType.TASK, existingTask.name, newDescription, newStateName)
-            addAuditUseCase.addAuditEntry(userId, EntityType.TASK, existingTask.id, auditDescription)
+            auditServices.addAuditForUpdateEntity(
+                entityType = EntityType.TASK,
+                existEntityName = existingTask.name,
+                newEntityName = updatedTask.name,
+                entityId = existingTask.id,
+                newDescription = newDescription,
+                newStateName = newStateName
+            )
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error.")
@@ -164,11 +167,12 @@ class TaskManagerUiImp(
 
             val project = getProjectsUseCase.getProjectByName(projectName)
             manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
-            val userId = loginUseCase.getCurrentUser()?.id
-                ?: return@runBlocking printer.showMessage(UiMessages.USER_NOT_LOGGED_IN)
-
-            val auditDescription = printer.printDeleteTaskDescription(EntityType.TASK, task.name, task.id, projectName)
-            addAuditUseCase.addAuditEntry(userId, EntityType.TASK, task.id, auditDescription)
+            auditServices.addAuditForDeleteEntity(
+                entityType = EntityType.TASK,
+                entityName = taskName,
+                entityId = task.id,
+                additionalInfo = projectName
+            )
             printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY)
         } catch (ex: Exception) {
             printer.showMessage(ex.message ?: "Unknown Error")
@@ -337,4 +341,5 @@ class TaskManagerUiImp(
         printer.showMessage("-----------------------------------------------------")
         printer.showMessage("Choose an option: ")
     }
+
 }
