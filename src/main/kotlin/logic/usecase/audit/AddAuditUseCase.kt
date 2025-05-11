@@ -9,7 +9,7 @@ import java.util.*
 
 class AddAuditUseCase(private val auditRepository: AuditRepository) {
 
-    suspend fun addAuditEntry(
+    suspend fun addAudit(
         userId: UUID,
         entityType: EntityType,
         entityId: UUID,
