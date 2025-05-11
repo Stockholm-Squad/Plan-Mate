@@ -1,12 +1,14 @@
 package data.source.remote.mongo
 
+import com.mongodb.client.model.Filters
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.TaskInProjectDto
+import kotlinx.coroutines.flow.toList
 import org.example.data.source.TaskInProjectDataSource
-import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 
 class TaskInProjectMongoDataSource(
-    private val taskInProjectCollection: CoroutineCollection<TaskInProjectDto>
+    private val taskInProjectCollection: MongoCollection<TaskInProjectDto>,
 ) : TaskInProjectDataSource {
 
     override suspend fun addTaskInProject(projectId: String, taskId: String): Boolean {
@@ -16,11 +18,12 @@ class TaskInProjectMongoDataSource(
     }
 
     override suspend fun deleteTaskFromProject(projectId: String, taskId: String): Boolean {
+        val deleteFilter = Filters.and(
+            Filters.eq(TaskInProjectDto::projectId.name, projectId),
+            Filters.eq(TaskInProjectDto::taskId.name, taskId)
+        )
         val result =
-            taskInProjectCollection.deleteOne(
-                TaskInProjectDto::projectId eq projectId,
-                TaskInProjectDto::taskId eq taskId
-            )
+            taskInProjectCollection.deleteOne(deleteFilter)
         return result.deletedCount > 0
     }
 

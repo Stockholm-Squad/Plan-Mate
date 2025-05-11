@@ -1,16 +1,28 @@
 package org.example.data.source.remote
 
+import com.mongodb.ConnectionString
+import com.mongodb.MongoClientSettings
+import com.mongodb.ServerApi
+import com.mongodb.ServerApiVersion
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import org.example.data.utils.CONNECTION_STRING
 import org.example.data.utils.DATABASE_NAME
-import org.litote.kmongo.coroutine.CoroutineClient
-import org.litote.kmongo.coroutine.CoroutineDatabase
-import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.reactivestreams.KMongo
 
 object MongoSetup {
+    val database: MongoDatabase
+        get() = MongoClient.create(
+            getClientMongoSettings()
+        ).getDatabase(DATABASE_NAME)
 
-    fun createDataBase(): CoroutineDatabase {
-        val client: CoroutineClient = KMongo.createClient(CONNECTION_STRING).coroutine
-        return client.getDatabase(DATABASE_NAME)
-    }
+    private fun getClientMongoSettings(): MongoClientSettings = MongoClientSettings.builder()
+        .applyConnectionString(ConnectionString(CONNECTION_STRING))
+        .serverApi(
+            getServiceApi()
+        )
+        .build()
+
+    private fun getServiceApi(): ServerApi = ServerApi.builder()
+        .version(ServerApiVersion.V1)
+        .build()
 }

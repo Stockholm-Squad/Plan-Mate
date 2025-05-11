@@ -1,13 +1,14 @@
 package data.source.remote.mongo
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.TaskDto
+import kotlinx.coroutines.flow.toList
 import org.example.data.source.TaskDataSource
-import org.litote.kmongo.coroutine.CoroutineCollection
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
 
 class TaskMongoDataSource(
-    private val taskCollection: CoroutineCollection<TaskDto>
+    private val taskCollection: MongoCollection<TaskDto>,
 ) : TaskDataSource {
 
     override suspend fun getAllTasks(): List<TaskDto> {
