@@ -1,6 +1,7 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
+import data.dto.ProjectDto
 import io.mockk.every
 import io.mockk.mockk
 import logic.models.exceptions.ReadDataException
@@ -8,7 +9,6 @@ import logic.models.exceptions.WriteDataException
 import org.example.data.csv_reader_writer.project.IProjectCSVReaderWriter
 import org.example.data.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
 import org.example.data.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
-import data.dto.ProjectDto
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -85,7 +85,7 @@ class ProjectRepositoryImpTest {
 
         //When
         val updated = testProject.copy(name = "Updated")
-        val result = projectRepositoryImp.editProject(updated)
+        val result = projectRepositoryImp.UpdatedProject(updated)
         //Then
         assertThat(result.isSuccess).isTrue()
 
@@ -97,7 +97,7 @@ class ProjectRepositoryImpTest {
         every { projectDataSource.read() } returns Result.failure(ReadDataException())
 
         //When
-        val result = projectRepositoryImp.editProject(testProject)
+        val result = projectRepositoryImp.UpdatedProject(testProject)
 
         //When Then
         assertThrows<ReadDataException> { result.getOrThrow() }
@@ -110,7 +110,7 @@ class ProjectRepositoryImpTest {
         every { projectDataSource.read() } returns Result.success(listOf(projectDto))
         every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.failure(WriteDataException())
 
-        val result = projectRepositoryImp.editProject(testProject)
+        val result = projectRepositoryImp.UpdatedProject(testProject)
 
         assertThrows<WriteDataException> { result.getOrThrow() }
     }

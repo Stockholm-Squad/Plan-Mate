@@ -9,8 +9,8 @@ import io.mockk.verify
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
 import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
-import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
 import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
 import org.example.data.repo.TaskRepositoryImp
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.TaskRepository
@@ -126,7 +126,7 @@ class TaskRepositoryImpTest {
         every { taskDataSource.overWrite(any()) } returns Result.success(true)
 
         // When
-        val result = taskRepository.editTask(updatedTask)
+        val result = taskRepository.updateTask(updatedTask)
 
         // Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -142,7 +142,7 @@ class TaskRepositoryImpTest {
         every { taskDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
-        val result = taskRepository.editTask(updatedTask)
+        val result = taskRepository.updateTask(updatedTask)
 
         // Then
         assertThrows<ReadDataException> { result.getOrThrow() }

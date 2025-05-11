@@ -34,10 +34,10 @@ class TaskRepositoryImp(
             onFailure = { throw TaskNotAddedException() }
         )
 
-    override suspend fun editTask(task: Task): Boolean =
+    override suspend fun updateTask(task: Task): Boolean =
         tryToExecute(
-            function = { taskDataSource.editTask(task.mapToTaskModel()) },
-            onSuccess = { isEdited -> isEdited  },
+            function = { taskDataSource.updateTask(task.mapToTaskModel()) },
+            onSuccess = { isUpdated -> isUpdated },
             onFailure = { throw TaskNotEditException() }
         )
 

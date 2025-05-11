@@ -36,7 +36,7 @@ class ManageStatesUseCaseTest {
                 )
             )
         )
-        every { projectStateRepository.editEntityState(any()) } returns Result.success(true)
+        every { projectStateRepository.updateEntityState(any()) } returns Result.success(true)
 
         //When
         val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
@@ -80,7 +80,7 @@ class ManageStatesUseCaseTest {
         val newStateName = "New ToDo"
 
         every { projectStateRepository.getAllEntityStates() } returns Result.success(listOf(EntityState(name = stateName)))
-        every { projectStateRepository.editEntityState(any()) } returns Result.failure(Throwable())
+        every { projectStateRepository.updateEntityState(any()) } returns Result.failure(Throwable())
 
         //When
         val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
@@ -96,7 +96,7 @@ class ManageStatesUseCaseTest {
         val newStateName = "New ToDo"
 
         every { projectStateRepository.getAllEntityStates() } returns Result.success(listOf(EntityState(name = stateName)))
-        every { projectStateRepository.editEntityState(any()) } returns Result.failure(FileNotExistException())
+        every { projectStateRepository.updateEntityState(any()) } returns Result.failure(FileNotExistException())
 
         //When
         val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
@@ -111,7 +111,7 @@ class ManageStatesUseCaseTest {
         val stateName = "1In Rev3ew"
         val newStateName = "New ToDo"
 
-        every { projectStateRepository.editEntityState(any()) } returns Result.failure(NotAllowedStateNameException())
+        every { projectStateRepository.updateEntityState(any()) } returns Result.failure(NotAllowedStateNameException())
         //When
         val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
 
@@ -124,7 +124,7 @@ class ManageStatesUseCaseTest {
         //Given
         val stateName = "   "
         val newStateName = "New ToDo"
-        every { projectStateRepository.editEntityState(any()) } returns Result.failure(NotAllowedStateNameException())
+        every { projectStateRepository.updateEntityState(any()) } returns Result.failure(NotAllowedStateNameException())
 
         //When
         val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)

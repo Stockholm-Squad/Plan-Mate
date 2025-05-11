@@ -6,6 +6,6 @@ interface ProjectManagerUi: UiLauncher{
     fun showAllProjects()
     fun showProjectByName()
     fun addProject()
-    fun editProject()
+    fun updateProject()
     fun deleteProject()
 }

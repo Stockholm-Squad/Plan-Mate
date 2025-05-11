@@ -132,7 +132,7 @@ class ProjectManagerUiImp(
         }
     }
 
-    override fun editProject() = runBlocking(errorHandler) {
+    override fun updateProject() = runBlocking(errorHandler) {
 
         outputPrinter.showMessage("Enter project Name to edit or leave it black to back: ")
         val projectName = inputReader.readStringOrNull() ?: return@runBlocking
@@ -235,7 +235,7 @@ class ProjectManagerUiImp(
                 "1" -> showAllProjects()
                 "2" -> showProjectByName()
                 "3" -> addProject()
-                "4" -> editProject()
+                "4" -> updateProject()
                 "5" -> deleteProject()
                 "0" -> return
                 else -> outputPrinter.showMessage("Invalid choice")

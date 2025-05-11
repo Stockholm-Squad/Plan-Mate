@@ -31,10 +31,10 @@ class ProjectRepositoryImp(
         }, onFailure = { throw NoProjectAddedException() })
 
 
-    override suspend fun editProject(updatedProject: Project): Boolean = tryToExecute(
+    override suspend fun UpdatedProject(updatedProject: Project): Boolean = tryToExecute(
         { projectDataSource.editProject(updatedProject.mapToProjectModel()) },
-        onSuccess = { isEdited ->
-            isEdited
+        onSuccess = { isUpdated ->
+            isUpdated
         }, onFailure = {
             throw NoProjectEditedException()
         })

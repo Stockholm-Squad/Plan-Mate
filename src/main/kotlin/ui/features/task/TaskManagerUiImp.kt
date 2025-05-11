@@ -140,7 +140,7 @@ class TaskManagerUiImp(
                 updatedDate = timestamp
             )
 
-            manageTasksUseCase.editTask(updatedTask)
+            manageTasksUseCase.updateTask(updatedTask)
             auditServicesUseCase.addAuditForUpdateEntity(
                 entityType = EntityType.TASK,
                 existEntityName = existingTask.name,

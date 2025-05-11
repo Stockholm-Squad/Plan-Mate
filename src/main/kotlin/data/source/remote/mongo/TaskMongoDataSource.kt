@@ -20,7 +20,7 @@ class TaskMongoDataSource(
         return result.wasAcknowledged()
     }
 
-    override suspend fun editTask(task: TaskDto): Boolean {
+    override suspend fun updateTask(task: TaskDto): Boolean {
         val result = taskCollection.replaceOne(TaskDto::id eq task.id, task)
         return result.modifiedCount > 0
     }

@@ -270,13 +270,13 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskByName(taskName) } returns Result.success(existingTask)
         every { manageStateUseCase.getEntityStateIdByName(newStateName) } returns newStateId
-        every { manageTasksUseCase.editTask(any()) } returns Result.success(true)
+        every { manageTasksUseCase.updateTask(any()) } returns Result.success(true)
 
         // When
         taskManagerUi.editTask()
 
         // Then
-        verify(exactly = 1) { manageTasksUseCase.editTask(any()) }
+        verify(exactly = 1) { manageTasksUseCase.updateTask(any()) }
         verify(exactly = 1) { printer.printTask(any()) }
     }
 

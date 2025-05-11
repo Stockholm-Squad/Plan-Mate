@@ -33,8 +33,8 @@ class ManageTasksUseCase(
         }
     }
 
-    suspend fun editTask(updatedTask: Task): Boolean =
-        taskRepository.editTask(updatedTask).also { isUpdated ->
+    suspend fun updateTask(updatedTask: Task): Boolean =
+        taskRepository.updateTask(updatedTask).also { isUpdated ->
             if (!isUpdated) throw TaskNotEditException()
         }
 

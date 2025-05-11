@@ -39,7 +39,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.editEntityState(EntityState(name = "In-Progress"))
+        val result = stateRepository.updateEntityState(EntityState(name = "In-Progress"))
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -54,7 +54,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
 
         //When
-        val result = stateRepository.editEntityState(projectState)
+        val result = stateRepository.updateEntityState(projectState)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -69,7 +69,7 @@ class ProjectStateRepositoryImpTest {
         every { projectStateDataSource.read() } returns Result.failure(FileNotExistException())
 
         //When
-        val result = stateRepository.editEntityState(projectState)
+        val result = stateRepository.updateEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -84,7 +84,7 @@ class ProjectStateRepositoryImpTest {
         )
 
         //When
-        val result = stateRepository.editEntityState(projectState)
+        val result = stateRepository.updateEntityState(projectState)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
