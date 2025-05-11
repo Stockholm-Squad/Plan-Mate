@@ -8,10 +8,12 @@ import org.example.logic.InvalidUserNameException
 import org.example.logic.UserDoesNotExistException
 import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
-import org.example.logic.utils.hashToMd5
+import org.example.logic.utils.HashingService
 
 class LoginUseCase(
-    private val userRepository: UserRepository, private val validateUserDataUseCase: ValidateUserDataUseCase,
+    private val userRepository: UserRepository,
+    private val validateUserDataUseCase: ValidateUserDataUseCase,
+    private val hashingService: HashingService,
 ) {
     private var currentUser: User? = null
 
@@ -31,7 +33,7 @@ class LoginUseCase(
     }
 
     private fun isCorrectPassword(passwordToBeLoggedIn: String, userPassword: String): Boolean {
-        return hashToMd5(passwordToBeLoggedIn) == userPassword
+        return hashingService.verify(passwordToBeLoggedIn, userPassword)
     }
 
     private suspend fun getUser(userName: String): User? {
