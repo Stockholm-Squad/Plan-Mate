@@ -21,7 +21,7 @@ open class TaskExceptions(message: String) : PlanMateExceptions(message)
 class TasksNotFoundException(message: String = "No tasks found.") : TaskExceptions(message)
 class TaskNotFoundException(message: String = "Task Not found.") : TaskExceptions(message)
 class TaskNotAddedException(message: String = "Failed to add task.") : TaskExceptions(message)
-class TaskNotEditException(message: String = "Failed to edit task.") : TaskExceptions(message)
+class TaskNotUpdatedException(message: String = "Failed to update task.") : TaskExceptions(message)
 class TaskNotDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
 class DuplicateTaskNameException(message: String = "Duplicated task name.") : TaskExceptions(message)
 
@@ -30,7 +30,7 @@ open class ProjectExceptions(message: String) : PlanMateExceptions(message)
 class ProjectNotFoundException(message: String = "Project not found.") : ProjectExceptions(message)
 class NoProjectAddedException(message: String = "No project added.") : ProjectExceptions(message)
 class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
-class NoProjectEditedException(message: String = "The project hasn't edited") : ProjectExceptions(message)
+class NoProjectUpdatedException(message: String = "The project hasn't updated") : ProjectExceptions(message)
 class NoProjectDeletedException(message: String = "The project hasn't deleted") : ProjectExceptions(message)
 class ProjectAlreadyExistException(message: String = "The project is already exists") : ProjectExceptions(message)
 
@@ -40,15 +40,16 @@ class EntityStateAlreadyExistException(message: String = "The state already exis
 class NoEntityStatesFoundedException(message: String = "There are no states.") : EntityStateExceptions(message)
 class NotAllowedEntityStateNameException(message: String = "Only letters are allowed!") : EntityStateExceptions(message)
 class EntityStateNotAddedException(message: String = "Entity State Not Added") : EntityStateExceptions(message)
-class EntityStateNotEditedException(message: String = "Entity State Not Edited") : EntityStateExceptions(message)
+class EntityStateNotUpdatedException(message: String = "Entity State Not Updated") : EntityStateExceptions(message)
 class EntityStateNotDeletedException(message: String = "Entity State Not Deleted") :
     EntityStateExceptions(message)
+
 class NoEntityStateFoundException(message: String = "No Entity State Found") : EntityStateExceptions(message)
 
 
 open class AuditExceptions(message: String) : PlanMateExceptions(message)
-class NoAuditsFoundedException(message: String = "There are no audits.") : AuditExceptions(message)
-class AuditSystemNotAddedException(message: String = "Audit system not added.") : AuditExceptions(message)
+class NoAuditsFoundException(message: String = "There are no audits.") : AuditExceptions(message)
+class AuditNotAddedException(message: String = "Audit not added.") : AuditExceptions(message)
 
 
 open class UserToProjectExceptions(message: String) : PlanMateExceptions(message)

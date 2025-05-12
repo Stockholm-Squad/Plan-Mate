@@ -3,7 +3,9 @@ package org.example.di
 import logic.usecase.login.LoginUseCase
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.usecase.audit.AddAuditUseCase
+import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.audit.GetAuditUseCase
+import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
@@ -23,6 +25,8 @@ val useCaseModule = module {
     single<AddUserUseCase> { AddUserUseCase(get(), get(), get(), get()) }
     single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }
     single<AddAuditUseCase> { AddAuditUseCase(get()) }
+    single<AuditServicesUseCase> { AuditServicesUseCase(get(), get(), get()) }
+    single<AuditDescriptionProvider> { AuditDescriptionProvider() }
     single<LoginUseCase> { LoginUseCase(get(), get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get()) }
     factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get()) }

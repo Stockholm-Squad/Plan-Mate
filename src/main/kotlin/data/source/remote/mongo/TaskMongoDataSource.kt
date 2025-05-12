@@ -17,7 +17,7 @@ class TaskMongoDataSource(
     override suspend fun addTask(task: TaskDto): Boolean =
         taskCollection.insertOne(task).insertedId != null
 
-    override suspend fun editTask(task: TaskDto): Boolean =
+    override suspend fun updateTask(task: TaskDto): Boolean =
         taskCollection.replaceOne(TaskDto::id eq task.id, task).modifiedCount > 0
 
     override suspend fun deleteTask(id: String): Boolean =

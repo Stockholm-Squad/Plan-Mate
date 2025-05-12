@@ -8,7 +8,7 @@ import org.example.data.source.TaskInProjectDataSource
 import org.example.data.utils.tryToExecute
 import org.example.logic.TaskNotAddedException
 import org.example.logic.TaskNotDeletedException
-import org.example.logic.TaskNotEditException
+import org.example.logic.TaskNotUpdatedException
 import org.example.logic.TasksNotFoundException
 import org.example.logic.entities.Task
 import org.example.logic.repository.TaskRepository
@@ -23,28 +23,28 @@ class TaskRepositoryImp(
     override suspend fun getAllTasks(): List<Task> =
         tryToExecute(
             function = { taskDataSource.getAllTasks().mapNotNull { it.mapToTaskEntity() } },
-            onSuccess = { it },
+            onSuccess = { listOfTasks -> listOfTasks },
             onFailure = { throw TasksNotFoundException() }
         )
 
     override suspend fun addTask(task: Task): Boolean =
         tryToExecute(
             function = { taskDataSource.addTask(task.mapToTaskModel()) },
-            onSuccess = { true },
+            onSuccess = { isAdded -> isAdded  },
             onFailure = { throw TaskNotAddedException() }
         )
 
-    override suspend fun editTask(task: Task): Boolean =
+    override suspend fun updateTask(task: Task): Boolean =
         tryToExecute(
-            function = { taskDataSource.editTask(task.mapToTaskModel()) },
-            onSuccess = { true },
-            onFailure = { throw TaskNotEditException() }
+            function = { taskDataSource.updateTask(task.mapToTaskModel()) },
+            onSuccess = { isUpdated -> isUpdated },
+            onFailure = { throw TaskNotUpdatedException() }
         )
 
     override suspend fun deleteTask(id: UUID?): Boolean =
         tryToExecute(
             function = { taskDataSource.deleteTask(id.toString()) },
-            onSuccess = { true },
+            onSuccess = { isDeleted -> isDeleted },
             onFailure = { throw TaskNotDeletedException() }
         )
 
@@ -55,7 +55,7 @@ class TaskRepositoryImp(
                 val taskIds = project.map { it.taskId }
                 taskDataSource.getTasksByIds(taskIds).mapNotNull { it.mapToTaskEntity() }
             },
-            onSuccess = { it },
+            onSuccess = { listOfTasks -> listOfTasks },
             onFailure = { throw TasksNotFoundException() }
         )
 
@@ -68,7 +68,7 @@ class TaskRepositoryImp(
                     taskId.toString()
                 )
             },
-            onSuccess = { true },
+            onSuccess = { isAddedToProject -> isAddedToProject  },
             onFailure = { throw TaskNotAddedException() }
         )
 
@@ -80,7 +80,7 @@ class TaskRepositoryImp(
                     taskId.toString()
                 )
             },
-            onSuccess = { true },
+            onSuccess = { isDeletedFromProject -> isDeletedFromProject  },
             onFailure = { throw TaskNotDeletedException() }
         )
 
@@ -90,7 +90,7 @@ class TaskRepositoryImp(
                 val mateTaskAssignments = mateTaskAssignment.getUsersMateTaskByUserName(userName).map { it.taskId }
                 taskDataSource.getTasksByIds(mateTaskAssignments).mapNotNull { it.mapToTaskEntity() }
             },
-            onSuccess = { it },
+            onSuccess = { listOfTasks -> listOfTasks },
             onFailure = { throw TasksNotFoundException() }
         )
 }

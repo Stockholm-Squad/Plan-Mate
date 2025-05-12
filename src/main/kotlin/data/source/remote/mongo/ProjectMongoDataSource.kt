@@ -17,7 +17,7 @@ class ProjectMongoDataSource(
     override suspend fun addProject(project: ProjectDto): Boolean =
         projectCollection.insertOne(project).insertedId != null
 
-    override suspend fun editProject(updatedProject: ProjectDto): Boolean =
+    override suspend fun updateProject(updatedProject: ProjectDto): Boolean =
         projectCollection.updateOne(
             ProjectDto::id eq updatedProject.id,
             setValue(ProjectDto::name, updatedProject.name)

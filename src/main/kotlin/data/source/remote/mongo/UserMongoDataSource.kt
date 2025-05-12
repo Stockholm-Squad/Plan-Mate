@@ -35,7 +35,7 @@ class UserMongoDataSource(
     override suspend fun getUserById(userId: String): UserDto? =
         userCollection.find(Filters.eq(UserDto::id.name, userId)).firstOrNull()
 
-    override suspend fun editUser(user: UserDto): Boolean =
+    override suspend fun updateUser(user: UserDto): Boolean =
         userCollection.updateOne(
             UserDto::id eq user.id,
             setValue(UserDto::username, user.username)

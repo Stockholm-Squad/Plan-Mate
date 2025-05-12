@@ -16,7 +16,7 @@ class EntityStateMongoDataSource(
     override suspend fun addEntityState(entityState: EntityStateDto): Boolean =
         stateCollection.insertOne(entityState).insertedId != null
 
-    override suspend fun editEntityState(entityState: EntityStateDto): Boolean =
+    override suspend fun updateEntityState(entityState: EntityStateDto): Boolean =
         stateCollection.updateOne(
             EntityStateDto::id eq entityState.id,
             setValue(EntityStateDto::name, entityState.name)

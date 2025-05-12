@@ -2,9 +2,7 @@ package org.example.ui.input_output.output
 
 import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityState
-import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
-import java.util.*
 
 class OutputPrinterImplementation : OutputPrinter {
 
@@ -75,36 +73,6 @@ class OutputPrinterImplementation : OutputPrinter {
 
             println("-".repeat(165))
         }
-    }
-
-    override fun printAddTaskDescription(
-        entityType: EntityType,
-        taskName: String,
-        taskId: UUID,
-        projectName: String
-    ): String {
-        return "$entityType: added'$taskName' (ID: $taskId) to the '$projectName' project."
-    }
-
-    override fun printUpdateTaskDescription(
-        entityType: EntityType,
-        newTaskName: String,
-        newDescription: String,
-        newStateName: String
-    ): String {
-        return "$entityType: " +
-                "Updated Task name '$newTaskName'. " +
-                "Description '${newDescription.take(30)}'. " +
-                "State updated to '$newStateName'."
-    }
-
-    override fun printDeleteTaskDescription(
-        entityType: EntityType,
-        taskName: String,
-        taskId: UUID,
-        projectName: String
-    ): String {
-        return "$entityType: Task '$taskName' (ID: $taskId) was deleted from project '$projectName'."
     }
 
 }
