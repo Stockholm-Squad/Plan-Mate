@@ -164,7 +164,7 @@ class ManageProjectUseCaseTest {
             val existingProject = buildProject(id = projectId, name = "Existing Project")
             val updatedProject = existingProject.copy(name = "Updated Project")
             every { projectRepository.getAllProjects() } returns Result.success(listOf(existingProject))
-            every { projectRepository.UpdatedProject(updatedProject) } returns Result.success(true)
+            every { projectRepository.updateProject(updatedProject) } returns Result.success(true)
 
             // When
             val result = manageProjectUseCase.updateProjectState("existingProject","")
@@ -178,7 +178,7 @@ class ManageProjectUseCaseTest {
             // Given
             "non-existent"
             val existingProject = buildProject(id = UUID.randomUUID(), name = "Existing Project")
-            every { projectRepository.UpdatedProject(existingProject) } returns Result.failure(NoObjectFound())
+            every { projectRepository.updateProject(existingProject) } returns Result.failure(NoObjectFound())
 
             // When
             val result = manageProjectUseCase.updateProjectState("existingProject", "")
