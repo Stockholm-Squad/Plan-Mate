@@ -36,8 +36,6 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForProjectByName() should return audits related to the project`() = runTest {
         // Given
-        val projectName = "project"
-        val projectId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
         val audit = buildAudit(entityTypeId = projectId)
 
         coEvery { auditRepository.getAllAudits() } returns listOf(audit)
@@ -56,7 +54,6 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForProjectByName() should return an empty list if no audits are found`() = runTest {
         // Given
-        val projectName = "project"
         coEvery { auditRepository.getAllAudits() } returns emptyList()
         coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk {
             every { id } returns UUID.randomUUID()
@@ -72,14 +69,11 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForTaskByName() should return audits related to the task`() = runTest {
         // Given
-
-        val taskName = "task"
-        val taskId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
-        val audit = buildAudit(entityTypeId = taskId)
+        val audit = buildAudit(entityTypeId = entityId)
 
         coEvery { auditRepository.getAllAudits() } returns listOf(audit)
         coEvery { manageTasksUseCase.getAllTasks() } returns listOf(mockk {
-            every { id } returns taskId
+            every { id } returns entityId
             every { name } returns taskName
         })
 
@@ -88,15 +82,12 @@ class GetAuditUseCaseTest {
 
         // Then
         assertThat(result).isNotEmpty()
-        assertThat(result.first().entityTypeId).isEqualTo(taskId)
+        assertThat(result.first().entityTypeId).isEqualTo(entityId)
     }
 
     @Test
     fun `getAuditsForTaskByName() should return an empty list if no audits are found`() = runTest {
         // Given
-
-        val taskName = "task"
-
         coEvery { auditRepository.getAllAudits() } returns emptyList()
         coEvery { manageTasksUseCase.getAllTasks() } returns emptyList()
 
@@ -110,8 +101,7 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForUserById() should return audits related to the user`() = runTest {
         // Given
-        val userId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
-        val audit = buildAudit(entityTypeId = userId)
+        val audit = buildAudit(userId = userId)
 
         coEvery { auditRepository.getAllAudits() } returns listOf(audit)
 
@@ -126,8 +116,6 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForUserById() should return an empty list if no audits are found`() = runTest {
         // Given
-        val userId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
-
         coEvery { auditRepository.getAllAudits() } returns emptyList()
 
         // When
@@ -140,7 +128,6 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForUserById() should call getAllAudits from the repository`() = runTest {
         // Given
-        val userId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
         val audit = buildAudit(entityTypeId = userId)
 
         coEvery { auditRepository.getAllAudits() } returns listOf(audit)
@@ -155,7 +142,6 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForUserById() should call getAllAudits from the repository list`() = runTest {
         // Given
-        val userId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
         val audit1 = buildAudit(userId = userId, entityType = EntityType.TASK)
         val audit2 = buildAudit(userId = userId, entityType = EntityType.PROJECT)
 
@@ -172,8 +158,6 @@ class GetAuditUseCaseTest {
     fun `getAuditsForUserById() should return audits related to the correct user when multiple audits exist`() =
         runTest {
             // Given
-            val userId1 = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
-            val userId2 = UUID.fromString("a5a85f64-6737-4562-b9fc-3c963f66abc1")
             val audit1 = buildAudit(userId = userId1)
             val audit2 = buildAudit(userId = userId2)
 
@@ -190,7 +174,6 @@ class GetAuditUseCaseTest {
     @Test
     fun `getAuditsForUserById() should return an empty list if no audits match the userId`() = runTest {
         // Given
-        val userId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
         val audit1 = buildAudit(entityTypeId = userId)
         val audit2 = buildAudit(entityTypeId = userId)
 

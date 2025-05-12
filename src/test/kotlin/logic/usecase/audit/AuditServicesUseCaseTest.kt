@@ -6,14 +6,10 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.usecase.login.LoginUseCase
-import org.example.logic.entities.EntityType
-import org.example.logic.entities.User
-import org.example.logic.entities.UserRole
 import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
 import org.junit.jupiter.api.BeforeEach
-import java.util.*
 import kotlin.test.Test
 
 class AuditServicesUseCaseTest {
@@ -22,26 +18,6 @@ class AuditServicesUseCaseTest {
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var auditDescriptionProvider: AuditDescriptionProvider
     private lateinit var auditServicesUseCase: AuditServicesUseCase
-
-    private val userId = UUID.fromString("5df64cdc-824b-4b93-ac3a-5fda9528466c")
-    private val entityType = EntityType.TASK
-    private val entityId = UUID.fromString("e2c592e6-2618-405f-96b4-03bba272416d")
-    private val entityName = "Task 001"
-    private val additionalInfo = "Urgent task"
-    private val existingName = "Old Name"
-    private val newName = "New Name"
-    private val newDescription = "Updated description"
-    private val newStateName = "Completed"
-    private val addedDescription = "Added Task"
-    private val updateDescription = "Updated Task"
-    private val deletedDescription = "Deleted Task"
-
-    private val user = User(
-        id = userId,
-        username = "plan",
-        hashedPassword = "bd9fa9edbeff8f0b88a6f26ce7665953",
-        userRole = UserRole.MATE
-    )
 
     @BeforeEach
     fun setUp() {
