@@ -43,7 +43,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         every { manageStatesUseCase.updateEntityStateByName("ExistingState", "NewState") } returns Result.success(true)
 
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         verify { printer.showMessage("State updated successfully ^_^") }
     }
@@ -61,7 +61,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         } returns Result.success(true)
 
         //When
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         //Then
         verify { printer.showMessage("Please enter the state you want to update: ") }
@@ -80,7 +80,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         )
 
         //When
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         //Then
         verify { printer.showMessage("Failed to Update state: " + NotAllowedStateNameException().message) }
@@ -92,7 +92,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         every { reader.readStringOrNull() } returns null
 
         //When
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         //Then
         verify { printer.showMessage("Invalid input") }
@@ -102,7 +102,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     fun `editState should fail with invalid input`() {
         every { reader.readStringOrNull() } returns ""
 
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         verify { printer.showMessage("Invalid input") }
     }

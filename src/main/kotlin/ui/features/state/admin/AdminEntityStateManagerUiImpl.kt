@@ -39,7 +39,7 @@ class AdminEntityStateManagerUiImpl(
         when (reader.readIntOrNull()) {
             EntityStateMenuChoice.SHOW_ALL.choiceNumber -> this.showAllStates()
             EntityStateMenuChoice.ADD_STATE.choiceNumber -> this.addState()
-            EntityStateMenuChoice.EDIT_STATE.choiceNumber -> this.editState()
+            EntityStateMenuChoice.UPDATE_STATE.choiceNumber -> this.updateState()
             EntityStateMenuChoice.DELETE_STATE.choiceNumber -> this.deleteState()
             EntityStateMenuChoice.BACK.choiceNumber -> return true
             else -> printer.showMessage("Please enter a valid choice!!")
@@ -69,7 +69,7 @@ class AdminEntityStateManagerUiImpl(
             } ?: printer.showMessage(UiMessages.INVALID_INPUT)
     }
 
-    override fun editState() {
+    override fun updateState() {
         printer.showMessage(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE)
         val currentStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
             ?: run {
