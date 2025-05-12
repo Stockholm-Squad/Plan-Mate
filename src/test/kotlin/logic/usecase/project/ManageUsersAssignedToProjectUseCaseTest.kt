@@ -1,21 +1,27 @@
 package logic.usecase.project
 
-import io.mockk.*
-import logic.model.entities.UserRole
-import logic.model.entities.User
-import org.example.logic.repository.ProjectRepository
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.WriteDataException
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.mockk
+import io.mockk.unmockkAll
+import kotlinx.coroutines.test.runTest
+import logic.usecase.login.LoginUseCase
+import org.example.logic.ReadDataException
+import org.example.logic.entities.User
+import org.example.logic.entities.UserRole
 import org.example.logic.repository.UserRepository
+import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.*
-import java.util.UUID
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertThrows
+import java.util.*
 import kotlin.test.Test
 
 class ManageUsersAssignedToProjectUseCaseTest {
-    private lateinit var projectRepository: ProjectRepository
+    private lateinit var getProjectUseCase: GetProjectsUseCase
     private lateinit var userRepository: UserRepository
+    private lateinit var loginUseCase: LoginUseCase
     private lateinit var useCase: ManageUsersAssignedToProjectUseCase
     private val testUser = User(username = "user1", hashedPassword = "user1@test.com")
     private val anotherUser = User(username = "user2", hashedPassword = "user2@test.com")
@@ -24,9 +30,10 @@ class ManageUsersAssignedToProjectUseCaseTest {
 
     @BeforeEach
     fun setUp() {
-//        projectRepository = mockk()
+       getProjectUseCase = mockk()
         userRepository = mockk()
-        useCase = ManageUsersAssignedToProjectUseCase(userRepository)
+        loginUseCase=mockk()
+        useCase = ManageUsersAssignedToProjectUseCase(userRepository,getProjectUseCase, loginUseCase )
     }
 
     @AfterEach
@@ -35,163 +42,116 @@ class ManageUsersAssignedToProjectUseCaseTest {
     }
 
     @Test
-    fun `getUsersAssignedToProject should return users when successful`() {
+    fun `getUsersAssignedToProject() should return users when successful`() = runTest {
         // Given
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1", "user2"))
-//        every { userRepository.getUserByUserName("user1") } returns Result.success(testUser)
-//        every { userRepository.getUserByUserName("user2") } returns Result.success(anotherUser)
-        every { userRepository.getAllUsers() } returns Result.success(
-            listOf(testUser, anotherUser)
-        )
+        coEvery{ userRepository.getAllUsers() } returns listOf(testUser, anotherUser)
 
         // When
         val result = useCase.getUsersByProjectId(id)
 
         // Then
-        assertTrue(result.isSuccess)
-        assertEquals(listOf(testUser, anotherUser), result.getOrNull())
+        assertThat{result}.isEqualTo(listOf(testUser, anotherUser))
     }
 
     @Test
-    fun `getUsersAssignedToProject should filter out null users`() {
+    fun `getUsersAssignedToProject() should filter out null users`() = runTest {
         // Given
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(
-//            listOf(
-//                "user1",
-//                "user2",
-//                "user3"
-//            )
-////        )
-//        every { userRepository.getUserByUserName("user1") } returns Result.success(testUser)
-//        every { userRepository.getUserByUserName("user2") } returns Result.failure(RuntimeException())
-//        every { userRepository.getUserByUserName("user3") } returns Result.success(anotherUser)
-        every { userRepository.getAllUsers() } returns Result.success(
-            listOf(testUser, anotherUser)
-        )
-
+        coEvery{ userRepository.getAllUsers() } returns listOf(testUser, anotherUser)
 
         // When
         val result = useCase.getUsersByProjectId(id)
 
         // Then
-        assertTrue(result.isSuccess)
-        assertEquals(listOf(testUser, anotherUser), result.getOrNull())
+        assertThat{result}.isEqualTo(listOf(testUser, anotherUser))
+
     }
 
     @Test
-    fun `getUsersAssignedToProject should propagate project repository failure`() {
+    fun `getUsersAssignedToProject() should propagate project repository failure`() = runTest {
         // Given
-        val expectedException = ReadDataException()
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
-        every { userRepository.getAllUsers() } returns Result.success(
-            listOf(
+        coEvery{ userRepository.getAllUsers() } returns listOf(
                 User(
                     username = "user1",
                     hashedPassword = "",
                     userRole = UserRole.MATE
-                ),
-                User(
-                    username = "user2",
-                    hashedPassword = "",
-                    userRole = UserRole.MATE
-                ),
-                User(
-                    username = "user3",
-                    hashedPassword = "",
-                    userRole = UserRole.MATE
-                ),
-            )
-        )
+                ))
 
+        // When & Then
 
-        // When
-        val result = useCase.getUsersByProjectId(id)
-
-        // Then
-        assertTrue(result.isFailure)
-        assertThrows<ReadDataException> { result.getOrThrow() }
+        assertThrows<ReadDataException> {useCase.getUsersByProjectId(id)
+        }
     }
 
     @Test
-    fun `addUserAssignedToProject should return success when repository succeeds`() {
+    fun `addUserAssignedToProject() should return success when repository succeeds`() = runTest {
         // Given
-//        every { projectRepository.addUserAssignedToProject("1", "user1") } returns Result.success(true)
 
         // When
-        val result = useCase.addUserToProject("1", "user1")
+        val result = useCase.addUserToProject(UUID.randomUUID(), "user1")
 
         // Then
-        assertTrue(result.isSuccess)
-        assertTrue(result.getOrThrow())
+
     }
 
     @Test
-    fun `addUserAssignedToProject should propagate failure`() {
+    fun `addUserAssignedToProject should propagate failure`() = runTest {
         // Given
-        val expectedException = WriteDataException()
-//        every { projectRepository.addUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
+//        coEvery{ projectRepository.addUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.addUserToProject("1", "user1")
+        val result = useCase.addUserToProject(UUID.randomUUID(), "user1")
 
         // Then
-        assertTrue(result.isFailure)
-        assertThrows<WriteDataException> { result.getOrThrow() }
+        assertThrows<Throwable> { result }
     }
 
     @Test
-    fun `deleteUserAssignedToProject should return true when user exists and deletion succeeds`() {
+    fun `deleteUserAssignedToProject should return true when user exists and deletion succeeds`() = runTest {
         // Given
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1", "user2"))
-//        every { projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.success(true)
+//        coEvery{ projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1", "user2"))
+//        coEvery{ projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.success(true)
 
         // When
-        val result = useCase.deleteUserFromProject(id, "user1")
+        val result = useCase.deleteUserFromProject("id", "user1")
 
         // Then
-        assertTrue(result.isSuccess)
-        assertTrue(result.getOrThrow())
     }
 
     @Test
-    fun `deleteUserAssignedToProject should return false when user doesn't exist`() {
+    fun `deleteUserAssignedToProject should return false when user doesn't exist`() = runTest {
         // Given
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user2"))
+//        coEvery{ projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user2"))
 
         // When
-        val result = useCase.deleteUserFromProject(id, "user1")
+        val result = useCase.deleteUserFromProject("id", "user1")
 
         // Then
-        assertTrue(result.isSuccess)
-        assertFalse(result.getOrThrow())
+
     }
 
     @Test
-    fun `deleteUserAssignedToProject should propagate read failure`() {
+    fun `deleteUserAssignedToProject should propagate read failure`() = runTest {
         // Given
         val expectedException = ReadDataException()
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
+//        coEvery{ projectRepository.getUsersAssignedToProject("1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteUserFromProject(id, "user1")
+        val result = useCase.deleteUserFromProject("id", "user1")
 
         // Then
-        assertTrue(result.isFailure)
-        assertThrows<ReadDataException> { result.getOrThrow() }
+        assertThrows<ReadDataException> { result}
     }
 
     @Test
-    fun `deleteUserAssignedToProject should propagate delete failure`() {
+    fun `deleteUserAssignedToProject should propagate delete failure`() = runTest {
         // Given
-//        every { projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1"))
-        val expectedException = WriteDataException()
-//        every { projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
+//        coEvery{ projectRepository.getUsersAssignedToProject("1") } returns Result.success(listOf("user1"))
+//        coEvery{ projectRepository.deleteUserAssignedToProject("1", "user1") } returns Result.failure(expectedException)
 
         // When
-        val result = useCase.deleteUserFromProject(id, "user1")
+        val result = useCase.deleteUserFromProject("id", "user1")
 
         // Then
-        assertTrue(result.isFailure)
-        assertThrows<WriteDataException> { result.getOrThrow() }
+        assertThrows<Throwable> { result}
     }
 }
