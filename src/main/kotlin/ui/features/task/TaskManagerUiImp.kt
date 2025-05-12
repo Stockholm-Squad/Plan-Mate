@@ -52,8 +52,8 @@ class TaskManagerUiImp(
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
             TaskOptions.SHOW_TASK_BY_NAME -> getTaskByName()
-            TaskOptions.CREATE_TASK -> addTask(null)
-            TaskOptions.EDIT_TASK -> editTask()
+            TaskOptions.ADD_TASK -> addTask(null)
+            TaskOptions.UPDATE_TASK -> updateTask()
             TaskOptions.DELETE_TASK -> deleteTask()
             TaskOptions.SHOW_TASKS_BY_PROJECT_NAME -> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
@@ -121,7 +121,7 @@ class TaskManagerUiImp(
         }
     }
 
-    override fun editTask() = runBlocking(coroutineExceptionHandler) {
+    override fun updateTask() = runBlocking(coroutineExceptionHandler) {
         try {
             val taskName = getTaskName()
 
