@@ -1,6 +1,8 @@
-package org.example.data.source.local.csv_reader_writer.state
+package org.example.data.source.local.csv_reader_writer
 
 import data.dto.EntityStateDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -10,14 +12,15 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-class EntityStateCSVReaderWriter(private val filePath: String) :
-    IEntityStateCSVReaderWriter {
+class EntityStateCSVReaderWriter(private val filePath: String) : IReaderWriter<EntityStateDto> {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<EntityStateDto> {
         val file = resolveFile()
         if (!file.exists()) {
-            file.createNewFile()
+            withContext(Dispatchers.IO) {
+                file.createNewFile()
+            }
         }
 
         if (File(filePath).readLines().size < 2)
@@ -30,18 +33,18 @@ class EntityStateCSVReaderWriter(private val filePath: String) :
 
     }
 
-    override suspend fun overWrite(state: List<EntityStateDto>): Boolean {
-        state.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(data: List<EntityStateDto>): Boolean {
+        data.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(state: List<EntityStateDto>): Boolean {
+    override suspend fun append(data: List<EntityStateDto>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
             } else emptyList<EntityStateDto>().toDataFrame()
 
-            val newData = state.toDataFrame()
+            val newData = data.toDataFrame()
             (existing.concat(newData)).writeCSV(file)
             return true
         }

@@ -4,10 +4,12 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.*
 import data.source.remote.mongo.*
 import org.example.data.source.*
+import org.example.data.source.local.*
 import org.example.data.source.remote.MongoSetup
 import org.example.data.source.remote.provider.MongoProvider
 import org.example.data.source.remote.provider.MongoProviderImpl
 import org.example.data.utils.*
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val remoteDataSourceModule = module {
@@ -59,6 +61,28 @@ val remoteDataSourceModule = module {
                 USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME,
                 UserAssignedToProjectDto::class.java
             ))
+        )
+    }
+}
+
+val localDataSourceModule = module {
+    factory<TaskInProjectDataSource> { TaskInProjectCSVDataSource(get(named("taskInProjectReaderWriter"))) }
+    factory<UserAssignedToProjectDataSource> { UserAssignedToProjectCSVDataSource(get(named("userAssignedToProjectReaderWriter"))) }
+    factory<MateTaskAssignmentDataSource> { MateTaskAssignmentCSVDataSource(get(named("mateTaskAssignmentReaderWriter"))) }
+
+    factory<AuditDataSource> { AuditCSVDataSource(get(named("auditReaderWriter"))) }
+    factory<ProjectDataSource> {
+        ProjectCSVDataSource(
+            get(named("projectReaderWriter")),
+            get()
+        )
+    }
+    factory<EntityStateDataSource> { EntityStateCSVDataSource(get(named("entityStateReaderWriter"))) }
+    factory<TaskDataSource> { TaskCSVDataSource(get(named("taskReaderWriter"))) }
+    factory<UserDataSource> {
+        UserCSVDataSource(
+            get(named("userReaderWriter")),
+            get()
         )
     }
 }
