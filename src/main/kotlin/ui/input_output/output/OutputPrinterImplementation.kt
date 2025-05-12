@@ -12,7 +12,7 @@ class OutputPrinterImplementation : OutputPrinter {
 
     override fun printTask(task: Task) {
         println(
-            "Name: ${task.name} | Description: ${task.description} " +
+            "Name: ${task.title} | Description: ${task.description} " +
 //                "| State: ${task.stateId} " + //TODO: State Name not id
                     "| Created: ${task.createdDate.date} ${task.createdDate.time} | Updated: ${task.updatedDate.date} ${task.updatedDate.time}"
         )
@@ -25,7 +25,7 @@ class OutputPrinterImplementation : OutputPrinter {
     override fun printMateTaskAssignments(assignments: List<Task>) {
         if (assignments.isEmpty()) return println("No tasks assigned.")
 
-        val userName = assignments.first().name
+        val userName = assignments.first().title
         println("Tasks assigned to: $userName")
         assignments.forEachIndexed { index, it ->
             println("${index + 1}. Task ID: ${it.id}")

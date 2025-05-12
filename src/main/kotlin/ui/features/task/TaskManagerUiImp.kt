@@ -101,7 +101,7 @@ class TaskManagerUiImp(
 
                 val task = Task(
                     projectName = projectName,
-                    name = name,
+                    title = name,
                     description = description,
                     stateId = stateId,
                     createdDate = timestamp,
@@ -110,7 +110,7 @@ class TaskManagerUiImp(
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
                 auditServicesUseCase.addAuditForAddEntity(
-                    EntityType.TASK, task.name,
+                    EntityType.TASK, task.title,
                     entityId = task.id,
                     additionalInfo = projectName
                 )
@@ -134,7 +134,7 @@ class TaskManagerUiImp(
 
             val newStateId = manageStateUseCase.getEntityStateIdByName(newStateName)
             val updatedTask = existingTask.copy(
-                name = newName,
+                title = newName,
                 description = newDescription,
                 stateId = newStateId,
                 updatedDate = timestamp
@@ -143,8 +143,8 @@ class TaskManagerUiImp(
             manageTasksUseCase.updateTask(updatedTask)
             auditServicesUseCase.addAuditForUpdateEntity(
                 entityType = EntityType.TASK,
-                existEntityName = existingTask.name,
-                newEntityName = updatedTask.name,
+                existEntityName = existingTask.title,
+                newEntityName = updatedTask.title,
                 entityId = existingTask.id,
                 newDescription = newDescription,
                 newStateName = newStateName

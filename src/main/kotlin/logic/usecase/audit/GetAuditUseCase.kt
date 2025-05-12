@@ -25,7 +25,7 @@ class GetAuditUseCase(
         val result = mutableListOf<Audit>()
         auditRepository.getAllAudits().also { audits ->
             manageTasksUseCase.getAllTasks().filter { task ->
-                task.name == taskName
+                task.title == taskName
             }.forEach { task ->
                 audits.filter { audit ->
                     audit.entityTypeId == task.id
