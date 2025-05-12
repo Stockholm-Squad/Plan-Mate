@@ -1,294 +1,314 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import data.dto.UserAssignedToProjectDto
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.example.logic.entities.User
-import org.example.logic.entities.UserRole
-import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.WriteDataException
-import org.example.data.csv_reader_writer.mate_task_assignment.MateTaskAssignmentCSVReaderWriter
-import org.example.data.csv_reader_writer.user_assigned_to_project.UserAssignedToProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.user.UserCSVReaderWriter
-import data.dto.UserDto
+import io.mockk.coEvery
+import kotlinx.coroutines.test.runTest
 import org.example.data.repo.UserRepositoryImp
-import org.example.logic.model.exceptions.ReadDataException
-import org.example.logic.model.exceptions.UsersDataAreEmptyException
-import org.example.logic.model.exceptions.WriteDataException
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.example.data.source.MateTaskAssignmentDataSource
+import org.example.data.source.UserAssignedToProjectDataSource
+import org.example.data.source.UserDataSource
+import org.example.logic.*
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.io.IOException
 import java.util.*
 
 class UserRepositoryImpTest {
 
-    private lateinit var userRepository: UserRepositoryImp
-    private lateinit var userCsvDataSource: UserCSVReaderWriter
-    private lateinit var userAssignedToProjectCsvDataSource: UserAssignedToProjectCSVReaderWriter
-    private lateinit var mateTaskAssignmentCSVReaderWriter: MateTaskAssignmentCSVReaderWriter
-
-    private val projectUUID1 = UUID.randomUUID()
-    private val projectUUID2 = UUID.randomUUID()
-    private val testUserAssigned = UserAssignedToProjectDto(projectId = projectUUID1.toString(), userName = "user1")
-    private val userAssignedWithDifferentUserName =
-        UserAssignedToProjectDto(projectId = projectUUID1.toString(), userName = "user2")
-    private val userAssignedWithDifferentProjectId =
-        UserAssignedToProjectDto(projectId = projectUUID2.toString(), userName = "user1")
-
-    private val testUserUUID1 = UUID.randomUUID()
-    private val testUserEntity1 = User(
-        id = testUserUUID1,
-        username = "testUser",
-        hashedPassword = "hashedPassword",
-        userRole = UserRole.MATE
-    )
-    private val testUserDto1 = UserDto(
-        id = testUserUUID1.toString(),
-        username = "testUser",
-        hashedPassword = "hashedPassword",
-        role = UserRole.MATE.toString()
-    )
-
-    private val testUserUUID2 = UUID.randomUUID()
-    private val testUserEntity2 = User(
-        id = testUserUUID2,
-        username = "testUser",
-        hashedPassword = "hashedPassword",
-        userRole = UserRole.MATE
-    )
-    private val testUserDto2 = UserDto(
-        id = testUserUUID2.toString(),
-        username = "testUser",
-        hashedPassword = "hashedPassword",
-        role = UserRole.MATE.toString()
-    )
+    private lateinit var userDataSource: UserDataSource
+    private lateinit var userAssignedToProjectDataSource: UserAssignedToProjectDataSource
+    private lateinit var mateTaskAssignment: MateTaskAssignmentDataSource
+    private lateinit var userRepo: UserRepositoryImp
 
     @BeforeEach
     fun setUp() {
-        userCsvDataSource = mockk(relaxed = true)
-        userAssignedToProjectCsvDataSource = mockk(relaxed = true)
-        mateTaskAssignmentCSVReaderWriter = mockk(relaxed = true)
-        userRepository =
-            UserRepositoryImp(userCsvDataSource, userAssignedToProjectCsvDataSource, mateTaskAssignmentCSVReaderWriter)
+        userDataSource = mockk(relaxed = true)
+        userAssignedToProjectDataSource = mockk(relaxed = true)
+        mateTaskAssignment = mockk(relaxed = true)
+        userRepo = UserRepositoryImp(
+            userDataSource = userDataSource,
+            userAssignedToProjectDataSource = userAssignedToProjectDataSource,
+            mateTaskAssignment = mateTaskAssignment
+        )
     }
 
     @Test
-    fun `addUser should return success when datasource writes successfully`() {
+    fun `addUser() should return true when user added successfully`() = runTest {
         // Given
-        every { userCsvDataSource.append(listOf(testUserDto1)) } returns Result.success(true)
-
+        coEvery { userDataSource.addUser(userDto) } returns true
         // When
-        val result = userRepository.addUser(testUserEntity1)
-
+        val result = userRepo.addUser(user)
         // Then
-        assertTrue(result.isSuccess)
-        assertEquals(true, result.getOrNull())
-        verify { userCsvDataSource.append(listOf(testUserDto1)) }
+        assertThat(result).isTrue()
+
     }
 
     @Test
-    fun `addUser should return failure when datasource write fails`() {
+    fun `addUser() should throw UserNotAddedException when data source fails`() = runTest {
         // Given
-        val expectedException = IOException("Write failed")
-        every { userCsvDataSource.append(listOf(testUserDto1)) } returns Result.failure(expectedException)
-
-        // When
-        val result = userRepository.addUser(testUserEntity1)
-
-        // Then
-        assertTrue(result.isFailure)
-        assertEquals(expectedException, result.exceptionOrNull())
-        verify { userCsvDataSource.append(listOf(testUserDto1)) }
+        coEvery { userDataSource.addUser(userDto) } throws Exception("Database error")
+        // When& Then
+        assertThrows<UserNotAddedException> {
+            userRepo.addUser(user)
+        }
     }
 
     @Test
-    fun `getAllUsers should return success with users when datasource reads successfully`() {
+    fun `addUser() should return false when user adding fails`() = runTest {
         // Given
-        val expectedUsers = listOf(testUserDto1, testUserDto2)
-        every { userCsvDataSource.read() } returns Result.success(expectedUsers)
-
+        coEvery { userDataSource.addUser(userDto) } returns false
         // When
-        val result = userRepository.getAllUsers()
-
+        val result = userRepo.addUser(user)
         // Then
-        assertTrue(result.isSuccess)
-        assertEquals(expectedUsers, result.getOrNull())
-        verify { userCsvDataSource.read() }
+        assertThat(result).isFalse()
     }
 
     @Test
-    fun `getAllUsers should return failure when datasource read fails`() {
+    fun `getAllUsers() should return all users when called`() = runTest {
         // Given
-        val expectedException = UsersDataAreEmptyException()
-        every { userCsvDataSource.read() } returns Result.failure(expectedException)
-
+        coEvery { userDataSource.getAllUsers() } returns userDtoList
         // When
-        val result = userRepository.getAllUsers()
+        val result = userRepo.getAllUsers()
+        assertThat(result).isEqualTo(usersList)
 
-        // Then
-        assertTrue(result.isFailure)
-        assertEquals(expectedException, result.exceptionOrNull())
-        verify { userCsvDataSource.read() }
     }
 
     @Test
-    fun `getAllUsers should return empty list when datasource returns empty list`() {
+    fun `getAllUsers() should return exception when datasource fails`() = runTest {
+
         // Given
-        every { userCsvDataSource.read() } returns Result.success(emptyList())
+        coEvery { userDataSource.getAllUsers() } throws Exception("Database error")
 
-        // When
-        val result = userRepository.getAllUsers()
+        //When&Then
+        assertThrows<UsersDoesNotExistException> {
+            userRepo.getAllUsers()
+        }
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertTrue(result.getOrNull()?.isEmpty() ?: false)
-        verify { userCsvDataSource.read() }
     }
 
     @Test
-    fun `addUser should propagate false when datasource returns false`() {
+    fun `getUsersByProjectId() should return list of users if user exists `() = runTest {
         // Given
-        every { userCsvDataSource.append(listOf(testUserDto1)) } returns Result.success(false)
-
+        val projectId = UUID.randomUUID()
+        coEvery { userDataSource.getUsersByProjectId(projectId.toString()) } returns userDtoList
         // When
-        val result = userRepository.addUser(testUserEntity1)
+        val result = userRepo.getUsersByProjectId(projectId)
+        //Then
+        assertThat(result).isEqualTo(usersList)
+    }
 
+    @Test
+    fun `getUsersByProjectId() should return empty list of users if there is not any user assigned for that project`() =
+        runTest {
+            // Given
+            val projectId = UUID.randomUUID()
+            val emptyList = emptyList<User>()
+            coEvery { userDataSource.getUsersByProjectId(projectId.toString()) } returns emptyList()
+            // When
+            val result = userRepo.getUsersByProjectId(projectId)
+            //Then
+            assertThat(result).isEqualTo(emptyList)
+        }
+
+    @Test
+    fun `getUsersByProjectId() should throw exception when datasource fails `() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery { userDataSource.getUsersByProjectId(projectId.toString()) } throws Exception()
+        //When&&Then
+        assertThrows<UsersDoesNotExistException> {
+            userRepo.getUsersByProjectId(projectId)
+        }
+    }
+
+    @Test
+    fun `addUserToProject() should return true when user added`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery {
+            userAssignedToProjectDataSource.addUserToProject(
+                projectId.toString(),
+                userName = "username"
+            )
+        } returns true
+        // When
+        val result = userRepo.addUserToProject(projectId = projectId, userName = "username")
+        //Then
+        assertThat(result).isTrue()
+    }
+    @Test
+    fun `addUserToProject() should return false when user not added`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery {
+            userAssignedToProjectDataSource.addUserToProject(
+                projectId.toString(),
+                userName = "username"
+            )
+        } returns false
+        // When
+        val result = userRepo.addUserToProject(projectId = projectId, userName = "username")
+        //Then
+        assertThat(result).isFalse()
+    }
+    @Test
+    fun `addUserToProject() should throw exception when datasource fails`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery {
+            userAssignedToProjectDataSource.addUserToProject(
+                projectId.toString(),
+                userName = "username"
+            )
+        } throws Exception()
+        //When&&Then
+        assertThrows<UserNotAddedToProjectException> {
+            userRepo.addUserToProject(projectId = projectId, userName = "username")
+        }
+    }
+    @Test
+    fun `deleteUserFromProject() should return true when user deleted`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery {
+            userAssignedToProjectDataSource.deleteUserFromProject(
+                projectId.toString(),
+                userName = "username"
+            )
+        } returns true
+        // When
+        val result = userRepo.deleteUserFromProject(projectId = projectId, userName = "username")
         // Then
-        assertTrue(result.isSuccess)
-        assertEquals(false, result.getOrNull())
-        verify { userCsvDataSource.append(listOf(testUserDto1)) }
+        assertThat(result).isTrue()
     }
 
-    @Nested
-    inner class UsersAssignedToProjectTests {
-        @Test
-        fun `getUsersAssignedToProject should return list of usernames for given project`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(testUserAssigned, userAssignedWithDifferentUserName)
+    @Test
+    fun `deleteUserFromProject() should return false when user not deleted`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery {
+            userAssignedToProjectDataSource.deleteUserFromProject(
+                projectId.toString(),
+                userName = "username"
             )
+        } returns false
+        // When
+        val result = userRepo.deleteUserFromProject(projectId = projectId, userName = "username")
+        // Then
+        assertThat(result).isFalse()
+    }
 
-            val result = userRepository.getUsersByProjectId(projectUUID1)
-
-            assertThat(result.getOrNull()).containsExactly("user1", "user2")
-        }
-
-        @Test
-        fun `getUsersAssignedToProject should return empty list when no users for project`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(UserAssignedToProjectDto(projectId = "2", userName = "user3"))
+    @Test
+    fun `deleteUserFromProject() should throw exception when datasource fails`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID()
+        coEvery {
+            userAssignedToProjectDataSource.deleteUserFromProject(
+                projectId.toString(),
+                userName = "username"
             )
-
-            val result = userRepository.getUsersByProjectId(projectUUID1)
-
-            assertThat(result.getOrNull()).isEmpty()
-        }
-
-        @Test
-        fun `getUsersAssignedToProject should return failure when read fails`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = userRepository.getUsersByProjectId(projectUUID1)
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `addUserAssignedToProject should append user and return success`() {
-            every { userAssignedToProjectCsvDataSource.append(any()) } returns Result.success(true)
-
-            val result = userRepository.addUserToProject(projectUUID1, "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify {
-                userAssignedToProjectCsvDataSource.append(
-                    listOf(UserAssignedToProjectDto(projectId = "1", userName = "user1"))
-                )
-            }
-        }
-
-        @Test
-        fun `addUserAssignedToProject should return failure when write fails`() {
-            every { userAssignedToProjectCsvDataSource.append(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = userRepository.addUserToProject(projectUUID1, "user1")
-
-            assertThrows<WriteDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should remove user and return success`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(testUserAssigned, userAssignedWithDifferentUserName)
-            )
-            every { userAssignedToProjectCsvDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = userRepository.deleteUserFromProject(projectUUID1, "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { userAssignedToProjectCsvDataSource.overWrite(listOf(userAssignedWithDifferentUserName)) }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return success when user not found`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(userAssignedWithDifferentUserName)
-            )
-            every { userAssignedToProjectCsvDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = userRepository.deleteUserFromProject(projectUUID1, "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { userAssignedToProjectCsvDataSource.overWrite(listOf(userAssignedWithDifferentUserName)) }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return success when project not found`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(userAssignedWithDifferentProjectId)
-            )
-            every { userAssignedToProjectCsvDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = userRepository.deleteUserFromProject(projectUUID1, "user1")
-
-            assertThat(result.isSuccess).isTrue()
-            verify { userAssignedToProjectCsvDataSource.overWrite(listOf(userAssignedWithDifferentProjectId)) }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return failure when read fails`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = userRepository.deleteUserFromProject(projectUUID1, "user1")
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteUserAssignedToProject should return failure when write fails`() {
-            every { userAssignedToProjectCsvDataSource.read() } returns Result.success(
-                listOf(testUserAssigned, userAssignedWithDifferentUserName)
-            )
-            every { userAssignedToProjectCsvDataSource.overWrite(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = userRepository.deleteUserFromProject(projectUUID1, "user1")
-
-            assertThrows<WriteDataException> { result.getOrThrow() }
+        } throws Exception()
+        // When & Then
+        assertThrows<UserNotDeletedFromProjectException> {
+            userRepo.deleteUserFromProject(projectId = projectId, userName = "username")
         }
     }
 
+    @Test
+    fun `addUserToTask() should return true when user added to task`() = runTest {
+        // Given
+        val taskId = UUID.randomUUID()
+        coEvery {
+            mateTaskAssignment.addUserToTask(
+                mateName = "mateName",
+                taskId = taskId.toString()
+            )
+        } returns true
+        // When
+        val result = userRepo.addUserToTask(mateName = "mateName", taskId = taskId)
+        // Then
+        assertThat(result).isTrue()
+    }
 
+    @Test
+    fun `addUserToTask() should return false when user not added to task`() = runTest {
+        // Given
+        val taskId = UUID.randomUUID()
+        coEvery {
+            mateTaskAssignment.addUserToTask(
+                mateName = "mateName",
+                taskId = taskId.toString()
+            )
+        } returns false
+        // When
+        val result = userRepo.addUserToTask(mateName = "mateName", taskId = taskId)
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `addUserToTask() should throw exception when datasource fails`() = runTest {
+        // Given
+        val taskId = UUID.randomUUID()
+        coEvery {
+            mateTaskAssignment.addUserToTask(
+                mateName = "mateName",
+                taskId = taskId.toString()
+            )
+        } throws Exception()
+        // When & Then
+        assertThrows<UserNotAddedToTaskException> {
+            userRepo.addUserToTask(mateName = "mateName", taskId = taskId)
+        }
+    }
+
+    @Test
+    fun `deleteUserFromTask() should return true when user is deleted from task`() = runTest {
+        // Given
+        val taskId = UUID.randomUUID()
+        coEvery {
+            mateTaskAssignment.deleteUserFromTask(
+                mateName = "mateName",
+                taskId = taskId.toString()
+            )
+        } returns true
+        // When
+        val result = userRepo.deleteUserFromTask(mateName = "mateName", taskId = taskId)
+        // Then
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `deleteUserFromTask() should return false when user is not deleted from task`() = runTest {
+        // Given
+        val taskId = UUID.randomUUID()
+        coEvery {
+            mateTaskAssignment.deleteUserFromTask(
+                mateName = "mateName",
+                taskId = taskId.toString()
+            )
+        } returns false
+        // When
+        val result = userRepo.deleteUserFromTask(mateName = "mateName", taskId = taskId)
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `deleteUserFromTask() should throw exception when datasource fails`() = runTest {
+        // Given
+        val taskId = UUID.randomUUID()
+        coEvery {
+            mateTaskAssignment.deleteUserFromTask(
+                mateName = "mateName",
+                taskId = taskId.toString()
+            )
+        } throws Exception()
+        // When & Then
+        assertThrows<UserNotDeletedFromTaskException> {
+            userRepo.deleteUserFromTask(mateName = "mateName", taskId = taskId)
+        }
+    }
 }
