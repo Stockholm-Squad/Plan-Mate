@@ -1,165 +1,220 @@
-package logic.usecase.project
+package org.example.logic.usecase.project
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
-import org.example.logic.ReadDataException
-import org.example.logic.entities.Task
-import org.example.logic.repository.TaskRepository
-import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageTasksInProjectUseCase
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
-import java.util.*
-import kotlin.test.Test
 
+import org.example.logic.ReadDataException
+import org.example.logic.TaskNotAddedException
+import org.example.logic.TaskNotDeletedException
+import org.example.logic.TasksNotFoundException
+import org.example.logic.repository.TaskRepository
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import utils.buildProject
+import utils.buildTask
+import java.util.*
 
 class ManageTasksInProjectUseCaseTest {
     private lateinit var taskRepository: TaskRepository
     private lateinit var getProjectsUseCase: GetProjectsUseCase
-    private lateinit var manageTasksInProjectUseCase: ManageTasksInProjectUseCase
-    private val testTask = Task(
-        id = UUID.randomUUID(),
+    private lateinit var useCase: ManageTasksInProjectUseCase
+
+    private val projectId = UUID.randomUUID()
+    private val taskId = UUID.randomUUID()
+    private val testTask = buildTask(
+        id = taskId,
         name = "Test Task",
-        description = "",
         stateId = UUID.randomUUID(),
-        createdDate = LocalDateTime(LocalDate(2005, 2, 19), LocalTime(12, 12)),
-        updatedDate = LocalDateTime(LocalDate(2005, 2, 19), LocalTime(12, 12)),
-        projectName = "Project",
-    )
-    private val anotherTask = Task(
-        id = UUID.randomUUID(),
-        name = "Another Task",
-        description = "",
-        stateId = UUID.randomUUID(),
-        createdDate = LocalDateTime(LocalDate(2005, 2, 19), LocalTime(12, 12)),
-        updatedDate = LocalDateTime(LocalDate(2005, 2, 19), LocalTime(12, 12)),
-        projectName = "Another Project",
+        projectName = "plan-mate",
     )
 
     @BeforeEach
-    fun setUp() {
-        taskRepository = mockk()
-        getProjectsUseCase = mockk()
-        manageTasksInProjectUseCase = ManageTasksInProjectUseCase(getProjectsUseCase, taskRepository)
+    fun setup() {
+        taskRepository = mockk(relaxed = true)
+        getProjectsUseCase = mockk(relaxed = true)
+        useCase = ManageTasksInProjectUseCase(getProjectsUseCase, taskRepository)
     }
 
-    @Test
-    fun `getTasksAssignedToProject() should return tasks when successful`() = runTest {
-        // Given
-        val id = UUID.randomUUID()
-        coEvery { taskRepository.getTasksInProject(id) } returns listOf(testTask, anotherTask)
+    @Nested
+    inner class GetTasksById {
+        @Test
+        fun `getTasksAssignedToProject() should return tasks when successful`() = runTest {
+            // Given
+            coEvery { taskRepository.getTasksInProject(projectId) } returns listOf(testTask)
+            // When
+            val result = useCase.getTasksInProjectById(projectId)
+            // Then
+            assertThat(result).containsExactly(testTask)
+        }
 
-        // When
-        val result = manageTasksInProjectUseCase.getTasksInProjectById(id)
+        @Test
+        fun `getTasksAssignedToProject() should return project repository failure`() = runTest {
+            // Given
+            coEvery { taskRepository.getTasksInProject(projectId) } throws ReadDataException()
 
-        // Then
-        assertThat { result }.isEqualTo(listOf(testTask, anotherTask))
-    }
+            // When & Then
+            assertThrows<ReadDataException> {
+                useCase.getTasksInProjectById(projectId)
+            }
+        }
 
-
-    @Test
-    fun `getTasksAssignedToProject() should propagate project repository failure`() = runTest {
-        // Given
-        val id = UUID.randomUUID()
-        coEvery { taskRepository.getTasksInProject(id) } throws ReadDataException()
-
-        //  When & Then
-        assertThrows<ReadDataException> {
-            manageTasksInProjectUseCase.getTasksInProjectById(id)
+        @Test
+        fun `getTasksAssignedToProject() should throw TasksNotFoundException when no tasks`() = runTest {
+            coEvery { taskRepository.getTasksInProject(projectId) } returns emptyList()
+            assertThrows<TasksNotFoundException> {
+                useCase.getTasksInProjectById(projectId)
+            }
         }
     }
 
-    @Test
-    fun `addTaskAssignedToProject() should return true when repository succeeds`() = runTest {
-        // Given
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
+    @Nested
+    inner class AddTask {
+        @Test
+        fun `addTaskAssignedToProject() should return true when repository succeeds`() = runTest {
+            // Given
+            coEvery { taskRepository.addTaskInProject(projectId, taskId) } returns true
+            // When
+            val result = useCase.addTaskToProject(projectId, taskId)
+            // Then
+            assertThat(result).isTrue()
+        }
 
-        coEvery { taskRepository.addTaskInProject(id1, id2) } returns true
+        @Test
+        fun `addTaskAssignedToProject() should return failure`() = runTest {
+            // Given
+            coEvery { taskRepository.addTaskInProject(projectId, taskId) } throws ReadDataException()
 
-        // When
-        val result = manageTasksInProjectUseCase.addTaskToProject(id1, id2)
+            // When & Then
+            assertThrows<ReadDataException> {
+                useCase.addTaskToProject(projectId, taskId)
+            }
+        }
 
-        // Then
-        assertThat { result }.isEqualTo(true)
-    }
-
-    @Test
-    fun `addTaskAssignedToProject() should propagate failure`() = runTest {
-        // Given
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
-        coEvery { taskRepository.addTaskInProject(id1, id2) } throws Throwable()
-
-        // When & Then
-        assertThrows<Throwable> {
-            manageTasksInProjectUseCase.addTaskToProject(id1, id2)
+        @Test
+        fun `addTaskAssignedToProject() should throw TaskNotAddedException when repository returns false`() = runTest {
+            coEvery { taskRepository.addTaskInProject(projectId, taskId) } returns false
+            assertThrows<TaskNotAddedException> {
+                useCase.addTaskToProject(projectId, taskId)
+            }
         }
     }
 
-    @Test
-    fun `deleteTaskAssignedToProject() should return true when task exists and deletion succeeds`() = runTest {
-        // Given
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
-        coEvery { taskRepository.getTasksInProject(id1) } returns listOf(testTask, anotherTask)
-        coEvery { taskRepository.deleteTaskFromProject(id1, id2) } returns true
+    @Nested
+    inner class DeleteTask {
+        @Test
+        fun `deleteTaskAssignedToProject() should return true when task exists and deletion succeeds`() = runTest {
+            // Given
+            coEvery { taskRepository.deleteTaskFromProject(projectId, taskId) } returns true
 
-        // When
-        val result = manageTasksInProjectUseCase.deleteTaskFromProject(id1, id2)
+            // When
+            val result = useCase.deleteTaskFromProject(projectId, taskId)
 
-        // Then
-        assertThat { result }.isEqualTo(true)
+            // Then
+            assertThat(result).isTrue()
+        }
 
-    }
+        @Test
+        fun `deleteTaskAssignedToProject() should return delete failure`() = runTest {
+            // Given
+            coEvery { taskRepository.deleteTaskFromProject(projectId, taskId) } throws ReadDataException()
 
-    @Test
-    fun `deleteTaskAssignedToProject() should return false when task doesn't exist`() = runTest {
-        // Given
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
+            // When & Then
+            assertThrows<ReadDataException> {
+                useCase.deleteTaskFromProject(projectId, taskId)
+            }
+        }
 
-        coEvery { taskRepository.getTasksInProject(id1) } returns listOf(testTask)
-
-        // When
-        val result = manageTasksInProjectUseCase.deleteTaskFromProject(id1, id2)
-
-        // Then
-        assertThat { result }.isEqualTo(listOf(testTask))
-    }
-
-    @Test
-    fun `deleteTaskAssignedToProject() should propagate read failure`() = runTest {
-        // Given
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
-        coEvery { taskRepository.getTasksInProject(id1) } throws ReadDataException()
-
-        //  When & Then
-        assertThrows<ReadDataException> {
-            manageTasksInProjectUseCase.deleteTaskFromProject(id1, id2)
+        @Test
+        fun `deleteTaskAssignedToProject() should throw TaskNotDeletedException when repository returns false`() = runTest {
+            coEvery { taskRepository.deleteTaskFromProject(projectId, taskId) } returns false
+            assertThrows<TaskNotDeletedException> {
+                useCase.deleteTaskFromProject(projectId, taskId)
+            }
         }
     }
 
-    @Test
-    fun `deleteTaskAssignedToProject should propagate delete failure`() = runTest {
-        // Given
-        val id1 = UUID.randomUUID()
-        val id2 = UUID.randomUUID()
+    @Nested
+    inner class GetTasksByName {
 
-        coEvery { taskRepository.getTasksInProject(id1) } returns listOf(testTask)
-        coEvery { taskRepository.deleteTaskFromProject(id1, id2) } throws Throwable()
+        @Test
+        fun `getTasksInProjectByName() should return tasks when project found and tasks exist`() = runTest {
+            // Given
+            val projectName = "Project"
+            // create a project with a known id
+            val project = buildProject(name = projectName)
+            // make getProjectByName return that same project
+            coEvery { getProjectsUseCase.getProjectByName(projectName) } returns project
 
+            // now stub the repo to return your testTask when asked for project.id
+            coEvery { taskRepository.getTasksInProject(project.id) } returns listOf(testTask)
 
-        // When & Then
-        assertThrows<Throwable> {
-            manageTasksInProjectUseCase.deleteTaskFromProject(id1, id2)
+            // When
+            val result = useCase.getTasksInProjectByName(projectName)
 
+            // Then
+            assertThat(result).containsExactly(testTask)
+            // (optional) verify that we indeed called the repository with the right id
+            coVerify { taskRepository.getTasksInProject(project.id) }
+        }
+
+        @Test
+        fun `getTasksInProjectByName() should throw TasksNotFoundException when no tasks`() = runTest {
+            val projectName = "Project"
+            coEvery { getProjectsUseCase.getProjectByName(projectName) } returns buildProject(name = projectName)
+            coEvery { taskRepository.getTasksInProject(testTask.id) } returns emptyList()
+
+            assertThrows<TasksNotFoundException> {
+                useCase.getTasksInProjectByName(projectName)
+            }
+        }
+
+        @Test
+        fun `getTasksInProjectByName() should return exception when getProjectByName fails`() = runTest {
+            val projectName = "Proj"
+            coEvery { getProjectsUseCase.getProjectByName(projectName) } throws ReadDataException()
+
+            assertThrows<ReadDataException> {
+                useCase.getTasksInProjectByName(projectName)
+            }
+        }
+
+    }
+
+    @Nested
+    inner class GetAllTasksByUserName {
+        @Test
+        fun `getAllTasksByUserName() should return tasks when tasks exist`() = runTest {
+            val userName = "user1"
+            coEvery { taskRepository.getAllTasksByUserName(userName) } returns listOf(testTask)
+
+            val result = useCase.getAllTasksByUserName(userName)
+
+            assertThat(result).containsExactly(testTask)
+        }
+
+        @Test
+        fun `getAllTasksByUserName() should throw TasksNotFoundException when no tasks for user`() = runTest {
+            val userName = "user2"
+            coEvery { taskRepository.getAllTasksByUserName(userName) } returns emptyList()
+
+            assertThrows<TasksNotFoundException> {
+                useCase.getAllTasksByUserName(userName)
+            }
+        }
+
+        @Test
+        fun `getAllTasksByUserName() should return repository failure`() = runTest {
+            val userName = "user3"
+            coEvery { taskRepository.getAllTasksByUserName(userName) } throws ReadDataException()
+
+            assertThrows<ReadDataException> {
+                useCase.getAllTasksByUserName(userName)
+            }
         }
     }
 }
