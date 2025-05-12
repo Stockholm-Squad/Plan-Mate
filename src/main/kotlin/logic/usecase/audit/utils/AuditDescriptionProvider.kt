@@ -1,6 +1,6 @@
 package org.example.logic.usecase.audit.utils
 
-import logic.usecase.audit.*
+import logic.usecase.audit.utils.*
 import org.example.logic.entities.EntityType
 import java.util.*
 
@@ -31,25 +31,26 @@ class AuditDescriptionProvider {
         newEntityName: String,
         entityId: UUID,
         newDescription: String,
-        newStateName: String
+        newStateName: String,
+        additionalInfo: String
     ): String {
         return when (entityType) {
             EntityType.TASK -> TASK_MESSAGE_TEMPLATE.format(
                 entityType, UPDATED_ACTION,
-                TASK_NAME_UPDATE.format(existEntityName, newEntityName), entityId,
+                NAME_UPDATE.format(existEntityName, newEntityName), entityId,
                 COMBINED_DETAIL_FORMAT.format(
                     DESCRIPTION_UPDATE.format(newDescription.take(30)),
-                    STATE_UPDATED.format(newStateName)
+                    STATE_UPDATED.format(newStateName), TASK_PROJECT_SUFFIX.format(additionalInfo)
                 )
             )
 
             EntityType.PROJECT -> PROJECT_MESSAGE_TEMPLATE.format(
-                entityType, UPDATED_ACTION, PROJECT_NAME_UPDATE.format(existEntityName, newEntityName), entityId,
-                STATE_UPDATE_MESSAGE.format(newStateName)
+                entityType, UPDATED_ACTION, NAME_UPDATE.format(existEntityName, newEntityName), entityId,
+                STATE_UPDATED.format(newStateName)
             )
 
             EntityType.STATE -> STATE_MESSAGE_TEMPLATE.format(
-                entityType, UPDATED_ACTION, STATE_NAME_UPDATE.format(existEntityName, newEntityName), entityId
+                entityType, UPDATED_ACTION, NAME_UPDATE.format(existEntityName, newEntityName), entityId
             )
         }
     }

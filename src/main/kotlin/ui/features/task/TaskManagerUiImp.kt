@@ -11,9 +11,9 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.logic.usecase.task.TaskOptions
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
+import org.example.ui.features.task.model.TaskOptions
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
@@ -123,6 +123,9 @@ class TaskManagerUiImp(
 
     override fun updateTask() = runBlocking(coroutineExceptionHandler) {
         try {
+            val projectName = getProjectByName()
+            if (projectName.isEmpty()) return@runBlocking
+
             val taskName = getTaskName()
 
             val existingTask = manageTasksUseCase.getTaskByName(taskName)
@@ -139,6 +142,7 @@ class TaskManagerUiImp(
                 stateId = newStateId,
                 updatedDate = timestamp
             )
+            getProjectsUseCase.getProjectByName(projectName)
 
             manageTasksUseCase.updateTask(updatedTask)
             auditServicesUseCase.addAuditForUpdateEntity(
@@ -147,7 +151,8 @@ class TaskManagerUiImp(
                 newEntityName = updatedTask.title,
                 entityId = existingTask.id,
                 newDescription = newDescription,
-                newStateName = newStateName
+                newStateName = newStateName,
+                additionalInfo = projectName
             )
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
@@ -246,7 +251,7 @@ class TaskManagerUiImp(
         if (name == null) {
             printer.showMessage(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.equals("y", ignoreCase = true)) return readUpdateTaskInput()
+            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
@@ -255,7 +260,7 @@ class TaskManagerUiImp(
         if (description == null) {
             printer.showMessage(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.equals("y", ignoreCase = true)) return readUpdateTaskInput()
+            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
@@ -264,7 +269,7 @@ class TaskManagerUiImp(
         if (stateName == null) {
             printer.showMessage(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.equals("y", ignoreCase = true)) return readUpdateTaskInput()
+            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
