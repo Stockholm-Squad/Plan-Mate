@@ -14,34 +14,25 @@ class ProjectMongoDataSource(
     private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
 ) : ProjectDataSource {
 
-    override suspend fun addProject(project: ProjectDto): Boolean {
-        val result = projectCollection.insertOne(project)
-        return result.wasAcknowledged()
-    }
+    override suspend fun addProject(project: ProjectDto): Boolean =
+        projectCollection.insertOne(project).insertedId != null
 
-    override suspend fun editProject(updatedProject: ProjectDto): Boolean {
-        val result = projectCollection.updateOne(
-            filter = ProjectDto::id eq updatedProject.id,
-            update = setValue(ProjectDto::name, updatedProject.name)
-        )
-        return result.matchedCount > 0
-    }
+    override suspend fun editProject(updatedProject: ProjectDto): Boolean =
+        projectCollection.updateOne(
+            ProjectDto::id eq updatedProject.id,
+            setValue(ProjectDto::name, updatedProject.name)
+        ).matchedCount > 0
 
-    override suspend fun deleteProject(projectToDelete: ProjectDto): Boolean {
-        val result = projectCollection.deleteOne(ProjectDto::id eq projectToDelete.id)
-        return result.deletedCount > 0
-    }
+    override suspend fun deleteProject(projectToDelete: ProjectDto): Boolean =
+        projectCollection.deleteOne(ProjectDto::id eq projectToDelete.id).deletedCount > 0
 
-    override suspend fun getAllProjects(): List<ProjectDto> {
-        return projectCollection.find().toList()
-    }
+    override suspend fun getAllProjects(): List<ProjectDto> =
+        projectCollection.find().toList()
 
-    override suspend fun getProjectsByUsername(username: String): List<ProjectDto> {
-        val projectIds = userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName(username).map {
-            it.projectId
-        }
-        val filter = ProjectDto::id `in` projectIds
-        return projectCollection.find(filter).toList()
-    }
-
+    override suspend fun getProjectsByUsername(username: String): List<ProjectDto> =
+        projectCollection.find(
+            ProjectDto::id `in` userAssignedToProjectDataSource
+                .getUsersAssignedToProjectByUserName(username)
+                .map { userToProject-> userToProject.projectId }
+        ).toList()
 }

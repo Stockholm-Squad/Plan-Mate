@@ -16,45 +16,31 @@ class UserMongoDataSource(
     private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
 ) : UserDataSource {
 
-    override suspend fun addUser(user: UserDto): Boolean {
-        val result = userCollection.insertOne(user)
-        return result.wasAcknowledged()
-    }
+    override suspend fun addUser(user: UserDto): Boolean =
+        userCollection.insertOne(user).insertedId != null
 
-    override suspend fun getAllUsers(): List<UserDto> {
-        return userCollection.find().toList()
-    }
+    override suspend fun getAllUsers(): List<UserDto> =
+        userCollection.find().toList()
 
-    override suspend fun getUsersByProjectId(projectId: String): List<UserDto> {
-        val assignedUsernames = userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId(projectId)
-            .map { it.userName }
+    override suspend fun getUsersByProjectId(projectId: String): List<UserDto> =
+        userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId(projectId)
+            .map { userToProject -> userToProject.userName }
+            .takeIf { userNames -> userNames.isNotEmpty() }
+            ?.let { userCollection.find(UserDto::username `in` it).toList() }
+            ?: emptyList()
 
-        if (assignedUsernames.isEmpty()) return emptyList()
+    override suspend fun isUserExist(username: String): Boolean =
+        userCollection.find(Filters.eq(UserDto::username.name, username)).firstOrNull() != null
 
-        val filter = UserDto::username `in` assignedUsernames
-        return userCollection.find(filter).toList()
-    }
+    override suspend fun getUserById(userId: String): UserDto? =
+        userCollection.find(Filters.eq(UserDto::id.name, userId)).firstOrNull()
 
-    override suspend fun isUserExist(username: String): Boolean {
-        val filter = Filters.eq(UserDto::username.name, username)
-        return userCollection.find(filter).firstOrNull() != null
-    }
+    override suspend fun editUser(user: UserDto): Boolean =
+        userCollection.updateOne(
+            UserDto::id eq user.id,
+            setValue(UserDto::username, user.username)
+        ).matchedCount > 0
 
-    override suspend fun getUserById(userId: String): UserDto? {
-        val filter = Filters.eq(UserDto::id.name, userId)
-        return userCollection.find(filter).firstOrNull()
-    }
-
-    override suspend fun editUser(user: UserDto): Boolean {
-        val result = userCollection.updateOne(
-            filter = UserDto::id eq user.id,
-            update = setValue(UserDto::username, user.username)
-        )
-        return result.matchedCount > 0
-    }
-
-    override suspend fun deleteUser(user: UserDto): Boolean {
-        val result = userCollection.deleteOne(UserDto::id eq user.id)
-        return result.deletedCount > 0
-    }
+    override suspend fun deleteUser(user: UserDto): Boolean =
+        userCollection.deleteOne(UserDto::id eq user.id).deletedCount > 0
 }

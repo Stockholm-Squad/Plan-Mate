@@ -7,38 +7,29 @@ import org.example.data.source.MateTaskAssignmentDataSource
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 
-
 class MateTaskAssignmentMongoDataSource(
     private val mateTaskAssignmentCollection: MongoCollection<MateTaskAssignmentDto>,
 ) : MateTaskAssignmentDataSource {
 
-    override suspend fun addUserToTask(mateName: String, taskId: String): Boolean {
-        val document = MateTaskAssignmentDto(
-            userName = mateName,
-            taskId = taskId
-        )
+    override suspend fun addUserToTask(mateName: String, taskId: String): Boolean =
+        mateTaskAssignmentCollection.insertOne(
+            MateTaskAssignmentDto(
+                userName = mateName,
+                taskId = taskId
+            )
+        ).insertedId != null
 
-        val result = mateTaskAssignmentCollection.insertOne(document)
-        return result.wasAcknowledged()
-    }
+    override suspend fun deleteUserFromTask(mateName: String, taskId: String): Boolean =
+        mateTaskAssignmentCollection.deleteOne(
+            and(
+                MateTaskAssignmentDto::userName eq mateName,
+                MateTaskAssignmentDto::taskId eq taskId
+            )
+        ).deletedCount > 0
 
-    override suspend fun deleteUserFromTask(mateName: String, taskId: String): Boolean {
-        val filter = and(
-            MateTaskAssignmentDto::userName eq mateName,
-            MateTaskAssignmentDto::taskId eq taskId
-        )
+    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::taskId eq taskId).toList()
 
-        val result = mateTaskAssignmentCollection.deleteOne(filter)
-        return result.deletedCount > 0
-    }
-
-    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> {
-        val filter = MateTaskAssignmentDto::taskId eq taskId
-        return mateTaskAssignmentCollection.find(filter).toList()
-    }
-
-    override suspend fun getUsersMateTaskByUserName(userName: String): List<MateTaskAssignmentDto> {
-        val filter = MateTaskAssignmentDto::userName eq userName
-        return mateTaskAssignmentCollection.find(filter).toList()
-    }
+    override suspend fun getUsersMateTaskByUserName(userName: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::userName eq userName).toList()
 }

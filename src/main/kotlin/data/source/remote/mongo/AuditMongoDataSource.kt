@@ -10,11 +10,10 @@ class AuditMongoDataSource(
     private val auditsCollection: MongoCollection<AuditDto>,
 ) : AuditDataSource {
 
-    override suspend fun addAuditsEntries(auditSystem: List<AuditDto>): Boolean {
-        return auditsCollection.insertMany(auditSystem).wasAcknowledged()
-    }
+    override suspend fun addAuditsEntries(auditSystem: List<AuditDto>): Boolean =
+        auditsCollection.insertMany(auditSystem).insertedIds.size == auditSystem.size
 
-    override suspend fun getAllAuditEntries(): List<AuditDto> {
-        return auditsCollection.find().toList()
-    }
+
+    override suspend fun getAllAuditEntries(): List<AuditDto> = auditsCollection.find().toList()
+
 }
