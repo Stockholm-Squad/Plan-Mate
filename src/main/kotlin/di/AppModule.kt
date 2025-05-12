@@ -7,8 +7,8 @@ import org.koin.dsl.module
 val appModule = module {
     includes(
         useCaseModule,
-        localDataSourceModule,
-        readerWriterModule,
+//        localDataSourceModule, readerWriterModule,
+        remoteDataSourceModule,
         repositoryModule,
         uiModule,
         inputOutputModule
