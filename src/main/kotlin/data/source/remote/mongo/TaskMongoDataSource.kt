@@ -11,30 +11,21 @@ class TaskMongoDataSource(
     private val taskCollection: MongoCollection<TaskDto>,
 ) : TaskDataSource {
 
-    override suspend fun getAllTasks(): List<TaskDto> {
-        return taskCollection.find().toList()
-    }
+    override suspend fun getAllTasks(): List<TaskDto> =
+        taskCollection.find().toList()
 
-    override suspend fun addTask(task: TaskDto): Boolean {
-        val result = taskCollection.insertOne(task)
-        return result.wasAcknowledged()
-    }
+    override suspend fun addTask(task: TaskDto): Boolean =
+        taskCollection.insertOne(task).insertedId != null
 
-    override suspend fun updateTask(task: TaskDto): Boolean {
-        val result = taskCollection.replaceOne(TaskDto::id eq task.id, task)
-        return result.modifiedCount > 0
-    }
+    override suspend fun updateTask(task: TaskDto): Boolean =
+        taskCollection.replaceOne(TaskDto::id eq task.id, task).modifiedCount > 0
 
-    override suspend fun deleteTask(id: String): Boolean {
-        val result = taskCollection.deleteOne(TaskDto::id eq id)
-        return result.deletedCount > 0
-    }
+    override suspend fun deleteTask(id: String): Boolean =
+        taskCollection.deleteOne(TaskDto::id eq id).deletedCount > 0
 
-    override suspend fun getTasksInProject(taskIds: List<String>): List<TaskDto> {
-        return taskCollection.find(TaskDto::id `in` taskIds).toList()
-    }
+    override suspend fun getTasksInProject(taskIds: List<String>): List<TaskDto> =
+        taskCollection.find(TaskDto::id `in` taskIds).toList()
 
-    override suspend fun getTasksByIds(taskIds: List<String>): List<TaskDto> {
-        return taskCollection.find(TaskDto::id `in` taskIds).toList()
-    }
+    override suspend fun getTasksByIds(taskIds: List<String>): List<TaskDto> =
+        taskCollection.find(TaskDto::id `in` taskIds).toList()
 }

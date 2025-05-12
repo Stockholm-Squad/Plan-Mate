@@ -1,6 +1,7 @@
 package data.csv_reader_writer
 
 import data.dto.EntityStateDto
+import org.example.data.source.local.csv_reader_writer.EntityStateCSVReaderWriter
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
@@ -11,13 +12,13 @@ import kotlin.test.assertTrue
 class ProjectStateCSVReaderWriterTest {
     private lateinit var tempFile: File
     private lateinit var testFilePath: String
-    private lateinit var dataSource: org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter
+    private lateinit var dataSource: EntityStateCSVReaderWriter
 
     @BeforeEach
     fun setUp() {
         tempFile = Files.createTempFile("tst", ".csv").toFile()
         testFilePath = tempFile.path
-        dataSource = org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter(testFilePath)
+        dataSource = EntityStateCSVReaderWriter(testFilePath)
     }
 
     @AfterEach
@@ -40,7 +41,7 @@ class ProjectStateCSVReaderWriterTest {
         @Test
         fun `read should return Throwable when read from file not exist`() {
             File(testFilePath).writeText("")
-            dataSource = org.example.data.source.local.csv_reader_writer.state.EntityStateCSVReaderWriter("")
+            dataSource = EntityStateCSVReaderWriter("")
             val result = dataSource.read()
             assertThrows<Throwable> { result.getOrThrow() }
         }
