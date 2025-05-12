@@ -7,7 +7,6 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.data.utils.DateHandlerImp
-import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import org.example.logic.repository.AuditRepository
 import org.example.logic.usecase.audit.GetAuditUseCase
@@ -15,8 +14,9 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import utils.buildAudit
 import java.util.*
-import kotlin.test.assertTrue
+
 
 class GetAuditUseCaseTest {
 
@@ -29,31 +29,41 @@ class GetAuditUseCaseTest {
     private val taskName = "Task1"
     private val dateTime = DateHandlerImp().getCurrentDateTime()
 
-    private val auditProject = Audit(
-        id = UUID.fromString("f3a85f64-5717-4562-b3fc-2c963f66bfa1"),
+    private val projectId = UUID.fromString("e3a85f64-5717-4562-b3fc-2c963f66dabc")
+    private val projectAuditId = UUID.fromString("f3a85f64-5717-4562-b3fc-2c963f66bfa1")
+    private val userProjectId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
+
+    private val taskId = UUID.fromString("c3a85f64-5717-4562-b3fc-2c963f66abcd")
+    private val taskAuditId = UUID.fromString("5fa85f64-5717-4562-b3fc-2c963f66bfa2")
+    private val taskAuditId1 = UUID.fromString("9fa85f64-5717-4562-b3fc-2c963f66bfa4")
+    private val userTaskId = UUID.fromString("8fa85f64-5717-4562-b3fc-2c963f66bfa3")
+    private val userTaskId1 = UUID.fromString("7fa85f64-5717-4562-b3fc-2c963f66bfa5")
+
+    private val auditProject = buildAudit(
+        id = projectAuditId,
         entityType = EntityType.PROJECT,
-        entityTypeId = UUID.fromString("e3a85f64-5717-4562-b3fc-2c963f66dabc"),
+        entityTypeId = projectId,
+        userId = userProjectId,
         description = "Added Project",
-        userId = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1"),
-        dateTime = dateTime
+        createdAt = dateTime
     )
 
-    private val auditTask = Audit(
-        id = UUID.fromString("5fa85f64-5717-4562-b3fc-2c963f66bfa2"),
+    private val auditTask = buildAudit(
+        id = taskAuditId,
         entityType = EntityType.TASK,
-        entityTypeId = UUID.fromString("c3a85f64-5717-4562-b3fc-2c963f66abcd"),
+        entityTypeId = taskId,
+        userId = userTaskId,
         description = "Added Task",
-        userId = UUID.fromString("8fa85f64-5717-4562-b3fc-2c963f66bfa3"),
-        dateTime = dateTime
+        createdAt = dateTime
     )
 
-    private val auditTask1 = Audit(
-        id = UUID.fromString("9fa85f64-5717-4562-b3fc-2c963f66bfa4"),
+    private val auditTask1 = buildAudit(
+        id = taskAuditId1,
         entityType = EntityType.TASK,
-        entityTypeId = UUID.fromString("c3a85f64-5717-4562-b3fc-2c963f66abcd"),
+        entityTypeId = taskId,
+        userId = userTaskId1,
         description = "Added Task",
-        userId = UUID.fromString("7fa85f64-5717-4562-b3fc-2c963f66bfa5"),
-        dateTime = dateTime
+        createdAt = dateTime
     )
 
     @BeforeEach
@@ -66,140 +76,107 @@ class GetAuditUseCaseTest {
 
     @Test
     fun `getAuditsForProjectByName() should return audits related to the project`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns listOf(auditProject)
         coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk {
-            every { id } returns auditProject.entityTypeId
+            every { id } returns projectId
         }
 
-        // When
         val result = getAuditUseCase.getAuditsForProjectByName(projectName)
 
-        // Then
         assertThat(result).isNotEmpty()
-        assertThat(result.first().entityTypeId).isEqualTo(auditProject.entityTypeId)
+        assertThat(result.first().entityTypeId).isEqualTo(projectId)
     }
 
     @Test
     fun `getAuditsForProjectByName() should return an empty list if no audits are found`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns emptyList()
         coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk {
             every { id } returns UUID.randomUUID()
         }
 
-        // When
         val result = getAuditUseCase.getAuditsForProjectByName(projectName)
 
-        // Then
         assertThat(result).isEmpty()
     }
 
     @Test
     fun `getAuditsForTaskByName() should return audits related to the task`() = runTest {
-        // Given
-        val taskName = "Task1"
         coEvery { auditRepository.getAllAudits() } returns listOf(auditTask)
         coEvery { manageTasksUseCase.getAllTasks() } returns listOf(mockk {
-            every { id } returns auditTask.entityTypeId
+            every { id } returns taskId
             every { name } returns taskName
         })
 
-        // When
         val result = getAuditUseCase.getAuditsForTaskByName(taskName)
 
-        // Then
         assertThat(result).isNotEmpty()
-        assertThat(result.first().entityTypeId).isEqualTo(auditTask.entityTypeId)
+        assertThat(result.first().entityTypeId).isEqualTo(taskId)
     }
 
     @Test
     fun `getAuditsForTaskByName() should return an empty list if no audits are found`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns emptyList()
         coEvery { manageTasksUseCase.getAllTasks() } returns emptyList()
 
-        // When
         val result = getAuditUseCase.getAuditsForTaskByName(taskName)
 
-        // Then
         assertThat(result).isEmpty()
     }
 
-    /////////////////////////////////////////////
     @Test
     fun `getAuditsForUserById() should return audits related to the user`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns listOf(auditTask)
 
-        // When
-        val result = getAuditUseCase.getAuditsForUserById(auditTask.userId)
+        val result = getAuditUseCase.getAuditsForUserById(userTaskId)
 
-        // Then
         assertThat(result).isNotEmpty()
-        assertThat(result.first().userId).isEqualTo(auditTask.userId)
+        assertThat(result.first().userId).isEqualTo(userTaskId)
     }
 
     @Test
     fun `getAuditsForUserById() should return an empty list if no audits are found`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns emptyList()
 
-        // When
-        val result = getAuditUseCase.getAuditsForUserById(auditTask.userId)
+        val result = getAuditUseCase.getAuditsForUserById(userTaskId)
 
-        // Then
-        assertTrue { result.isEmpty() }
+        assertThat(result).isEmpty()
     }
 
     @Test
     fun `getAuditsForUserById() should call getAllAudits from the repository`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns listOf(auditTask)
 
-        // When
-        getAuditUseCase.getAuditsForUserById(auditTask.userId)
+        getAuditUseCase.getAuditsForUserById(userTaskId)
 
-        // Then
         coVerify { auditRepository.getAllAudits() }
     }
 
     @Test
     fun `getAuditsForUserById() should call getAllAudits from the repository list`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns listOf(auditTask, auditTask1)
 
-        // When
-        getAuditUseCase.getAuditsForUserById(auditTask.userId)
+        getAuditUseCase.getAuditsForUserById(userTaskId)
 
-        // Then
         coVerify { auditRepository.getAllAudits() }
     }
 
     @Test
     fun `getAuditsForUserById() should return audits related to the correct user when multiple audits exist`() =
         runTest {
-            // Given
             coEvery { auditRepository.getAllAudits() } returns listOf(auditTask, auditTask1)
 
-            // When
-            val result = getAuditUseCase.getAuditsForUserById(auditTask.userId)
+            val result = getAuditUseCase.getAuditsForUserById(userTaskId)
 
-            // Then
             assertThat(result).hasSize(1)
-            assertThat(result.first().userId).isEqualTo(auditTask.userId)
+            assertThat(result.first().userId).isEqualTo(userTaskId)
         }
 
     @Test
     fun `getAuditsForUserById() should return an empty list if no audits match the userId`() = runTest {
-        // Given
         coEvery { auditRepository.getAllAudits() } returns listOf(auditTask, auditTask1)
 
-        // When
-        val result = getAuditUseCase.getAuditsForUserById(UUID.randomUUID()) // A non-matching userId
+        val result = getAuditUseCase.getAuditsForUserById(UUID.randomUUID())
 
-        // Then
-        assertTrue { result.isEmpty() }
+        assertThat(result).isEmpty()
     }
-
 }
