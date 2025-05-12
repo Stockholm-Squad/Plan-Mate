@@ -21,7 +21,7 @@ open class TaskExceptions(message: String) : PlanMateExceptions(message)
 class TasksNotFoundException(message: String = "No tasks found.") : TaskExceptions(message)
 class TaskNotFoundException(message: String = "Task Not found.") : TaskExceptions(message)
 class TaskNotAddedException(message: String = "Failed to add task.") : TaskExceptions(message)
-class TaskNotEditException(message: String = "Failed to edit task.") : TaskExceptions(message)
+class TaskNotUpdatedException(message: String = "Failed to update task.") : TaskExceptions(message)
 class TaskNotDeletedException(message: String = "Failed to delete task.") : TaskExceptions(message)
 class DuplicateTaskNameException(message: String = "Duplicated task name.") : TaskExceptions(message)
 
