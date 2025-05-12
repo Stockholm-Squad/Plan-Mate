@@ -9,45 +9,31 @@ import org.example.data.source.EntityStateDataSource
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
 
-
 class EntityStateMongoDataSource(
     private val stateCollection: MongoCollection<EntityStateDto>,
 ) : EntityStateDataSource {
 
-    override suspend fun addEntityState(entityState: EntityStateDto): Boolean {
-        val result = stateCollection.insertOne(entityState)
-        return result.wasAcknowledged()
-    }
+    override suspend fun addEntityState(entityState: EntityStateDto): Boolean =
+        stateCollection.insertOne(entityState).insertedId != null
 
-    override suspend fun updateEntityState(entityState: EntityStateDto): Boolean {
-        val result = stateCollection.updateOne(
-            filter = EntityStateDto::id eq entityState.id,
-            update = setValue(EntityStateDto::name, entityState.name)
-        )
-        return result.matchedCount > 0
-    }
+    override suspend fun updateEntityState(entityState: EntityStateDto): Boolean =
+        stateCollection.updateOne(
+            EntityStateDto::id eq entityState.id,
+            setValue(EntityStateDto::name, entityState.name)
+        ).matchedCount > 0
 
-    override suspend fun deleteEntityState(entityState: EntityStateDto): Boolean {
-        val result = stateCollection.deleteOne(EntityStateDto::id eq entityState.id)
-        return result.deletedCount > 0
-    }
+    override suspend fun deleteEntityState(entityState: EntityStateDto): Boolean =
+        stateCollection.deleteOne(EntityStateDto::id eq entityState.id).deletedCount > 0
 
-    override suspend fun isEntityStateExist(stateName: String): Boolean {
-        val filteredQuery = Filters.eq(EntityStateDto::name.name, stateName)
-        return stateCollection.find(filteredQuery).firstOrNull() != null
-    }
+    override suspend fun isEntityStateExist(stateName: String): Boolean =
+        stateCollection.find(Filters.eq(EntityStateDto::name.name, stateName)).firstOrNull() != null
 
-    override suspend fun getAllEntityStates(): List<EntityStateDto> {
-        return stateCollection.find().toList()
-    }
+    override suspend fun getAllEntityStates(): List<EntityStateDto> =
+        stateCollection.find().toList()
 
-    override suspend fun getEntityStateByName(stateName: String): EntityStateDto? {
-        val filteredQuery = Filters.eq(EntityStateDto::name.name, stateName)
-        return stateCollection.find(filteredQuery).firstOrNull()
-    }
+    override suspend fun getEntityStateByName(stateName: String): EntityStateDto? =
+        stateCollection.find(Filters.eq(EntityStateDto::name.name, stateName)).firstOrNull()
 
-    override suspend fun getEntityStateById(stateId: String): EntityStateDto? {
-        val filteredQuery = Filters.eq(EntityStateDto::id.name, stateId)
-        return stateCollection.find(filteredQuery).firstOrNull()
-    }
+    override suspend fun getEntityStateById(stateId: String): EntityStateDto? =
+        stateCollection.find(Filters.eq(EntityStateDto::id.name, stateId)).firstOrNull()
 }
