@@ -32,7 +32,7 @@ class ProjectRepositoryImp(
 
 
     override suspend fun UpdatedProject(updatedProject: Project): Boolean = tryToExecute(
-        { projectDataSource.editProject(updatedProject.mapToProjectModel()) },
+        { projectDataSource.updateProject(updatedProject.mapToProjectModel()) },
         onSuccess = { isUpdated ->
             isUpdated
         }, onFailure = {
