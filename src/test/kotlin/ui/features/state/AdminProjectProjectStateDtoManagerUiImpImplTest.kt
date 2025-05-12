@@ -41,7 +41,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         every { reader.readStringOrNull() } returns "ExistingState"
         every { reader.readStringOrNull() } returns "NewState"
 
-        every { manageStatesUseCase.editEntityStateByName("ExistingState", "NewState") } returns Result.success(true)
+        every { manageStatesUseCase.updateEntityStateByName("ExistingState", "NewState") } returns Result.success(true)
 
         adminStateManagerUi.editState()
 
@@ -54,7 +54,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
         every {
-            this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.editEntityStateByName(
+            this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.updateEntityStateByName(
                 stateName,
                 newState
             )
@@ -75,7 +75,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         every { reader.readStringOrNull() } returns stateName
         every { reader.readStringOrNull() } returns newState
 
-        every { manageStatesUseCase.editEntityStateByName(any(), any()) } returns Result.failure(
+        every { manageStatesUseCase.updateEntityStateByName(any(), any()) } returns Result.failure(
            NotAllowedStateNameException()
         )
 

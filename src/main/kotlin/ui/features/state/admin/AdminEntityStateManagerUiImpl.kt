@@ -86,7 +86,7 @@ class AdminEntityStateManagerUiImpl(
         runBlocking {
             try {
                 val stateId = manageEntityStatesUseCase.getEntityStateIdByName(currentStateName)
-                manageEntityStatesUseCase.editEntityStateByName(
+                manageEntityStatesUseCase.updateEntityStateByName(
                     stateName = currentStateName,
                     newStateName = newStateName
                 )

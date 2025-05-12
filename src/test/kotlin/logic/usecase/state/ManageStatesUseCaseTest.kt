@@ -39,7 +39,7 @@ class ManageStatesUseCaseTest {
         every { projectStateRepository.updateEntityState(any()) } returns Result.success(true)
 
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThat(result.getOrNull()).isEqualTo(true)
@@ -67,7 +67,7 @@ class ManageStatesUseCaseTest {
         val newStateName = "New ToDo"
 
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
@@ -83,7 +83,7 @@ class ManageStatesUseCaseTest {
         every { projectStateRepository.updateEntityState(any()) } returns Result.failure(Throwable())
 
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThrows<Throwable> { result.getOrThrow() }
@@ -99,7 +99,7 @@ class ManageStatesUseCaseTest {
         every { projectStateRepository.updateEntityState(any()) } returns Result.failure(FileNotExistException())
 
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThrows<StateNotExistException> { result.getOrThrow() }
@@ -113,7 +113,7 @@ class ManageStatesUseCaseTest {
 
         every { projectStateRepository.updateEntityState(any()) } returns Result.failure(NotAllowedStateNameException())
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
@@ -127,7 +127,7 @@ class ManageStatesUseCaseTest {
         every { projectStateRepository.updateEntityState(any()) } returns Result.failure(NotAllowedStateNameException())
 
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThrows<NotAllowedStateNameException> { result.getOrThrow() }
@@ -142,7 +142,7 @@ class ManageStatesUseCaseTest {
         every { projectStateRepository.getAllEntityStates() } returns Result.success(listOf(EntityState(name = "tyyyg")))
 
         //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        val result = manageStatesUseCase.updateEntityStateByName(stateName, newStateName)
 
         //Then
         assertThrows<StateNotExistException> { result.getOrThrow() }
