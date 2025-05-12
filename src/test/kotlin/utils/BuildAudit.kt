@@ -1,26 +1,39 @@
 package utils
 
+import data.dto.AuditDto
 import kotlinx.datetime.LocalDateTime
 import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
-import data.dto.AuditDto
 import java.util.*
 
-
-fun createAuditSystemEntity(
+fun buildAudit(
     id: UUID,
     entityType: EntityType,
     entityTypeId: UUID,
     userId: UUID,
     description: String,
     createdAt: LocalDateTime
-): Audit = Audit(id = id, entityType = entityType, entityTypeId = entityTypeId, userId = userId, description = description, dateTime = createdAt)
+): Audit = Audit(
+    id = id,
+    entityType = entityType,
+    entityTypeId = entityTypeId,
+    description = description,
+    userId = userId,
+    dateTime = createdAt
+)
 
-fun createAuditSystemModel(
+fun buildAuditModel(
     id: String,
     entityType: String,
     entityId: String,
     userId: String,
     changeDescription: String,
     createdAt: String
-): AuditDto = AuditDto(id, entityType, entityId, userId, changeDescription, createdAt)
+): AuditDto = AuditDto(
+    id = id,
+    entityType = entityType,
+    entityTypeId = entityId,
+    userId = userId,
+    description = changeDescription,
+    dateTime = createdAt,
+)
