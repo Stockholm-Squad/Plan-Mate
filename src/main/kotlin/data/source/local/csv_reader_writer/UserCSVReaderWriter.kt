@@ -1,6 +1,8 @@
-package org.example.data.source.local.csv_reader_writer.user
+package org.example.data.source.local.csv_reader_writer
 
 import data.dto.UserDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.example.logic.utils.HashingService
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
@@ -15,14 +17,15 @@ import java.util.*
 class UserCSVReaderWriter(
     private val filePath: String,
     private val hashingService: HashingService,
-) :
-    org.example.data.source.local.csv_reader_writer.user.IUserCSVReaderWriter {
+) : IReaderWriter<UserDto> {
     private fun resolveFile(): File = File(filePath)
 
     override suspend fun read(): List<UserDto> {
         val file = resolveFile()
         if (!file.exists()) {
-            file.createNewFile()
+            withContext(Dispatchers.IO) {
+                file.createNewFile()
+            }
             createAdminIfNotExist()
         }
 
@@ -48,18 +51,18 @@ class UserCSVReaderWriter(
         return true
     }
 
-    override suspend fun overWrite(users: List<UserDto>): Boolean {
-        users.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(data: List<UserDto>): Boolean {
+        data.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(users: List<UserDto>): Boolean {
+    override suspend fun append(data: List<UserDto>): Boolean {
         resolveFile().also { file ->
             val existing = if (file.exists() && file.length() > 0) {
                 DataFrame.readCSV(file).cast()
             } else emptyList<UserDto>().toDataFrame()
 
-            val newData = users.toDataFrame()
+            val newData = data.toDataFrame()
             (existing.concat(newData)).writeCSV(file)
         }
         return true

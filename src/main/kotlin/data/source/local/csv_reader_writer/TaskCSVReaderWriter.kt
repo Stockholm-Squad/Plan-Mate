@@ -1,6 +1,8 @@
-package org.example.data.source.local.csv_reader_writer.audits
+package org.example.data.source.local.csv_reader_writer
 
-import data.dto.AuditDto
+import data.dto.TaskDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -11,13 +13,16 @@ import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
 
-class AuditCSVReaderWriter(private val filePath: String) : IAuditCSVReaderWriter {
+class TaskCSVReaderWriter(private val filePath: String) : IReaderWriter<TaskDto> {
+
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<AuditDto> {
+    override suspend fun read(): List<TaskDto> {
         val file = resolveFile()
         if (!file.exists()) {
-            file.createNewFile()
+            withContext(Dispatchers.IO) {
+                file.createNewFile()
+            }
             return emptyList()
         }
 
@@ -26,24 +31,24 @@ class AuditCSVReaderWriter(private val filePath: String) : IAuditCSVReaderWriter
         }
 
         return DataFrame.readCSV(file)
-            .cast<AuditDto>()
+            .cast<TaskDto>()
             .toList()
     }
 
-    override suspend fun overWrite(audits: List<AuditDto>): Boolean {
-        audits.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(data: List<TaskDto>): Boolean {
+        data.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(audits: List<AuditDto>): Boolean {
+    override suspend fun append(data: List<TaskDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<AuditDto>().toDataFrame()
+            emptyList<TaskDto>().toDataFrame()
         }
 
-        val newData = audits.toDataFrame()
+        val newData = data.toDataFrame()
         (existing.concat(newData)).writeCSV(file)
         return true
     }
