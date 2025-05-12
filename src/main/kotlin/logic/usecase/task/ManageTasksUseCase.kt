@@ -15,7 +15,7 @@ class ManageTasksUseCase(
     }
 
     suspend fun getTaskByName(taskName: String): Task =
-        taskRepository.getAllTasks().find { it.name.equals(taskName, ignoreCase = true) }
+        taskRepository.getAllTasks().find { it.title.equals(taskName, ignoreCase = true) }
             ?: throw TaskNotFoundException()
 
     suspend fun getTaskIdByName(taskName: String): UUID =
@@ -24,7 +24,7 @@ class ManageTasksUseCase(
     suspend fun addTask(task: Task, projectId: UUID): Boolean {
         val isDuplicate =
             taskRepository.getTasksInProject(projectId = projectId).any {
-                it.name.equals(task.name, ignoreCase = true)
+                it.title.equals(task.title, ignoreCase = true)
             }
         if (isDuplicate) throw DuplicateTaskNameException()
 
@@ -33,9 +33,9 @@ class ManageTasksUseCase(
         }
     }
 
-    suspend fun editTask(updatedTask: Task): Boolean =
-        taskRepository.editTask(updatedTask).also { isUpdated ->
-            if (!isUpdated) throw TaskNotEditException()
+    suspend fun updateTask(updatedTask: Task): Boolean =
+        taskRepository.updateTask(updatedTask).also { isUpdated ->
+            if (!isUpdated) throw TaskNotUpdatedException()
         }
 
     suspend fun deleteTaskByName(taskName: String): Boolean =

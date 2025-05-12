@@ -1,11 +1,11 @@
 package org.example.logic.repository
 
 import org.example.logic.entities.EntityState
-import java.util.UUID
+import java.util.*
 
 interface EntityStateRepository {
     suspend fun addEntityState(entityState: EntityState): Boolean
-    suspend fun editEntityState(entityState: EntityState): Boolean
+    suspend fun updateEntityState(entityState: EntityState): Boolean
     suspend fun deleteEntityState(entityState: EntityState): Boolean
     suspend fun isEntityStateExist(stateName: String): Boolean
     suspend fun getAllEntityStates(): List<EntityState>

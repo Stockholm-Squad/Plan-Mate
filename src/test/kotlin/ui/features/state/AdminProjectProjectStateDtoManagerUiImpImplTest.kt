@@ -37,31 +37,31 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     }
 
     @Test
-    fun `editState should succeed with valid input`() {
+    fun `UpdateState should succeed with valid input`() {
         every { reader.readStringOrNull() } returns "ExistingState"
         every { reader.readStringOrNull() } returns "NewState"
 
-        every { manageStatesUseCase.editEntityStateByName("ExistingState", "NewState") } returns Result.success(true)
+        every { manageStatesUseCase.updateEntityStateByName("ExistingState", "NewState") } returns Result.success(true)
 
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         verify { printer.showMessage("State updated successfully ^_^") }
     }
     @Test
-    fun `editState() should print state updated successfully when a valid name`() {
+    fun `UpdateState() should print state updated successfully when a valid name`() {
         //Given
         val stateName = "TODO"
         val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
         every {
-            this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.editEntityStateByName(
+            this@AdminProjectProjectStateDtoManagerUiImpImplTest.manageStatesUseCase.updateEntityStateByName(
                 stateName,
                 newState
             )
         } returns Result.success(true)
 
         //When
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         //Then
         verify { printer.showMessage("Please enter the state you want to update: ") }
@@ -69,40 +69,40 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     }
 
     @Test
-    fun `editState() should print invalid input when enter not valid name`() {
+    fun `UpdateState() should print invalid input when enter not valid name`() {
         val stateName = "1hnfjnj!"
         val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
         every { reader.readStringOrNull() } returns newState
 
-        every { manageStatesUseCase.editEntityStateByName(any(), any()) } returns Result.failure(
+        every { manageStatesUseCase.updateEntityStateByName(any(), any()) } returns Result.failure(
            NotAllowedStateNameException()
         )
 
         //When
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         //Then
         verify { printer.showMessage("Failed to Update state: " + NotAllowedStateNameException().message) }
     }
 
     @Test
-    fun `editState() should print INVALID_INPUT when enter null`() {
+    fun `UpdateState() should print INVALID_INPUT when enter null`() {
         // Given
         every { reader.readStringOrNull() } returns null
 
         //When
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         //Then
         verify { printer.showMessage("Invalid input") }
     }
 
     @Test
-    fun `editState should fail with invalid input`() {
+    fun `UpdateState should fail with invalid input`() {
         every { reader.readStringOrNull() } returns ""
 
-        adminStateManagerUi.editState()
+        adminStateManagerUi.updateState()
 
         verify { printer.showMessage("Invalid input") }
     }
@@ -292,7 +292,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 //                when (option) {
 //                    1 -> adminStateManagerUi.showAllStates()
 //                    2 -> adminStateManagerUi.addState()
-//                    3 -> adminStateManagerUi.editState()
+//                    3 -> adminStateManagerUi.UpdateState()
 //                    4 -> adminStateManagerUi.deleteState()
 //                    5 -> true
 //                }

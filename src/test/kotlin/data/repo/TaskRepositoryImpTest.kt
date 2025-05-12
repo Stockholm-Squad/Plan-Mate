@@ -1,334 +1,131 @@
 package data.repo
 
-import com.google.common.truth.Truth.assertThat
-import data.dto.MateTaskAssignmentDto
-import data.dto.TaskInProjectDto
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
-import io.mockk.verify
-import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.WriteDataException
-import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
-import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
-import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
+import kotlinx.coroutines.test.runTest
 import org.example.data.repo.TaskRepositoryImp
-import org.example.data.utils.DateHandlerImp
+import org.example.data.source.MateTaskAssignmentDataSource
+import org.example.data.source.TaskDataSource
+import org.example.data.source.TaskInProjectDataSource
 import org.example.logic.repository.TaskRepository
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coVerify
+import org.example.data.mapper.mapToTaskModel
+import org.example.logic.TaskNotAddedException
+import org.example.logic.TaskNotUpdatedException
+import org.example.logic.TasksNotFoundException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utils.buildTask
-import utils.buildTaskModel
-import java.util.*
-
 
 class TaskRepositoryImpTest {
-
-    private lateinit var taskDataSource: TaskCSVReaderWriter
-    private lateinit var mateTaskAssignmentCsvDataSource: IMateTaskAssignmentCSVReaderWriter
-    private lateinit var taskInProjectDataSource: ITaskInProjectCSVReaderWriter
+    private lateinit var taskDataSource: TaskDataSource
+    private lateinit var mateTaskAssignmentDataSource: MateTaskAssignmentDataSource
+    private lateinit var taskInProjectDataSource: TaskInProjectDataSource
     private lateinit var taskRepository: TaskRepository
-    private lateinit var dataHandler: DateHandlerImp
-    private val projectUUID1 = UUID.randomUUID()
-    private val projectUUID2 = UUID.randomUUID()
-    private val taskUUID1 = UUID.randomUUID()
-    private val taskUUID2 = UUID.randomUUID()
-    private val testTaskInProject =
-        TaskInProjectDto(projectId = projectUUID1.toString(), taskId = taskUUID1.toString())
-    private val taskInProjectWithDifferentTaskId =
-        TaskInProjectDto(projectId = projectUUID1.toString(), taskId = taskUUID2.toString())
-    private val taskInProjectWithDifferentProjectId =
-        TaskInProjectDto(projectId = projectUUID2.toString(), taskId = taskUUID1.toString())
-
 
     @BeforeEach
     fun setUp() {
         taskDataSource = mockk(relaxed = true)
-        mateTaskAssignmentCsvDataSource = mockk(relaxed = true)
+        mateTaskAssignmentDataSource = mockk(relaxed = true)
+        taskInProjectDataSource = mockk(relaxed = true)
         taskRepository = TaskRepositoryImp(
-            taskDataSource,
-            mateTaskAssignmentCsvDataSource,
-            taskInProjectDataSource
+            taskDataSource = taskDataSource,
+            mateTaskAssignment = mateTaskAssignmentDataSource,
+            taskInProjectDataSource = taskInProjectDataSource
         )
-        dataHandler = DateHandlerImp()
     }
 
     @Test
-    fun `getAllTasks() should return success result with a list of tasks when the file has data`() {
-        // Given
-        val taskList = listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State"),
-            buildTaskModel(name = "Task 2", description = "Description 2", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.success(taskList)
-
-        // When
+    fun `getAllTasks() should return list of tasks when datasource success`() = runTest {
+        //Given
+        coEvery { taskDataSource.getAllTasks() } returns taskDtoList
+        //When
         val result = taskRepository.getAllTasks()
+        //Then
+        assertThat(result).isEqualTo(tasksList)
 
-        // Then
-        assertThat(result.getOrNull()).isEqualTo(taskList)
     }
 
     @Test
-    fun `getAllTasks() should return failure result with throwable when error happens while reading from the file`() {
+    fun `getAllTasks() should return exception when datasource fails`() = runTest {
+        //Given
+        coEvery { taskDataSource.getAllTasks() } throws Exception()
+        //When&Then
+        assertThrows<TasksNotFoundException> {
+            taskRepository.getAllTasks()
+        }
+    }
+    @Test
+    fun `addTask() should return true when datasource adds task successfully`() = runTest {
         // Given
-        every { taskDataSource.read() } returns Result.failure(ReadDataException())
+        val task = tasksList[0]
+        coEvery { taskDataSource.addTask(task.mapToTaskModel()) } returns true
 
         // When
-        val result = taskRepository.getAllTasks()
+        val result = taskRepository.addTask(task)
 
         // Then
-        assertThrows<ReadDataException> { result.getOrThrow() }
+        assertThat(result).isTrue()
     }
 
     @Test
-    fun `createTask() should return success result with true when the task is created successfully`() {
+    fun `addTask() should return false when datasource returns false`() = runTest {
         // Given
-        val newTask = buildTask(name = "Task 3", description = "Description 3", stateId = UUID.randomUUID())
-        val existingTasks = listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.success(existingTasks)
-        every { taskDataSource.overWrite(any()) } returns Result.success(true)
+        val task = tasksList[1]
+        coEvery { taskDataSource.addTask(task.mapToTaskModel()) } returns false
 
         // When
-        val result = taskRepository.addTask(newTask)
+        val result = taskRepository.addTask(task)
 
         // Then
-        assertThat(result.getOrNull()).isEqualTo(true)
+        assertThat(result).isFalse()
     }
 
     @Test
-    fun `createTask() should return failure result with throwable when the task already exists`() {
+    fun `addTask() should throw TaskNotAddedException when datasource throws exception`() = runTest {
         // Given
-        val newTask = buildTask(name = "Task 1", description = "Description 1", stateId = UUID.randomUUID())
-        val existingTasks = listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.success(existingTasks)
+        val task = tasksList[2]
+        coEvery { taskDataSource.addTask(task.mapToTaskModel()) } throws Exception()
 
-        // When
-        val result = taskRepository.addTask(newTask)
-
-        // Then
-        assertThrows<ReadDataException> { result.getOrThrow() }
+        // When & Then
+        assertThrows<TaskNotAddedException> {
+            taskRepository.addTask(task)
+        }
     }
-
     @Test
-    fun `editTask() should return success result with true when the task is updated successfully`() {
+    fun `updateTask() should return true when datasource updates task successfully`() = runTest {
         // Given
-        val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
-        val existingTasks = listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.success(existingTasks)
-        every { taskDataSource.overWrite(any()) } returns Result.success(true)
+        val task = tasksList[0]
+        coEvery { taskDataSource.updateTask(task.mapToTaskModel()) } returns true
 
         // When
-        val result = taskRepository.editTask(updatedTask)
+        val result = taskRepository.updateTask(task)
 
         // Then
-        assertThat(result.getOrNull()).isEqualTo(true)
+        assertThat(result).isTrue()
     }
-
     @Test
-    fun `editTask() should return failure result with throwable when the task to edit does not exist`() {
+    fun `updateTask() should return false when datasource returns false`() = runTest {
         // Given
-        val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
-        listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.failure(ReadDataException())
+        val task = tasksList[1]
+        coEvery { taskDataSource.updateTask(task.mapToTaskModel()) } returns false
 
         // When
-        val result = taskRepository.editTask(updatedTask)
+        val result = taskRepository.updateTask(task)
 
         // Then
-        assertThrows<ReadDataException> { result.getOrThrow() }
+        assertThat(result).isFalse()
     }
-
     @Test
-    fun `deleteTask() should return success result with true when the task is deleted successfully`() {
+    fun `updateTask() should throw TaskNotUpdatedException when datasource throws exception`() = runTest {
         // Given
-        val taskId = UUID.randomUUID()
-        val existingTasks = listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.success(existingTasks)
-        every { taskDataSource.overWrite(any()) } returns Result.success(true)
+        val task = tasksList[2]
+        coEvery { taskDataSource.updateTask(task.mapToTaskModel()) } throws Exception()
 
-        // When
-        val result = taskRepository.deleteTask(taskId)
-
-        // Then
-        assertThat(result.getOrNull()).isEqualTo(true)
-    }
-
-    @Test
-    fun `deleteTask() should return failure result with throwable when the task to delete does not exist`() {
-        // Given
-        val taskId = UUID.randomUUID()
-        listOf(
-            buildTaskModel(name = "Task 1", description = "Description 1", stateId = "State")
-        )
-        every { taskDataSource.read() } returns Result.failure(ReadDataException())
-
-        // When
-        val result = taskRepository.deleteTask(taskId)
-
-        // Then
-        assertThrows<ReadDataException> { result.getOrThrow() }
-    }
-
-    @Test
-    fun `getAllMateTaskAssignment should return success when read is successful`() {
-        // Given
-        val mateName = "Ali"
-        val assignments = listOf(MateTaskAssignmentDto("task1", "Ali"), MateTaskAssignmentDto("task2", "Ali"))
-        every { mateTaskAssignmentCsvDataSource.read() } returns Result.success(assignments)
-
-        // When
-        val result = taskRepository.getAllTasksByUserName(mateName)
-
-        // Then
-        assertThat(result.getOrNull()).isEqualTo(assignments)
-    }
-
-    @Test
-    fun `getAllMateTaskAssignment should return failure with ReadException when read fails`() {
-        // Given
-        val mateName = "Ali"
-        every { mateTaskAssignmentCsvDataSource.read() } returns Result.failure(ReadDataException())
-
-        // When
-        val result = taskRepository.getAllTasksByUserName(mateName)
-
-        // Then
-        assertThrows<ReadDataException> { result.getOrThrow() }
-    }
-
-
-    @Nested
-    inner class TasksInProjectTests {
-
-        @Test
-        fun `getTasksInProject should return list of task IDs for given project`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
-            )
-
-            val result = taskRepository.getTasksInProject(projectUUID1)
-
-            assertThat(result.getOrNull()).containsExactly("101", "102")
-        }
-
-        @Test
-        fun `getTasksInProject should return empty list when no tasks for project`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(TaskInProjectDto(projectId = "2", taskId = "201"))
-            )
-
-            val result = taskRepository.getTasksInProject(projectUUID1)
-
-            assertThat(result.getOrNull()).isEmpty()
-        }
-
-        @Test
-        fun `getTasksInProject should return failure when read fails`() {
-            every { taskInProjectDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = taskRepository.getTasksInProject(projectUUID1)
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `addTaskInProject should append task and return success`() {
-            every { taskInProjectDataSource.append(any()) } returns Result.success(true)
-
-            val result = taskRepository.addTaskInProject(projectUUID1, taskUUID1)
-
-            assertThat(result.getOrThrow()).isTrue()
-            verify { taskInProjectDataSource.append(listOf(TaskInProjectDto(projectId = "1", taskId = "101"))) }
-        }
-
-        @Test
-        fun `addTaskInProject should return failure when write fails`() {
-            every { taskInProjectDataSource.append(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = taskRepository.addTaskInProject(projectUUID1, taskUUID1)
-
-            assertThrows<WriteDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should remove task and return success`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = taskRepository.deleteTaskFromProject(projectUUID1, taskUUID1)
-
-            assertThat(result.isSuccess).isTrue()
-            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentTaskId)) }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return success when task not found`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(taskInProjectWithDifferentTaskId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = taskRepository.deleteTaskFromProject(projectUUID1, taskUUID1)
-
-            assertThat(result.isSuccess).isTrue()
-            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentTaskId)) }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return success when project not found`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(taskInProjectWithDifferentProjectId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.success(true)
-
-            val result = taskRepository.deleteTaskFromProject(projectUUID1, taskUUID1)
-
-            assertThat(result.isSuccess).isTrue()
-            verify { taskInProjectDataSource.overWrite(listOf(taskInProjectWithDifferentProjectId)) }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return failure when read fails`() {
-            every { taskInProjectDataSource.read() } returns Result.failure(
-                ReadDataException()
-            )
-
-            val result = taskRepository.deleteTaskFromProject(projectUUID1, taskUUID1)
-
-            assertThrows<ReadDataException> { result.getOrThrow() }
-        }
-
-        @Test
-        fun `deleteTaskFromProject should return failure when write fails`() {
-            every { taskInProjectDataSource.read() } returns Result.success(
-                listOf(testTaskInProject, taskInProjectWithDifferentTaskId)
-            )
-            every { taskInProjectDataSource.overWrite(any()) } returns Result.failure(
-                WriteDataException()
-            )
-
-            val result = taskRepository.deleteTaskFromProject(projectUUID1, taskUUID1)
-
-            assertThrows <WriteDataException> { result.getOrThrow() }
+        // When & Then
+        assertThrows<TaskNotUpdatedException> {
+            taskRepository.updateTask(task)
         }
     }
-
 }

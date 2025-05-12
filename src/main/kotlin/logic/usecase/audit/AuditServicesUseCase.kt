@@ -35,7 +35,8 @@ class AuditServicesUseCase(
         newEntityName: String,
         entityId: UUID,
         newDescription: String? = null,
-        newStateName: String? = null
+        newStateName: String? = null,
+        additionalInfo: String? = null
     ) {
         val auditDescription = auditDescriptionProvider.getAuditDescriptionForUpdate(
             entityType = entityType,
@@ -43,7 +44,8 @@ class AuditServicesUseCase(
             newEntityName = newEntityName,
             entityId = entityId,
             newDescription = newDescription ?: "",
-            newStateName = newStateName ?: ""
+            newStateName = newStateName ?: "",
+            additionalInfo = additionalInfo ?: ""
         )
         val userId = getCurrentUserId()
         addAuditUseCase.addAudit(userId, entityType, entityId, auditDescription)

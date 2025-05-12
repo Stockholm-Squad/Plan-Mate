@@ -11,9 +11,9 @@ class AuditMongoDataSource(
 ) : AuditDataSource {
 
     override suspend fun addAudit(audit: AuditDto): Boolean =
-        auditsCollection.insertOne(audit).wasAcknowledged()
+        auditsCollection.insertOne(audit).insertedId != null
 
 
-    override suspend fun getAllAudits(): List<AuditDto> =
-        auditsCollection.find().toList()
+    override suspend fun getAllAudits(): List<AuditDto> = auditsCollection.find().toList()
+
 }

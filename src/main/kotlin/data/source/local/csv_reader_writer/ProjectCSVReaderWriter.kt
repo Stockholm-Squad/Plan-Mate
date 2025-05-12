@@ -1,6 +1,9 @@
-package org.example.data.source.local.csv_reader_writer.mate_task_assignment
+package org.example.data.source.local.csv_reader_writer
 
-import data.dto.MateTaskAssignmentDto
+
+import data.dto.ProjectDto
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.kotlinx.dataframe.DataFrame
 import org.jetbrains.kotlinx.dataframe.api.cast
 import org.jetbrains.kotlinx.dataframe.api.concat
@@ -10,15 +13,15 @@ import org.jetbrains.kotlinx.dataframe.io.readCSV
 import org.jetbrains.kotlinx.dataframe.io.writeCSV
 import java.io.File
 
-
-class MateTaskAssignmentCSVReaderWriter(private val filePath: String) : IMateTaskAssignmentCSVReaderWriter {
-
+class ProjectCSVReaderWriter(private val filePath: String) : IReaderWriter<ProjectDto> {
     private fun resolveFile(): File = File(filePath)
 
-    override suspend fun read(): List<MateTaskAssignmentDto> {
+    override suspend fun read(): List<ProjectDto> {
         val file = resolveFile()
         if (!file.exists()) {
-            file.createNewFile()
+            withContext(Dispatchers.IO) {
+                file.createNewFile()
+            }
             return emptyList()
         }
 
@@ -27,24 +30,24 @@ class MateTaskAssignmentCSVReaderWriter(private val filePath: String) : IMateTas
         }
 
         return DataFrame.readCSV(file)
-            .cast<MateTaskAssignmentDto>()
+            .cast<ProjectDto>()
             .toList()
     }
 
-    override suspend fun overWrite(mateTasks: List<MateTaskAssignmentDto>): Boolean {
-        mateTasks.toDataFrame().writeCSV(resolveFile())
+    override suspend fun overWrite(data: List<ProjectDto>): Boolean {
+        data.toDataFrame().writeCSV(resolveFile())
         return true
     }
 
-    override suspend fun append(mateTasks: List<MateTaskAssignmentDto>): Boolean {
+    override suspend fun append(data: List<ProjectDto>): Boolean {
         val file = resolveFile()
         val existing = if (file.exists() && file.length() > 0) {
             DataFrame.readCSV(file).cast()
         } else {
-            emptyList<MateTaskAssignmentDto>().toDataFrame()
+            emptyList<ProjectDto>().toDataFrame()
         }
 
-        val newData = mateTasks.toDataFrame()
+        val newData = data.toDataFrame()
         (existing.concat(newData)).writeCSV(file)
         return true
     }

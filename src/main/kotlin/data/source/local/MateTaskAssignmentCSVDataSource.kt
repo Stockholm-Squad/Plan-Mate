@@ -2,21 +2,21 @@ package org.example.data.source.local
 
 import data.dto.MateTaskAssignmentDto
 import org.example.data.source.MateTaskAssignmentDataSource
+import org.example.data.source.local.csv_reader_writer.IReaderWriter
 
-class MateTaskAssignmentCSVDataSource : MateTaskAssignmentDataSource {
-    override suspend fun addUserToTask(mateName: String, taskId: String): Boolean {
-        TODO("Not yet implemented")
-    }
+class MateTaskAssignmentCSVDataSource(
+    private val mateTaskAssignmentReaderWriter: IReaderWriter<MateTaskAssignmentDto>,
+) : MateTaskAssignmentDataSource {
+    override suspend fun addUserToTask(mateName: String, taskId: String): Boolean =
+        mateTaskAssignmentReaderWriter.append(listOf(MateTaskAssignmentDto(mateName, taskId)))
 
-    override suspend fun deleteUserFromTask(mateName: String, taskId: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    override suspend fun deleteUserFromTask(mateName: String, taskId: String): Boolean =
+        mateTaskAssignmentReaderWriter.read().filterNot { mateTaskAssignment -> mateTaskAssignment.taskId == taskId }
+            .let { filteredMateTaskAssignment -> mateTaskAssignmentReaderWriter.overWrite(filteredMateTaskAssignment) }
 
-    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.taskId == taskId }
 
-    override suspend fun getUsersMateTaskByUserName(userName: String): List<MateTaskAssignmentDto> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getUsersMateTaskByUserName(userName: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.userName == userName }
 }

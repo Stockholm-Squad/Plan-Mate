@@ -250,9 +250,9 @@ class TaskManagerUiTest {
 
     //endregion
 
-    //region editTask
+    //region updateTask
     @Test
-    fun `editTask() should update task successfully when looked up by name`() {
+    fun `updateTask() should update task successfully when looked up by name`() {
         // Given
         val taskName = "Old Name"
         val newName = "Updated"
@@ -270,32 +270,32 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen newStateName
         every { manageTasksUseCase.getTaskByName(taskName) } returns Result.success(existingTask)
         every { manageStateUseCase.getEntityStateIdByName(newStateName) } returns newStateId
-        every { manageTasksUseCase.editTask(any()) } returns Result.success(true)
+        every { manageTasksUseCase.updateTask(any()) } returns Result.success(true)
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { manageTasksUseCase.editTask(any()) }
+        verify(exactly = 1) { manageTasksUseCase.updateTask(any()) }
         verify(exactly = 1) { printer.printTask(any()) }
     }
 
     @Test
-    fun `editTask() should show error when task not found by name`() {
+    fun `updateTask() should show error when task not found by name`() {
         // Given
         val taskName = "invalid"
         every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
         every { manageTasksUseCase.getTaskByName(taskName) } returns Result.failure(NoTasksFoundException())
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
-    fun `editTask() should show error when state name is empty`() {
+    fun `updateTask() should show error when state name is empty`() {
         // Given
         val taskName = "Updated"
         val newName = "Updated"
@@ -307,18 +307,18 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen null
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when task ID is empty`() {
+    fun `updateTask() should show error when task ID is empty`() {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns null
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT) }
@@ -326,18 +326,18 @@ class TaskManagerUiTest {
     }
 
     @Test
-    fun `editTask() should show error when task ID is blank`() {
+    fun `updateTask() should show error when task ID is blank`() {
         every { uiUtils.readNonBlankInputOrNull(reader) } returns null
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when new name is empty`() {
+    fun `updateTask() should show error when new name is empty`() {
         // Given
         val taskName = "Old"
         val newState = "Updated"
@@ -349,14 +349,14 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns "" andThen newDescription andThen newState
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when new name is null`() {
+    fun `updateTask() should show error when new name is null`() {
         // Given
         val taskName = "Old"
         val newState = "Updated"
@@ -368,14 +368,14 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns null andThen newDescription andThen newState
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when new description is empty`() {
+    fun `updateTask() should show error when new description is empty`() {
         // Given
         val taskName = "Old"
         val newName = "Updated"
@@ -387,14 +387,14 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen "" andThen newState
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when new description is null`() {
+    fun `updateTask() should show error when new description is null`() {
         // Given
         val taskName = "Old"
         val newName = "Updated"
@@ -406,14 +406,14 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen null andThen newState
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when new state name is empty`() {
+    fun `updateTask() should show error when new state name is empty`() {
         // Given
         val taskName = "Old"
         val newName = "Updated"
@@ -425,14 +425,14 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen ""
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when new state name is null`() {
+    fun `updateTask() should show error when new state name is null`() {
         // Given
         val taskName = "Old"
         val newName = "Updated"
@@ -444,14 +444,14 @@ class TaskManagerUiTest {
         every { reader.readStringOrNull() } returns newName andThen newDescription andThen null
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT) }
     }
 
     @Test
-    fun `editTask() should show EMPTY_TASK_INPUT when any input is empty`() {
+    fun `updateTask() should show EMPTY_TASK_INPUT when any input is empty`() {
         // Given
         val taskName = "Old"
         val existingTask = buildTask(name = taskName, description =  "Old Desc", stateId = UUID.randomUUID())
@@ -462,14 +462,14 @@ class TaskManagerUiTest {
         every { manageTasksUseCase.getTaskByName(taskName) } returns Result.success(existingTask)
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
     }
 
     @Test
-    fun `editTask() should show error when invalid state name is provided`() {
+    fun `updateTask() should show error when invalid state name is provided`() {
         // Given
         val taskName = "Old Task"
         val newName = "New Name"
@@ -483,7 +483,7 @@ class TaskManagerUiTest {
         every { manageStateUseCase.getEntityStateIdByName(newStateName) } returns null
 
         // When
-        taskManagerUi.editTask()
+        taskManagerUi.updateTask()
 
         // Then
         verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_STATE_NAME) }
