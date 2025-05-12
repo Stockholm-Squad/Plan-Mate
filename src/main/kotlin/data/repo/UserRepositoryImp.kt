@@ -36,30 +36,11 @@ class UserRepositoryImp(
 
 
     override suspend fun getUsersByProjectId(projectId: UUID): List<User> =
-        withContext(Dispatchers.IO) {
-            val assignedUsersDeferred = async {
-                tryToExecute(
-                    function = { userDataSource.getUsersByProjectId(projectId.toString()) },
-                    onSuccess = { listOfUsers -> listOfUsers },
-                    onFailure = { throw UserDoesNotExistException() }
-                )
-            }
-
-            val allUsersDeferred = async {
-                tryToExecute(
-                    function = { userDataSource.getAllUsers() },
-                    onSuccess = { listOfUsers -> listOfUsers },
-                    onFailure = { throw UserDoesNotExistException() }
-                )
-            }
-
-            val assignedUsers = assignedUsersDeferred.await()
-            val allUsers = allUsersDeferred.await()
-
-            val usersIds = assignedUsers.map { user -> user.username }
-            allUsers.filter { user -> user.username in usersIds }
-                .mapNotNull { it.mapToUserEntity() }
-        }
+        tryToExecute(
+            { userDataSource.getUsersByProjectId(projectId.toString())},
+            onSuccess = { listOfUsers -> listOfUsers.mapNotNull { user -> user.mapToUserEntity() } },
+            onFailure = { throw UsersDoesNotExistException() }
+        )
 
 
     override suspend fun addUserToProject(projectId: UUID, userName: String): Boolean =

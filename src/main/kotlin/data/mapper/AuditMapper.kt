@@ -33,6 +33,7 @@ fun getAuditType(audit: String): EntityType? {
     return when {
         audit.equals("TASK", ignoreCase = true) -> EntityType.TASK
         audit.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
+        audit.equals("STATE", ignoreCase = true) -> EntityType.STATE
         else -> null
     }
 }

@@ -12,7 +12,7 @@ class OutputPrinterImplementation : OutputPrinter {
 
     override fun printTask(task: Task) {
         println(
-            "Name: ${task.name} | Description: ${task.description} " +
+            "Name: ${task.title} | Description: ${task.description} " +
 //                "| State: ${task.stateId} " + //TODO: State Name not id
                     "| Created: ${task.createdDate.date} ${task.createdDate.time} | Updated: ${task.updatedDate.date} ${task.updatedDate.time}"
         )
@@ -25,7 +25,7 @@ class OutputPrinterImplementation : OutputPrinter {
     override fun printMateTaskAssignments(assignments: List<Task>) {
         if (assignments.isEmpty()) return println("No tasks assigned.")
 
-        val userName = assignments.first().name
+        val userName = assignments.first().title
         println("Tasks assigned to: $userName")
         assignments.forEachIndexed { index, it ->
             println("${index + 1}. Task ID: ${it.id}")
@@ -55,15 +55,15 @@ class OutputPrinterImplementation : OutputPrinter {
         val groupedByEntityType = audits.groupBy { it.entityType }
 
         for ((entityType, entries) in groupedByEntityType) {
-            println("\n========== $entityType ==========\n")
+            println("\n============================== $entityType ==============================\n")
 
-            println(String.format("| %-15s | %-110s | %-30s |", "Changed By", "Change Description", "Date"))
+            println(String.format("| %-6s | %-110s | %-30s |", "Changed By", "Change Description", "Date"))
             println("-".repeat(165))
 
             for (entry in entries) {
                 println(
                     String.format(
-                        "| %-15s | %-110s | %-30s |",
+                        "| %-6s | %-110s | %-30s |",
                         username,
                         entry.description.take(205),
                         entry.dateTime

@@ -31,17 +31,17 @@ object UiMessages {
     const val INVALID_INPUT = "Invalid input"
     const val USER_NOT_LOGGED_IN = "user not loged in"
     const val INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid task name entered.\nPress Enter to return to the main menu or 'y' to try again."
+        "Invalid task name entered.\nPress Enter to return to the main menu or 'Y' to try again."
     const val INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid project name entered.\nPress 'Enter' to return to the main menu or 'y' to try again."
+        "Invalid project name entered.\nPress 'Enter' to return to the main menu or 'Y' to try again."
     const val INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid description entered.\nPress Enter to return to the main menu or 'y' to try again."
+        "Invalid description entered.\nPress Enter to return to the main menu or 'Y' to try again."
     const val INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
-        "Invalid state name entered.\nPress Enter to return to the main menu or 'y' to try again."
+        "Invalid state name entered.\nPress Enter to return to the main menu or 'Y' to try again."
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """
-        |----------- Audit Menu -----------|
+        |--------------- Audit Menu --------------|
         | 1. Show Project Audits                  |
         | 2. Show Task Audits                     |
         | 3. Show All Audits                      |
@@ -59,7 +59,7 @@ object UiMessages {
         | 3. Manage states                                     |
         | 4. Add Mate                                          |
         | 5. Add Mate To Project                               |
-        | 6. Show Audit                                |
+        | 6. Show Audit                                        |
         | 7. Log out                                           |
     """.trimIndent()
 
@@ -68,7 +68,7 @@ object UiMessages {
         |-------  Please choose what do you want to do  -------|
         | 1. Manage tasks                                      |
         | 2. Manage states                                     |
-        | 3. Show Audit                                 |
+        | 3. Show Audit                                        |
         | 4. Log out                                           |
     """.trimIndent()
 }

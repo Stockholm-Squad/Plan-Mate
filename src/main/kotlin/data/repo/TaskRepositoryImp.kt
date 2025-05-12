@@ -8,7 +8,7 @@ import org.example.data.source.TaskInProjectDataSource
 import org.example.data.utils.tryToExecute
 import org.example.logic.TaskNotAddedException
 import org.example.logic.TaskNotDeletedException
-import org.example.logic.TaskNotEditException
+import org.example.logic.TaskNotUpdatedException
 import org.example.logic.TasksNotFoundException
 import org.example.logic.entities.Task
 import org.example.logic.repository.TaskRepository
@@ -34,16 +34,16 @@ class TaskRepositoryImp(
             onFailure = { throw TaskNotAddedException() }
         )
 
-    override suspend fun editTask(task: Task): Boolean =
+    override suspend fun updateTask(task: Task): Boolean =
         tryToExecute(
-            function = { taskDataSource.editTask(task.mapToTaskModel()) },
-            onSuccess = { isEdited -> isEdited  },
-            onFailure = { throw TaskNotEditException() }
+            function = { taskDataSource.updateTask(task.mapToTaskModel()) },
+            onSuccess = { isUpdated -> isUpdated },
+            onFailure = { throw TaskNotUpdatedException() }
         )
 
-    override suspend fun deleteTask(id: UUID?): Boolean =
+    override suspend fun deleteTask(taskId: UUID?): Boolean =
         tryToExecute(
-            function = { taskDataSource.deleteTask(id.toString()) },
+            function = { taskDataSource.deleteTask(taskId.toString()) },
             onSuccess = { isDeleted -> isDeleted },
             onFailure = { throw TaskNotDeletedException() }
         )
