@@ -6,7 +6,7 @@ enum class EntityStateMenuChoice(
 ) {
     SHOW_ALL(1, "Show all states"),
     ADD_STATE(2, "Add state"),
-    UPDATE_STATE(3, "Edit state"),
+    UPDATE_STATE(3, "Update state"),
     DELETE_STATE(4, "Delete state"),
     BACK(5, "Back")
 }
