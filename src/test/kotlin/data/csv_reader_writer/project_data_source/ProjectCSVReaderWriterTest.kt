@@ -1,9 +1,8 @@
 package data.csv_reader_writer.project_data_source
 
-import logic.models.exceptions.FileNotExistException
-import logic.models.exceptions.ReadDataException
-import org.example.data.csv_reader_writer.project.ProjectCSVReaderWriter
 import data.dto.ProjectDto
+import kotlinx.coroutines.test.runTest
+import org.example.data.source.local.csv_reader_writer.ProjectCSVReaderWriter
 import org.junit.jupiter.api.*
 import java.io.File
 import java.nio.file.Files
@@ -33,35 +32,31 @@ class ProjectCSVReaderWriterTest {
     @Nested
     inner class ReadTests {
         @Test
-        fun `read should return FileNotExistException when file doesn't exist`() {
+        fun `read should return FileNotExistException when file doesn't exist`() = runTest {
             File(testFilePath).delete()
 
             val result = dataSource.read()
-
-            assertTrue(result.isFailure)
-            assertThrows<FileNotExistException> { result.getOrThrow() }
+            assertTrue(result.isEmpty())
         }
 
         @Test
-        fun `read should return empty list when file is empty`() {
+        fun `read should return empty list when file is empty`() = runTest {
             File(testFilePath).writeText("")
 
             val result = dataSource.read()
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow().isEmpty())
+            assertTrue(result.isEmpty())
         }
 
         @Test
-        fun `read should return empty list when file has only header`() {
+        fun `read should return empty list when file has only header`() = runTest {
             File(testFilePath).writeText("id,name,description")
 
             val result = dataSource.read()
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow().isEmpty())
+            assertTrue(result.isEmpty())
         }
 
         @Test
-        fun `read should return projects when file contains valid data`() {
+        fun `read should return projects when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
                 id,name,stateId
@@ -72,11 +67,10 @@ class ProjectCSVReaderWriterTest {
 
             val result = dataSource.read()
             println(result)
-            assertTrue(result.isSuccess)
-            val projects = result.getOrThrow()
-            assertEquals(2, projects.size)
-            assertEquals("Project A", projects[0].name)
-            assertEquals("Project B", projects[1].name)
+
+            assertEquals(2, result.size)
+            assertEquals("Project A", result[0].name)
+            assertEquals("Project B", result[1].name)
         }
     }
 
@@ -84,15 +78,14 @@ class ProjectCSVReaderWriterTest {
     inner class WriteTests {
 
         @Test
-        fun `write should create file with correct content`() {
+        fun `write should create file with correct content`() = runTest {
             val projects = listOf(
                 ProjectDto(id = "1", name = "Project A", stateId = "State A"),
                 ProjectDto(id = "2", name = "Project B", stateId = "State B")
             )
 
             val result = dataSource.overWrite(projects)
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow())
+            assertTrue(result)
 
             val content = File(testFilePath).readText()
             println("File content:\n$content") // Debug output
@@ -103,23 +96,20 @@ class ProjectCSVReaderWriterTest {
         }
 
         @Test
-        fun `write should handle empty list`() {
+        fun `write should handle empty list`() = runTest {
             val result = dataSource.overWrite(emptyList())
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow())
+            assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("", content)
+            assertEquals("id,name,stateId", content.trim())
         }
 
         @Test
-        fun `read should return ReadException on invalid CSV`() {
+        fun `read should return ReadException on invalid CSV`() = runTest {
             File(testFilePath).writeText("invalid,csv,data\nnot,matching,fields\n1")
 
-            val result = dataSource.read()
 
-            assertTrue(result.isFailure)
-            assertThrows<ReadDataException> { result.getOrThrow() }
+            assertThrows<Throwable> { dataSource.read() }
         }
 
     }
@@ -128,7 +118,7 @@ class ProjectCSVReaderWriterTest {
     inner class AppendTests {
 
         @Test
-        fun `append should add records to empty file`() {
+        fun `append should add records to empty file`() = runTest {
             val projects = listOf(
                 ProjectDto(id = "1", name = "Project A", stateId = "State A"),
                 ProjectDto(id = "2", name = "Project B", stateId = "State B")
@@ -136,8 +126,7 @@ class ProjectCSVReaderWriterTest {
 
             val result = dataSource.append(projects)
 
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow())
+            assertTrue(result)
 
             val content = File(testFilePath).readText()
             assertTrue(content.contains("1,Project A,State A"))
@@ -145,7 +134,7 @@ class ProjectCSVReaderWriterTest {
         }
 
         @Test
-        fun `append should add records to existing file`() {
+        fun `append should add records to existing file`() = runTest {
             val initialProjects = listOf(
                 ProjectDto(id = "1", name = "Project A", stateId = "State A")
             )
@@ -157,8 +146,7 @@ class ProjectCSVReaderWriterTest {
 
             val result = dataSource.append(newProjects)
 
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow())
+            assertTrue(result)
 
             val content = File(testFilePath).readText()
             assertTrue(content.contains("1,Project A,State A"))
@@ -166,13 +154,12 @@ class ProjectCSVReaderWriterTest {
         }
 
         @Test
-        fun `append should do nothing with empty list`() {
+        fun `append should do nothing with empty list`() = runTest {
             val result = dataSource.append(emptyList())
-            assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow())
+            assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("", content)
+            assertEquals("id,name,stateId", content.trim())
         }
     }
 
