@@ -97,21 +97,21 @@
 //    }
 //
 //    @Test
-//    fun `editTask() should return success result when the task is updated`() {
+//    fun `updateTask() should return success result when the task is updated`() {
 //        val task = buildTask(name = "Task 1")
-//        every { taskRepository.editTask(task) } returns Result.success(true)
+//        every { taskRepository.updateTask(task) } returns Result.success(true)
 //
-//        val result = manageTasksUseCase.editTask(task)
+//        val result = manageTasksUseCase.updateTask(task)
 //
 //        assertThat(result.getOrNull()).isEqualTo(true)
 //    }
 //
 //    @Test
-//    fun `editTask() should return failure result when update fails`() {
+//    fun `updateTask() should return failure result when update fails`() {
 //        val task = buildTask(name = "Task 1")
-//        every { taskRepository.editTask(task) } returns Result.failure(NoTasksFound())
+//        every { taskRepository.updateTask(task) } returns Result.failure(NoTasksFound())
 //
-//        val result = manageTasksUseCase.editTask(task)
+//        val result = manageTasksUseCase.updateTask(task)
 //
 //        assertThrows<NoTasksFound> { result.getOrThrow() }
 //    }

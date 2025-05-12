@@ -24,7 +24,7 @@ class UserCSVDataSource : UserDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editUser(user: UserDto): Boolean {
+    override suspend fun updateUser(user: UserDto): Boolean {
         TODO("Not yet implemented")
     }
 

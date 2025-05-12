@@ -19,7 +19,7 @@ class ProjectMongoDataSource(
         return result.wasAcknowledged()
     }
 
-    override suspend fun editProject(updatedProject: ProjectDto): Boolean {
+    override suspend fun updateProject(updatedProject: ProjectDto): Boolean {
         val result = projectCollection.updateOne(
             filter = ProjectDto::id eq updatedProject.id,
             update = setValue(ProjectDto::name, updatedProject.name)

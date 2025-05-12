@@ -7,7 +7,7 @@ interface TaskManagerUi : UiLauncher {
     fun showAllTasks()
     fun getTaskByName()
     fun addTask(passedProjectName: String?)
-    fun editTask()
+    fun updateTask()
     fun deleteTask()
     fun showAllTasksInProject(): List<Task>
     fun showAllMateTaskAssignment()

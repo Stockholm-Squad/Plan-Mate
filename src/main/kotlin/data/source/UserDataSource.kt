@@ -8,6 +8,6 @@ interface UserDataSource {
     suspend fun getUsersByProjectId(projectId: String): List<UserDto>
     suspend fun isUserExist(username: String): Boolean
     suspend fun getUserById(userId: String): UserDto?
-    suspend fun editUser(user: UserDto): Boolean
+    suspend fun updateUser(user: UserDto): Boolean
     suspend fun deleteUser(user: UserDto): Boolean
 }
