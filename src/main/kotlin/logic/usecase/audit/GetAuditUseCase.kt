@@ -38,8 +38,6 @@ class GetAuditUseCase(
     }
 
     suspend fun getAuditsForUserById(userId: UUID): List<Audit> =
-        auditRepository.getAllAudits().also { audits ->
-            return audits.filter { it.userId == userId }
-        }
+        auditRepository.getAllAudits().filter { it.userId == userId }
 
 }
