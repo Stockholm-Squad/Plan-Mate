@@ -3,6 +3,7 @@ package logic.usecase.project
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.logic.NoProjectsFoundException
@@ -28,56 +29,57 @@ class GetProjectsUseCaseTest {
         getProjectsUseCase = GetProjectsUseCase(projectRepository)
     }
 
-    @Nested
-    inner class GetProjectByName {
-        @Test
-        fun `getProjectByName() should return project when it exists`() = runTest {
-            // Given
-            val projectId = UUID.randomUUID()
-            val expectedProject = buildProject(id = projectId, name = "Test Project")
-            val allProjects = listOf(
-                buildProject(id = UUID.randomUUID(), name = "Project 1"),
-                expectedProject,
-                buildProject(id = UUID.randomUUID(), name = "Project 2")
-            )
-            coEvery { projectRepository.getAllProjects() } returns allProjects
+    @Test
+    fun `getAllProjects() should return list of project when successful`() = runTest {
+        //Given
+        val sampleProject1 = buildProject(name = "plan-mate")
+        coEvery { projectRepository.getAllProjects() } returns listOf(sampleProject1)
+        //When
+        val result = getProjectsUseCase.getAllProjects()
 
-            // When
-            val result = getProjectsUseCase.getProjectByName(expectedProject.name)
-
-            // Then
-            assertThat { result }.isEqualTo(expectedProject)
-            coVerify { projectRepository.getAllProjects() }
-        }
-
-        @Test
-        fun `getProjectByName() should throw when project does not exist`() = runTest {
-            // Given
-            UUID.randomUUID()
-            val allProjects = listOf(
-                buildProject(id = UUID.randomUUID(), name = "Project 1"),
-                buildProject(id = UUID.randomUUID(), name = "Project 2")
-            )
-            coEvery { projectRepository.getAllProjects() } returns allProjects
-
-            // When & Then
-            assertThrows<ProjectNotFoundException> { getProjectsUseCase.getProjectByName("not exist project") }
-        }
-
-        @Test
-        fun `should return failure when repository fails`() = runTest {
-            // Given
-            val projectId = "123"
-
-            coEvery { projectRepository.getAllProjects() } throws NoProjectsFoundException()
-
-
-            // When & Then
-            assertThrows<NoProjectsFoundException> {
-                getProjectsUseCase.getProjectByName(projectId)
-            }
-            coVerify { projectRepository.getAllProjects() }
-        }
+        assertThat(result).hasSize(1)
     }
 
+    @Test
+    fun `getProjectByName() should return project when it exists`() = runTest {
+        // Given
+        val expectedProject = buildProject( name = "Test Project")
+        coEvery { projectRepository.getAllProjects() } returns listOf(expectedProject)
+
+        // When
+        val result = getProjectsUseCase.getProjectByName(expectedProject.name)
+
+        // Then
+        assertThat(result).isEqualTo(expectedProject)
+        coVerify { projectRepository.getAllProjects() }
+    }
+
+    @Test
+    fun `getProjectByName() should throw when project does not exist`() = runTest {
+        // Given
+        val allProjects = listOf(
+            buildProject(id = UUID.randomUUID(), name = "Project 1"),
+            buildProject(id = UUID.randomUUID(), name = "Project 2")
+        )
+        coEvery { projectRepository.getAllProjects() } returns allProjects
+
+        // When & Then
+        assertThrows<ProjectNotFoundException> { getProjectsUseCase.getProjectByName("plan-mate") }
+    }
+
+    @Test
+    fun `should return failure when repository fails`() = runTest {
+        // Given
+        val projectId = "123"
+
+        coEvery { projectRepository.getAllProjects() } throws NoProjectsFoundException()
+
+
+        // When & Then
+        assertThrows<NoProjectsFoundException> {
+            getProjectsUseCase.getProjectByName(projectId)
+        }
+        coVerify { projectRepository.getAllProjects() }
+    }
 }
+
