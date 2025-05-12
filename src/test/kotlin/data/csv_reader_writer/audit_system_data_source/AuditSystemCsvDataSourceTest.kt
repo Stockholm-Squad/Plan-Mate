@@ -1,26 +1,26 @@
 package data.csv_reader_writer.audit_system_data_source
 
 import com.google.common.truth.Truth.assertThat
-import logic.models.exceptions.FileNotExistException
-import logic.models.exceptions.ReadDataException
-import logic.models.exceptions.WriteDataException
-import org.example.data.source.local.AuditSystemCsvDataSource
-import data.dto.AuditSystemDto
+import data.dto.AuditDto
+import kotlinx.coroutines.test.runTest
+import org.example.data.source.local.csv_reader_writer.AuditCSVReaderWriter
+import org.example.data.source.local.csv_reader_writer.IReaderWriter
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.io.File
 
 class AuditSystemCsvDataSourceTest {
 
-    private lateinit var dataSource: AuditSystemCsvDataSource
+    private lateinit var dataSource: IReaderWriter<AuditDto>
     private lateinit var tempFile: File
 
     @BeforeEach
     fun setUp() {
         tempFile = File.createTempFile("audit_test", ".csv")
         tempFile.deleteOnExit()
-        dataSource = AuditSystemCsvDataSource(tempFile.absolutePath)
+        dataSource = AuditCSVReaderWriter(tempFile.absolutePath)
     }
 
     @AfterEach
@@ -29,108 +29,109 @@ class AuditSystemCsvDataSourceTest {
     }
 
     @Test
-    fun `read should create and return empty list if file doesn't exist`() {
+    fun `read should create and return empty list if file doesn't exist`() = runTest {
         val nonExistentFile = File(tempFile.parent, "nonexistent.csv")
-        val ds = AuditSystemCsvDataSource(nonExistentFile.absolutePath)
+        val ds = AuditCSVReaderWriter(nonExistentFile.absolutePath)
 
         val result = ds.read()
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEmpty()
+        assertThat(result).isEmpty()
         assertThat(nonExistentFile.exists()).isTrue()
     }
 
     @Test
-    fun `read should return failure if file creation throws exception`() {
+    fun `read should return failure if file creation throws exception`() = runTest {
         val directory = File(tempFile.parentFile, "fakeDir")
         directory.mkdir()
         val invalidFile = File(directory, "another/fake.csv")
 
-        val ds = AuditSystemCsvDataSource(invalidFile.absolutePath)
-        val result = ds.read()
+        val ds = AuditCSVReaderWriter(invalidFile.absolutePath)
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(FileNotExistException::class.java)
-
+        assertThrows<Throwable> { ds.read() }
         directory.delete()
     }
 
     @Test
-    fun `read should return empty list if file has less than 2 lines`() {
+    fun `read should return empty list if file has less than 2 lines`() = runTest {
         tempFile.writeText("only,header,line\n")
         val result = dataSource.read()
 
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEmpty()
+        assertThat(result).isEmpty()
     }
 
     @Test
-    fun `read should return failure when CSV is malformed`() {
+    fun `read should return failure when CSV is malformed`() = runTest {
         tempFile.writeText("bad,data,line\n1,2,3")
-        val result = dataSource.read()
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(ReadDataException::class.java)
+        assertThrows<Throwable> { dataSource.read() }
     }
 
     @Test
-    fun `overWrite should write data and return success`() {
+    fun `overWrite should write data and return success`() = runTest {
         val models = listOf(
-            AuditSystemDto("u1", "Add", "Success", "Admin", "test", "test"),
-            AuditSystemDto("u2", "Delete", "Failed", "User", "2023-01-02", "test")
+            AuditDto("u1", "Add", "Success", "Admin", "test", "test"),
+            AuditDto("u2", "Delete", "Failed", "User", "2023-01-02", "test")
         )
 
         val result = dataSource.overWrite(models)
 
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isTrue()
         assertThat(tempFile.readText()).contains("u1")
     }
 
     @Test
-    fun `overWrite should return failure on write exception`() {
-        val invalidDataSource = AuditSystemCsvDataSource("/invalid/path/to/file.csv")
-        val result = invalidDataSource.overWrite(emptyList())
+    fun `overWrite should return failure on write exception`() = runTest {
+        val invalidDataSource = AuditCSVReaderWriter("/invalid/path/to/file.csv")
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(WriteDataException::class.java)
+        assertThrows<Throwable> { invalidDataSource.overWrite(emptyList()) }
     }
 
     @Test
-    fun `append should write data to empty file`() {
+    fun `append should write data to empty file`() = runTest {
         val models = listOf(
-            AuditSystemDto("u1", "Update", "Success", "Admin", "test", "test")
+            AuditDto("u1", "Update", "Success", "Admin", "test", "test")
         )
 
         val result = dataSource.append(models)
 
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isTrue()
         assertThat(tempFile.readText()).contains("u1")
     }
 
     @Test
-    fun `append should append to existing data`() {
+    fun `append should append to existing data`() = runTest {
         val initialData = listOf(
-            AuditSystemDto("u1", "Update", "Success", "Admin", "test", "test")
+            AuditDto("u1", "Update", "Success", "Admin", "test", "test")
         )
         dataSource.overWrite(initialData)
 
         val moreData = listOf(
-            AuditSystemDto("u2", "Delete", "Failed", "Admin", "test", "test")
+            AuditDto("u2", "Delete", "Failed", "Admin", "test", "test")
         )
         val result = dataSource.append(moreData)
 
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isTrue()
         val content = tempFile.readText()
         assertThat(content).contains("u1")
         assertThat(content).contains("u2")
     }
 
     @Test
-    fun `append should return failure on exception`() {
-        val invalidDataSource = AuditSystemCsvDataSource("/invalid/path/to/file.csv")
-        val result = invalidDataSource.append(emptyList())
+    fun `append should return failure on exception`() = runTest {
+        val invalidDataSource = AuditCSVReaderWriter("/invalid/path/to/file.csv")
 
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(WriteDataException::class.java)
+        assertThrows<Throwable> { invalidDataSource.append(emptyList()) }
     }
+
+    @Test
+    fun `read should return empty list when creating new file`() = runTest {
+        // Ensure file doesn't exist initially
+        tempFile.delete()
+
+        val result = dataSource.read()
+
+        assertThat(result).isEmpty()
+        assertThat(tempFile.exists()).isTrue()
+    }
+
 }
