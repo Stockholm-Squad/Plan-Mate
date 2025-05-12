@@ -52,8 +52,8 @@ class TaskManagerUiImp(
         when (option) {
             TaskOptions.SHOW_ALL_TASKS -> showAllTasks()
             TaskOptions.SHOW_TASK_BY_NAME -> getTaskByName()
-            TaskOptions.CREATE_TASK -> addTask(null)
-            TaskOptions.EDIT_TASK -> editTask()
+            TaskOptions.ADD_TASK -> addTask(null)
+            TaskOptions.UPDATE_TASK -> updateTask()
             TaskOptions.DELETE_TASK -> deleteTask()
             TaskOptions.SHOW_TASKS_BY_PROJECT_NAME -> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
@@ -121,16 +121,16 @@ class TaskManagerUiImp(
         }
     }
 
-    override fun editTask() = runBlocking(coroutineExceptionHandler) {
+    override fun updateTask() = runBlocking(coroutineExceptionHandler) {
         try {
             val taskName = getTaskName()
 
             val existingTask = manageTasksUseCase.getTaskByName(taskName)
 
-            val editInput = readEditTaskInput()
+            val updateInput = readUpdateTaskInput()
                 ?: return@runBlocking printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
 
-            val (newName, newDescription, newStateName) = editInput
+            val (newName, newDescription, newStateName) = updateInput
 
             val newStateId = manageStateUseCase.getEntityStateIdByName(newStateName)
             val updatedTask = existingTask.copy(
@@ -140,7 +140,7 @@ class TaskManagerUiImp(
                 updatedDate = timestamp
             )
 
-            manageTasksUseCase.editTask(updatedTask)
+            manageTasksUseCase.updateTask(updatedTask)
             auditServicesUseCase.addAuditForUpdateEntity(
                 entityType = EntityType.TASK,
                 existEntityName = existingTask.name,
@@ -240,13 +240,13 @@ class TaskManagerUiImp(
 
     }
 
-    private fun readEditTaskInput(): Triple<String, String, String>? {
+    private fun readUpdateTaskInput(): Triple<String, String, String>? {
         printer.showMessage(UiMessages.NEW_TASK_NAME_PROMPT)
         val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (name == null) {
             printer.showMessage(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.equals("y", ignoreCase = true)) return readEditTaskInput()
+            if (confirm.equals("y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
@@ -255,7 +255,7 @@ class TaskManagerUiImp(
         if (description == null) {
             printer.showMessage(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.equals("y", ignoreCase = true)) return readEditTaskInput()
+            if (confirm.equals("y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
@@ -264,7 +264,7 @@ class TaskManagerUiImp(
         if (stateName == null) {
             printer.showMessage(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
-            if (confirm.equals("y", ignoreCase = true)) return readEditTaskInput()
+            if (confirm.equals("y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 

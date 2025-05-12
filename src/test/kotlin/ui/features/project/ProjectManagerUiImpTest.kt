@@ -187,9 +187,9 @@ class ProjectManagerUiImpTest {
 //    }
 //
 //    @Nested
-//    inner class EditProject {
+//    inner class updateProject {
 //        @Test
-//        fun `should successfully edit existing project`() {
+//        fun `should successfully update existing project`() {
 //            // Given
 //            val project = buildProject(id = "1", name = "Old Name")
 //            val updatedProject = buildProject(id = "1", name = "New Name", stateId = project.stateId)
@@ -205,7 +205,7 @@ class ProjectManagerUiImpTest {
 //        }
 //
 //        @Test
-//        fun `should show error when editing non-existent project`() {
+//        fun `should show error when updateing non-existent project`() {
 //            // Given
 //            every { inputReader.readStringOrNull() } returnsMany listOf("4", "999", "0")
 //            every { manageProjectUseCase.getProjectByName("999") } returns Result.failure(NoSuchElementException())
@@ -218,7 +218,7 @@ class ProjectManagerUiImpTest {
 //        }
 //
 //        @Test
-//        fun `should show error when edit operation fails`() {
+//        fun `should show error when update operation fails`() {
 //            // Given
 //            val project = buildProject(id = "1")
 //            val updatedProject = buildProject(id = "1", name = "New Name")

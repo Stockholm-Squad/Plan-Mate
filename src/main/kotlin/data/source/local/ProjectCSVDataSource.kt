@@ -12,7 +12,7 @@ class ProjectCSVDataSource(
     override suspend fun addProject(project: ProjectDto): Boolean =
         projectReaderWriter.append(listOf(project))
 
-    override suspend fun editProject(updatedProject: ProjectDto): Boolean =
+    override suspend fun updateProject(updatedProject: ProjectDto): Boolean =
         getAllProjects().map { project -> if (updatedProject.id == project.id) updatedProject else project }
             .let { updatedProjects -> projectReaderWriter.overWrite(updatedProjects) }
 

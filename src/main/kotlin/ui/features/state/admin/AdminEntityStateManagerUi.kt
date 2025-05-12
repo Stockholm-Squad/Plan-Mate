@@ -4,7 +4,7 @@ import org.example.ui.features.common.ui_launcher.UiLauncher
 
 interface AdminEntityStateManagerUi : UiLauncher {
     fun addState()
-    fun editState()
+    fun updateState()
     fun deleteState()
     fun showAllStates()
 }

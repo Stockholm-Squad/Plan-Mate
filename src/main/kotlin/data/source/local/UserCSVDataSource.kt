@@ -26,7 +26,7 @@ class UserCSVDataSource(
     override suspend fun getUserById(userId: String): UserDto? =
         getAllUsers().find { user -> user.id == userId }
 
-    override suspend fun editUser(user: UserDto): Boolean =
+    override suspend fun updateUser(user: UserDto): Boolean =
         getAllUsers().map { mappedUser -> if (mappedUser.id == user.id) user else mappedUser }
             .let { updatedUsers -> userReaderWriter.overWrite(updatedUsers) }
 

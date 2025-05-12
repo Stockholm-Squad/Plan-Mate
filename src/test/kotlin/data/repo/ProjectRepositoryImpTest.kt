@@ -1,6 +1,7 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
+import data.dto.ProjectDto
 import io.mockk.every
 import io.mockk.mockk
 import logic.models.exceptions.ReadDataException
@@ -8,7 +9,6 @@ import logic.models.exceptions.WriteDataException
 import org.example.data.csv_reader_writer.project.IProjectCSVReaderWriter
 import org.example.data.csv_reader_writer.task_in_project.TaskInProjectCSVReaderWriter
 import org.example.data.csv_reader_writer.user_assigned_to_project.IUserAssignedToProjectCSVReaderWriter
-import data.dto.ProjectDto
 import org.example.data.repo.ProjectRepositoryImp
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
@@ -78,26 +78,26 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    fun `editProject() should update existing project and write to data source`() {
+    fun `updateProject() should update existing project and write to data source`() {
         //Given
         every { projectDataSource.read() } returns Result.success(listOf(projectDto))
         every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.success(true)
 
         //When
         val updated = testProject.copy(name = "Updated")
-        val result = projectRepositoryImp.editProject(updated)
+        val result = projectRepositoryImp.updateProject(updated)
         //Then
         assertThat(result.isSuccess).isTrue()
 
     }
 
     @Test
-    fun `editProject() should fail when he can not read form data source`() {
+    fun `updateProject() should fail when he can not read form data source`() {
         //Given
         every { projectDataSource.read() } returns Result.failure(ReadDataException())
 
         //When
-        val result = projectRepositoryImp.editProject(testProject)
+        val result = projectRepositoryImp.updateProject(testProject)
 
         //When Then
         assertThrows<ReadDataException> { result.getOrThrow() }
@@ -106,11 +106,11 @@ class ProjectRepositoryImpTest {
 
 
     @Test
-    fun `editProject() should return failure when write fails`() {
+    fun `updateProject() should return failure when write fails`() {
         every { projectDataSource.read() } returns Result.success(listOf(projectDto))
         every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.failure(WriteDataException())
 
-        val result = projectRepositoryImp.editProject(testProject)
+        val result = projectRepositoryImp.updateProject(testProject)
 
         assertThrows<WriteDataException> { result.getOrThrow() }
     }

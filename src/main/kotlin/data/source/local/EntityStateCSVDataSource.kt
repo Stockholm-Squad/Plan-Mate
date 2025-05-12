@@ -10,7 +10,7 @@ class EntityStateCSVDataSource(
     override suspend fun addEntityState(entityState: EntityStateDto): Boolean =
         entityStateReaderWriter.append(listOf(entityState))
 
-    override suspend fun editEntityState(entityState: EntityStateDto): Boolean =
+    override suspend fun updateEntityState(entityState: EntityStateDto): Boolean =
         getAllEntityStates().map { state -> if (state.id == entityState.id) entityState else state }
             .let { updatedEntityStates -> entityStateReaderWriter.overWrite(updatedEntityStates) }
 

@@ -13,7 +13,7 @@ class TaskCSVDataSource(
     override suspend fun addTask(task: TaskDto): Boolean =
         taskReaderWriter.append(listOf(task))
 
-    override suspend fun editTask(task: TaskDto): Boolean =
+    override suspend fun updateTask(task: TaskDto): Boolean =
         getAllTasks().map { mappedTask -> if (task.id == mappedTask.id) task else mappedTask }
             .let { updatesTasks -> taskReaderWriter.overWrite(updatesTasks) }
 
