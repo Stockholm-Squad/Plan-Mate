@@ -6,7 +6,7 @@ import org.example.data.source.ProjectDataSource
 import org.example.data.utils.tryToExecute
 import org.example.logic.NoProjectAddedException
 import org.example.logic.NoProjectDeletedException
-import org.example.logic.NoProjectEditedException
+import org.example.logic.NoProjectUpdatedException
 import org.example.logic.NoProjectsFoundException
 import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
@@ -36,7 +36,7 @@ class ProjectRepositoryImp(
         onSuccess = { isUpdated ->
             isUpdated
         }, onFailure = {
-            throw NoProjectEditedException()
+            throw NoProjectUpdatedException()
         })
 
 
