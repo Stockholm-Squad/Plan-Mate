@@ -7,7 +7,7 @@ interface TaskRepository {
     suspend fun getAllTasks(): List<Task>
     suspend fun addTask(task: Task): Boolean
     suspend fun updateTask(task: Task): Boolean
-    suspend fun deleteTask(id: UUID?): Boolean
+    suspend fun deleteTask(taskId: UUID?): Boolean
     suspend fun getTasksInProject(projectId: UUID): List<Task>
     suspend fun addTaskInProject(projectId: UUID, taskId: UUID): Boolean
     suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean

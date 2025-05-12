@@ -9,7 +9,7 @@ fun TaskDto.mapToTaskEntity(): Task? {
     return Task(
         id.toSafeUUID() ?: return null,
         projectName,
-        name,
+        title,
         description,
         stateId.toSafeUUID() ?: return null,
         DateHandlerImp().getLocalDateTimeFromString(createdDate),
@@ -21,7 +21,7 @@ fun Task.mapToTaskModel(): TaskDto {
     return TaskDto(
         id.toString(),
         projectName,
-        name,
+        title,
         description,
         stateId.toString(),
         createdDate.toString(),

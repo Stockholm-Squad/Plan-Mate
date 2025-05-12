@@ -41,9 +41,9 @@ class TaskRepositoryImp(
             onFailure = { throw TaskNotUpdatedException() }
         )
 
-    override suspend fun deleteTask(id: UUID?): Boolean =
+    override suspend fun deleteTask(taskId: UUID?): Boolean =
         tryToExecute(
-            function = { taskDataSource.deleteTask(id.toString()) },
+            function = { taskDataSource.deleteTask(taskId.toString()) },
             onSuccess = { isDeleted -> isDeleted },
             onFailure = { throw TaskNotDeletedException() }
         )
