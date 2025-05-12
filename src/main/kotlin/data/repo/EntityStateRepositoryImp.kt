@@ -21,7 +21,7 @@ class EntityStateRepositoryImp(
 
 
     override suspend fun updateEntityState(entityState: EntityState): Boolean = tryToExecute(
-        { entityStateDataSource.editEntityState(entityState.mapToStateModel()) },
+        { entityStateDataSource.editUpdatedState(entityState.mapToStateModel()) },
         onSuccess = { isEdited -> isEdited },
         onFailure = { throw EntityStateNotEditedException() }
     )
