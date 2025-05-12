@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.example.logic.EntityStateAlreadyExistException
+import org.example.logic.NoEntityStateFoundException
 import org.example.logic.NotAllowedEntityStateNameException
 import org.example.logic.entities.EntityState
 import org.example.logic.repository.EntityStateRepository
@@ -26,7 +26,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() =
+    fun `editEntityState()  should return success result with true when the state name is valid and repo returned success result of true`() =
         runTest {
             //Given
             val stateName = "do"
@@ -48,115 +48,97 @@ class ManageStatesUseCaseTest {
             assertThat(result).isEqualTo(true)
         }
 
-//    @Test
-//    fun `editState() should return success result with true when the name of state have leading and trailing space and repo returned success result of true`() = runTest {
-//        //Given
-//        val stateName = "ToDo"
-//        val newStateName="New ToDo"
-//        coEvery { projectStateRepository.getAllProjectStates() } returns  listOf(ProjectState(name= "ToDo")))
-//        coEvery { manageStatesUseCase.editProjectStateByName(stateName,newStateName) } returns  true)
-//
-//        //When
-//        val result = manageStatesUseCase.editProjectStateByName(stateName,newStateName)
-//
-//        //Then
-//        assertThat(result.getOrNull()).isEqualTo(true)
-//    }
-
     @Test
-    fun `editState() should return failure result with not allowed state name exception when the name of state contain special characters`() =
+    fun `editEntityState()  should return failure result with not allowed state name exception when the name of state contain special characters`() =
         runTest {
             //Given
             val stateName = "#In Review$"
             val newStateName = "New ToDo"
 
-            //When
-            val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
-
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            // When & Then
+            assertThrows<NotAllowedEntityStateNameException> {
+                manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+            }
         }
 
     @Test
-    fun `editState() should return failure result with exception when edit state failes`() = runTest {
+    fun `editEntityState()  should return failure result with exception when edit state fail`() = runTest {
         //Given
         val stateName = "In Review"
         val newStateName = "New ToDo"
 
         coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = stateName))
-        coEvery { entityStateRepository.editEntityState(any()) } throws Throwable ()
+        coEvery { entityStateRepository.editEntityState(any()) } throws Throwable()
 
-        //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
-
-        //Then
-        assertThrows<Throwable> { result }
+        // When & Then
+        assertThrows<Throwable> {
+            manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+        }
     }
 
     @Test
-    fun `editState() should return failure result with exception when edit states fails with file not found`() =
+    fun `editEntityState()  should return failure result with exception when edit states fails with file not found`() =
         runTest {
             //Given
             val stateName = "In Review"
             val newStateName = "New ToDo"
 
-            coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = stateName))
-            coEvery { entityStateRepository.editEntityState(any()) } throws NotAllowedEntityStateNameException()
+            coEvery { entityStateRepository.editEntityState(any()) } throws Throwable()
 
-            //When
-            val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
-
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            // When & Then
+            assertThrows<Throwable> {
+                manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+            }
         }
 
     @Test
-    fun `editState() should return failure result with not allowed state name exception when the name of state contain number`() =
+    fun `editEntityState()  should return failure result with not allowed state name exception when the name of state contain number`() =
         runTest {
             //Given
             val stateName = "1In Rev3ew"
             val newStateName = "New ToDo"
 
             coEvery { entityStateRepository.editEntityState(any()) } throws NotAllowedEntityStateNameException()
-            //When
-            val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
 
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            // When & Then
+            assertThrows<NotAllowedEntityStateNameException> {
+                manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+            }
         }
 
     @Test
-    fun `editState() should return failure result with not allowed state name exception when the name is blank string`() =
+    fun `editEntityState()  should return failure result with not allowed state name exception when the name is blank string`() =
         runTest {
             //Given
             val stateName = "   "
             val newStateName = "New ToDo"
             coEvery { entityStateRepository.editEntityState(any()) } throws NotAllowedEntityStateNameException()
-
-            //When
-            val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
-
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            // When & Then
+            assertThrows<NotAllowedEntityStateNameException> {
+                manageStatesUseCase.editEntityStateByName(
+                    stateName,
+                    newStateName
+                )
+            }
         }
 
     @Test
-    fun `editState() should return failure result with state not exist exception when state is not exist`() = runTest {
-        //Given
-        val stateName = "TODO"
-        val newStateName = "New ToDo"
+    fun `editEntityState()  should return failure result with state not exist exception when state is not exist`() =
+        runTest {
+            //Given
+            val stateName = "TODO"
+            val newStateName = "New ToDo"
 
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = "tyyyg"))
+            coEvery { entityStateRepository.editEntityState(any()) } throws NoEntityStateFoundException()
 
-        //When
-        val result = manageStatesUseCase.editEntityStateByName(stateName, newStateName)
-
-        //Then
-        assertThrows<NotAllowedEntityStateNameException> { result }
-    }
+            // When & Then
+            assertThrows<NoEntityStateFoundException> {
+                manageStatesUseCase.editEntityStateByName(stateName, newStateName)
+            }
+        }
 
     @Test
-    fun `deleteState() should return success result with true when the state name exist and the repo added successfully`() =
+    fun `deleteEntityState()  should return success result with true when the state name exist and the repo added successfully`() =
         runTest {
             //Given
             val stateName = "TODO"
@@ -173,77 +155,60 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `deleteState() should return failure result with exception when the state name not valid`() = runTest {
+    fun `deleteEntityState()  should return failure result with exception when the state name not valid`() = runTest {
         //Given
         val stateName = "TOD&%O"
         coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = stateName))
         coEvery { entityStateRepository.deleteEntityState(any()) } returns true
 
-        //  When
-        val result = manageStatesUseCase.deleteEntityState(stateName)
-
-        //Then
-        assertThrows<Throwable> { result }
+        // When & Then
+        assertThrows<Throwable> { manageStatesUseCase.deleteEntityState(stateName) }
     }
 
     @Test
-    fun `deleteState() should return failure result with exception when repo returns   failed with file not found exception`() =
+    fun `deleteEntityState()  should return failure result with exception when repo returns fail with file not found exception`() =
         runTest {
             //Given
             val stateName = "TOD&%O"
             coEvery { entityStateRepository.getAllEntityStates() } throws Throwable()
-
-
-            //  When
-            val result = manageStatesUseCase.deleteEntityState(stateName)
-
-            //Then
-            assertThrows<Throwable> { result }
+            // When & Then
+            assertThrows<Throwable> {
+                manageStatesUseCase.deleteEntityState(stateName)
+            }
         }
 
     @Test
-    fun `deleteState() should return failure result with throwable when the state name not exist`() = runTest {
+    fun `deleteEntityState()  should return failure result with throwable when the state name not exist`() = runTest {
         //Given
         val stateName = "TODO"
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = "In Progress"))
+        coEvery { entityStateRepository.getEntityStateByName(any()) } throws NotAllowedEntityStateNameException()
 
-        //  When
-        val result = manageStatesUseCase.deleteEntityState(stateName)
-
-        //Then
-        assertThrows<NotAllowedEntityStateNameException> { result }
+        // When & Then
+        assertThrows<NotAllowedEntityStateNameException> { manageStatesUseCase.deleteEntityState(stateName) }
     }
 
     @Test
-    fun `deleteState() should return failure result with throwable when repo returned failure result while editing`() =
+    fun `deleteEntityState()  should return failure result with throwable when repo returned failure result while editing`() =
         runTest {
             //Given
             val stateName = "TODO"
-            coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = stateName))
             coEvery { entityStateRepository.deleteEntityState(any()) } throws Throwable()
 
-            //  When
-            val result = manageStatesUseCase.deleteEntityState(stateName)
-
-            //Then
-            assertThrows<Throwable> { result }
+            // When & Then
+            assertThrows<Throwable> { manageStatesUseCase.deleteEntityState(stateName) }
         }
 
     @Test
-    fun `addState() should return success result with true when the name of state is valid`() = runTest {
+    fun `addEntityState() should return success result with true when the name of state is valid`() = runTest {
         // Given
         val entityState = EntityState(
             id = UUID.randomUUID(),
-            name = "todo"
+            name = "doing"
         )
 
-        coEvery { entityStateRepository.getAllEntityStates() } returns
-                listOf(
-                    EntityState(name = "Done"),
-                    EntityState(name = "doing")
-                )
+        coEvery { entityStateRepository.isEntityStateExist(entityState.name) } returns false
 
-        coEvery { entityStateRepository.addEntityState(entityState) } returns true
+        coEvery { entityStateRepository.addEntityState(any()) } returns true
 
         // When
         val result = manageStatesUseCase.addEntityState(entityState.name)
@@ -253,19 +218,17 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `addState() should return failure result with throwable when the addState fails`() = runTest {
+    fun `addEntityState() should return failure result with throwable when the addState fails`() = runTest {
         // Given
         val stateName = "ToDo"
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = "Done"))
         coEvery { entityStateRepository.addEntityState(any()) } throws Throwable()
-        // When 
-        val result = manageStatesUseCase.addEntityState(stateName)
-        // Then
-        assertThrows<Throwable> { result }
+
+        // When & Then
+        assertThrows<Throwable> { manageStatesUseCase.addEntityState(stateName) }
     }
 
     @Test
-    fun `addState() should return success result with true when the name of state have leading and trailing space`() =
+    fun `addEntityState() should return success result with true when the name of state have leading and trailing space`() =
         runTest {
             //Given
             val stateName = "   ToDo    "
@@ -279,74 +242,64 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `addState() should return failure result when the state exist`() = runTest {
+    fun `addEntityState() should return failure result when the state exist`() = runTest {
         //Given
         val stateName = "ToDo"
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = stateName))
-
-        //When
-        val result = manageStatesUseCase.addEntityState(stateName)
-
-        //Then
-        assertThrows<EntityStateAlreadyExistException> { result }
+        coEvery { entityStateRepository.isEntityStateExist(stateName) } returns true
+        // When & Then
+        assertThrows<Throwable> { manageStatesUseCase.addEntityState(stateName) }
     }
 
     @Test
-    fun `addState() should return failure result with not allowed state name exception when the name of state contain special characters`() =
+    fun `addEntityState() should return failure result with not allowed state name exception when the name of state contain special characters`() =
         runTest {
             //Given
             val stateName = "#I Review$"
             coEvery { entityStateRepository.addEntityState(any()) } throws Throwable()
-            //When
-            val result = manageStatesUseCase.addEntityState(stateName)
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+
+            // When & Then
+            assertThrows<Throwable> { manageStatesUseCase.addEntityState(stateName) }
         }
 
     @Test
-    fun `addState() should return failure result with not allowed state name exception when the name of state contain number`() =
+    fun `addEntityState() should return failure result with not allowed state name exception when the name of state contain number`() =
         runTest {
             //Given
             val stateName = "1I Rev3ew"
-            coEvery { entityStateRepository.addEntityState(any()) } throws NotAllowedEntityStateNameException()
-            //When
-            val result = manageStatesUseCase.addEntityState(stateName)
+            coEvery { entityStateRepository.addEntityState(any()) } throws Throwable()
 
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            // When & Then
+            assertThrows<NotAllowedEntityStateNameException> { manageStatesUseCase.addEntityState(stateName) }
         }
 
     @Test
-    fun `addState() should return failure result with not allowed state name exception when the name is blank string`() =
+    fun `addEntityState() should return failure result with not allowed state name exception when the name is blank string`() =
         runTest {
             //Given
             val stateName = "   "
-            coEvery { entityStateRepository.addEntityState(any()) } returns true
+            coEvery { entityStateRepository.addEntityState(any()) } throws Throwable()
 
-            //When
-            val result = manageStatesUseCase.addEntityState(stateName)
-
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            // When & Then
+            assertThrows<Throwable> { manageStatesUseCase.addEntityState(stateName) }
         }
 
     @Test
 
 
-    fun `addState() should return failure result with not allowed length exception when the name of state is more than 30`() =
+    fun `addEntityState() should return failure result with not allowed length exception when the name of state is more than 30`() =
         runTest {
             //Given
             val state = "hi in this state this is too long state"
-            coEvery { entityStateRepository.addEntityState(any()) } throws NotAllowedEntityStateNameException()
-            //When
-            val result = manageStatesUseCase.addEntityState(state)
-            //Then
-            assertThrows<NotAllowedEntityStateNameException> { result }
+            coEvery { entityStateRepository.addEntityState(any()) } throws Throwable()
+            // When & Then
+            assertThrows<Throwable> {
+                manageStatesUseCase.addEntityState(state)
+            }
         }
 
     @Test
 
-    fun `getAllStates() should return success result with list of state when the file have data`() = runTest {
+    fun `getAllEntityStates() should return success result with list of state when the file have data`() = runTest {
         //Given
         val state = listOf(
             EntityState(name = "todo")
@@ -360,79 +313,92 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `getAllStates() should return failure result with empty data exception when have no data`() = runTest {
+    fun `getAllEntityStates() should return failure result with empty data exception when have no data`() = runTest {
         //Given & When
-        coEvery { entityStateRepository.getAllEntityStates() } returns emptyList()
+        coEvery { entityStateRepository.getAllEntityStates() } throws Throwable()
         //  When
-        val result = manageStatesUseCase.getAllEntityStates()
+
 
         //Then
-        assertThrows<Throwable> { result }
+        assertThrows<Throwable> { manageStatesUseCase.getAllEntityStates() }
     }
 
     @Test
-    fun `getAllStates() should return failure result with read exception when error happens while reading from data`() =
+    fun `getAllEntityStates() should return failure result with read exception when error happens while reading from data`() =
         runTest {
             //Given
             coEvery { entityStateRepository.getAllEntityStates() } throws Throwable()
 
-            //  When
-            val result = manageStatesUseCase.getAllEntityStates()
-
-            //Then
-            assertThrows<Throwable> { result }
+            // When & Then
+            assertThrows<Throwable> { manageStatesUseCase.getAllEntityStates() }
         }
 
     @Test
-    fun `getStateIdByName() should return id of state when state exist`() = runTest {
+    fun `getEntityStateNameByStateId() should return name  of state when state exist`() = runTest {
         //Given
         val projectState = EntityState(name = "TODO")
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf(projectState)
+        coEvery { entityStateRepository.getEntityStateByID(any()) } returns projectState
 
         //  When
-        val result = manageStatesUseCase.getEntityStateIdByName(projectState.name)
+        val result = manageStatesUseCase.getEntityStateNameByStateId(projectState.id)
 
         //Then
+        assertThat(result).isEqualTo(projectState.name)
+    }
+
+    @Test
+    fun `getEntityStateNameByStateId() should return failure  of state when state not exist`() = runTest {
+        //Given
+        val projectState = EntityState(name = "TODO")
+        coEvery { entityStateRepository.getEntityStateByID(any()) } throws Throwable()
+
+        //  When & Then
+        assertThrows<Throwable> { manageStatesUseCase.getEntityStateNameByStateId(projectState.id) }
+    }
+
+    @Test
+    fun `getEntityStateIdByName() should return failure when state not exist`() = runTest {
+        //Given
+        val projectState = EntityState(name = "TODO")
+        coEvery { entityStateRepository.getEntityStateByName(any()) } throws Throwable()
+
+        //  When & Then
+        assertThrows<Throwable> { manageStatesUseCase.getEntityStateIdByName(projectState.name) }
+    }
+
+
+    @Test
+    fun `getEntityStateIdByName() should return id when state name valid`() = runTest {
+        // Given
+        val projectState = EntityState(id = UUID.fromString("08585840-5cef-4cf2-a71f-4eccf5d7bcb8"), name = "TODO")
+        coEvery { entityStateRepository.getEntityStateByName(projectState.name) } returns projectState
+
+        // When
+        val result = manageStatesUseCase.getEntityStateIdByName(projectState.name)
+
+        // Then
         assertThat(result).isEqualTo(projectState.id)
     }
 
     @Test
-    fun `getStateIdByName() should return null when state not exist`() = runTest {
-        //Given
-        val projectState = EntityState(name = "TODO")
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf(projectState)
-
-        //  When
-        val result = manageStatesUseCase.getEntityStateIdByName("injhb")
-
-        //Then
-        assertThat(result).isEqualTo(null)
-    }
-
-    @Test
-    fun `getStateIdByName() should return null when state name not valid`() = runTest {
+    fun `getEntityStateIdByName() should return failure when state name not valid`() = runTest {
         //Given
         val projectState = EntityState(name = "T&^^ODO")
-        coEvery { entityStateRepository.getAllEntityStates() } returns listOf()
+        coEvery { entityStateRepository.getEntityStateByName(any()) } throws Throwable()
 
-        //  When
-        val result = manageStatesUseCase.getEntityStateIdByName(projectState.name)
-
-        //Then
-        assertThat(result).isEqualTo(null)
+        //  When & Then
+        assertThrows<Throwable> { manageStatesUseCase.getEntityStateIdByName(projectState.name) }
     }
 
+
     @Test
-    fun `getStateIdByName() should return null when getAllState return failure`() = runTest {
+    fun `getEntityStateIdByName() should return failure when getAllEntityStates return failure`() = runTest {
         //Given
         val projectState = EntityState(name = "TODO")
-        coEvery { entityStateRepository.getAllEntityStates() } throws Throwable()
+        coEvery { entityStateRepository.getEntityStateByName(any()) } throws Throwable()
 
-        //  When
-        val result = manageStatesUseCase.getEntityStateIdByName(projectState.name)
-
-        //Then
-        assertThat(result).isEqualTo(null)
+        //  When & Then
+        assertThrows<Throwable> { manageStatesUseCase.getEntityStateIdByName(projectState.name) }
     }
 
 }
