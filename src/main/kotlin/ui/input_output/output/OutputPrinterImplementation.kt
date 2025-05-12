@@ -55,15 +55,15 @@ class OutputPrinterImplementation : OutputPrinter {
         val groupedByEntityType = audits.groupBy { it.entityType }
 
         for ((entityType, entries) in groupedByEntityType) {
-            println("\n========== $entityType ==========\n")
+            println("\n============================== $entityType ==============================\n")
 
-            println(String.format("| %-15s | %-110s | %-30s |", "Changed By", "Change Description", "Date"))
+            println(String.format("| %-6s | %-110s | %-30s |", "Changed By", "Change Description", "Date"))
             println("-".repeat(165))
 
             for (entry in entries) {
                 println(
                     String.format(
-                        "| %-15s | %-110s | %-30s |",
+                        "| %-6s | %-110s | %-30s |",
                         username,
                         entry.description.take(205),
                         entry.dateTime
