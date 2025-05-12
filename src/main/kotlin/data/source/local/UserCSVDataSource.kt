@@ -1,12 +1,13 @@
 package org.example.data.source.local
 
 import data.dto.UserDto
+import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 
 class UserCSVDataSource(
     private val userReaderWriter: IReaderWriter<UserDto>,
-    private val userAssignedToProjectDataSource: UserAssignedToProjectCSVDataSource,
+    private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
 ) : UserDataSource {
     override suspend fun addUser(user: UserDto): Boolean =
         userReaderWriter.append(listOf(user))
