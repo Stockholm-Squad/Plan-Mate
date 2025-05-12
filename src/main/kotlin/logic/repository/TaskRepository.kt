@@ -11,5 +11,5 @@ interface TaskRepository {
     suspend fun getTasksInProject(projectId: UUID): List<Task>
     suspend fun addTaskInProject(projectId: UUID, taskId: UUID): Boolean
     suspend fun deleteTaskFromProject(projectId: UUID, taskId: UUID): Boolean
-    suspend fun getAllTasksByUserName(userName: String): List<Task>
+    suspend fun getAllTasksByUserName(username: String): List<Task>
 }

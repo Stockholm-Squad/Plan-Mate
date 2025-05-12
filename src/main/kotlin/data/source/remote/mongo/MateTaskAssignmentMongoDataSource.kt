@@ -12,18 +12,18 @@ class MateTaskAssignmentMongoDataSource(
     private val mateTaskAssignmentCollection: MongoCollection<MateTaskAssignmentDto>,
 ) : MateTaskAssignmentDataSource {
 
-    override suspend fun addUserToTask(mateName: String, taskId: String): Boolean =
+    override suspend fun addUserToTask(username: String, taskId: String): Boolean =
         mateTaskAssignmentCollection.insertOne(
             MateTaskAssignmentDto(
-                userName = mateName,
+                userName = username,
                 taskId = taskId
             )
         ).insertedId != null
 
-    override suspend fun deleteUserFromTask(mateName: String, taskId: String): Boolean =
+    override suspend fun deleteUserFromTask(username: String, taskId: String): Boolean =
         mateTaskAssignmentCollection.deleteOne(
             and(
-                MateTaskAssignmentDto::userName eq mateName,
+                MateTaskAssignmentDto::userName eq username,
                 MateTaskAssignmentDto::taskId eq taskId
             )
         ).deletedCount > 0
@@ -31,6 +31,6 @@ class MateTaskAssignmentMongoDataSource(
     override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
         mateTaskAssignmentCollection.find(MateTaskAssignmentDto::taskId eq taskId).toList()
 
-    override suspend fun getUsersMateTaskByUserName(userName: String): List<MateTaskAssignmentDto> =
-        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::userName eq userName).toList()
+    override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::userName eq username).toList()
 }
