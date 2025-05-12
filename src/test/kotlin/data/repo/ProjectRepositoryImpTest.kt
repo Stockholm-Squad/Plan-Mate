@@ -78,7 +78,7 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    fun `editProject() should update existing project and write to data source`() {
+    fun `updateProject() should update existing project and write to data source`() {
         //Given
         every { projectDataSource.read() } returns Result.success(listOf(projectDto))
         every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.success(true)
@@ -92,7 +92,7 @@ class ProjectRepositoryImpTest {
     }
 
     @Test
-    fun `editProject() should fail when he can not read form data source`() {
+    fun `updateProject() should fail when he can not read form data source`() {
         //Given
         every { projectDataSource.read() } returns Result.failure(ReadDataException())
 
@@ -106,7 +106,7 @@ class ProjectRepositoryImpTest {
 
 
     @Test
-    fun `editProject() should return failure when write fails`() {
+    fun `updateProject() should return failure when write fails`() {
         every { projectDataSource.read() } returns Result.success(listOf(projectDto))
         every { projectDataSource.overWrite(listOf(projectDto)) } returns Result.failure(WriteDataException())
 
