@@ -36,7 +36,7 @@ class ManageProjectUseCase(
             if (isProjectExist) {
                 val newProjectStateId = manageProjectStateUseCase.getEntityStateIdByName(newProjectStateName)
                 val updatedProject = Project(id = projectId, name = newProjectName, stateId = newProjectStateId)
-                projectRepository.UpdatedProject(updatedProject)
+                projectRepository.updateProject(updatedProject)
             } else
                 throw ProjectNotFoundException()
         }

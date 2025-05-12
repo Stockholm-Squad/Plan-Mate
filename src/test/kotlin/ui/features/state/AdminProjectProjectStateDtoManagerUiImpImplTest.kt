@@ -37,7 +37,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     }
 
     @Test
-    fun `editState should succeed with valid input`() {
+    fun `UpdateState should succeed with valid input`() {
         every { reader.readStringOrNull() } returns "ExistingState"
         every { reader.readStringOrNull() } returns "NewState"
 
@@ -48,7 +48,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         verify { printer.showMessage("State updated successfully ^_^") }
     }
     @Test
-    fun `editState() should print state updated successfully when a valid name`() {
+    fun `UpdateState() should print state updated successfully when a valid name`() {
         //Given
         val stateName = "TODO"
         val newState ="Done"
@@ -69,7 +69,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     }
 
     @Test
-    fun `editState() should print invalid input when enter not valid name`() {
+    fun `UpdateState() should print invalid input when enter not valid name`() {
         val stateName = "1hnfjnj!"
         val newState ="Done"
         every { reader.readStringOrNull() } returns stateName
@@ -87,7 +87,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     }
 
     @Test
-    fun `editState() should print INVALID_INPUT when enter null`() {
+    fun `UpdateState() should print INVALID_INPUT when enter null`() {
         // Given
         every { reader.readStringOrNull() } returns null
 
@@ -99,7 +99,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
     }
 
     @Test
-    fun `editState should fail with invalid input`() {
+    fun `UpdateState should fail with invalid input`() {
         every { reader.readStringOrNull() } returns ""
 
         adminStateManagerUi.updateState()
@@ -292,7 +292,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 //                when (option) {
 //                    1 -> adminStateManagerUi.showAllStates()
 //                    2 -> adminStateManagerUi.addState()
-//                    3 -> adminStateManagerUi.editState()
+//                    3 -> adminStateManagerUi.UpdateState()
 //                    4 -> adminStateManagerUi.deleteState()
 //                    5 -> true
 //                }

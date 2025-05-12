@@ -116,7 +116,7 @@ class TaskRepositoryImpTest {
     }
 
     @Test
-    fun `editTask() should return success result with true when the task is updated successfully`() {
+    fun `updateTask() should return success result with true when the task is updated successfully`() {
         // Given
         val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
         val existingTasks = listOf(
@@ -133,7 +133,7 @@ class TaskRepositoryImpTest {
     }
 
     @Test
-    fun `editTask() should return failure result with throwable when the task to edit does not exist`() {
+    fun `updateTask() should return failure result with throwable when the task to update does not exist`() {
         // Given
         val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
         listOf(

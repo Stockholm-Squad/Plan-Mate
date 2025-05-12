@@ -31,7 +31,7 @@ class ProjectStateRepositoryImpTest {
     }
 
     @Test
-    fun `editState() should return success result when the state not found`() {
+    fun `updateState() should return success result when the state not found`() {
         //Given
         every { projectStateDataSource.overWrite(any()) } returns Result.success(
             value = true
@@ -46,7 +46,7 @@ class ProjectStateRepositoryImpTest {
     }
 
     @Test
-    fun `editState() should return success result with true when the state updated successfully`() {
+    fun `updateState() should return success result with true when the state updated successfully`() {
         //Given
         every { projectStateDataSource.overWrite(any()) } returns Result.success(
             value = true
@@ -61,7 +61,7 @@ class ProjectStateRepositoryImpTest {
     }
 
     @Test
-    fun `editState() should return failure result with empty data when file not found`() {
+    fun `updateState() should return failure result with empty data when file not found`() {
         //Given
         every { projectStateDataSource.overWrite(any()) } returns Result.success(
             value = true
@@ -76,7 +76,7 @@ class ProjectStateRepositoryImpTest {
     }
 
     @Test
-    fun `editState() should return failure result with throwable when error happens while write failed`() {
+    fun `updateState() should return failure result with throwable when error happens while write failed`() {
         //Given
         every { projectStateDataSource.read() } returns Result.success(listOf(projectStateDto))
         every { projectStateDataSource.overWrite(any()) } returns Result.failure(

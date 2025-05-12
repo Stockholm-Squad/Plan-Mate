@@ -24,7 +24,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return success result with true when the state name is valid and repo returned success result of true`() {
+    fun `UpdateState() should return success result with true when the state name is valid and repo returned success result of true`() {
         //Given
         val stateName = "do"
         val newStateName = "new"
@@ -46,22 +46,22 @@ class ManageStatesUseCaseTest {
     }
 
 //    @Test
-//    fun `editState() should return success result with true when the name of state have leading and trailing space and repo returned success result of true`() {
+//    fun `UpdateState() should return success result with true when the name of state have leading and trailing space and repo returned success result of true`() {
 //        //Given
 //        val stateName = "ToDo"
 //        val newStateName="New ToDo"
 //        every { projectStateRepository.getAllProjectStates() } returns Result.success(listOf(ProjectState(name= "ToDo")))
-//        every { manageStatesUseCase.editProjectStateByName(stateName,newStateName) } returns Result.success(true)
+//        every { manageStatesUseCase.UpdateProjectStateByName(stateName,newStateName) } returns Result.success(true)
 //
 //        //When
-//        val result = manageStatesUseCase.editProjectStateByName(stateName,newStateName)
+//        val result = manageStatesUseCase.UpdateProjectStateByName(stateName,newStateName)
 //
 //        //Then
 //        assertThat(result.getOrNull()).isEqualTo(true)
 //    }
 
     @Test
-    fun `editState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
+    fun `UpdateState() should return failure result with not allowed state name exception when the name of state contain special characters`() {
         //Given
         val stateName = "#In Review$"
         val newStateName = "New ToDo"
@@ -74,7 +74,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return failure result with exception when edit state failes`() {
+    fun `UpdateState() should return failure result with exception when Update state failes`() {
         //Given
         val stateName = "In Review"
         val newStateName = "New ToDo"
@@ -90,7 +90,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return failure result with exception when edit states fails with file not found`() {
+    fun `UpdateState() should return failure result with exception when Update states fails with file not found`() {
         //Given
         val stateName = "In Review"
         val newStateName = "New ToDo"
@@ -106,7 +106,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return failure result with not allowed state name exception when the name of state contain number`() {
+    fun `UpdateState() should return failure result with not allowed state name exception when the name of state contain number`() {
         //Given
         val stateName = "1In Rev3ew"
         val newStateName = "New ToDo"
@@ -120,7 +120,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return failure result with not allowed state name exception when the name is blank string`() {
+    fun `UpdateState() should return failure result with not allowed state name exception when the name is blank string`() {
         //Given
         val stateName = "   "
         val newStateName = "New ToDo"
@@ -134,7 +134,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editState() should return failure result with state not exist exception when state is not exist`() {
+    fun `UpdateState() should return failure result with state not exist exception when state is not exist`() {
         //Given
         val stateName = "TODO"
         val newStateName = "New ToDo"
@@ -207,7 +207,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `deleteState() should return failure result with throwable when repo returned failure result while editing`() {
+    fun `deleteState() should return failure result with throwable when repo returned failure result while Updateing`() {
         //Given
         val stateName = "TODO"
         every { projectStateRepository.getAllEntityStates() } returns Result.success(listOf(EntityState(name = stateName)))

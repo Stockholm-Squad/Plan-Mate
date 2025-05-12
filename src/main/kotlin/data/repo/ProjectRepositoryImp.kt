@@ -31,7 +31,7 @@ class ProjectRepositoryImp(
         }, onFailure = { throw NoProjectAddedException() })
 
 
-    override suspend fun UpdatedProject(updatedProject: Project): Boolean = tryToExecute(
+    override suspend fun updateProject(updatedProject: Project): Boolean = tryToExecute(
         { projectDataSource.updateProject(updatedProject.mapToProjectModel()) },
         onSuccess = { isUpdated ->
             isUpdated
