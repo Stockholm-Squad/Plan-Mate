@@ -103,13 +103,13 @@ class ManageProjectUseCaseTest {
 
             coEvery { getProjectsUseCase.getAllProjects() } returns listOf(existingProject)
             coEvery { manageStatesUseCase.getEntityStateIdByName("done") } returns newStateId
-            coEvery { projectRepository.editProject(any()) } returns true
+            coEvery { projectRepository.updateProject(any()) } returns true
 
             val result = manageProjectUseCase.updateProject(projectId, updatedName, "done")
 
             assertThat(result).isTrue()
             coVerify {
-                projectRepository.editProject(withArg {
+                projectRepository.updateProject(withArg {
                     assertThat(it.id).isEqualTo(projectId)
                     assertThat(it.name).isEqualTo(updatedName)
                     assertThat(it.stateId).isEqualTo(newStateId)
@@ -133,7 +133,7 @@ class ManageProjectUseCaseTest {
             val id = UUID.randomUUID()
             coEvery { getProjectsUseCase.getAllProjects() } returns listOf(buildProject(id = id, name = "plan-mate"))
             coEvery { manageStatesUseCase.getEntityStateIdByName("todo") } throws NoEntityStateFoundException()
-            coEvery { projectRepository.editProject(buildProject(id = id, name = "plan-mate")) } returns false
+            coEvery { projectRepository.updateProject(buildProject(id = id, name = "plan-mate")) } returns false
             //When & Then
             assertThrows<ProjectNotFoundException> {
                 manageProjectUseCase.updateProject(UUID.randomUUID(), "Updated", "done")
