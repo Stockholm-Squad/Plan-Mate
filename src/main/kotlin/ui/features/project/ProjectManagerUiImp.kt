@@ -134,7 +134,7 @@ class ProjectManagerUiImp(
 
     override fun updateProject() = runBlocking(errorHandler) {
 
-        outputPrinter.showMessage("Enter project Name to edit or leave it black to back: ")
+        outputPrinter.showMessage("Enter project Name to update or leave it black to back: ")
         val projectName = inputReader.readStringOrNull() ?: return@runBlocking
 
         try {
