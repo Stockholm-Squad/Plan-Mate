@@ -30,7 +30,7 @@ open class ProjectExceptions(message: String) : PlanMateExceptions(message)
 class ProjectNotFoundException(message: String = "Project not found.") : ProjectExceptions(message)
 class NoProjectAddedException(message: String = "No project added.") : ProjectExceptions(message)
 class NoProjectsFoundException(message: String = "No projects found.") : ProjectExceptions(message)
-class NoProjectUpdatedException(message: String = "The project hasn't edited") : ProjectExceptions(message)
+class NoProjectUpdatedException(message: String = "The project hasn't updated") : ProjectExceptions(message)
 class NoProjectDeletedException(message: String = "The project hasn't deleted") : ProjectExceptions(message)
 class ProjectAlreadyExistException(message: String = "The project is already exists") : ProjectExceptions(message)
 
@@ -40,7 +40,7 @@ class EntityStateAlreadyExistException(message: String = "The state already exis
 class NoEntityStatesFoundedException(message: String = "There are no states.") : EntityStateExceptions(message)
 class NotAllowedEntityStateNameException(message: String = "Only letters are allowed!") : EntityStateExceptions(message)
 class EntityStateNotAddedException(message: String = "Entity State Not Added") : EntityStateExceptions(message)
-class EntityStateNotUpdatedException(message: String = "Entity State Not Edited") : EntityStateExceptions(message)
+class EntityStateNotUpdatedException(message: String = "Entity State Not Updated") : EntityStateExceptions(message)
 class EntityStateNotDeletedException(message: String = "Entity State Not Deleted") :
     EntityStateExceptions(message)
 
