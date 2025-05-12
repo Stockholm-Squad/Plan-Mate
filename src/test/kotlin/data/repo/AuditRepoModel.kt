@@ -8,9 +8,9 @@ import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import java.util.UUID
 
-val auditId = UUID.randomUUID()
-val entityId = UUID.randomUUID()
-val userId = UUID.randomUUID()
+val auditId = UUID.fromString("4c254165-fe54-4dc9-911a-dc309273e749")
+val entityId = UUID.fromString("e058fc70-e133-43e1-850e-828cf1ef765c")
+val userId = UUID.fromString("b51f0645-0b89-453d-9ed7-277350e2d58d")
 val auditDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 val auditDto = AuditDto(
     id = auditId.toString(),
