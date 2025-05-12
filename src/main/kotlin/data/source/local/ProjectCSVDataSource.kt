@@ -9,11 +9,10 @@ class ProjectCSVDataSource(
     private val projectReaderWriter: IReaderWriter<ProjectDto>,
     private val userAssignedToProjectReaderWriter: UserAssignedToProjectDataSource,
 ) : ProjectDataSource {
-    override suspend fun addProject(project: ProjectDto): Boolean =
-        projectReaderWriter.append(listOf(project))
+    override suspend fun addProject(project: ProjectDto): Boolean = projectReaderWriter.append(listOf(project))
 
-    override suspend fun updateProject(updatedProject: ProjectDto): Boolean =
-        getAllProjects().map { project -> if (updatedProject.id == project.id) updatedProject else project }
+    override suspend fun updateProject(projectToUpdate: ProjectDto): Boolean =
+        getAllProjects().map { project -> if (projectToUpdate.id == project.id) projectToUpdate else project }
             .let { updatedProjects -> projectReaderWriter.overWrite(updatedProjects) }
 
     override suspend fun deleteProject(projectToDelete: ProjectDto): Boolean =

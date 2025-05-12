@@ -10,53 +10,53 @@ import org.example.logic.repository.EntityStateRepository
 import java.util.*
 
 class EntityStateRepositoryImp(
-    private val entityStateDataSource: EntityStateDataSource,
+    private val entityStateDataSource: EntityStateDataSource
 ) : EntityStateRepository {
 
     override suspend fun addEntityState(entityState: EntityState): Boolean = tryToExecute(
-        { entityStateDataSource.addEntityState(entityState.mapToStateModel()) },
+        function = { entityStateDataSource.addEntityState(entityState.mapToStateModel()) },
         onSuccess = { isAdded -> isAdded },
         onFailure = { throw EntityStateNotAddedException() }
     )
 
 
     override suspend fun updateEntityState(entityState: EntityState): Boolean = tryToExecute(
-        { entityStateDataSource.updateEntityState(entityState.mapToStateModel()) },
+        function = { entityStateDataSource.updateEntityState(entityState.mapToStateModel()) },
         onSuccess = { isUpdated -> isUpdated },
         onFailure = { throw EntityStateNotUpdatedException() }
     )
 
 
     override suspend fun deleteEntityState(entityState: EntityState): Boolean = tryToExecute(
-        { entityStateDataSource.deleteEntityState(entityState.mapToStateModel()) },
+        function = { entityStateDataSource.deleteEntityState(entityState.mapToStateModel()) },
         onSuccess = { isDeleted -> isDeleted },
         onFailure = { throw EntityStateNotDeletedException() }
     )
 
 
     override suspend fun isEntityStateExist(stateName: String): Boolean = tryToExecute(
-        { entityStateDataSource.isEntityStateExist(stateName) },
+        function = { entityStateDataSource.isEntityStateExist(stateName) },
         onSuccess = { isExist -> isExist },
         onFailure = { throw NoEntityStateFoundException() }
     )
 
 
     override suspend fun getAllEntityStates(): List<EntityState> = tryToExecute(
-        { entityStateDataSource.getAllEntityStates() },
+        function = { entityStateDataSource.getAllEntityStates() },
         onSuccess = { listOfEntityState -> listOfEntityState },
         onFailure = { throw NoEntityStatesFoundedException() }
     ).mapNotNull { it.mapToStateEntity() }
 
 
     override suspend fun getEntityStateByName(stateName: String): EntityState = tryToExecute(
-        { entityStateDataSource.getEntityStateByName(stateName) },
+        function = { entityStateDataSource.getEntityStateByName(stateName) },
         onSuccess = { listOfEntityState -> listOfEntityState },
         onFailure = { throw NoEntityStateFoundException() }
     )?.mapToStateEntity() ?: throw NoEntityStateFoundException()
 
 
     override suspend fun getEntityStateByID(stateId: UUID): EntityState = tryToExecute(
-        { entityStateDataSource.getEntityStateById(stateId.toString()) },
+        function = { entityStateDataSource.getEntityStateById(stateId.toString()) },
         onSuccess = { entityState -> entityState },
         onFailure = { throw NoEntityStateFoundException() }
     )?.mapToStateEntity() ?: throw NoEntityStateFoundException()

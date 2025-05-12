@@ -134,7 +134,7 @@ class UserRepositoryImpTest {
             )
         } returns true
         // When
-        val result = userRepo.addUserToProject(projectId = projectId, userName = "username")
+        val result = userRepo.addUserToProject(projectId = projectId, username = "username")
         //Then
         assertThat(result).isTrue()
     }
@@ -149,7 +149,7 @@ class UserRepositoryImpTest {
             )
         } returns false
         // When
-        val result = userRepo.addUserToProject(projectId = projectId, userName = "username")
+        val result = userRepo.addUserToProject(projectId = projectId, username = "username")
         //Then
         assertThat(result).isFalse()
     }
@@ -165,7 +165,7 @@ class UserRepositoryImpTest {
         } throws Exception()
         //When&&Then
         assertThrows<UserNotAddedToProjectException> {
-            userRepo.addUserToProject(projectId = projectId, userName = "username")
+            userRepo.addUserToProject(projectId = projectId, username = "username")
         }
     }
     @Test
@@ -179,7 +179,7 @@ class UserRepositoryImpTest {
             )
         } returns true
         // When
-        val result = userRepo.deleteUserFromProject(projectId = projectId, userName = "username")
+        val result = userRepo.deleteUserFromProject(projectId = projectId, username = "username")
         // Then
         assertThat(result).isTrue()
     }
@@ -195,7 +195,7 @@ class UserRepositoryImpTest {
             )
         } returns false
         // When
-        val result = userRepo.deleteUserFromProject(projectId = projectId, userName = "username")
+        val result = userRepo.deleteUserFromProject(projectId = projectId, username = "username")
         // Then
         assertThat(result).isFalse()
     }
@@ -212,7 +212,7 @@ class UserRepositoryImpTest {
         } throws Exception()
         // When & Then
         assertThrows<UserNotDeletedFromProjectException> {
-            userRepo.deleteUserFromProject(projectId = projectId, userName = "username")
+            userRepo.deleteUserFromProject(projectId = projectId, username = "username")
         }
     }
 
@@ -222,12 +222,12 @@ class UserRepositoryImpTest {
         val taskId = UUID.randomUUID()
         coEvery {
             mateTaskAssignment.addUserToTask(
-                mateName = "mateName",
+                username = "mateName",
                 taskId = taskId.toString()
             )
         } returns true
         // When
-        val result = userRepo.addUserToTask(mateName = "mateName", taskId = taskId)
+        val result = userRepo.addUserToTask(username = "mateName", taskId = taskId)
         // Then
         assertThat(result).isTrue()
     }
@@ -238,12 +238,12 @@ class UserRepositoryImpTest {
         val taskId = UUID.randomUUID()
         coEvery {
             mateTaskAssignment.addUserToTask(
-                mateName = "mateName",
+                username = "mateName",
                 taskId = taskId.toString()
             )
         } returns false
         // When
-        val result = userRepo.addUserToTask(mateName = "mateName", taskId = taskId)
+        val result = userRepo.addUserToTask(username = "mateName", taskId = taskId)
         // Then
         assertThat(result).isFalse()
     }
@@ -254,13 +254,13 @@ class UserRepositoryImpTest {
         val taskId = UUID.randomUUID()
         coEvery {
             mateTaskAssignment.addUserToTask(
-                mateName = "mateName",
+                username = "mateName",
                 taskId = taskId.toString()
             )
         } throws Exception()
         // When & Then
         assertThrows<UserNotAddedToTaskException> {
-            userRepo.addUserToTask(mateName = "mateName", taskId = taskId)
+            userRepo.addUserToTask(username = "mateName", taskId = taskId)
         }
     }
 
@@ -270,12 +270,12 @@ class UserRepositoryImpTest {
         val taskId = UUID.randomUUID()
         coEvery {
             mateTaskAssignment.deleteUserFromTask(
-                mateName = "mateName",
+                username = "mateName",
                 taskId = taskId.toString()
             )
         } returns true
         // When
-        val result = userRepo.deleteUserFromTask(mateName = "mateName", taskId = taskId)
+        val result = userRepo.deleteUserFromTask(username = "mateName", taskId = taskId)
         // Then
         assertThat(result).isTrue()
     }
@@ -286,12 +286,12 @@ class UserRepositoryImpTest {
         val taskId = UUID.randomUUID()
         coEvery {
             mateTaskAssignment.deleteUserFromTask(
-                mateName = "mateName",
+                username = "mateName",
                 taskId = taskId.toString()
             )
         } returns false
         // When
-        val result = userRepo.deleteUserFromTask(mateName = "mateName", taskId = taskId)
+        val result = userRepo.deleteUserFromTask(username = "mateName", taskId = taskId)
         // Then
         assertThat(result).isFalse()
     }
@@ -302,13 +302,13 @@ class UserRepositoryImpTest {
         val taskId = UUID.randomUUID()
         coEvery {
             mateTaskAssignment.deleteUserFromTask(
-                mateName = "mateName",
+                username = "mateName",
                 taskId = taskId.toString()
             )
         } throws Exception()
         // When & Then
         assertThrows<UserNotDeletedFromTaskException> {
-            userRepo.deleteUserFromTask(mateName = "mateName", taskId = taskId)
+            userRepo.deleteUserFromTask(username = "mateName", taskId = taskId)
         }
     }
 }

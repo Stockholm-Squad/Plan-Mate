@@ -10,4 +10,8 @@ interface UserDataSource {
     suspend fun getUserById(userId: String): UserDto?
     suspend fun updateUser(user: UserDto): Boolean
     suspend fun deleteUser(user: UserDto): Boolean
+    suspend fun deleteUserFromProject(projectId: String, username: String): Boolean
+    suspend fun addUserToProject(projectId: String, username: String): Boolean
+    suspend fun addUserToTask(username: String, taskId: String): Boolean
+    suspend fun deleteUserFromTask(username: String, taskId: String): Boolean
 }
