@@ -145,20 +145,14 @@ class ManageTasksInProjectUseCaseTest {
         fun `getTasksInProjectByName() should return tasks when project found and tasks exist`() = runTest {
             // Given
             val projectName = "Project"
-            // create a project with a known id
             val project = buildProject(name = projectName)
-            // make getProjectByName return that same project
             coEvery { getProjectsUseCase.getProjectByName(projectName) } returns project
-
-            // now stub the repo to return your testTask when asked for project.id
             coEvery { taskRepository.getTasksInProject(project.id) } returns listOf(testTask)
-
             // When
             val result = useCase.getTasksInProjectByName(projectName)
 
             // Then
             assertThat(result).containsExactly(testTask)
-            // (optional) verify that we indeed called the repository with the right id
             coVerify { taskRepository.getTasksInProject(project.id) }
         }
 
