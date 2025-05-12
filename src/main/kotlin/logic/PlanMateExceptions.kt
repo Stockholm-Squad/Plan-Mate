@@ -40,7 +40,7 @@ class EntityStateAlreadyExistException(message: String = "The state already exis
 class NoEntityStatesFoundedException(message: String = "There are no states.") : EntityStateExceptions(message)
 class NotAllowedEntityStateNameException(message: String = "Only letters are allowed!") : EntityStateExceptions(message)
 class EntityStateNotAddedException(message: String = "Entity State Not Added") : EntityStateExceptions(message)
-class EntityStateNotEditedException(message: String = "Entity State Not Edited") : EntityStateExceptions(message)
+class EntityStateNotUpdatedException(message: String = "Entity State Not Edited") : EntityStateExceptions(message)
 class EntityStateNotDeletedException(message: String = "Entity State Not Deleted") :
     EntityStateExceptions(message)
 
