@@ -26,7 +26,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editEntityState()  should return success result with true when the state name is valid and repo returned success result of true`() =
+    fun `editEntityState()  should return true  when the state name is valid and repo returned true`() =
         runTest {
             //Given
             val stateName = "do"
@@ -49,7 +49,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `editEntityState()  should return failure result with not allowed state name exception when the name of state contain special characters`() =
+    fun `editEntityState()  should return failure with not allowed state name exception when the name of state contain special characters`() =
         runTest {
             //Given
             val stateName = "#In Review$"
@@ -62,7 +62,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `editEntityState()  should return failure result with exception when edit state fail`() = runTest {
+    fun `editEntityState() should return failure with exception when edit state fail`() = runTest {
         //Given
         val stateName = "In Review"
         val newStateName = "New ToDo"
@@ -77,7 +77,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `editEntityState()  should return failure result with exception when edit states fails with file not found`() =
+    fun `editEntityState() should return failure with exception when edit states fails with file not found`() =
         runTest {
             //Given
             val stateName = "In Review"
@@ -92,7 +92,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `editEntityState()  should return failure result with not allowed state name exception when the name of state contain number`() =
+    fun `editEntityState()  should return failure with not allowed state name exception when the name of state contain number`() =
         runTest {
             //Given
             val stateName = "1In Rev3ew"
@@ -107,7 +107,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `editEntityState()  should return failure result with not allowed state name exception when the name is blank string`() =
+    fun `editEntityState()  should return failure with not allowed state name exception when the name is blank string`() =
         runTest {
             //Given
             val stateName = "   "
@@ -123,7 +123,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `editEntityState()  should return failure result with state not exist exception when state is not exist`() =
+    fun `editEntityState()  should return failure with state not exist exception when state is not exist`() =
         runTest {
             //Given
             val stateName = "TODO"
@@ -138,7 +138,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `deleteEntityState()  should return success result with true when the state name exist and the repo added successfully`() =
+    fun `deleteEntityState()  should return true with true when the state name exist and the repo added successfully`() =
         runTest {
             //Given
             val stateName = "TODO"
@@ -155,7 +155,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `deleteEntityState()  should return failure result with exception when the state name not valid`() = runTest {
+    fun `deleteEntityState()  should return failure with exception when the state name not valid`() = runTest {
         //Given
         val stateName = "TOD&%O"
         coEvery { entityStateRepository.getAllEntityStates() } returns listOf(EntityState(name = stateName))
@@ -166,7 +166,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `deleteEntityState()  should return failure result with exception when repo returns fail with file not found exception`() =
+    fun `deleteEntityState()  should return failure with exception when repo returns fail with file not found exception`() =
         runTest {
             //Given
             val stateName = "TOD&%O"
@@ -178,7 +178,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `deleteEntityState()  should return failure result with throwable when the state name not exist`() = runTest {
+    fun `deleteEntityState()  should return failure with throwable when the state name not exist`() = runTest {
         //Given
         val stateName = "TODO"
         coEvery { entityStateRepository.getEntityStateByName(any()) } throws NotAllowedEntityStateNameException()
@@ -188,7 +188,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `deleteEntityState()  should return failure result with throwable when repo returned failure result while editing`() =
+    fun `deleteEntityState()  should return failure with throwable when repo returned failure while editing`() =
         runTest {
             //Given
             val stateName = "TODO"
@@ -199,7 +199,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `addEntityState() should return success result with true when the name of state is valid`() = runTest {
+    fun `addEntityState() should return true with true when the name of state is valid`() = runTest {
         // Given
         val entityState = EntityState(
             id = UUID.randomUUID(),
@@ -218,7 +218,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `addEntityState() should return failure result with throwable when the addState fails`() = runTest {
+    fun `addEntityState() should return failure with throwable when the addState fails`() = runTest {
         // Given
         val stateName = "ToDo"
         coEvery { entityStateRepository.addEntityState(any()) } throws Throwable()
@@ -228,7 +228,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `addEntityState() should return success result with true when the name of state have leading and trailing space`() =
+    fun `addEntityState() should return true with true when the name of state have leading and trailing space`() =
         runTest {
             //Given
             val stateName = "   ToDo    "
@@ -242,16 +242,25 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `addEntityState() should return failure result when the state exist`() = runTest {
+    fun `addEntityState() should return failure when the state exist`() = runTest {
         //Given
         val stateName = "ToDo"
         coEvery { entityStateRepository.isEntityStateExist(stateName) } returns true
         // When & Then
         assertThrows<Throwable> { manageStatesUseCase.addEntityState(stateName) }
     }
+    @Test
+    fun `addEntityState() should return failure when the state not  exist`() = runTest {
+        //Given
+        val stateName = "ToDo"
+        coEvery { entityStateRepository.isEntityStateExist(stateName) } throws Throwable()
+        // When & Then
+        assertThrows<Throwable> { manageStatesUseCase.addEntityState(stateName) }
+    }
+
 
     @Test
-    fun `addEntityState() should return failure result with not allowed state name exception when the name of state contain special characters`() =
+    fun `addEntityState() should return failure with not allowed state name exception when the name of state contain special characters`() =
         runTest {
             //Given
             val stateName = "#I Review$"
@@ -262,7 +271,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `addEntityState() should return failure result with not allowed state name exception when the name of state contain number`() =
+    fun `addEntityState() should return failure with not allowed state name exception when the name of state contain number`() =
         runTest {
             //Given
             val stateName = "1I Rev3ew"
@@ -273,7 +282,7 @@ class ManageStatesUseCaseTest {
         }
 
     @Test
-    fun `addEntityState() should return failure result with not allowed state name exception when the name is blank string`() =
+    fun `addEntityState() should return failure with not allowed state name exception when the name is blank string`() =
         runTest {
             //Given
             val stateName = "   "
@@ -286,7 +295,7 @@ class ManageStatesUseCaseTest {
     @Test
 
 
-    fun `addEntityState() should return failure result with not allowed length exception when the name of state is more than 30`() =
+    fun `addEntityState() should return failure with not allowed length exception when the name of state is more than 30`() =
         runTest {
             //Given
             val state = "hi in this state this is too long state"
@@ -299,7 +308,7 @@ class ManageStatesUseCaseTest {
 
     @Test
 
-    fun `getAllEntityStates() should return success result with list of state when the file have data`() = runTest {
+    fun `getAllEntityStates() should return true with list of state when the file have data`() = runTest {
         //Given
         val state = listOf(
             EntityState(name = "todo")
@@ -313,7 +322,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `getAllEntityStates() should return failure result with empty data exception when have no data`() = runTest {
+    fun `getAllEntityStates() should return failure with empty data exception when have no data`() = runTest {
         //Given & When
         coEvery { entityStateRepository.getAllEntityStates() } throws Throwable()
         //  When
@@ -324,7 +333,7 @@ class ManageStatesUseCaseTest {
     }
 
     @Test
-    fun `getAllEntityStates() should return failure result with read exception when error happens while reading from data`() =
+    fun `getAllEntityStates() should return failure with read exception when error happens while reading from data`() =
         runTest {
             //Given
             coEvery { entityStateRepository.getAllEntityStates() } throws Throwable()
