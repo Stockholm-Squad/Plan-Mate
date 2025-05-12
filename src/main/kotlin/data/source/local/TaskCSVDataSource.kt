@@ -12,7 +12,7 @@ class TaskCSVDataSource : TaskDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editTask(task: TaskDto): Boolean {
+    override suspend fun updateTask(task: TaskDto): Boolean {
         TODO("Not yet implemented")
     }
 

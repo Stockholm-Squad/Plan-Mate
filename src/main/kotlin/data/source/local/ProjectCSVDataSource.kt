@@ -8,7 +8,7 @@ class ProjectCSVDataSource : ProjectDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editProject(updatedProject: ProjectDto): Boolean {
+    override suspend fun updateProject(updatedProject: ProjectDto): Boolean {
         TODO("Not yet implemented")
     }
 

@@ -9,8 +9,8 @@ import io.mockk.verify
 import logic.models.exceptions.ReadDataException
 import logic.models.exceptions.WriteDataException
 import org.example.data.csv_reader_writer.mate_task_assignment.IMateTaskAssignmentCSVReaderWriter
-import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
 import org.example.data.csv_reader_writer.task.TaskCSVReaderWriter
+import org.example.data.csv_reader_writer.task_in_project.ITaskInProjectCSVReaderWriter
 import org.example.data.repo.TaskRepositoryImp
 import org.example.data.utils.DateHandlerImp
 import org.example.logic.repository.TaskRepository
@@ -116,7 +116,7 @@ class TaskRepositoryImpTest {
     }
 
     @Test
-    fun `editTask() should return success result with true when the task is updated successfully`() {
+    fun `updateTask() should return success result with true when the task is updated successfully`() {
         // Given
         val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
         val existingTasks = listOf(
@@ -126,14 +126,14 @@ class TaskRepositoryImpTest {
         every { taskDataSource.overWrite(any()) } returns Result.success(true)
 
         // When
-        val result = taskRepository.editTask(updatedTask)
+        val result = taskRepository.updateTask(updatedTask)
 
         // Then
         assertThat(result.getOrNull()).isEqualTo(true)
     }
 
     @Test
-    fun `editTask() should return failure result with throwable when the task to edit does not exist`() {
+    fun `updateTask() should return failure result with throwable when the task to update does not exist`() {
         // Given
         val updatedTask = buildTask(name = "Updated Task", description = "Updated Description", stateId = UUID.randomUUID())
         listOf(
@@ -142,7 +142,7 @@ class TaskRepositoryImpTest {
         every { taskDataSource.read() } returns Result.failure(ReadDataException())
 
         // When
-        val result = taskRepository.editTask(updatedTask)
+        val result = taskRepository.updateTask(updatedTask)
 
         // Then
         assertThrows<ReadDataException> { result.getOrThrow() }

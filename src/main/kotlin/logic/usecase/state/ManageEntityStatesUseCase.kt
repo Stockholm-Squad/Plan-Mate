@@ -21,11 +21,11 @@ class ManageEntityStatesUseCase(
         }
     }
 
-    suspend fun editEntityStateByName(stateName: String, newStateName: String): Boolean {
+    suspend fun updateEntityStateByName(stateName: String, newStateName: String): Boolean {
         return isStateNameValid(stateName).let { validStateName ->
             isStateNameValid(newStateName).let { validNewStateName ->
                 entityStateRepository.getEntityStateByName(validStateName).let { state ->
-                    entityStateRepository.editEntityState(EntityState(state.id, validNewStateName))
+                    entityStateRepository.updateEntityState(EntityState(state.id, validNewStateName))
                 }
             }
         }

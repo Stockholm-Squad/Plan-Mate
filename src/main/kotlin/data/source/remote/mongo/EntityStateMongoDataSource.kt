@@ -19,7 +19,7 @@ class EntityStateMongoDataSource(
         return result.wasAcknowledged()
     }
 
-    override suspend fun editEntityState(entityState: EntityStateDto): Boolean {
+    override suspend fun updateEntityState(entityState: EntityStateDto): Boolean {
         val result = stateCollection.updateOne(
             filter = EntityStateDto::id eq entityState.id,
             update = setValue(EntityStateDto::name, entityState.name)
