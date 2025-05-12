@@ -1,4 +1,4 @@
-package org.example.logic.usecase.task
+package org.example.ui.features.task.model
 
 enum class TaskOptions(val option: Int?, val label: String) {
     SHOW_ALL_TASKS(1, "Show all tasks"),
@@ -8,4 +8,5 @@ enum class TaskOptions(val option: Int?, val label: String) {
     DELETE_TASK(5, "Delete task"),
     SHOW_TASKS_BY_PROJECT_NAME(6, "Show tasks by project name"),
     SHOW_MATE_TASK_ASSIGNMENTS(7, "Show mate task assignments"),
-    EXIT(0, "Exit")}
+    EXIT(0, "Exit")
+}
