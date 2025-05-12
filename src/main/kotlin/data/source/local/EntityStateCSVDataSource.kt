@@ -8,7 +8,7 @@ class EntityStateCSVDataSource : EntityStateDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun editUpdatedState(entityState: EntityStateDto): Boolean {
+    override suspend fun updatedState(entityState: EntityStateDto): Boolean {
         TODO("Not yet implemented")
     }
 
