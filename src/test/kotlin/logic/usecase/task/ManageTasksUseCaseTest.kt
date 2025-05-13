@@ -1,149 +1,174 @@
-//package logic.usecase.task
-//
-//import com.google.common.truth.Truth.assertThat
-//import org.example.logic.usecase.task.ManageTasksUseCase
-//import org.example.logic.repository.TaskRepository
-//import io.mockk.every
-//import io.mockk.mockk
-//import org.example.logic.model.exceptions.NoTasksCreated
-//import org.example.logic.model.exceptions.NoTasksFound
-//import org.example.logic.model.exceptions.TaskNotFoundException
-//import org.example.logic.model.exceptions.NoTasksDeleted
-//import org.example.data.utils.DateHandlerImp
-//import org.junit.jupiter.api.BeforeEach
-//import org.junit.jupiter.api.Test
-//import org.junit.jupiter.api.assertThrows
-//import utils.buildTask
-//
-//
-//class ManageTasksUseCaseTest {
-//
-//    private lateinit var taskRepository: TaskRepository
-//    private lateinit var manageTasksUseCase: ManageTasksUseCase
-//    private lateinit var dataHandler: DateHandlerImp
-//
-//    @BeforeEach
-//    fun setUp() {
-//        taskRepository = mockk(relaxed = true)
-//        manageTasksUseCase = ManageTasksUseCase(taskRepository)
-//        dataHandler = DateHandlerImp()
-//    }
-//
-//    @Test
-//    fun `getAllTasks() should return success result with a list of tasks when the file has data`() {
-//        val taskList = listOf(
-//            buildTask(name = "Task 1"),
-//            buildTask(name = "Task 2")
-//        )
-//        every { taskRepository.getAllTasks() } returns Result.success(taskList)
-//
-//        val result = manageTasksUseCase.getAllTasks()
-//
-//        assertThat(result.getOrNull()).isEqualTo(taskList)
-//    }
-//
-//    @Test
-//    fun `getAllTasks() should return failure result when no tasks are found`() {
-//        every { taskRepository.getAllTasks() } returns Result.failure(NoTasksFound())
-//
-//        val result = manageTasksUseCase.getAllTasks()
-//
-//        assertThrows<NoTasksFound> { result.getOrThrow() }
-//    }
-//
-//    @Test
-//    fun `getTaskByName() should return success result when the task is found`() {
-//        val taskName = "Task 1"
-//        val taskList = listOf(
-//            buildTask(name = taskName),
-//            buildTask(name = "Task 2")
-//        )
-//        every { taskRepository.getAllTasks() } returns Result.success(taskList)
-//
-//        val result = manageTasksUseCase.getTaskByName(taskName)
-//
-//        assertThat(result.getOrNull()?.name).isEqualTo(taskName)
-//    }
-//
-//    @Test
-//    fun `getTaskByName() should return failure result when the task is not found`() {
-//        val taskName = "NonExistent"
-//        val taskList = listOf(buildTask(name = "OtherTask"))
-//        every { taskRepository.getAllTasks() } returns Result.success(taskList)
-//
-//        val result = manageTasksUseCase.getTaskByName(taskName)
-//
-//        assertThrows<TaskNotFoundException> { result.getOrThrow() }
-//    }
-//
-//    @Test
-//    fun `createTask() should return true result when the task is created`() {
-//        val task = buildTask(name = "NewTask")
-//        every { taskRepository.addTask(task) } returns Result.success(true)
-//
-//        val result = manageTasksUseCase.createTask(task)
-//
-//        assertThat(result.getOrNull()).isEqualTo(true)
-//    }
-//
-//    @Test
-//    fun `createTask() should return failure result when task creation fails`() {
-//        val task = buildTask(name = "DuplicateTask")
-//        every { taskRepository.addTask(task) } returns Result.failure(NoTasksCreated())
-//
-//        val result = manageTasksUseCase.createTask(task)
-//
-//        assertThrows<NoTasksCreated> { result.getOrThrow() }
-//    }
-//
-//    @Test
-//    fun `updateTask() should return success result when the task is updated`() {
-//        val task = buildTask(name = "Task 1")
-//        every { taskRepository.updateTask(task) } returns Result.success(true)
-//
-//        val result = manageTasksUseCase.updateTask(task)
-//
-//        assertThat(result.getOrNull()).isEqualTo(true)
-//    }
-//
-//    @Test
-//    fun `updateTask() should return failure result when update fails`() {
-//        val task = buildTask(name = "Task 1")
-//        every { taskRepository.updateTask(task) } returns Result.failure(NoTasksFound())
-//
-//        val result = manageTasksUseCase.updateTask(task)
-//
-//        assertThrows<NoTasksFound> { result.getOrThrow() }
-//    }
-//
-//    @Test
-//    fun `deleteTaskByName() should return success result when the task is deleted`() {
-//        val task = buildTask(name = "Task 1")
-//        every { taskRepository.getAllTasks() } returns Result.success(listOf(task))
-//        every { taskRepository.deleteTask(task.id) } returns Result.success(true)
-//
-//        val result = manageTasksUseCase.deleteTaskByName("Task 1")
-//
-//        assertThat(result.getOrNull()).isEqualTo(true)
-//    }
-//
-//    @Test
-//    fun `deleteTaskByName() should return failure result when task is not found`() {
-//        every { taskRepository.getAllTasks() } returns Result.success(emptyList())
-//
-//        val result = manageTasksUseCase.deleteTaskByName("Unknown Task")
-//
-//        assertThrows<TaskNotFoundException> { result.getOrThrow() }
-//    }
-//
-//    @Test
-//    fun `deleteTaskByName() should return failure result when deletion fails`() {
-//        val task = buildTask(name = "Task X")
-//        every { taskRepository.getAllTasks() } returns Result.success(listOf(task))
-//        every { taskRepository.deleteTask(task.id) } returns Result.failure(NoTasksDeleted())
-//
-//        val result = manageTasksUseCase.deleteTaskByName("Task X")
-//
-//        assertThrows<NoTasksDeleted> { result.getOrThrow() }
-//    }
-//}
+package logic.usecase.task
+
+import com.google.common.truth.Truth.assertThat
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import org.example.logic.*
+import org.example.logic.repository.TaskRepository
+import org.example.logic.usecase.task.ManageTasksUseCase
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import utils.buildTask
+import java.util.*
+import kotlin.test.assertTrue
+
+class ManageTasksUseCaseTest {
+
+    private lateinit var taskRepository: TaskRepository
+    private lateinit var manageTasksUseCase: ManageTasksUseCase
+    val projectId: UUID = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
+    val task = buildTask(title = "Task1")
+
+    @BeforeEach
+    fun setUp() {
+        taskRepository = mockk(relaxed = true)
+        manageTasksUseCase = ManageTasksUseCase(taskRepository)
+    }
+
+    @Test
+    fun `getAllTasks() should return tasks when list is not empty`() = runTest {
+        // Given
+        coEvery { taskRepository.getAllTasks() } returns listOf(task)
+
+        // When
+        val result = manageTasksUseCase.getAllTasks()
+
+        // Then
+        assertThat(result).hasSize(1)
+        assertThat(result.first()).isEqualTo(task)
+    }
+
+    @Test
+    fun `getAllTasks() should throw TasksNotFoundException when list is empty`() = runTest {
+        // Given
+        coEvery { taskRepository.getAllTasks() } returns emptyList()
+
+        // When & Then
+        assertThrows<TasksNotFoundException> {
+            manageTasksUseCase.getAllTasks()
+        }
+    }
+
+    @Test
+    fun `getTaskByName() should return task when name matches`() = runTest {
+        // Given
+        coEvery { taskRepository.getAllTasks() } returns listOf(task)
+
+        // When
+        val result = manageTasksUseCase.getTaskByName(task.title)
+
+        // Then
+        assertThat(result).isEqualTo(task)
+    }
+
+    @Test
+    fun `getTaskByName() should throw TaskNotFoundException when no name matches`() = runTest {
+        // Given
+        val taskName = "Task2"
+        coEvery { taskRepository.getAllTasks() } returns listOf(task)
+
+        // When & Then
+        assertThrows<TaskNotFoundException> {
+            manageTasksUseCase.getTaskByName(taskName)
+        }
+    }
+
+    @Test
+    fun `getTaskIdByName() should return task ID when task exists`() = runTest {
+        // Given
+        coEvery { taskRepository.getAllTasks() } returns listOf(task)
+
+        // When
+        val result = manageTasksUseCase.getTaskIdByName(task.title)
+
+        // Then
+        assertThat(result).isEqualTo(task.id)
+    }
+
+
+    @Test
+    fun `addTask() should return true when task is added`() = runTest {
+        // Given
+        coEvery { taskRepository.getTasksInProject(projectId) } returns emptyList()
+        coEvery { taskRepository.addTask(task) } returns true
+
+        // When
+        val result = manageTasksUseCase.addTask(task, projectId)
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `addTask() should throw DuplicateTaskNameException if task already exists in project`() = runTest {
+        // Given
+        coEvery { taskRepository.getTasksInProject(projectId) } returns listOf(task)
+
+        // When & Then
+        assertThrows<DuplicateTaskNameException> {
+            manageTasksUseCase.addTask(task, projectId)
+        }
+    }
+
+    @Test
+    fun `addTask() should throw TaskNotAddedException when add fails`() = runTest {
+        // Given
+        coEvery { taskRepository.getTasksInProject(projectId) } returns emptyList()
+        coEvery { taskRepository.addTask(task) } returns false
+
+        // When & Then
+        assertThrows<TaskNotAddedException> {
+            manageTasksUseCase.addTask(task, projectId)
+        }
+    }
+
+    @Test
+    fun `updateTask() should return true when updated successfully`() = runTest {
+        // Given
+        coEvery { taskRepository.updateTask(task) } returns true
+
+        // When
+        val result = manageTasksUseCase.updateTask(task)
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `updateTask() should throw TaskNotUpdatedException when update fails`() = runTest {
+        // Given
+        coEvery { taskRepository.updateTask(task) } returns false
+
+        // When & Then
+        assertThrows<TaskNotUpdatedException> {
+            manageTasksUseCase.updateTask(task)
+        }
+    }
+
+    @Test
+    fun `deleteTaskByName() should return true when deleted successfully`() = runTest {
+        // Given
+        coEvery { taskRepository.getAllTasks() } returns listOf(task)
+        coEvery { taskRepository.deleteTask(task.id) } returns true
+
+        // When
+        val result = manageTasksUseCase.deleteTaskByName(task.title)
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `deleteTaskByName() should throw TaskNotDeletedException when delete fails`() = runTest {
+        // Given
+        coEvery { taskRepository.getAllTasks() } returns listOf(task)
+        coEvery { taskRepository.deleteTask(task.id) } returns false
+
+        // When & Then
+        assertThrows<TaskNotDeletedException> {
+            manageTasksUseCase.deleteTaskByName(task.title)
+        }
+    }
+}

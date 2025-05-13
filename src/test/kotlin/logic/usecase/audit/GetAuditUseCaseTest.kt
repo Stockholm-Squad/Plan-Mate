@@ -74,7 +74,7 @@ class GetAuditUseCaseTest {
         coEvery { auditRepository.getAllAudits() } returns listOf(audit)
         coEvery { manageTasksUseCase.getAllTasks() } returns listOf(mockk {
             every { id } returns entityId
-            every { name } returns taskName
+            every { title } returns taskName
         })
 
         // When
