@@ -63,9 +63,9 @@ class ProjectCSVReaderWriterTest {
         fun `read should return projects when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
-                id,title,stateId
-                1,Project A,State A
-                2,Project B,State B\n
+                id,stateId,title
+                1,State A,Project A
+                2,State B,Project B
             """.trimIndent()
             )
 
@@ -127,8 +127,8 @@ class ProjectCSVReaderWriterTest {
             val content = File(testFilePath).readText()
 
             // Check for the actual fields being written
-            assertTrue(content.contains("1,Project A,State A"))
-            assertTrue(content.contains("2,Project B,State B"))
+            assertTrue(content.contains("1,State A,Project A"))
+            assertTrue(content.contains("2,State B,Project B"))
         }
 
         @Test
@@ -137,7 +137,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,title,stateId", content.trim())
+            assertEquals("id,stateId,title", content.trim())
         }
 
         @Test
@@ -165,8 +165,8 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertTrue(content.contains("1,Project A,State A"))
-            assertTrue(content.contains("2,Project B,State B"))
+            assertTrue(content.contains("1,State A,Project A"))
+            assertTrue(content.contains("2,State B,Project B"))
         }
 
         @Test
@@ -185,8 +185,8 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertTrue(content.contains("1,Project A,State A"))
-            assertTrue(content.contains("2,Project B,State B"))
+            assertTrue(content.contains("1,State A,Project A"))
+            assertTrue(content.contains("2,State B,Project B"))
         }
 
         @Test
@@ -195,7 +195,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,title,stateId", content.trim())
+            assertEquals("id,stateId,title", content.trim())
         }
 
         @Test
@@ -214,8 +214,8 @@ class ProjectCSVReaderWriterTest {
             assertTrue(tempFile.exists())
 
             val content = tempFile.readText()
-            assertTrue(content.contains("1,Project A,State A"))
-            assertTrue(content.contains("2,Project B,State B"))
+            assertTrue(content.contains("1,State A,Project A"))
+            assertTrue(content.contains("2,State B,Project B"))
         }
 
         @Test
@@ -229,7 +229,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(tempFile.exists())
 
             val content = tempFile.readText()
-            assertEquals("id,title,stateId", content.trim())
+            assertEquals("id,stateId,title", content.trim())
         }
     }
 
