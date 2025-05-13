@@ -1,15 +1,15 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
-import org.example.logic.entities.User
 import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.data.repo.UserRepositoryImp
 import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.example.logic.*
+import org.example.logic.entities.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -18,19 +18,13 @@ import java.util.*
 class UserRepositoryImpTest {
 
     private lateinit var userDataSource: UserDataSource
-    private lateinit var userAssignedToProjectDataSource: UserAssignedToProjectDataSource
-    private lateinit var mateTaskAssignment: MateTaskAssignmentDataSource
     private lateinit var userRepo: UserRepositoryImp
 
     @BeforeEach
     fun setUp() {
         userDataSource = mockk(relaxed = true)
-        userAssignedToProjectDataSource = mockk(relaxed = true)
-        mateTaskAssignment = mockk(relaxed = true)
         userRepo = UserRepositoryImp(
-            userDataSource = userDataSource,
-            userAssignedToProjectDataSource = userAssignedToProjectDataSource,
-            mateTaskAssignment = mateTaskAssignment
+            userDataSource = userDataSource
         )
     }
 
@@ -128,9 +122,9 @@ class UserRepositoryImpTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery {
-            userAssignedToProjectDataSource.addUserToProject(
+            userDataSource.addUserToProject(
                 projectId.toString(),
-                userName = "username"
+                username = "username"
             )
         } returns true
         // When
@@ -143,9 +137,9 @@ class UserRepositoryImpTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery {
-            userAssignedToProjectDataSource.addUserToProject(
+            userDataSource.addUserToProject(
                 projectId.toString(),
-                userName = "username"
+                username = "username"
             )
         } returns false
         // When
@@ -158,9 +152,9 @@ class UserRepositoryImpTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery {
-            userAssignedToProjectDataSource.addUserToProject(
+            userDataSource.addUserToProject(
                 projectId.toString(),
-                userName = "username"
+                username = "username"
             )
         } throws Exception()
         //When&&Then
@@ -173,9 +167,9 @@ class UserRepositoryImpTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery {
-            userAssignedToProjectDataSource.deleteUserFromProject(
+            userDataSource.deleteUserFromProject(
                 projectId.toString(),
-                userName = "username"
+                username = "username"
             )
         } returns true
         // When
@@ -189,9 +183,9 @@ class UserRepositoryImpTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery {
-            userAssignedToProjectDataSource.deleteUserFromProject(
+            userDataSource.deleteUserFromProject(
                 projectId.toString(),
-                userName = "username"
+                username = "username"
             )
         } returns false
         // When
@@ -205,9 +199,9 @@ class UserRepositoryImpTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery {
-            userAssignedToProjectDataSource.deleteUserFromProject(
+            userDataSource.deleteUserFromProject(
                 projectId.toString(),
-                userName = "username"
+                username = "username"
             )
         } throws Exception()
         // When & Then
@@ -221,7 +215,7 @@ class UserRepositoryImpTest {
         // Given
         val taskId = UUID.randomUUID()
         coEvery {
-            mateTaskAssignment.addUserToTask(
+            userDataSource.addUserToTask(
                 username = "mateName",
                 taskId = taskId.toString()
             )
@@ -237,7 +231,7 @@ class UserRepositoryImpTest {
         // Given
         val taskId = UUID.randomUUID()
         coEvery {
-            mateTaskAssignment.addUserToTask(
+            userDataSource.addUserToTask(
                 username = "mateName",
                 taskId = taskId.toString()
             )
@@ -253,7 +247,7 @@ class UserRepositoryImpTest {
         // Given
         val taskId = UUID.randomUUID()
         coEvery {
-            mateTaskAssignment.addUserToTask(
+            userDataSource.addUserToTask(
                 username = "mateName",
                 taskId = taskId.toString()
             )
@@ -269,7 +263,7 @@ class UserRepositoryImpTest {
         // Given
         val taskId = UUID.randomUUID()
         coEvery {
-            mateTaskAssignment.deleteUserFromTask(
+            userDataSource.deleteUserFromTask(
                 username = "mateName",
                 taskId = taskId.toString()
             )
@@ -285,7 +279,7 @@ class UserRepositoryImpTest {
         // Given
         val taskId = UUID.randomUUID()
         coEvery {
-            mateTaskAssignment.deleteUserFromTask(
+            userDataSource.deleteUserFromTask(
                 username = "mateName",
                 taskId = taskId.toString()
             )
@@ -301,7 +295,7 @@ class UserRepositoryImpTest {
         // Given
         val taskId = UUID.randomUUID()
         coEvery {
-            mateTaskAssignment.deleteUserFromTask(
+            userDataSource.deleteUserFromTask(
                 username = "mateName",
                 taskId = taskId.toString()
             )

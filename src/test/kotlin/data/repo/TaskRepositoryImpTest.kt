@@ -1,38 +1,29 @@
 package data.repo
 
+import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.example.data.repo.TaskRepositoryImp
-import org.example.data.source.MateTaskAssignmentDataSource
-import org.example.data.source.TaskDataSource
-import org.example.data.source.TaskInProjectDataSource
-import org.example.logic.repository.TaskRepository
-import org.junit.jupiter.api.BeforeEach
-import com.google.common.truth.Truth.assertThat
-import io.mockk.coVerify
 import org.example.data.mapper.mapToTaskModel
+import org.example.data.repo.TaskRepositoryImp
+import org.example.data.source.TaskDataSource
 import org.example.logic.TaskNotAddedException
 import org.example.logic.TaskNotUpdatedException
 import org.example.logic.TasksNotFoundException
+import org.example.logic.repository.TaskRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class TaskRepositoryImpTest {
     private lateinit var taskDataSource: TaskDataSource
-    private lateinit var mateTaskAssignmentDataSource: MateTaskAssignmentDataSource
-    private lateinit var taskInProjectDataSource: TaskInProjectDataSource
     private lateinit var taskRepository: TaskRepository
 
     @BeforeEach
     fun setUp() {
         taskDataSource = mockk(relaxed = true)
-        mateTaskAssignmentDataSource = mockk(relaxed = true)
-        taskInProjectDataSource = mockk(relaxed = true)
         taskRepository = TaskRepositoryImp(
-            taskDataSource = taskDataSource,
-            mateTaskAssignment = mateTaskAssignmentDataSource,
-            taskInProjectDataSource = taskInProjectDataSource
+            taskDataSource = taskDataSource
         )
     }
 
@@ -56,6 +47,7 @@ class TaskRepositoryImpTest {
             taskRepository.getAllTasks()
         }
     }
+
     @Test
     fun `addTask() should return true when datasource adds task successfully`() = runTest {
         // Given
@@ -93,6 +85,7 @@ class TaskRepositoryImpTest {
             taskRepository.addTask(task)
         }
     }
+
     @Test
     fun `updateTask() should return true when datasource updates task successfully`() = runTest {
         // Given
@@ -105,6 +98,7 @@ class TaskRepositoryImpTest {
         // Then
         assertThat(result).isTrue()
     }
+
     @Test
     fun `updateTask() should return false when datasource returns false`() = runTest {
         // Given
@@ -117,6 +111,7 @@ class TaskRepositoryImpTest {
         // Then
         assertThat(result).isFalse()
     }
+
     @Test
     fun `updateTask() should throw TaskNotUpdatedException when datasource throws exception`() = runTest {
         // Given
