@@ -145,6 +145,7 @@ class ProjectManagerUi(
                 null -> {
                     outputPrinter.showMessageLine(UiMessages.INVALID_INPUT)
                 }
+
                 else -> {
                     return stateName
                 }
