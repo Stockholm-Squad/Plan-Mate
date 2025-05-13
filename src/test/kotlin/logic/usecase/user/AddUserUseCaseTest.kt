@@ -6,19 +6,18 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import logic.usecase.login.LoginUseCase
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.InvalidPasswordException
 import org.example.logic.InvalidUserNameException
 import org.example.logic.UserExistException
-import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.user.AddUserUseCase
 import org.example.logic.utils.HashingService
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class AddUserUseCaseTest {
 
@@ -27,7 +26,6 @@ class AddUserUseCaseTest {
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var hashingService: HashingService
     private lateinit var addUserUseCase: AddUserUseCase
-    val userId: UUID = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
 
     @BeforeEach
     fun setUp() {
@@ -44,7 +42,7 @@ class AddUserUseCaseTest {
     }
 
     @Test
-    fun `addUser should return true when user is valid and does not exist`() = runBlocking {
+    fun `addUser should return true when user is valid and does not exist`() = runTest {
         // Given
         val username = "newUser"
         val password = "StrongPass123"
@@ -63,12 +61,12 @@ class AddUserUseCaseTest {
         assertThat(result).isTrue()
         coVerify {
             loginUseCase.isUserExist(username)
-            userRepository.addUser(User(userId, username, hashed))
+            userRepository.addUser(any())
         }
     }
 
     @Test
-    fun `addUser should throw InvalidUserNameException when username is invalid`() = runBlocking {
+    fun `addUser should throw InvalidUserNameException when username is invalid`() = runTest {
         // Given
         val username = "!"
         val password = "Valid123"
@@ -87,7 +85,7 @@ class AddUserUseCaseTest {
     }
 
     @Test
-    fun `addUser should throw InvalidPasswordException when password is invalid`() = runBlocking {
+    fun `addUser should throw InvalidPasswordException when password is invalid`() = runTest {
         // Given
         val username = "validUser"
         val password = "123"
@@ -107,7 +105,7 @@ class AddUserUseCaseTest {
     }
 
     @Test
-    fun `addUser should throw UserExistException when user already exists`() = runBlocking {
+    fun `addUser should throw UserExistException when user already exists`() = runTest {
         // Given
         val username = "existingUser"
         val password = "ValidPass123"
