@@ -124,4 +124,29 @@ class AddUserUseCaseTest {
         coVerify(exactly = 0) { userRepository.addUser(any()) }
     }
 
+    @Test
+    fun `addUser should return false when user is valid and userRepository returns false`() = runTest {
+        // Given
+        val username = "newUser"
+        val password = "StrongPass123"
+        val hashed = "hashed_pass"
+
+        every { validateUserDataUseCase.isValidUserName(username) } returns true
+        every { validateUserDataUseCase.isValidPassword(password) } returns true
+        coEvery { loginUseCase.isUserExist(username) } returns false
+        every { hashingService.hash(password) } returns hashed
+        coEvery { userRepository.addUser(any()) } returns false // repo returns false here ✅
+
+        // When
+        val result = addUserUseCase.addUser(username, password)
+
+        // Then
+        assertThat(result).isFalse() // assert that result is false ✅
+        coVerify {
+            loginUseCase.isUserExist(username)
+            userRepository.addUser(any())
+        }
+    }
+
+
 }
