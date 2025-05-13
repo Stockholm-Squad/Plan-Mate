@@ -1,3 +1,5 @@
+package data.source.local
+
 import com.google.common.truth.Truth.assertThat
 import data.dto.EntityStateDto
 import io.mockk.coEvery
