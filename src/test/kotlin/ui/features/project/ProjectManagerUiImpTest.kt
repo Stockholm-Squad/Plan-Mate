@@ -3,7 +3,6 @@ package ui.features.project
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.project.ProjectManagerUiImp
-import org.example.ui.features.state.admin.AdminEntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUiImp
 import org.example.ui.input_output.input.InputReader

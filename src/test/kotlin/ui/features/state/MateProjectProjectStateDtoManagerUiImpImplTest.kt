@@ -1,9 +1,6 @@
 package ui.features.state
 
 import io.mockk.mockk
-import org.example.ui.features.state.common.UserEntityStateManagerUi
-import org.example.ui.features.state.mate.MateEntityStateManagerUiImpl
-import org.example.ui.features.state.mate.MateEntityStateManagerUi
 import org.junit.jupiter.api.BeforeEach
 
 class MateProjectProjectStateDtoManagerUiImpImplTest {

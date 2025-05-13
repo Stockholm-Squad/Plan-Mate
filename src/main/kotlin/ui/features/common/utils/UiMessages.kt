@@ -44,7 +44,8 @@ object UiMessages {
     const val ENTER_USER_NAME_TO_ASSIGN_TO_PROJECT = "Enter username to assign or leave it blank to back: "
     const val FAILED_TO_ASSIGN_USER_TO_PROJECT = "Failed to Assign user to project"
     const val PLEASE_TRY_AGAIN = "Please try again ^_^"
-    const val ENTER_PROJECT_NAME_TO_VIEW_ASSIGNED_USER = "Enter project name to view assigned users (leave blank to cancel): "
+    const val ENTER_PROJECT_NAME_TO_VIEW_ASSIGNED_USER =
+        "Enter project name to view assigned users (leave blank to cancel): "
     const val USER_ASSIGNED_TO_PROJECT = "User Assigned to project successfully ^_^"
     const val FAILED_LOADING_USER_ASSIGNED_TO_PROJECT = "Filed on loading Users assigned to project"
     const val NO_USERS_ASSIGNED_TO_PROJECT = "No users assigned to this project"
@@ -55,6 +56,10 @@ object UiMessages {
     const val FAILED_TO_DELETE_USER_FROM_PROJECT = "Failed to delete user from project"
     const val LOGIN_USER_NAME_PROMPT = "Please enter your user name: "
     const val LOGIN_PASSWORD_PROMPT = "Please enter your Password: "
+    const val FAILED_TO_LOAD_STATE = "Failed to load states"
+    const val FAILED_TO_DELETE_STATE = "Failed to delete state"
+    const val FAILED_TO_UPDATE_STATE = "Failed to update state:"
+    const val FAILED_TO_ADD_STATE = "Failed to add state:"
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """
@@ -97,6 +102,16 @@ object UiMessages {
         | 1. Assign users to project                               |
         | 2. View users assigned to project                        |
         | 3. Remove user from project                              |
+        | 0. Exit                                                  |
+        |----------------------------------------------------------|
+    """.trimIndent()
+
+    val SHOW_ADMIN_ENTITY_STATE_OPTIONS = """
+        |----------------- Entity State Management ----------------|
+        | 1. Show all states                                       |
+        | 2. Add state                                             |
+        | 3. Update state                                          |
+        | 4. Delete state                                          |
         | 0. Exit                                                  |
         |----------------------------------------------------------|
     """.trimIndent()

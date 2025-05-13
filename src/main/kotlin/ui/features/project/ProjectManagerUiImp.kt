@@ -11,7 +11,8 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
-import org.example.ui.features.state.admin.AdminEntityStateManagerUi
+import org.example.ui.features.state.AdminEntityStateManagerUi
+import org.example.ui.features.state.ShowAllEntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -22,7 +23,8 @@ class ProjectManagerUiImp(
     private val outputPrinter: OutputPrinter,
     private val manageProjectUseCase: ManageProjectUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val stateManagerUi: AdminEntityStateManagerUi,
+    private val adminStateManagerUi: AdminEntityStateManagerUi,
+    private val showAllEntityStateManagerUi: ShowAllEntityStateManagerUi,
     private val manageStatesUseCase: ManageEntityStatesUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
@@ -78,12 +80,12 @@ class ProjectManagerUiImp(
             return
         }
         outputPrinter.showMessageLine("Available states:")
-        stateManagerUi.showAllStates()
+        showAllEntityStateManagerUi.launchUi()
         var stateName = ""
         while (true) {
             outputPrinter.showMessageLine("Enter state Name (or 'new' to create a new state) or leave it blank to back: ")
             when (val input = inputReader.readStringOrNull()) {
-                "new" -> stateManagerUi.addState()
+                "new" -> adminStateManagerUi.addState()
                 null -> return
                 else -> {
                     stateName = input
@@ -149,7 +151,7 @@ class ProjectManagerUiImp(
 
                 outputPrinter.showMessageLine("Available states:")
 
-                stateManagerUi.showAllStates()
+                showAllEntityStateManagerUi.launchUi()
 
                 outputPrinter.showMessageLine("Enter new state Name (leave blank to keep '${projectStateName}'): ")
 
