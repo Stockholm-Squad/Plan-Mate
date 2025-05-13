@@ -50,7 +50,7 @@ class UserAssignedToProjectCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file has only header`() = runTest {
-            File(testFilePath).writeText("userName,projectId")
+            File(testFilePath).writeText("username,projectId")
 
             val result = userAssignedToProjectCSVReaderWriter.read()
             assertTrue(result.isEmpty())
@@ -60,7 +60,7 @@ class UserAssignedToProjectCSVReaderWriterTest {
         fun `read should return assignments when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
-                userName,projectId
+                username,projectId
                 user1,projectA
                 user2,projectB
                 """.trimIndent()
@@ -69,9 +69,9 @@ class UserAssignedToProjectCSVReaderWriterTest {
             val result = userAssignedToProjectCSVReaderWriter.read()
 
             assertEquals(2, result.size)
-            assertEquals("user1", result[0].userName)
+            assertEquals("user1", result[0].username)
             assertEquals("projectA", result[0].projectId)
-            assertEquals("user2", result[1].userName)
+            assertEquals("user2", result[1].username)
             assertEquals("projectB", result[1].projectId)
         }
 
@@ -138,7 +138,7 @@ class UserAssignedToProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("userName,projectId", content.trim())
+            assertEquals("username,projectId", content.trim())
         }
     }
 
@@ -184,7 +184,7 @@ class UserAssignedToProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("userName,projectId", content.trim())
+            assertEquals("username,projectId", content.trim())
         }
 
         @Test

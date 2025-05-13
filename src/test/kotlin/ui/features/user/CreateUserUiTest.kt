@@ -10,16 +10,16 @@ import org.example.logic.usecase.extention.toSafeUUID
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.logic.usecase.user.AddUserUseCase
-import org.example.ui.features.user.CreateUserUiImp
+import org.example.ui.features.user.CreateUserUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class CreateUserUiImpTest {
+class CreateUserUiTest {
     private val mockCreateUserUseCase: AddUserUseCase = mockk(relaxed = true)
     private val mockPrinter: OutputPrinter = mockk(relaxed = true)
     private val mockInputReader: InputReader = mockk()
-    private lateinit var createUserUiImp: CreateUserUiImp
+    private lateinit var createUserUi: CreateUserUi
     val user = User(
         username = "rodina",
         hashedPassword = "0192023a7bbd73250516f069df18b500",
@@ -29,7 +29,7 @@ class CreateUserUiImpTest {
 
     @BeforeEach
     fun setUp() {
-        createUserUiImp = CreateUserUiImp(mockCreateUserUseCase, mockPrinter, mockInputReader)
+        createUserUi = CreateUserUi(mockCreateUserUseCase, mockPrinter, mockInputReader)
 
     }
 
@@ -39,13 +39,13 @@ class CreateUserUiImpTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf(null, null)
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
         verify {
-            mockPrinter.showMessage("➕ Adding new user...")
-            mockPrinter.showMessage("Enter username:")
-            mockPrinter.showMessage("Enter password:")
+            mockPrinter.showMessageLine("➕ Adding new user...")
+            mockPrinter.showMessageLine("Enter username:")
+            mockPrinter.showMessageLine("Enter password:")
         }
     }
 
@@ -55,10 +55,10 @@ class CreateUserUiImpTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf("", "password")
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
     @Test
@@ -67,10 +67,10 @@ class CreateUserUiImpTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf("username", "")
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
     @Test
@@ -79,10 +79,10 @@ class CreateUserUiImpTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf(null, null)
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
 
@@ -95,10 +95,10 @@ class CreateUserUiImpTest {
         every { mockCreateUserUseCase.addUser(username, password) } returns Result.success(true)
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("✅ User $username added successfully!") }
+        verify { mockPrinter.showMessageLine("✅ User $username added successfully!") }
     }
 
     @Test
@@ -110,10 +110,10 @@ class CreateUserUiImpTest {
         every { mockCreateUserUseCase.addUser(username, password) } returns Result.success(false)
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Failed to add user") }
+        verify { mockPrinter.showMessageLine("Failed to add user") }
     }
 
     @Test
@@ -126,10 +126,10 @@ class CreateUserUiImpTest {
                 Result.failure(UsersDataAreEmpty())
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("${UsersDataAreEmpty().message}") }
+        verify { mockPrinter.showMessageLine("${UsersDataAreEmpty().message}") }
     }
 
 
@@ -142,7 +142,7 @@ class CreateUserUiImpTest {
         every { mockCreateUserUseCase.addUser(username, password) } returns Result.success(true)
 
         // When
-        createUserUiImp.launchUi(
+        createUserUi.launchUi(
             user
         )
 
@@ -157,11 +157,11 @@ class CreateUserUiImpTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf(null, "validPass")
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
         verify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
     @Test
@@ -170,11 +170,11 @@ class CreateUserUiImpTest {
         every { mockInputReader.readStringOrNull() } returnsMany listOf("validUser", null)
 
         // When
-        createUserUiImp.launchUi(user)
+        createUserUi.launchUi(user)
 
         // Then
         verify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
 }

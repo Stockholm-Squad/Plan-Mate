@@ -16,7 +16,7 @@ class ManageEntityStatesUseCase(
             entityStateRepository.isEntityStateExist(validStateName)
                 .takeUnless { isEntityStateExist -> isEntityStateExist }
                 ?.let {
-                    entityStateRepository.addEntityState(EntityState(name = validStateName))
+                    entityStateRepository.addEntityState(EntityState(title = validStateName))
                 } ?: throw EntityStateAlreadyExistException()
         }
     }
@@ -50,7 +50,7 @@ class ManageEntityStatesUseCase(
     }
 
     suspend fun getEntityStateNameByStateId(stateId: UUID): String {
-        return entityStateRepository.getEntityStateByID(stateId).name
+        return entityStateRepository.getEntityStateByID(stateId).title
     }
 
     private fun isStateNameValid(stateName: String): String {

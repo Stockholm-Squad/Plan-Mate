@@ -6,14 +6,18 @@ import org.example.logic.utils.toSafeUUID
 
 fun ProjectDto.mapToProjectEntity(): Project? {
     return Project(
-        id.toSafeUUID() ?: return null,
-        name,
-        stateId.toSafeUUID() ?: return null
+        id = id.toSafeUUID() ?: return null,
+        title = title,
+        stateId = stateId.toSafeUUID() ?: return null
     )
 }
 
 fun Project.mapToProjectModel(): ProjectDto {
-    return ProjectDto(id.toString(), name, stateId.toString())
+    return ProjectDto(
+        id = id.toString(),
+        title = title,
+        stateId = stateId.toString()
+    )
 }
 
 

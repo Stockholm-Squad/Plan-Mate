@@ -12,49 +12,37 @@ import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
 
 class ProjectRepositoryImp(
-    private val projectDataSource: ProjectDataSource,
+    private val projectDataSource: ProjectDataSource
 ) : ProjectRepository {
 
     override suspend fun getProjectsByUsername(username: String): List<Project> = tryToExecute(
-        { projectDataSource.getProjectsByUsername(username) },
-        onSuccess = { listOfProjects ->
-            listOfProjects.mapNotNull { project -> project.mapToProjectEntity() }
-        },
+        function = { projectDataSource.getProjectsByUsername(username) },
+        onSuccess = { listOfProjects -> listOfProjects.mapNotNull { project -> project.mapToProjectEntity() } },
         onFailure = { throw NoProjectsFoundException() },
     )
 
 
     override suspend fun addProject(project: Project): Boolean = tryToExecute(
-        { projectDataSource.addProject(project.mapToProjectModel()) },
-        onSuccess = { isAdded ->
-            isAdded
-        }, onFailure = { throw NoProjectAddedException() })
+        function = { projectDataSource.addProject(project.mapToProjectModel()) },
+        onSuccess = { isAdded -> isAdded },
+        onFailure = { throw NoProjectAddedException() })
 
 
-    override suspend fun updateProject(updatedProject: Project): Boolean = tryToExecute(
-        { projectDataSource.updateProject(updatedProject.mapToProjectModel()) },
-        onSuccess = { isUpdated ->
-            isUpdated
-        }, onFailure = {
-            throw NoProjectUpdatedException()
-        })
+    override suspend fun updateProject(projectToUpdate: Project): Boolean = tryToExecute(
+        function = { projectDataSource.updateProject(projectToUpdate.mapToProjectModel()) },
+        onSuccess = { isUpdated -> isUpdated },
+        onFailure = { throw NoProjectUpdatedException() })
 
 
     override suspend fun deleteProject(projectToDelete: Project): Boolean = tryToExecute(
-        { projectDataSource.deleteProject(projectToDelete.mapToProjectModel()) },
-        onSuccess = { isDeleted ->
-            isDeleted
-        },
-        onFailure = {
-            throw NoProjectDeletedException()
-        })
+        function = { projectDataSource.deleteProject(projectToDelete.mapToProjectModel()) },
+        onSuccess = { isDeleted -> isDeleted },
+        onFailure = { throw NoProjectDeletedException() })
 
 
     override suspend fun getAllProjects(): List<Project> = tryToExecute(
-        { projectDataSource.getAllProjects() },
-        onSuccess = { listOfProjects ->
-            listOfProjects.mapNotNull { projectModel -> projectModel.mapToProjectEntity() }
-        },
+        function = { projectDataSource.getAllProjects() },
+        onSuccess = { listOfProjects -> listOfProjects.mapNotNull { projectModel -> projectModel.mapToProjectEntity() } },
         onFailure = { throw NoProjectsFoundException() },
     )
 }

@@ -4,7 +4,7 @@ import io.mockk.verify
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.logic.usecase.audit.ManageAuditSystemUseCase
-import org.example.ui.features.audit.AuditManagerUiImp
+import org.example.ui.features.audit.AuditManagerUI
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
@@ -16,7 +16,7 @@ class AuditSystemManagerUiImpTest {
     private lateinit var useCase: ManageAuditSystemUseCase
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
-    private lateinit var auditSystemUi: AuditManagerUiImp
+    private lateinit var auditSystemUi: AuditManagerUI
     private lateinit var user: User
 
     @BeforeEach
@@ -25,7 +25,7 @@ class AuditSystemManagerUiImpTest {
         reader = mockk()
         printer = mockk(relaxed = true)
 
-        auditSystemUi = AuditManagerUiImp(
+        auditSystemUi = AuditManagerUI(
             useCase,
             reader = reader,
             printer = printer
@@ -77,7 +77,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.EXITING) }
+        verify { printer.showMessageLine(UiMessages.EXITING) }
     }
 
     @Test
@@ -86,7 +86,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
@@ -95,7 +95,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
@@ -104,7 +104,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
@@ -114,7 +114,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify(exactly = 2) { printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
+        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
     }
 
     @Test
@@ -124,7 +124,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.EXITING) }
+        verify { printer.showMessageLine(UiMessages.EXITING) }
     }
 
     @Test
@@ -133,7 +133,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
     
     @Test
@@ -146,7 +146,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify { printer.showMessage("project error") }
+        verify { printer.showMessageLine("project error") }
     }
 
     @Test
@@ -159,7 +159,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify { printer.showMessage("task error") }
+        verify { printer.showMessageLine("task error") }
     }
 
     @Test
@@ -172,7 +172,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify(exactly = 2) { printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
+        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
     }
 
     @Test
@@ -185,7 +185,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify { printer.showMessage("audit list error") }
+        verify { printer.showMessageLine("audit list error") }
     }
 
 

@@ -5,8 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.exceptions.NoStatesFoundedException
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
-import org.example.ui.features.state.common.UserEntityStateManagerUi
-import org.example.ui.features.state.common.UserEntityStateManagerUiImp
+import org.example.ui.features.state.ShowAllEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,7 +20,7 @@ class UserProjectProjectStateDtoManagerUiImpImpTest {
     fun setUp() {
         printer = mockk(relaxed = true)
         manageStatesUseCase = mockk(relaxed = true)
-        userStateManagerUi = UserEntityStateManagerUiImp(manageStatesUseCase, printer)
+        userStateManagerUi = ShowAllEntityStateManagerUi(manageStatesUseCase, printer)
     }
 
     @Test
@@ -35,8 +34,8 @@ class UserProjectProjectStateDtoManagerUiImpImpTest {
         userStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage("Failed to Load data, " + NoStatesFoundedException().message) }
-        verify { printer.showMessage("Please try again ^_^") }
+        verify { printer.showMessageLine("Failed to Load data, " + NoStatesFoundedException().message) }
+        verify { printer.showMessageLine("Please try again ^_^") }
 
     }
 

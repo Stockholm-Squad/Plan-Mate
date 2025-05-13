@@ -14,7 +14,7 @@ class UserAssignedToProjectMongoDataSource(
     override suspend fun addUserToProject(projectId: String, userName: String): Boolean =
         userAssignedToProjectCollection.insertOne(
             UserAssignedToProjectDto(
-                userName = userName,
+                username = userName,
                 projectId = projectId
             )
         ).insertedId != null
@@ -22,7 +22,7 @@ class UserAssignedToProjectMongoDataSource(
     override suspend fun deleteUserFromProject(projectId: String, userName: String): Boolean =
         userAssignedToProjectCollection.deleteOne(
             and(
-                UserAssignedToProjectDto::userName eq userName,
+                UserAssignedToProjectDto::username eq userName,
                 UserAssignedToProjectDto::projectId eq projectId
             )
         ).deletedCount > 0
@@ -31,5 +31,5 @@ class UserAssignedToProjectMongoDataSource(
         userAssignedToProjectCollection.find(UserAssignedToProjectDto::projectId eq projectId).toList()
 
     override suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
-        userAssignedToProjectCollection.find(UserAssignedToProjectDto::userName eq userName).toList()
+        userAssignedToProjectCollection.find(UserAssignedToProjectDto::username eq userName).toList()
 }

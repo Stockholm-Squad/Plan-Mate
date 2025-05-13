@@ -6,8 +6,12 @@ import org.example.logic.entities.Task
 
 class OutputPrinterImplementation : OutputPrinter {
 
-    override fun showMessage(message: String) {
+    override fun showMessageLine(message: String) {
         println(message)
+    }
+
+    override fun showMessage(message: String) {
+        print(message)
     }
 
     override fun printTask(task: Task) {
@@ -41,7 +45,7 @@ class OutputPrinterImplementation : OutputPrinter {
         println("│ State                        │")
         println("├──────────────────────────────┤")
         projectStates.forEach {
-            println("│ %-28s │".format(it.name))
+            println("│ %-28s │".format(it.title))
         }
         println("└──────────────────────────────┘")
     }

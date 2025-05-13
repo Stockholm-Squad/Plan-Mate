@@ -53,7 +53,7 @@ class EntityStateCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file has only header`() = runTest {
-            File(testFilePath).writeText("id,name")
+            File(testFilePath).writeText("id,title")
 
             val result = entityStateCSVReaderWriter.read()
             assertTrue(result.isEmpty())
@@ -63,7 +63,7 @@ class EntityStateCSVReaderWriterTest {
         fun `read should return entity states when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
-                id,name
+                id,title
                 1,State A
                 2,State B
             """.trimIndent()
@@ -72,8 +72,8 @@ class EntityStateCSVReaderWriterTest {
             val result = entityStateCSVReaderWriter.read()
 
             assertEquals(2, result.size)
-            assertEquals("State A", result[0].name)
-            assertEquals("State B", result[1].name)
+            assertEquals("State A", result[0].title)
+            assertEquals("State B", result[1].title)
         }
 
         @Test
@@ -89,7 +89,7 @@ class EntityStateCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file creation fails`() = runTest {
-            // Create a directory with the same name to prevent file creation
+            // Create a directory with the same title to prevent file creation
             tempFile.delete()
             tempFile.mkdir() // This will make createNewFile() fail
 
@@ -115,8 +115,8 @@ class EntityStateCSVReaderWriterTest {
         @Test
         fun `write should create file with correct content`() = runTest {
             val states = listOf(
-                EntityStateDto(id = "1", name = "State A"),
-                EntityStateDto(id = "2", name = "State B")
+                EntityStateDto(id = "1", title = "State A"),
+                EntityStateDto(id = "2", title = "State B")
             )
 
             val result = entityStateCSVReaderWriter.overWrite(states)
@@ -134,7 +134,7 @@ class EntityStateCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,name", content.trim())
+            assertEquals("id,title", content.trim())
         }
 
         @Test
@@ -150,8 +150,8 @@ class EntityStateCSVReaderWriterTest {
         @Test
         fun `append should add records to empty file`() = runTest {
             val states = listOf(
-                EntityStateDto(id = "1", name = "State A"),
-                EntityStateDto(id = "2", name = "State B")
+                EntityStateDto(id = "1", title = "State A"),
+                EntityStateDto(id = "2", title = "State B")
             )
 
             val result = entityStateCSVReaderWriter.append(states)
@@ -165,12 +165,12 @@ class EntityStateCSVReaderWriterTest {
         @Test
         fun `append should add records to existing file`() = runTest {
             val initialStates = listOf(
-                EntityStateDto(id = "1", name = "State A")
+                EntityStateDto(id = "1", title = "State A")
             )
             entityStateCSVReaderWriter.overWrite(initialStates)
 
             val newStates = listOf(
-                EntityStateDto(id = "2", name = "State B")
+                EntityStateDto(id = "2", title = "State B")
             )
 
             val result = entityStateCSVReaderWriter.append(newStates)
@@ -187,7 +187,7 @@ class EntityStateCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,name", content.trim())
+            assertEquals("id,title", content.trim())
         }
 
         @Test
@@ -196,8 +196,8 @@ class EntityStateCSVReaderWriterTest {
             tempFile.delete()
 
             val states = listOf(
-                EntityStateDto(id = "1", name = "State A"),
-                EntityStateDto(id = "2", name = "State B")
+                EntityStateDto(id = "1", title = "State A"),
+                EntityStateDto(id = "2", title = "State B")
             )
 
             val result = entityStateCSVReaderWriter.append(states)
@@ -219,7 +219,7 @@ class EntityStateCSVReaderWriterTest {
             assertTrue(tempFile.exists())
 
             val content = tempFile.readText()
-            assertEquals("id,name", content.trim())
+            assertEquals("id,title", content.trim())
         }
     }
 }

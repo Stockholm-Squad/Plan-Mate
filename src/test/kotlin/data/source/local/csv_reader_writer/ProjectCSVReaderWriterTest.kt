@@ -53,7 +53,7 @@ class ProjectCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file has only header`() = runTest {
-            File(testFilePath).writeText("id,name,description")
+            File(testFilePath).writeText("id,title,description")
 
             val result = projectCSVReaderWriter.read()
             assertTrue(result.isEmpty())
@@ -63,7 +63,7 @@ class ProjectCSVReaderWriterTest {
         fun `read should return projects when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
-                id,name,stateId
+                id,title,stateId
                 1,Project A,State A
                 2,Project B,State B\n
             """.trimIndent()
@@ -72,8 +72,8 @@ class ProjectCSVReaderWriterTest {
             val result = projectCSVReaderWriter.read()
 
             assertEquals(2, result.size)
-            assertEquals("Project A", result[0].name)
-            assertEquals("Project B", result[1].name)
+            assertEquals("Project A", result[0].title)
+            assertEquals("Project B", result[1].title)
         }
 
         @Test
@@ -89,7 +89,7 @@ class ProjectCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file creation fails`() = runTest {
-            // Create a directory with the same name to prevent file creation
+            // Create a directory with the same title to prevent file creation
             tempFile.delete()
             tempFile.mkdir() // This will make createNewFile() fail
 
@@ -117,8 +117,8 @@ class ProjectCSVReaderWriterTest {
         @Test
         fun `write should create file with correct content`() = runTest {
             val projects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", title = "Project A", stateId = "State A"),
+                ProjectDto(id = "2", title = "Project B", stateId = "State B")
             )
 
             val result = projectCSVReaderWriter.overWrite(projects)
@@ -137,7 +137,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,name,stateId", content.trim())
+            assertEquals("id,title,stateId", content.trim())
         }
 
         @Test
@@ -156,8 +156,8 @@ class ProjectCSVReaderWriterTest {
         @Test
         fun `append should add records to empty file`() = runTest {
             val projects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", title = "Project A", stateId = "State A"),
+                ProjectDto(id = "2", title = "Project B", stateId = "State B")
             )
 
             val result = projectCSVReaderWriter.append(projects)
@@ -172,12 +172,12 @@ class ProjectCSVReaderWriterTest {
         @Test
         fun `append should add records to existing file`() = runTest {
             val initialProjects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A")
+                ProjectDto(id = "1", title = "Project A", stateId = "State A")
             )
             projectCSVReaderWriter.overWrite(initialProjects)
 
             val newProjects = listOf(
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "2", title = "Project B", stateId = "State B")
             )
 
             val result = projectCSVReaderWriter.append(newProjects)
@@ -195,7 +195,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,name,stateId", content.trim())
+            assertEquals("id,title,stateId", content.trim())
         }
 
         @Test
@@ -204,8 +204,8 @@ class ProjectCSVReaderWriterTest {
             tempFile.delete()
 
             val projects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", title = "Project A", stateId = "State A"),
+                ProjectDto(id = "2", title = "Project B", stateId = "State B")
             )
 
             val result = projectCSVReaderWriter.append(projects)
@@ -229,7 +229,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(tempFile.exists())
 
             val content = tempFile.readText()
-            assertEquals("id,name,stateId", content.trim())
+            assertEquals("id,title,stateId", content.trim())
         }
     }
 

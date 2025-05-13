@@ -1,7 +1,6 @@
 package org.example.logic.usecase.audit
 
 import logic.usecase.login.LoginUseCase
-import org.example.logic.UsersDoesNotExistException
 import org.example.logic.entities.EntityType
 import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
 import java.util.*
@@ -25,7 +24,8 @@ class AuditServicesUseCase(
             entityId = entityId,
             additionalInfo = additionalInfo ?: ""
         )
-        val userId = getCurrentUserId()
+        val userId = loginUseCase.getCurrentUser()?.id
+        if (userId == null) return
         addAuditUseCase.addAudit(userId, entityType, entityId, auditDescription)
     }
 
@@ -47,7 +47,8 @@ class AuditServicesUseCase(
             newStateName = newStateName ?: "",
             additionalInfo = additionalInfo ?: ""
         )
-        val userId = getCurrentUserId()
+        val userId = loginUseCase.getCurrentUser()?.id
+        if (userId == null) return
         addAuditUseCase.addAudit(userId, entityType, entityId, auditDescription)
     }
 
@@ -63,12 +64,9 @@ class AuditServicesUseCase(
             entityId = entityId,
             additionalInfo = additionalInfo ?: ""
         )
-        val userId = getCurrentUserId()
+        val userId = loginUseCase.getCurrentUser()?.id
+        if (userId == null) return
         addAuditUseCase.addAudit(userId, entityType, entityId, auditDescription)
-    }
-
-    private fun getCurrentUserId(): UUID {
-        return loginUseCase.getCurrentUser()?.id ?: throw UsersDoesNotExistException()
     }
 }
 

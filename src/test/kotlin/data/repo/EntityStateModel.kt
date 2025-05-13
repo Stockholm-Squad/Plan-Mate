@@ -7,9 +7,9 @@ import java.util.UUID
 val entityStateId = UUID.randomUUID()
 val entityState = EntityState(
     id = entityStateId,
-    name = "Todo"
+    title = "Todo"
 )
 val entityStateDto = EntityStateDto(
     id = entityStateId.toString(),
-    name = "Todo"
+    title = "Todo"
 )

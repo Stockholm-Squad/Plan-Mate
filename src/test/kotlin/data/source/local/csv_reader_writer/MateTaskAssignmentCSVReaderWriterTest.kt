@@ -51,7 +51,7 @@ class MateTaskAssignmentCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file has only header`() = runTest {
-            File(testFilePath).writeText("userName,taskId")
+            File(testFilePath).writeText("username,taskId")
 
             val result = mateTaskAssignmentCSVReaderWriter.read()
             assertTrue(result.isEmpty())
@@ -61,7 +61,7 @@ class MateTaskAssignmentCSVReaderWriterTest {
         fun `read should return assignments when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
-                userName,taskId
+                username,taskId
                 user1,task1
                 user2,task2
             """.trimIndent()
@@ -70,9 +70,9 @@ class MateTaskAssignmentCSVReaderWriterTest {
             val result = mateTaskAssignmentCSVReaderWriter.read()
 
             assertEquals(2, result.size)
-            assertEquals("user1", result[0].userName)
+            assertEquals("user1", result[0].username)
             assertEquals("task1", result[0].taskId)
-            assertEquals("user2", result[1].userName)
+            assertEquals("user2", result[1].username)
             assertEquals("task2", result[1].taskId)
         }
 
@@ -131,7 +131,7 @@ class MateTaskAssignmentCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("userName,taskId", content.trim())
+            assertEquals("username,taskId", content.trim())
         }
 
         @Test
@@ -184,7 +184,7 @@ class MateTaskAssignmentCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("userName,taskId", content.trim())
+            assertEquals("username,taskId", content.trim())
         }
 
         @Test

@@ -9,12 +9,12 @@ class UserAssignedToProjectCSVDataSource(
 ) : UserAssignedToProjectDataSource {
     override suspend fun addUserToProject(projectId: String, userName: String): Boolean =
         userAssignedToProjectReaderWriter.append(
-            listOf(UserAssignedToProjectDto(projectId = projectId, userName = userName))
+            listOf(UserAssignedToProjectDto(projectId = projectId, username = userName))
         )
 
     override suspend fun deleteUserFromProject(projectId: String, userName: String): Boolean =
         userAssignedToProjectReaderWriter.read().filterNot { userAssignedToProject ->
-            userAssignedToProject.projectId == projectId && userAssignedToProject.userName == userName
+            userAssignedToProject.projectId == projectId && userAssignedToProject.username == userName
         }.let { updatedUserAssignedToProjectList ->
             userAssignedToProjectReaderWriter.overWrite(updatedUserAssignedToProjectList)
         }

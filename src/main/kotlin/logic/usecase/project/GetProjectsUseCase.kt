@@ -21,7 +21,7 @@ class GetProjectsUseCase(
 
     private fun getProjectFromList(projectName: String, allProjects: List<Project>): Project {
         return allProjects.find { project ->
-            project.name == projectName
+            project.title == projectName
         } ?: throw ProjectNotFoundException()
     }
 }

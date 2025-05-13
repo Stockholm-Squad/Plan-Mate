@@ -13,33 +13,20 @@ class GetAuditUseCase(
 ) {
 
     suspend fun getAuditsForProjectByName(projectName: String): List<Audit> =
-        auditRepository.getAllAudits().also { audits ->
-            getProjectsUseCase.getProjectByName(projectName).also { project ->
-                return audits.filter { audit ->
-                    audit.entityTypeId == project.id
-                }
-            }
-        }
+        auditRepository.getAllAudits()
+            .filter { audit -> audit.entityTypeId == getProjectsUseCase.getProjectByName(projectName).id }
 
-    suspend fun getAuditsForTaskByName(taskName: String): List<Audit> {
-        val result = mutableListOf<Audit>()
-        auditRepository.getAllAudits().also { audits ->
-            manageTasksUseCase.getAllTasks().filter { task ->
-                task.title == taskName
-            }.forEach { task ->
-                audits.filter { audit ->
-                    audit.entityTypeId == task.id
-                }.also { filteredAudits ->
-                    result.addAll(filteredAudits)
-                }
+    suspend fun getAuditsForTaskByName(taskName: String): List<Audit> =
+        manageTasksUseCase.getAllTasks()
+            .filter { task -> task.title == taskName }
+            .map { task -> task.id }
+            .let { tasksId ->
+                auditRepository.getAllAudits()
+                    .filter { audit -> audit.entityTypeId in tasksId }
             }
-        }
-        return result
-    }
+
 
     suspend fun getAuditsForUserById(userId: UUID): List<Audit> =
-        auditRepository.getAllAudits().also { audits ->
-            return audits.filter { it.userId == userId }
-        }
+        auditRepository.getAllAudits().filter { it.userId == userId }
 
 }

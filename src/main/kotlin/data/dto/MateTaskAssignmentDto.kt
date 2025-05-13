@@ -1,6 +1,6 @@
 package data.dto
 
 data class MateTaskAssignmentDto(
-    val userName: String,
+    val username: String,
     val taskId: String
 )
