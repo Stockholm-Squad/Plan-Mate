@@ -1,10 +1,12 @@
-package data.csv_reader_writer.project_data_source
+package data.source.local.csv_reader_writer
 
+import com.google.common.truth.Truth.assertThat
 import data.dto.ProjectDto
 import kotlinx.coroutines.test.runTest
 import org.example.data.source.local.csv_reader_writer.ProjectCSVReaderWriter
 import org.junit.jupiter.api.*
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -44,7 +46,9 @@ class ProjectCSVReaderWriterTest {
             File(testFilePath).writeText("")
 
             val result = dataSource.read()
-            assertTrue(result.isEmpty())
+
+            assertThat(tempFile.exists()).isTrue()
+            assertThat(result).isEmpty()
         }
 
         @Test
@@ -66,11 +70,44 @@ class ProjectCSVReaderWriterTest {
             )
 
             val result = dataSource.read()
-            println(result)
 
             assertEquals(2, result.size)
             assertEquals("Project A", result[0].name)
             assertEquals("Project B", result[1].name)
+        }
+
+        @Test
+        fun `read should return empty list when creating new file`() = runTest {
+            // Ensure file doesn't exist initially
+            tempFile.delete()
+
+            val result = dataSource.read()
+
+            assertThat(result).isEmpty()
+            assertThat(tempFile.exists()).isTrue()
+        }
+
+        @Test
+        fun `read should return empty list when file creation fails`() = runTest {
+            // Create a directory with the same name to prevent file creation
+            tempFile.delete()
+            tempFile.mkdir() // This will make createNewFile() fail
+
+
+            assertThrows<IOException> {dataSource.read()}
+            assertThat(tempFile.exists()).isTrue()
+            assertThat(tempFile.isDirectory).isTrue()
+        }
+
+        @Test
+        fun `read should return empty list when file cannot be read`() = runTest {
+            tempFile.writeText("content")
+            tempFile.setReadable(false)
+
+            val result = dataSource.read()
+
+            assertThat(result).isEmpty()
+            tempFile.setReadable(true)
         }
     }
 
@@ -88,8 +125,7 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            println("File content:\n$content") // Debug output
-            println(content)
+
             // Check for the actual fields being written
             assertTrue(content.contains("1,Project A,State A"))
             assertTrue(content.contains("2,Project B,State B"))
@@ -159,6 +195,40 @@ class ProjectCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
+            assertEquals("id,name,stateId", content.trim())
+        }
+
+        @Test
+        fun `append should create file when not exist and write data`() = runTest {
+            // Ensure file doesn't exist
+            tempFile.delete()
+
+            val projects = listOf(
+                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
+                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+            )
+
+            val result = dataSource.append(projects)
+
+            assertTrue(result)
+            assertTrue(tempFile.exists())
+
+            val content = tempFile.readText()
+            assertTrue(content.contains("1,Project A,State A"))
+            assertTrue(content.contains("2,Project B,State B"))
+        }
+
+        @Test
+        fun `append should create file when not exist and handle empty list`() = runTest {
+            // Ensure file doesn't exist
+            tempFile.delete()
+
+            val result = dataSource.append(emptyList())
+
+            assertTrue(result)
+            assertTrue(tempFile.exists())
+
+            val content = tempFile.readText()
             assertEquals("id,name,stateId", content.trim())
         }
     }
