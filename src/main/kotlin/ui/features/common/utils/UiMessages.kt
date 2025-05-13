@@ -1,15 +1,15 @@
 package org.example.ui.features.common.utils
 
 object UiMessages {
-    const val TASK_NAME_PROMPT = "Enter task name:"
-    const val NEW_TASK_NAME_PROMPT = "Enter new task name:"
-    const val TASK_DESCRIPTION_PROMPT = "Enter task description:"
-    const val TASK_STATE_PROMPT = "Enter task state name:"
+    const val TASK_NAME_PROMPT = "Enter task name: "
+    const val NEW_TASK_NAME_PROMPT = "Enter new task name: "
+    const val TASK_DESCRIPTION_PROMPT = "Enter task description: "
+    const val TASK_STATE_PROMPT = "Enter task state name: "
     const val EMPTY_TASK_INPUT = "Inputs are empty"
-    const val USER_NAME_PROMPT = "Enter User name"
+    const val USER_NAME_PROMPT = "Enter User name: "
     const val TASK_DELETE_SUCCESSFULLY = "Task deleted successfully."
     const val EMPTY_TASK_NAME_INPUT = "Task name cannot be empty."
-    const val EMPTY_USER_NAME_INPUT = "Empty user name"
+    const val EMPTY_USER_NAME_INPUT = "Empty user name."
     const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
     const val PROJECT_NAME_PROMPT = "Enter project name:"

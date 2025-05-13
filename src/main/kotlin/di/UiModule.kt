@@ -36,5 +36,5 @@ val uiModule = module {
     factory<AdminEntityStateManagerUi> { AdminEntityStateManagerUiImpl(get(), get(), get(), get(), get()) }
     factory<TaskManagerUi> { TaskManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory<EntityStateManageUi> { EntityStateManagerUiImp(get(), get(), get(), get()) }
-    factory<UiUtils> { UiUtils(get()) }
+    factory<UiUtils> { UiUtils() }
 }

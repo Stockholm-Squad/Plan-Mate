@@ -27,7 +27,7 @@ class TaskManagerUiImp(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessageLine(throwable.message ?: "Unknown error")
@@ -58,11 +58,11 @@ class TaskManagerUiImp(
             TaskOptions.SHOW_TASKS_BY_PROJECT_NAME -> showAllTasksInProject()
             TaskOptions.SHOW_MATE_TASK_ASSIGNMENTS -> showAllMateTaskAssignment()
             TaskOptions.EXIT -> {
-                uiUtils.exit()
+                printer.showMessageLine(UiMessages.GOODBYE)
                 return true
             }
 
-            else -> uiUtils.invalidChoice()
+            else -> printer.showMessageLine(UiMessages.INVALID_OPTION)
         }
         return false
     }
