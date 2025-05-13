@@ -13,9 +13,9 @@ fun buildTask(
     description: String = "",
     stateId: UUID = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1"),
     createdDate: LocalDateTime = DateHandlerImp().getCurrentDateTime(),
-    updatedDate: LocalDateTime = DateHandlerImp().getCurrentDateTime()
+    updatedDate: LocalDateTime = DateHandlerImp().getCurrentDateTime(),
 
-): Task {
+    ): Task {
     return Task(
         id, projectName, title, description, stateId, createdDate, updatedDate
     )
@@ -29,7 +29,7 @@ fun buildTaskModel(
     description: String = "",
     stateId: String = "",
     createdDate: String = DateHandlerImp().getCurrentDateTime().toString(),
-    updatedDate: String = DateHandlerImp().getCurrentDateTime().toString()
+    updatedDate: String = DateHandlerImp().getCurrentDateTime().toString(),
 ): TaskDto {
     return TaskDto(id, projectName, title, description, stateId, createdDate, updatedDate)
 }

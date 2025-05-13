@@ -6,11 +6,13 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.logic.repository.AuditRepository
 import org.example.logic.usecase.audit.AddAuditUseCase
+import org.example.logic.utils.DateHandler
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
 
 class AddAuditUseCaseTest {
+    private lateinit var dateHandler: DateHandler
     private lateinit var auditRepository: AuditRepository
     private lateinit var addAuditUseCase: AddAuditUseCase
 
@@ -18,7 +20,8 @@ class AddAuditUseCaseTest {
     @BeforeEach
     fun setUp() {
         auditRepository = mockk(relaxed = true)
-        addAuditUseCase = AddAuditUseCase(auditRepository)
+        dateHandler = mockk(relaxed = true)
+        addAuditUseCase = AddAuditUseCase(auditRepository, dateHandler)
     }
 
     @Test

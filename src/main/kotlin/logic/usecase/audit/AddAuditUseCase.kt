@@ -1,13 +1,16 @@
 package org.example.logic.usecase.audit
 
-import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import org.example.logic.repository.AuditRepository
+import org.example.logic.utils.DateHandler
 
 import java.util.*
 
-class AddAuditUseCase(private val auditRepository: AuditRepository) {
+class AddAuditUseCase(
+    private val auditRepository: AuditRepository,
+    private val dateHandler: DateHandler
+) {
 
     suspend fun addAudit(
         userId: UUID,
@@ -20,7 +23,7 @@ class AddAuditUseCase(private val auditRepository: AuditRepository) {
             entityType = entityType,
             entityTypeId = entityId,
             description = description,
-            dateTime = DateHandlerImp().getCurrentDateTime(),
+            dateTime = dateHandler.getCurrentDateTime()
         )
         return auditRepository.addAudit(auditEntry)
     }
