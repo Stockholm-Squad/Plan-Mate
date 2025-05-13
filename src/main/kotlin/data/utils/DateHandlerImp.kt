@@ -11,10 +11,4 @@ class DateHandlerImp : DateHandler {
         val timeZone = TimeZone.currentSystemDefault()
         return now.toLocalDateTime(timeZone)
     }
-
-    fun getLocalDateTimeFromString(date: String): LocalDateTime = try {
-        LocalDateTime.parse(date)
-    } catch (ex: IllegalArgumentException) {
-        throw Exception("Invalid date format: $this")
-    }
 }

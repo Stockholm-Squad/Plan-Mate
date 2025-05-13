@@ -6,6 +6,7 @@ import org.example.logic.entities.Task
 
 
 interface OutputPrinter {
+    fun showMessageLine(message: String)
     fun showMessage(message: String)
     fun printTask(task: Task)
     fun printTaskList(tasks: List<Task>)

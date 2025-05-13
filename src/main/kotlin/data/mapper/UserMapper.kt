@@ -7,19 +7,19 @@ import org.example.logic.utils.toSafeUUID
 
 fun UserDto.mapToUserEntity(): User? {
     return User(
-        id.toSafeUUID() ?: return null,
-        username,
-        hashedPassword,
-        getRoleType(role)
+        id = id.toSafeUUID() ?: return null,
+        username = username,
+        hashedPassword = hashedPassword,
+        userRole = getRoleType(role)
     )
 }
 
 fun User.mapToUserModel(): UserDto {
     return UserDto(
-        id.toString(),
-        username,
-        hashedPassword,
-        userRole.toString()
+        id = id.toString(),
+        username = username,
+        hashedPassword = hashedPassword,
+        role = userRole.toString()
     )
 }
 

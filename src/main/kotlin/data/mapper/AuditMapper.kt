@@ -9,7 +9,7 @@ import org.example.logic.utils.toSafeUUID
 
 fun AuditDto.mapToAuditEntity(): Audit? {
     return Audit(
-        id.toSafeUUID() ?: return null,
+        id = id.toSafeUUID() ?: return null,
         entityType = getAuditType(entityType) ?: return null,
         entityTypeId = entityTypeId.toSafeUUID() ?: return null,
         description = description,
@@ -20,7 +20,7 @@ fun AuditDto.mapToAuditEntity(): Audit? {
 
 fun Audit.mapToAuditModel(): AuditDto {
     return AuditDto(
-        id.toString(),
+        id = id.toString(),
         entityType = entityType.toString(),
         entityTypeId = entityTypeId.toString(),
         description = description,
@@ -29,11 +29,11 @@ fun Audit.mapToAuditModel(): AuditDto {
     )
 }
 
-fun getAuditType(audit: String): EntityType? {
+fun getAuditType(audit: String): EntityType {
     return when {
         audit.equals("TASK", ignoreCase = true) -> EntityType.TASK
         audit.equals("PROJECT", ignoreCase = true) -> EntityType.PROJECT
         audit.equals("STATE", ignoreCase = true) -> EntityType.STATE
-        else -> null
+        else -> EntityType.UNKOWN
     }
 }

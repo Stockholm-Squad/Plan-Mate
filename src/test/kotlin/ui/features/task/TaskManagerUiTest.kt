@@ -12,7 +12,6 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.example.ui.utils.UiMessages
@@ -68,7 +67,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { printer.printTaskList(sampleTasks) }
-        verify(exactly = 0) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
+        verify(exactly = 0) { printer.showMessageLine(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
@@ -80,7 +79,7 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasks()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
@@ -93,7 +92,7 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasks()
 
         // Then
-        verify(exactly = 1) { printer.showMessage("Error: ${error}") }
+        verify(exactly = 1) { printer.showMessageLine("Error: ${error}") }
     }
 //endregion
 
@@ -113,7 +112,7 @@ class TaskManagerUiTest {
 
         // Then
         verifySequence {
-            printer.showMessage(UiMessages.TASK_NAME_PROMPT)
+            printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
             printer.printTask(task)
         }
     }
@@ -131,7 +130,7 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) {
-            printer.showMessage("Error: ${NoTasksFoundException()}")
+            printer.showMessageLine("Error: ${NoTasksFoundException()}")
         }
     }
 
@@ -144,7 +143,7 @@ class TaskManagerUiTest {
         taskManagerUi.getTaskByName()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT) }
         verify(exactly = 0) { manageTasksUseCase.getTaskByName(any()) }
     }
 
@@ -157,7 +156,7 @@ class TaskManagerUiTest {
         taskManagerUi.getTaskByName()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT) }
         verify(exactly = 0) { manageTasksUseCase.getTaskByName(any()) }
     }
     //endregion
@@ -193,7 +192,7 @@ class TaskManagerUiTest {
         taskManagerUi.addTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) }
         verify(exactly = 0) { manageStateUseCase.getEntityStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
@@ -209,7 +208,7 @@ class TaskManagerUiTest {
         taskManagerUi.addTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) }
         verify(exactly = 0) { manageStateUseCase.getEntityStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
@@ -228,7 +227,7 @@ class TaskManagerUiTest {
         taskManagerUi.addTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_TASK_STATE_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.INVALID_TASK_STATE_INPUT) }
         verify(exactly = 1) { manageStateUseCase.getEntityStateIdByName(stateName) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
@@ -243,7 +242,7 @@ class TaskManagerUiTest {
         taskManagerUi.addTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) }
         verify(exactly = 0) { manageStateUseCase.getEntityStateIdByName(any()) }
         verify(exactly = 0) { manageTasksUseCase.addTask(any()) }
     }
@@ -291,7 +290,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.NO_TASK_FOUND) }
     }
 
     @Test
@@ -310,7 +309,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_STATE_INPUT) }
     }
 
     @Test
@@ -321,7 +320,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_ID_INPUT) }
         verify(exactly = 0) { reader.readStringOrNull() }
     }
 
@@ -333,7 +332,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_ID_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_ID_INPUT) }
     }
 
     @Test
@@ -352,7 +351,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT) }
     }
 
     @Test
@@ -371,7 +370,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT) }
     }
 
     @Test
@@ -390,7 +389,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT) }
     }
 
     @Test
@@ -409,7 +408,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_DESCRIPTION_INPUT) }
     }
 
     @Test
@@ -428,7 +427,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_STATE_INPUT) }
     }
 
     @Test
@@ -447,7 +446,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_STATE_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_STATE_INPUT) }
     }
 
     @Test
@@ -465,7 +464,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify { printer.showMessage(UiMessages.EMPTY_TASK_INPUT) }
+        verify { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) }
     }
 
     @Test
@@ -486,7 +485,7 @@ class TaskManagerUiTest {
         taskManagerUi.updateTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.INVALID_STATE_NAME) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.INVALID_STATE_NAME) }
     }
 
     //endregion
@@ -508,7 +507,7 @@ class TaskManagerUiTest {
         // Then
         verify(exactly = 1) { manageTasksUseCase.getTaskByName(taskName) }
         verify(exactly = 1) { manageTasksUseCase.deleteTaskByName(taskName) }
-        verify(exactly = 1) { printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.TASK_DELETE_SUCCESSFULLY) }
     }
 
 
@@ -522,7 +521,7 @@ class TaskManagerUiTest {
         taskManagerUi.deleteTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT) }
     }
 
     @Test
@@ -536,7 +535,7 @@ class TaskManagerUiTest {
         taskManagerUi.deleteTask()
 
         // Then
-        verify(exactly = 1) { printer.showMessage(UiMessages.NO_TASK_FOUND) }
+        verify(exactly = 1) { printer.showMessageLine(UiMessages.NO_TASK_FOUND) }
     }
     //endregion
 
@@ -573,7 +572,7 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasksInProject()
 
         // Then
-        verify { printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT) }
+        verify { printer.showMessageLine(UiMessages.NO_TASKS_FOUND_IN_PROJECT) }
     }
     //endregion
 
@@ -590,9 +589,9 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasksInProject()
 
         // Then
-        verify { printer.showMessage(UiMessages.PROJECT_NAME_PROMPT) }
+        verify { printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT) }
         verify { printer.printTaskList(tasks) }
-        verify(exactly = 0) { printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT) }
+        verify(exactly = 0) { printer.showMessageLine(UiMessages.NO_TASKS_FOUND_IN_PROJECT) }
     }
 
 
@@ -604,8 +603,8 @@ class TaskManagerUiTest {
 
         taskManagerUi.showAllTasksInProject()
 
-        verify { printer.showMessage(UiMessages.PROJECT_NAME_PROMPT) }
-        verify { printer.showMessage(UiMessages.NO_TASKS_FOUND_IN_PROJECT) }
+        verify { printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT) }
+        verify { printer.showMessageLine(UiMessages.NO_TASKS_FOUND_IN_PROJECT) }
         verify(exactly = 0) { printer.printTaskList(any()) }
     }
 
@@ -618,8 +617,8 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasksInProject()
 
         // Then
-        verify { printer.showMessage(UiMessages.PROJECT_NAME_PROMPT) }
-        verify { printer.showMessage(UiMessages.EMPTY_PROJECT_ID_INPUT) }
+        verify { printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT) }
+        verify { printer.showMessageLine(UiMessages.EMPTY_PROJECT_ID_INPUT) }
         verify(exactly = 0) { manageTasksInProjectUseCase.getTasksInProjectByName(any()) }
     }
 
@@ -635,8 +634,8 @@ class TaskManagerUiTest {
         taskManagerUi.showAllTasksInProject()
 
         // Then
-        verify { printer.showMessage(UiMessages.PROJECT_NAME_PROMPT) }
-        verify { printer.showMessage("Error: ${exception}") }
+        verify { printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT) }
+        verify { printer.showMessageLine("Error: ${exception}") }
     }
     //endregion
 
