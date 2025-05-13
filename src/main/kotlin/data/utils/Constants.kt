@@ -1,6 +1,5 @@
 package org.example.data.utils
 
-const val CONNECTION_STRING = "mongodb+srv://PlanMate:planmate@planmate.06s0n1e.mongodb.net/?retryWrites=true&w=majority&appName=PlanMate" //TODO
 const val DATABASE_NAME = "PlanMate"
 const val TASKS_COLLECTION_NAME = "tasks"
 const val USERS_COLLECTION_NAME = "users"
