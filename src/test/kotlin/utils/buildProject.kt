@@ -9,6 +9,6 @@ fun buildProject(
     stateId: UUID = UUID.randomUUID()
 ): Project {
     return Project(
-        id = id, name = name, stateId = stateId
+        id = id, title = name, stateId = stateId
     )
 }

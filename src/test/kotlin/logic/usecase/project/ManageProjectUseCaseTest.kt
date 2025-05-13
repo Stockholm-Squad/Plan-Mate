@@ -6,12 +6,9 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.logic.NoEntityStateFoundException
-import org.example.logic.NoProjectAddedException
 import org.example.logic.NoProjectDeletedException
-import org.example.logic.NoProjectsFoundException
 import org.example.logic.ProjectAlreadyExistException
 import org.example.logic.ProjectNotFoundException
-import org.example.logic.entities.EntityState
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
@@ -54,7 +51,7 @@ class ManageProjectUseCaseTest {
             assertThat(result).isTrue()
             coVerify {
                 projectRepository.addProject(withArg {
-                    assertThat(it.name).isEqualTo(projectName)
+                    assertThat(it.title).isEqualTo(projectName)
                     assertThat(it.stateId).isEqualTo(stateId)
                 })
             }
@@ -111,7 +108,7 @@ class ManageProjectUseCaseTest {
             coVerify {
                 projectRepository.updateProject(withArg {
                     assertThat(it.id).isEqualTo(projectId)
-                    assertThat(it.name).isEqualTo(updatedName)
+                    assertThat(it.title).isEqualTo(updatedName)
                     assertThat(it.stateId).isEqualTo(newStateId)
                 })
             }

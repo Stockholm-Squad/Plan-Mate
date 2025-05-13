@@ -18,7 +18,7 @@ val stateId2 = UUID.randomUUID()
 val stateId3 = UUID.randomUUID()
 val task = Task(
     id = taskId1,
-    projectName = "Project A",
+    projectTitle = "Project A",
     title = "Task 1",
     description = "First task",
     stateId = stateId1,
@@ -27,7 +27,7 @@ val task = Task(
 )
 val taskDto =  TaskDto(
     id = taskId1.toString(),
-    projectName = "Project A",
+    projectTitle = "Project A",
     title = "Task 1",
     description = "First task",
     stateId = stateId1.toString(),
@@ -37,7 +37,7 @@ val taskDto =  TaskDto(
 val tasksList = listOf(
     Task(
         id = taskId1,
-        projectName = "Project A",
+        projectTitle = "Project A",
         title = "Task 1",
         description = "First task",
         stateId = stateId1,
@@ -45,7 +45,7 @@ val tasksList = listOf(
         updatedDate = currentTime
     ), Task(
         id = taskId2,
-        projectName = "Project B",
+        projectTitle = "Project B",
         title = "Task 2",
         description = "Second task",
         stateId = stateId2,
@@ -53,7 +53,7 @@ val tasksList = listOf(
         updatedDate = currentTime
     ), Task(
         id = taskId3,
-        projectName = "Project C",
+        projectTitle = "Project C",
         title = "Task 3",
         description = "Third task",
         stateId = stateId3,
@@ -64,7 +64,7 @@ val tasksList = listOf(
 val taskDtoList = listOf(
     TaskDto(
         id = taskId1.toString(),
-        projectName = "Project A",
+        projectTitle = "Project A",
         title = "Task 1",
         description = "First task",
         stateId = stateId1.toString(),
@@ -72,7 +72,7 @@ val taskDtoList = listOf(
         updatedDate = currentTime.toString()
     ), TaskDto(
         id = taskId2.toString(),
-        projectName = "Project B",
+        projectTitle = "Project B",
         title = "Task 2",
         description = "Second task",
         stateId = stateId2.toString(),
@@ -80,7 +80,7 @@ val taskDtoList = listOf(
         updatedDate = currentTime.toString()
     ), TaskDto(
         id = taskId3.toString(),
-        projectName = "Project C",
+        projectTitle = "Project C",
         title = "Task 3",
         description = "Third task",
         stateId = stateId3.toString(),

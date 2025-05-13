@@ -86,8 +86,8 @@ class ProjectCSVReaderWriterTest {
         @Test
         fun `write should create file with correct content`() {
             val projects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", name = "Project A", title = "State A"),
+                ProjectDto(id = "2", name = "Project B", title = "State B")
             )
 
             val result = dataSource.overWrite(projects)
@@ -130,8 +130,8 @@ class ProjectCSVReaderWriterTest {
         @Test
         fun `append should add records to empty file`() {
             val projects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A"),
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "1", name = "Project A", title = "State A"),
+                ProjectDto(id = "2", name = "Project B", title = "State B")
             )
 
             val result = dataSource.append(projects)
@@ -147,12 +147,12 @@ class ProjectCSVReaderWriterTest {
         @Test
         fun `append should add records to existing file`() {
             val initialProjects = listOf(
-                ProjectDto(id = "1", name = "Project A", stateId = "State A")
+                ProjectDto(id = "1", name = "Project A", title = "State A")
             )
             dataSource.overWrite(initialProjects)
 
             val newProjects = listOf(
-                ProjectDto(id = "2", name = "Project B", stateId = "State B")
+                ProjectDto(id = "2", name = "Project B", title = "State B")
             )
 
             val result = dataSource.append(newProjects)

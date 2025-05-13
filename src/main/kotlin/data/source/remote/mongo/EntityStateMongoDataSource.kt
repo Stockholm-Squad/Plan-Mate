@@ -19,20 +19,20 @@ class EntityStateMongoDataSource(
     override suspend fun updateEntityState(entityState: EntityStateDto): Boolean =
         stateCollection.updateOne(
             EntityStateDto::id eq entityState.id,
-            setValue(EntityStateDto::name, entityState.name)
+            setValue(EntityStateDto::title, entityState.title)
         ).matchedCount > 0
 
     override suspend fun deleteEntityState(entityState: EntityStateDto): Boolean =
         stateCollection.deleteOne(EntityStateDto::id eq entityState.id).deletedCount > 0
 
     override suspend fun isEntityStateExist(stateName: String): Boolean =
-        stateCollection.find(Filters.eq(EntityStateDto::name.name, stateName)).firstOrNull() != null
+        stateCollection.find(Filters.eq(EntityStateDto::title.name, stateName)).firstOrNull() != null
 
     override suspend fun getAllEntityStates(): List<EntityStateDto> =
         stateCollection.find().toList()
 
     override suspend fun getEntityStateByName(stateName: String): EntityStateDto? =
-        stateCollection.find(Filters.eq(EntityStateDto::name.name, stateName)).firstOrNull()
+        stateCollection.find(Filters.eq(EntityStateDto::title.name, stateName)).firstOrNull()
 
     override suspend fun getEntityStateById(stateId: String): EntityStateDto? =
         stateCollection.find(Filters.eq(EntityStateDto::id.name, stateId)).firstOrNull()

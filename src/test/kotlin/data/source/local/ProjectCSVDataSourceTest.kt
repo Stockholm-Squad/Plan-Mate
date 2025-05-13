@@ -20,9 +20,9 @@ class ProjectCSVDataSourceTest {
     private lateinit var userAssignedToProjectDataSource: UserAssignedToProjectDataSource
     private lateinit var dataSource: ProjectDataSource
 
-    private val project1 = ProjectDto(id = "1", name = "Project A", stateId = "2")
-    private val project2 = ProjectDto(id = "2", name = "Project B", stateId = "3")
-    private val updatedProject = ProjectDto(id = "1", name = "Updated Project A", stateId = "4")
+    private val project1 = ProjectDto(id = "1", name = "Project A", title = "2")
+    private val project2 = ProjectDto(id = "2", name = "Project B", title = "3")
+    private val updatedProject = ProjectDto(id = "1", name = "Updated Project A", title = "4")
 
     @BeforeEach
     fun setup() {
@@ -138,7 +138,7 @@ class ProjectCSVDataSourceTest {
         // Given
         coEvery {
             userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName("Thoraya")
-        } returns listOf(UserAssignedToProjectDto(userName = "Thoraya", projectId = "1"))
+        } returns listOf(UserAssignedToProjectDto(username = "Thoraya", projectId = "1"))
 
         coEvery { projectReaderWriter.read() } returns listOf(project1, project2)
 
@@ -169,7 +169,7 @@ class ProjectCSVDataSourceTest {
         // Given
         coEvery {
             userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName("Yasmeen")
-        } returns listOf(UserAssignedToProjectDto(userName = "Yasmeen", projectId = "99"))
+        } returns listOf(UserAssignedToProjectDto(username = "Yasmeen", projectId = "99"))
         coEvery { projectReaderWriter.read() } returns listOf(project1, project2)
 
         // When

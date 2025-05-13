@@ -3,7 +3,6 @@ package logic.usecase.project
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.logic.NoProjectsFoundException
@@ -11,7 +10,6 @@ import org.example.logic.ProjectNotFoundException
 import org.example.logic.repository.ProjectRepository
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utils.buildProject
@@ -47,7 +45,7 @@ class GetProjectsUseCaseTest {
         coEvery { projectRepository.getAllProjects() } returns listOf(expectedProject)
 
         // When
-        val result = getProjectsUseCase.getProjectByName(expectedProject.name)
+        val result = getProjectsUseCase.getProjectByName(expectedProject.title)
 
         // Then
         assertThat(result).isEqualTo(expectedProject)

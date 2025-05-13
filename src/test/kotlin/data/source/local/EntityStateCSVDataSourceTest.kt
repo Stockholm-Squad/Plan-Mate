@@ -17,8 +17,8 @@ class EntityStateCSVDataSourceTest {
     private lateinit var readerWriter: IReaderWriter<EntityStateDto>
     private lateinit var dataSource: EntityStateDataSource
 
-    private val sampleState1 = EntityStateDto(id = "1", name = "Todo")
-    private val sampleState2 = EntityStateDto(id = "2", name = "Doing")
+    private val sampleState1 = EntityStateDto(id = "1", title = "Todo")
+    private val sampleState2 = EntityStateDto(id = "2", title = "Doing")
 
     @BeforeEach
     fun setup() {
@@ -57,7 +57,7 @@ class EntityStateCSVDataSourceTest {
         coEvery { readerWriter.read() } returns listOf(sampleState1, sampleState2)
         coEvery { readerWriter.overWrite(any()) } returns true
 
-        val updated = sampleState1.copy(name = "Updated")
+        val updated = sampleState1.copy(title = "Updated")
 
         //When
         val result = dataSource.updateEntityState(updated)
@@ -67,8 +67,8 @@ class EntityStateCSVDataSourceTest {
         coVerify {
             readerWriter.overWrite(
                 match { list ->
-                    list.any { it.id == "1" && it.name == "Updated" } &&
-                            list.any { it.id == "2" && it.name == "Doing" }
+                    list.any { it.id == "1" && it.title == "Updated" } &&
+                            list.any { it.id == "2" && it.title == "Doing" }
                 }
             )
         }
@@ -81,7 +81,7 @@ class EntityStateCSVDataSourceTest {
         coEvery { readerWriter.overWrite(any()) } returns false
 
         //When
-        val result = dataSource.updateEntityState(sampleState1.copy(name = "Changed"))
+        val result = dataSource.updateEntityState(sampleState1.copy(title = "Changed"))
 
         //Then
         assertThat(result).isFalse()
@@ -93,7 +93,7 @@ class EntityStateCSVDataSourceTest {
         coEvery { readerWriter.read() } returns listOf(sampleState2)
         coEvery { readerWriter.overWrite(listOf(sampleState2)) } returns true
 
-        val updated = sampleState1.copy(name = "Updated")
+        val updated = sampleState1.copy(title = "Updated")
 
         //When
         val result = dataSource.updateEntityState(updated)

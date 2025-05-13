@@ -5,7 +5,7 @@ import java.util.*
 
 data class Task(
     val id: UUID = UUID.randomUUID(),
-    val projectName: String,
+    val projectTitle: String,
     val title: String,
     val description: String,
     val stateId: UUID,

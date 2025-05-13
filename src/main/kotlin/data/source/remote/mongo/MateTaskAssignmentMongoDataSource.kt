@@ -15,7 +15,7 @@ class MateTaskAssignmentMongoDataSource(
     override suspend fun addUserToTask(username: String, taskId: String): Boolean =
         mateTaskAssignmentCollection.insertOne(
             MateTaskAssignmentDto(
-                userName = username,
+                username = username,
                 taskId = taskId
             )
         ).insertedId != null
@@ -23,7 +23,7 @@ class MateTaskAssignmentMongoDataSource(
     override suspend fun deleteUserFromTask(username: String, taskId: String): Boolean =
         mateTaskAssignmentCollection.deleteOne(
             and(
-                MateTaskAssignmentDto::userName eq username,
+                MateTaskAssignmentDto::username eq username,
                 MateTaskAssignmentDto::taskId eq taskId
             )
         ).deletedCount > 0
@@ -32,5 +32,5 @@ class MateTaskAssignmentMongoDataSource(
         mateTaskAssignmentCollection.find(MateTaskAssignmentDto::taskId eq taskId).toList()
 
     override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
-        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::userName eq username).toList()
+        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::username eq username).toList()
 }

@@ -17,7 +17,7 @@ class UserCSVDataSource(
 
     override suspend fun getUsersByProjectId(projectId: String): List<UserDto> =
         userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId(projectId)
-            .map { userAssignedToProject -> userAssignedToProject.userName }
+            .map { userAssignedToProject -> userAssignedToProject.username }
             .let { userIds -> getAllUsers().filter { user -> user.id in userIds } }
 
     override suspend fun isUserExist(username: String): Boolean =

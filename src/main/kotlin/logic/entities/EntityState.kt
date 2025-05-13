@@ -4,5 +4,5 @@ import java.util.*
 
 data class EntityState(
     val id: UUID = UUID.randomUUID(),
-    val name: String
+    val title: String
 )
