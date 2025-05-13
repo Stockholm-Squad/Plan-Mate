@@ -20,7 +20,7 @@ class ProjectMongoDataSource(
     override suspend fun updateProject(projectToUpdate: ProjectDto): Boolean =
         projectCollection.updateOne(
             ProjectDto::id eq projectToUpdate.id,
-            setValue(ProjectDto::name, projectToUpdate.name)
+            setValue(ProjectDto::title, projectToUpdate.title)
         ).matchedCount > 0
 
     override suspend fun deleteProject(projectToDelete: ProjectDto): Boolean =

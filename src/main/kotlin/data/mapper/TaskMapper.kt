@@ -7,24 +7,24 @@ import org.example.logic.utils.toSafeUUID
 
 fun TaskDto.mapToTaskEntity(): Task? {
     return Task(
-        id.toSafeUUID() ?: return null,
-        projectTitle,
-        title,
-        description,
-        stateId.toSafeUUID() ?: return null,
-        DateHandlerImp().getLocalDateTimeFromString(createdDate),
-        DateHandlerImp().getLocalDateTimeFromString(updatedDate)
+        id = id.toSafeUUID() ?: return null,
+        projectTitle = projectTitle,
+        title = title,
+        description = description,
+        stateId = stateId.toSafeUUID() ?: return null,
+        createdDate = DateHandlerImp().getLocalDateTimeFromString(createdDate),
+        updatedDate = DateHandlerImp().getLocalDateTimeFromString(updatedDate)
     )
 }
 
 fun Task.mapToTaskModel(): TaskDto {
     return TaskDto(
-        id.toString(),
-        projectTitle,
-        title,
-        description,
-        stateId.toString(),
-        createdDate.toString(),
-        updatedDate.toString(),
+        id = id.toString(),
+        projectTitle = projectTitle,
+        title = title,
+        description = description,
+        stateId = stateId.toString(),
+        createdDate = createdDate.toString(),
+        updatedDate = updatedDate.toString(),
     )
 }

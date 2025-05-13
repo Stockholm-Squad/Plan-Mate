@@ -3,11 +3,11 @@ package org.example.ui
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.ui.features.addusertoproject.AddUserToProjectUI
-import org.example.ui.features.audit.AuditManagerUi
+import org.example.ui.features.audit.AuditManagerUI
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
-import org.example.ui.features.state.EntityStateManageUi
+import org.example.ui.features.state.EntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
@@ -16,9 +16,9 @@ import org.example.ui.input_output.output.OutputPrinter
 
 class PlanMateConsoleUi(
     private val loginUi: LoginUi,
-    private val manageAuditUi: AuditManagerUi,
+    private val manageAuditUi: AuditManagerUI,
     private val manageProjectUi: ProjectManagerUi,
-    private val stateManagerUi: EntityStateManageUi,
+    private val stateManagerUi: EntityStateManagerUi,
     private val taskManagerUi: TaskManagerUi,
     private val addUserToProjectUI: AddUserToProjectUI,
     private val createUserUi: CreateUserUi,
@@ -41,44 +41,46 @@ class PlanMateConsoleUi(
     }
 
     private fun handleMateUi() {
-        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
+        printer.showMessageLine(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
+        printer.showMessage(UiMessages.SELECT_OPTION)
         handleMateChoice()
     }
 
     private fun logout() {
-        printer.showMessage("Thank you for using PlanMate system")
-        printer.showMessage("--------------------------")
+        printer.showMessageLine(UiMessages.GOODBYE)
+        printer.showMessageLine(UiMessages.LINE_SEPARATOR)
         loginUi.logout()
     }
 
     private fun showErrorChoice() {
-        printer.showMessage("Invalid input, please try again")
-        printer.showMessage("--------------------------")
+        printer.showMessageLine("${UiMessages.INVALID_INPUT} ${UiMessages.PLEASE_TRY_AGAIN}")
+        printer.showMessageLine(UiMessages.LINE_SEPARATOR)
     }
 
     private fun handleMateChoice() {
         reader.readIntOrNull().takeIf { choice -> choice != null }.let { choice ->
             when (choice) {
-                MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
-                MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi()
-                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.invoke()
-                MateChoice.LOGOUT.choice -> logout()
+                1 -> taskManagerUi.launchUi()
+                2 -> stateManagerUi.launchUi()
+                3 -> manageAuditUi.launchUi()
+                0 -> logout()
                 else -> showErrorChoice()
             }
         }
     }
 
     private fun handleAdminUi() {
-        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
+        printer.showMessageLine(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
+        printer.showMessage(UiMessages.SELECT_OPTION)
         reader.readIntOrNull().takeIf { choice -> choice != null }.let { choice ->
             when (choice) {
-                AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
-                AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
-                AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi()
-                AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
-                AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.invoke()
-                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.invoke()
-                AdminChoice.LOGOUT.choice -> logout()
+                1 -> manageProjectUi.launchUi()
+                2 -> taskManagerUi.launchUi()
+                3 -> stateManagerUi.launchUi()
+                4 -> createUserUi.launchUi()
+                5 -> addUserToProjectUI.launchUi()
+                6 -> manageAuditUi.launchUi()
+                0 -> logout()
                 else -> showErrorChoice()
             }
         }
@@ -89,23 +91,3 @@ class PlanMateConsoleUi(
     }
 }
 
-enum class MateChoice(
-    val choice: Int
-) {
-    MANAGE_TASKS(1),
-    MANAGE_STATES(2),
-    SHOW_AUDIT_LOG(3),
-    LOGOUT(4),
-}
-
-enum class AdminChoice(
-    val choice: Int
-) {
-    MANAGE_PROJECTS(1),
-    MANAGE_TASKS(2),
-    MANAGE_STATES(3),
-    ADD_MATE(4),
-    ADD_MATE_TO_PROJECT(5),
-    SHOW_AUDIT_LOG(6),
-    LOGOUT(7),
-}

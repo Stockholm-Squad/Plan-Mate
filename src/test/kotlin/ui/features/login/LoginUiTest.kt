@@ -13,15 +13,15 @@ import org.example.logic.model.exceptions.UserDoesNotExist
 import logic.usecase.login.LoginUseCase
 import org.example.logic.model.exceptions.InvalidUserName
 import org.example.logic.model.exceptions.InvalidPassword
-import org.example.ui.features.login.LoginUiImp
+import org.example.ui.features.login.LoginUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.Test
 
-class LoginUiImpTest {
+class LoginUiTest {
     private lateinit var useCase: LoginUseCase
-    private lateinit var ui: LoginUiImp
+    private lateinit var ui: LoginUi
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
 
@@ -30,7 +30,7 @@ class LoginUiImpTest {
         reader = mockk(relaxed = true)
         printer = mockk(relaxed = true)
         useCase = mockk(relaxed = true)
-        ui = LoginUiImp(loginUseCase = useCase, reader = reader, printer = printer)
+        ui = LoginUi(loginUseCase = useCase, reader = reader, printer = printer)
     }
 
     @ParameterizedTest
@@ -54,7 +54,7 @@ class LoginUiImpTest {
             )
         } returns Result.failure(InvalidUserName())
         ui.authenticateUser()
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @ParameterizedTest
@@ -75,7 +75,7 @@ class LoginUiImpTest {
 
         ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @Test
@@ -88,7 +88,7 @@ class LoginUiImpTest {
 
         ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @Test
@@ -101,7 +101,7 @@ class LoginUiImpTest {
 
         ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @Test
