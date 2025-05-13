@@ -30,7 +30,7 @@ class AuditManagerUI(
                 1 -> displayAuditsByProjectName()
                 2 -> displayAuditsByTaskName()
                 3 -> displayAllAudits()
-                0 -> printer.showMessageLine(UiMessages.EXITING)
+                0 -> break
                 else -> printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE)
             }
         } while (askSearchAgain() == true)

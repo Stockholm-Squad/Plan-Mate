@@ -42,18 +42,19 @@ class PlanMateConsoleUi(
 
     private fun handleMateUi() {
         printer.showMessageLine(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
+        printer.showMessage(UiMessages.SELECT_OPTION)
         handleMateChoice()
     }
 
     private fun logout() {
-        printer.showMessageLine("Thank you for using PlanMate system")
-        printer.showMessageLine("--------------------------")
+        printer.showMessageLine(UiMessages.GOODBYE)
+        printer.showMessageLine(UiMessages.LINE_SEPARATOR)
         loginUi.logout()
     }
 
     private fun showErrorChoice() {
-        printer.showMessageLine("Invalid input, please try again")
-        printer.showMessageLine("--------------------------")
+        printer.showMessageLine("${UiMessages.INVALID_INPUT} ${UiMessages.PLEASE_TRY_AGAIN}")
+        printer.showMessageLine(UiMessages.LINE_SEPARATOR)
     }
 
     private fun handleMateChoice() {
@@ -70,6 +71,7 @@ class PlanMateConsoleUi(
 
     private fun handleAdminUi() {
         printer.showMessageLine(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
+        printer.showMessage(UiMessages.SELECT_OPTION)
         reader.readIntOrNull().takeIf { choice -> choice != null }.let { choice ->
             when (choice) {
                 1 -> manageProjectUi.launchUi()

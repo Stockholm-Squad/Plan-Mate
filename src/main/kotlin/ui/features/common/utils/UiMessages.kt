@@ -54,7 +54,6 @@ object UiMessages {
     const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE = "Please enter the state you want to delete: "
     const val INVALID_INPUT = "Invalid input"
     const val USERNAME_PASSWORD_CAN_NOT_BE_EMPTY = "Username and password cannot be empty"
-    const val USER_NOT_LOGGED_IN = "user not loged in"
     const val INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
         "Invalid task name entered.\nPress Enter to return to the main menu or 'Y' to try again."
     const val INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
@@ -88,6 +87,7 @@ object UiMessages {
     const val ADDING_NEW_USER = "➕ Adding new user..."
     const val USER_ADDED = "✅ User added successfully!"
     const val FAILED_TO_ADD_USER = "Failed to add user"
+    const val LINE_SEPARATOR = "--------------------------"
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """

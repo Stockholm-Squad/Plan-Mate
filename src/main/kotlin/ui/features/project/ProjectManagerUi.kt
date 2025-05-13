@@ -50,7 +50,7 @@ class ProjectManagerUi(
                 "3" -> addProject()
                 "4" -> updateProject()
                 "5" -> deleteProject()
-                "0" -> return
+                "0" -> break
                 else -> outputPrinter.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE)
             }
         }
@@ -178,7 +178,7 @@ class ProjectManagerUi(
                 showAllEntityStateManagerUi.launchUi()
                 outputPrinter.showMessageLine("${UiMessages.ENTER_NEW_STATE} (${UiMessages.LEAVE_BLANK_TO_KEEP} '${projectStateName}'): ")
                 val newProjectStateName = inputReader.readStringOrNull()
-                    ?: return@runBlocking outputPrinter.showMessageLine(UiMessages.USER_NOT_LOGGED_IN)
+                    ?: return@runBlocking outputPrinter.showMessageLine(UiMessages.INVALID_INPUT)
 
                 if (newName != null) {
                     manageProjectUseCase.updateProject(

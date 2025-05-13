@@ -57,8 +57,7 @@ class TaskManagerUi(
             5 -> deleteTask()
             6 -> showAllTasksInProject()
             7 -> showAllMateTaskAssignment()
-            8 -> {
-                printer.showMessageLine(UiMessages.GOODBYE)
+            0 -> {
                 return true
             }
 
