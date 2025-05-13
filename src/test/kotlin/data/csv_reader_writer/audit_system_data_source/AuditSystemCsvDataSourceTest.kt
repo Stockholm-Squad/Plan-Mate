@@ -1,17 +1,17 @@
-package data.source.local.csv_reader_writer
+package data.csv_reader_writer.audit_system_data_source
 
-import org.example.data.source.local.csv_reader_writer.AuditCSVReaderWriter
 import com.google.common.truth.Truth.assertThat
 import data.dto.AuditDto
 import kotlinx.coroutines.test.runTest
+import org.example.data.source.local.csv_reader_writer.AuditCSVReaderWriter
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.io.File
 
-
-class AuditCSVReaderWriterTest {
+class AuditSystemCsvDataSourceTest {
 
     private lateinit var dataSource: IReaderWriter<AuditDto>
     private lateinit var tempFile: File
@@ -47,7 +47,7 @@ class AuditCSVReaderWriterTest {
 
         val ds = AuditCSVReaderWriter(invalidFile.absolutePath)
 
-        org.junit.jupiter.api.assertThrows<Throwable> { ds.read() }
+        assertThrows<Throwable> { ds.read() }
         directory.delete()
     }
 
@@ -63,7 +63,7 @@ class AuditCSVReaderWriterTest {
     fun `read should return failure when CSV is malformed`() = runTest {
         tempFile.writeText("bad,data,line\n1,2,3")
 
-        org.junit.jupiter.api.assertThrows<Throwable> { dataSource.read() }
+        assertThrows<Throwable> { dataSource.read() }
     }
 
     @Test
@@ -83,7 +83,7 @@ class AuditCSVReaderWriterTest {
     fun `overWrite should return failure on write exception`() = runTest {
         val invalidDataSource = AuditCSVReaderWriter("/invalid/path/to/file.csv")
 
-        org.junit.jupiter.api.assertThrows<Throwable> { invalidDataSource.overWrite(emptyList()) }
+        assertThrows<Throwable> { invalidDataSource.overWrite(emptyList()) }
     }
 
     @Test
@@ -120,7 +120,7 @@ class AuditCSVReaderWriterTest {
     fun `append should return failure on exception`() = runTest {
         val invalidDataSource = AuditCSVReaderWriter("/invalid/path/to/file.csv")
 
-        org.junit.jupiter.api.assertThrows<Throwable> { invalidDataSource.append(emptyList()) }
+        assertThrows<Throwable> { invalidDataSource.append(emptyList()) }
     }
 
     @Test

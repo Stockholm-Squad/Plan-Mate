@@ -22,12 +22,6 @@ class UserCSVReaderWriter(
 
     override suspend fun read(): List<UserDto> {
         val file = resolveFile()
-        if (!file.exists()) {
-            withContext(Dispatchers.IO) {
-                file.createNewFile()
-            }
-            createAdminIfNotExist()
-        }
 
         createAdminIfNotExist()
         return DataFrame.readCSV(file)
@@ -37,7 +31,14 @@ class UserCSVReaderWriter(
 
 
     private suspend fun createAdminIfNotExist(): Boolean {
-        if (File(filePath).readLines().size < 2) {
+        val file = resolveFile()
+        if (!file.exists()) {
+            withContext(Dispatchers.IO) {
+                file.createNewFile()
+            }
+        }
+
+        if (file.readLines().size < 2) {
             val adminUser = listOf(
                 UserDto(
                     id = UUID.randomUUID().toString(),
@@ -58,9 +59,9 @@ class UserCSVReaderWriter(
 
     override suspend fun append(data: List<UserDto>): Boolean {
         resolveFile().also { file ->
-            val existing = if (file.exists() && file.length() > 0) {
-                DataFrame.readCSV(file).cast()
-            } else emptyList<UserDto>().toDataFrame()
+            createAdminIfNotExist()
+
+            val existing: DataFrame<UserDto> = DataFrame.readCSV(file).cast()
 
             val newData = data.toDataFrame()
             (existing.concat(newData)).writeCSV(file)
