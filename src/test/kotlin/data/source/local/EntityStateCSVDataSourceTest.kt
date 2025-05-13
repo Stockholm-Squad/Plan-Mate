@@ -17,8 +17,8 @@ class EntityStateCSVDataSourceTest {
     private lateinit var readerWriter: IReaderWriter<EntityStateDto>
     private lateinit var dataSource: EntityStateDataSource
 
-    private val sampleState1 = EntityStateDto(id = "1", name = "Active")
-    private val sampleState2 = EntityStateDto(id = "2", name = "Inactive")
+    private val sampleState1 = EntityStateDto(id = "1", name = "Todo")
+    private val sampleState2 = EntityStateDto(id = "2", name = "Doing")
 
     @BeforeEach
     fun setup() {
@@ -68,7 +68,7 @@ class EntityStateCSVDataSourceTest {
             readerWriter.overWrite(
                 match { list ->
                     list.any { it.id == "1" && it.name == "Updated" } &&
-                            list.any { it.id == "2" && it.name == "Inactive" }
+                            list.any { it.id == "2" && it.name == "Doing" }
                 }
             )
         }
@@ -212,7 +212,7 @@ class EntityStateCSVDataSourceTest {
         coEvery { readerWriter.read() } returns listOf(sampleState1, sampleState2)
 
         //When
-        val result = dataSource.getEntityStateByName("Inactive")
+        val result = dataSource.getEntityStateByName("Doing")
 
         //Then
         assertThat(result).isEqualTo(sampleState2)
