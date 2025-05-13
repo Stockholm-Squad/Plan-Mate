@@ -13,15 +13,12 @@ repositories {
 
 dependencies {
     addKoinDependencies()
-
+    addKotlinXDependencies()
+    addMongoDependencies()
+    addTestDependencies()
     //logger
     implementation("org.slf4j:slf4j-nop:2.0.9")
-
-    addKotlinXDependencies()
-
-    addMongoDependencies()
-
-    addTestDependencies()
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 }
 
 fun addTestDependencies() {
