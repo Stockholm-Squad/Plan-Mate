@@ -24,9 +24,9 @@ class TaskCSVDataSourceTest {
     private lateinit var taskInProjectDataSource: TaskInProjectDataSource
     private lateinit var dataSource: TaskDataSource
 
-    private val task1 = buildTaskModel(id = "1", name = "Design")
-    private val task2 = buildTaskModel(id = "2", name = "Development")
-    private val updatedTask = buildTaskModel(id = "1", name = "UI Design")
+    private val task1 = buildTaskModel(id = "1", title = "Design")
+    private val task2 = buildTaskModel(id = "2", title = "Development")
+    private val updatedTask = buildTaskModel(id = "1", title = "UI Design")
 
     @BeforeEach
     fun setup() {
