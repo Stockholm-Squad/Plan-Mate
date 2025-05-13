@@ -7,6 +7,7 @@ object UiMessages {
     const val TASK_STATE_PROMPT = "Enter task state name: "
     const val EMPTY_TASK_INPUT = "Inputs are empty"
     const val USER_NAME_PROMPT = "Enter User name: "
+    const val PASSWORD_PROMPT = "Enter password: "
     const val TASK_DELETE_SUCCESSFULLY = "Task deleted successfully."
     const val EMPTY_TASK_NAME_INPUT = "Task name cannot be empty."
     const val EMPTY_USER_NAME_INPUT = "Empty user name."
@@ -29,6 +30,7 @@ object UiMessages {
     const val PLEASE_ENTER_THE_NEW_STATE_NAME = "Please enter the new state name: "
     const val PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE = "Please enter the state you want to delete: "
     const val INVALID_INPUT = "Invalid input"
+    const val USERNAME_PASSWORD_CAN_NOT_BE_EMPTY = "Username and password cannot be empty"
     const val USER_NOT_LOGGED_IN = "user not loged in"
     const val INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
         "Invalid task name entered.\nPress Enter to return to the main menu or 'Y' to try again."
@@ -60,6 +62,9 @@ object UiMessages {
     const val FAILED_TO_DELETE_STATE = "Failed to delete state"
     const val FAILED_TO_UPDATE_STATE = "Failed to update state:"
     const val FAILED_TO_ADD_STATE = "Failed to add state:"
+    const val ADDING_NEW_USER = "➕ Adding new user..."
+    const val USER_ADDED = "✅ User added successfully!"
+    const val FAILED_TO_ADD_USER ="Failed to add user"
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """

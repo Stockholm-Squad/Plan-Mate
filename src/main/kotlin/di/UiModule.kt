@@ -13,7 +13,6 @@ import org.example.ui.features.state.ShowAllEntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.task.TaskManagerUiImp
 import org.example.ui.features.user.CreateUserUi
-import org.example.ui.features.user.CreateUserUiImp
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -22,7 +21,7 @@ val uiModule = module {
 
     factory<AuditManagerUI> { AuditManagerUI(get(), get(), get(), get()) }
     factory<LoginUi> { LoginUi(get(), get(), get()) }
-    factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
+    factory<CreateUserUi> { CreateUserUi(get(), get(), get()) }
     factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory<AddUserToProjectUI> { AddUserToProjectUI(get(), get(), get(), get(), get()) }
     factory<ShowAllEntityStateManagerUi> { ShowAllEntityStateManagerUi(get(), get()) }
