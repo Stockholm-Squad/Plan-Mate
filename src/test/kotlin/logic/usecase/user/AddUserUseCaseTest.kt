@@ -135,13 +135,13 @@ class AddUserUseCaseTest {
         every { validateUserDataUseCase.isValidPassword(password) } returns true
         coEvery { loginUseCase.isUserExist(username) } returns false
         every { hashingService.hash(password) } returns hashed
-        coEvery { userRepository.addUser(any()) } returns false // repo returns false here ✅
+        coEvery { userRepository.addUser(any()) } returns false
 
         // When
         val result = addUserUseCase.addUser(username, password)
 
         // Then
-        assertThat(result).isFalse() // assert that result is false ✅
+        assertThat(result).isFalse()
         coVerify {
             loginUseCase.isUserExist(username)
             userRepository.addUser(any())
