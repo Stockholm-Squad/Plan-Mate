@@ -8,7 +8,7 @@ import org.example.logic.utils.toSafeUUID
 fun TaskDto.mapToTaskEntity(): Task? {
     return Task(
         id.toSafeUUID() ?: return null,
-        projectName,
+        projectTitle,
         title,
         description,
         stateId.toSafeUUID() ?: return null,
@@ -20,7 +20,7 @@ fun TaskDto.mapToTaskEntity(): Task? {
 fun Task.mapToTaskModel(): TaskDto {
     return TaskDto(
         id.toString(),
-        projectName,
+        projectTitle,
         title,
         description,
         stateId.toString(),

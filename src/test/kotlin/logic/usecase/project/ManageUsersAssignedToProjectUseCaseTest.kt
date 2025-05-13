@@ -7,10 +7,8 @@ import io.mockk.mockk
 import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
 import logic.usecase.login.LoginUseCase
-import org.example.logic.ReadDataException
 import org.example.logic.UserDoesNotExistException
 import org.example.logic.entities.User
-import org.example.logic.entities.UserRole
 import org.example.logic.repository.UserRepository
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
@@ -149,7 +147,7 @@ class ManageUsersAssignedToProjectUseCaseTest {
     fun `deleteUserFromProject() should throw when user does not exist`() = runTest {
         //Given
         val project =
-            org.example.logic.entities.Project(id = projectId, name = projectName, stateId = UUID.randomUUID())
+            org.example.logic.entities.Project(id = projectId, title = projectName, stateId = UUID.randomUUID())
         coEvery { getProjectUseCase.getProjectByName(projectName) } returns project
         coEvery { loginUseCase.isUserExist(testUser.username) } returns false
         //When & then

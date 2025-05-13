@@ -100,7 +100,7 @@ class TaskManagerUiImp(
                 val project = getProjectsUseCase.getProjectByName(projectName)
 
                 val task = Task(
-                    projectName = projectName,
+                    projectTitle = projectName,
                     title = name,
                     description = description,
                     stateId = stateId,

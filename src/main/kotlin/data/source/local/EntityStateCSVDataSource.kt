@@ -25,7 +25,7 @@ class EntityStateCSVDataSource(
         entityStateReaderWriter.read()
 
     override suspend fun getEntityStateByName(stateName: String): EntityStateDto? =
-        getAllEntityStates().find { state -> state.name == stateName }
+        getAllEntityStates().find { state -> state.title == stateName }
 
     override suspend fun getEntityStateById(stateId: String): EntityStateDto? =
         getAllEntityStates().find { state -> state.id == stateId }

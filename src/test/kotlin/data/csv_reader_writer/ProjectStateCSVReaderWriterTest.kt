@@ -90,8 +90,8 @@ class ProjectStateCSVReaderWriterTest {
         @Test
         fun `write should create file with correct content`() {
             val states = listOf(
-                EntityStateDto(id = "1", name = "TODO"),
-                EntityStateDto(id = "2", name = "Progress")
+                EntityStateDto(id = "1", title = "TODO"),
+                EntityStateDto(id = "2", title = "Progress")
             )
 
             val result = dataSource.overWrite(states)

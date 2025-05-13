@@ -24,7 +24,7 @@ class UserMongoDataSource(
 
     override suspend fun getUsersByProjectId(projectId: String): List<UserDto> =
         userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId(projectId)
-            .map { userToProject -> userToProject.userName }
+            .map { userToProject -> userToProject.username }
             .takeIf { userNames -> userNames.isNotEmpty() }
             ?.let { userCollection.find(UserDto::username `in` it).toList() }
             ?: emptyList()

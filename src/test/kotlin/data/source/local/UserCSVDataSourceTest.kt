@@ -63,7 +63,7 @@ class UserCSVDataSourceTest {
     fun `getUsersByProjectId should return correct users`() = runTest {
         // Given
         coEvery { userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId("p1") } returns
-                listOf(UserAssignedToProjectDto(userName = "1", projectId = "p1"))
+                listOf(UserAssignedToProjectDto(username = "1", projectId = "p1"))
         coEvery { userReaderWriter.read() } returns listOf(user1, user2)
 
         // When

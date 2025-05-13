@@ -41,7 +41,7 @@ class OutputPrinterImplementation : OutputPrinter {
         println("│ State                        │")
         println("├──────────────────────────────┤")
         projectStates.forEach {
-            println("│ %-28s │".format(it.name))
+            println("│ %-28s │".format(it.title))
         }
         println("└──────────────────────────────┘")
     }

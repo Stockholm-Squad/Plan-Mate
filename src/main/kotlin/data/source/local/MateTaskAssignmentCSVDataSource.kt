@@ -18,5 +18,5 @@ class MateTaskAssignmentCSVDataSource(
         mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.taskId == taskId }
 
     override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
-        mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.userName == username }
+        mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.username == username }
 }

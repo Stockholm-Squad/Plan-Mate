@@ -38,7 +38,7 @@ class ProjectManagerUiImp(
                 outputPrinter.showMessage("No projects found")
             } else {
                 projects.forEachIndexed { index, project ->
-                    outputPrinter.showMessage("${index + 1}. ${project.name}")
+                    outputPrinter.showMessage("${index + 1}. ${project.title}")
                 }
             }
         }
@@ -60,7 +60,7 @@ class ProjectManagerUiImp(
             try {
                 getProjectsUseCase.getProjectByName(projectName).let { project ->
                     outputPrinter.showMessage("Project Details:")
-                    outputPrinter.showMessage("Name: ${project.name}")
+                    outputPrinter.showMessage("Name: ${project.title}")
                     val stateName: String =
                         manageStatesUseCase.getEntityStateNameByStateId(project.stateId) ?: "not exist state"
                     outputPrinter.showMessage("State: $stateName")
@@ -141,7 +141,7 @@ class ProjectManagerUiImp(
             getProjectsUseCase.getProjectByName(projectName).let { project ->
                 val projectStateName: String =
                     manageStatesUseCase.getEntityStateNameByStateId(project.stateId) ?: "not exist state"
-                outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.name}'): ")
+                outputPrinter.showMessage("Enter new project name (leave blank to keep '${project.title}'): ")
 
                 val newName = inputReader.readStringOrNull()
 
@@ -167,7 +167,7 @@ class ProjectManagerUiImp(
                         if (success) {
                             auditServicesUseCase.addAuditForUpdateEntity(
                                 entityType = EntityType.PROJECT,
-                                existEntityName = project.name,
+                                existEntityName = project.title,
                                 newEntityName = newName ?: projectName,
                                 entityId = project.id,
                                 newStateName = newProjectStateName

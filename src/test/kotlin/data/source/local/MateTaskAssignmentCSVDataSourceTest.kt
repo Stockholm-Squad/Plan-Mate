@@ -17,9 +17,9 @@ class MateTaskAssignmentCSVDataSourceTest {
     private lateinit var readerWriter: IReaderWriter<MateTaskAssignmentDto>
     private lateinit var dataSource: MateTaskAssignmentDataSource
 
-    private val dto1 = MateTaskAssignmentDto(userName = "Thoraya", taskId = "task1")
-    private val dto2 = MateTaskAssignmentDto(userName = "Hanan", taskId = "task2")
-    private val dto3 = MateTaskAssignmentDto(userName = "Thoraya", taskId = "task3")
+    private val dto1 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task1")
+    private val dto2 = MateTaskAssignmentDto(username = "Hanan", taskId = "task2")
+    private val dto3 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task3")
 
     @BeforeEach
     fun setup() {
