@@ -103,7 +103,8 @@ class AuditServicesUseCaseTest {
                 newName,
                 entityId,
                 newDescription,
-                newStateName
+                newStateName,
+                additionalInfo
             )
         } returns updateDescription
         coEvery { loginUseCase.getCurrentUser() } returns user
@@ -115,12 +116,13 @@ class AuditServicesUseCaseTest {
             newName,
             entityId,
             newDescription,
-            newStateName
+            newStateName,
+            additionalInfo
         )
     }
 
     @Test
-    fun `addAuditForUpdateEntity() should use default values when newDescription and newStateName are not passed`() =
+    fun `addAuditForUpdateEntity() should use default values when newDescription, newStateName and additionalInfo are not passed`() =
         runTest {
             // Given
             coEvery {
@@ -130,7 +132,8 @@ class AuditServicesUseCaseTest {
                     newEntityName = newName,
                     entityId = entityId,
                     newDescription = "",
-                    newStateName = ""
+                    newStateName = "",
+                    additionalInfo = ""
                 )
             } returns updateDescription
 

@@ -2,9 +2,9 @@ package utils
 
 import data.dto.AuditDto
 import kotlinx.datetime.LocalDateTime
-import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
+import org.example.logic.utils.DateHandlerImp
 import java.util.*
 
 fun buildAudit(

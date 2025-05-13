@@ -24,7 +24,7 @@ val useCaseModule = module {
 
     single<AddUserUseCase> { AddUserUseCase(get(), get(), get(), get()) }
     single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }
-    single<AddAuditUseCase> { AddAuditUseCase(get()) }
+    single<AddAuditUseCase> { AddAuditUseCase(get(), get()) }
     single<AuditServicesUseCase> { AuditServicesUseCase(get(), get(), get()) }
     single<AuditDescriptionProvider> { AuditDescriptionProvider() }
     single<LoginUseCase> { LoginUseCase(get(), get(), get()) }

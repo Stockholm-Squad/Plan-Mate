@@ -1,8 +1,8 @@
 package org.example.data.mapper
 
 import data.dto.TaskDto
-import org.example.data.utils.DateHandlerImp
 import org.example.logic.entities.Task
+import org.example.logic.utils.DateHandlerImp
 import org.example.logic.utils.toSafeUUID
 
 fun TaskDto.mapToTaskEntity(): Task? {
