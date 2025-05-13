@@ -17,10 +17,10 @@ class LoginUiImp(
         val user = loginUseCase.getCurrentUser()
         if (user != null) return user
 
-        printer.showMessage("Please enter your user name: ")
+        printer.showMessageLine("Please enter your user name: ")
         val username = reader.readStringOrNull() ?: return null
 
-        printer.showMessage("Please enter your Password: ")
+        printer.showMessageLine("Please enter your Password: ")
         val password = reader.readStringOrNull() ?: return null
 
         return runBlocking {
@@ -38,7 +38,7 @@ class LoginUiImp(
     }
 
     private fun handleFailure(message: String) {
-        printer.showMessage(message)
+        printer.showMessageLine(message)
     }
 
     override fun launchUi() {

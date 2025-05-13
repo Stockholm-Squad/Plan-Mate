@@ -43,9 +43,9 @@ class CreateUserUiImpTest {
 
         // Then
         verify {
-            mockPrinter.showMessage("➕ Adding new user...")
-            mockPrinter.showMessage("Enter username:")
-            mockPrinter.showMessage("Enter password:")
+            mockPrinter.showMessageLine("➕ Adding new user...")
+            mockPrinter.showMessageLine("Enter username:")
+            mockPrinter.showMessageLine("Enter password:")
         }
     }
 
@@ -58,7 +58,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
     @Test
@@ -70,7 +70,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
     @Test
@@ -82,7 +82,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
 
@@ -98,7 +98,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("✅ User $username added successfully!") }
+        verify { mockPrinter.showMessageLine("✅ User $username added successfully!") }
     }
 
     @Test
@@ -113,7 +113,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("Failed to add user") }
+        verify { mockPrinter.showMessageLine("Failed to add user") }
     }
 
     @Test
@@ -129,7 +129,7 @@ class CreateUserUiImpTest {
         createUserUiImp.launchUi(user)
 
         // Then
-        verify { mockPrinter.showMessage("${UsersDataAreEmpty().message}") }
+        verify { mockPrinter.showMessageLine("${UsersDataAreEmpty().message}") }
     }
 
 
@@ -161,7 +161,7 @@ class CreateUserUiImpTest {
 
         // Then
         verify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
     @Test
@@ -174,7 +174,7 @@ class CreateUserUiImpTest {
 
         // Then
         verify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
-        verify { mockPrinter.showMessage("Username and password cannot be empty") }
+        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
     }
 
 }

@@ -12,10 +12,10 @@ class UiUtils(
     }
 
     fun invalidChoice() {
-        printer.showMessage(UiMessages.INVALID_OPTION)
+        printer.showMessageLine(UiMessages.INVALID_OPTION)
     }
 
     fun exit() {
-        printer.showMessage(UiMessages.GOODBYE)
+        printer.showMessageLine(UiMessages.GOODBYE)
     }
 }

@@ -41,19 +41,19 @@ class PlanMateConsoleUi(
     }
 
     private fun handleMateUi() {
-        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
+        printer.showMessageLine(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_MATE)
         handleMateChoice()
     }
 
     private fun logout() {
-        printer.showMessage("Thank you for using PlanMate system")
-        printer.showMessage("--------------------------")
+        printer.showMessageLine("Thank you for using PlanMate system")
+        printer.showMessageLine("--------------------------")
         loginUi.logout()
     }
 
     private fun showErrorChoice() {
-        printer.showMessage("Invalid input, please try again")
-        printer.showMessage("--------------------------")
+        printer.showMessageLine("Invalid input, please try again")
+        printer.showMessageLine("--------------------------")
     }
 
     private fun handleMateChoice() {
@@ -69,14 +69,14 @@ class PlanMateConsoleUi(
     }
 
     private fun handleAdminUi() {
-        printer.showMessage(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
+        printer.showMessageLine(UiMessages.MAIN_MENU_WELCOME_MESSAGE_FOR_ADMIN)
         reader.readIntOrNull().takeIf { choice -> choice != null }.let { choice ->
             when (choice) {
                 AdminChoice.MANAGE_PROJECTS.choice -> manageProjectUi.launchUi()
                 AdminChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi()
                 AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
-                AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.invoke()
+                AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.launchUi()
                 AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.invoke()
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
@@ -90,7 +90,7 @@ class PlanMateConsoleUi(
 }
 
 enum class MateChoice(
-    val choice: Int
+    val choice: Int,
 ) {
     MANAGE_TASKS(1),
     MANAGE_STATES(2),
@@ -99,7 +99,7 @@ enum class MateChoice(
 }
 
 enum class AdminChoice(
-    val choice: Int
+    val choice: Int,
 ) {
     MANAGE_PROJECTS(1),
     MANAGE_TASKS(2),

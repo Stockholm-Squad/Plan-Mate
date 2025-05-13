@@ -18,7 +18,7 @@ class EntityStateManagerUiImp(
         when (user?.userRole) {
             UserRole.ADMIN -> adminStateManagerUi.launchUi()
             UserRole.MATE -> mateStateManagerUi.launchUi()
-            else -> printer.showMessage(UiMessages.INVALID_USER)
+            else -> printer.showMessageLine(UiMessages.INVALID_USER)
         }
     }
 

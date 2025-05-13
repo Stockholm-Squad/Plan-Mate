@@ -2,7 +2,6 @@ package org.example.di
 
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.addusertoproject.AddUserToProjectUI
-import org.example.ui.features.addusertoproject.AddUserToProjectUIImp
 import org.example.ui.features.audit.AuditManagerUi
 import org.example.ui.features.audit.AuditManagerUiImp
 import org.example.ui.features.common.utils.UiUtils
@@ -32,7 +31,7 @@ val uiModule = module {
     factory<LoginUi> { LoginUiImp(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
     factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    factory<AddUserToProjectUI> { AddUserToProjectUIImp(get(), get(), get(), get(), get()) }
+    factory<AddUserToProjectUI> { AddUserToProjectUI(get(), get(), get(), get(), get()) }
     factory<UserEntityStateManagerUi> { UserEntityStateManagerUiImp(get(), get()) }
     factory<MateEntityStateManagerUi> { MateEntityStateManagerUiImpl(get()) }
     factory<AdminEntityStateManagerUi> { AdminEntityStateManagerUiImpl(get(), get(), get(), get(), get()) }

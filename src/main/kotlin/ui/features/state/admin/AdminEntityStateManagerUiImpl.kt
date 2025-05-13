@@ -27,12 +27,12 @@ class AdminEntityStateManagerUiImpl(
     }
 
     private fun showMenu() {
-        printer.showMessage("-------------------------------------")
-        printer.showMessage(UiMessages.WHAT_DO_YOU_NEED)
+        printer.showMessageLine("-------------------------------------")
+        printer.showMessageLine(UiMessages.WHAT_DO_YOU_NEED)
         EntityStateMenuChoice.entries.forEach { item ->
-            printer.showMessage("${item.choiceNumber} ${item.choiceMessage}")
+            printer.showMessageLine("${item.choiceNumber} ${item.choiceMessage}")
         }
-        printer.showMessage("-------------------------------------")
+        printer.showMessageLine("-------------------------------------")
     }
 
     private fun handleMenuChoice(): Boolean {
@@ -42,13 +42,13 @@ class AdminEntityStateManagerUiImpl(
             EntityStateMenuChoice.UPDATE_STATE.choiceNumber -> this.updateState()
             EntityStateMenuChoice.DELETE_STATE.choiceNumber -> this.deleteState()
             EntityStateMenuChoice.BACK.choiceNumber -> return true
-            else -> printer.showMessage("Please enter a valid choice!!")
+            else -> printer.showMessageLine("Please enter a valid choice!!")
         }
         return false
     }
 
     override fun addState() {
-        printer.showMessage(UiMessages.PLEASE_ENTER_NAME_FOR_THE_STATE)
+        printer.showMessageLine(UiMessages.PLEASE_ENTER_NAME_FOR_THE_STATE)
         reader.readStringOrNull()
             .takeIf { stateName -> stateName != null }
             ?.let { stateName ->
@@ -61,26 +61,26 @@ class AdminEntityStateManagerUiImpl(
                             entityName = stateName,
                             entityId = stateId,
                         )
-                        printer.showMessage(UiMessages.STATE_ADDED_SUCCESSFULLY)
+                        printer.showMessageLine(UiMessages.STATE_ADDED_SUCCESSFULLY)
                     } catch (exception: Exception) {
-                        printer.showMessage("Failed to add state: ${exception.message}")
+                        printer.showMessageLine("Failed to add state: ${exception.message}")
                     }
                 }
-            } ?: printer.showMessage(UiMessages.INVALID_INPUT)
+            } ?: printer.showMessageLine(UiMessages.INVALID_INPUT)
     }
 
     override fun updateState() {
-        printer.showMessage(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE)
+        printer.showMessageLine(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_UPDATE)
         val currentStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
             ?: run {
-                printer.showMessage(UiMessages.INVALID_INPUT)
+                printer.showMessageLine(UiMessages.INVALID_INPUT)
                 return
             }
 
-        printer.showMessage(UiMessages.PLEASE_ENTER_THE_NEW_STATE_NAME)
+        printer.showMessageLine(UiMessages.PLEASE_ENTER_THE_NEW_STATE_NAME)
         val newStateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
             ?: run {
-                printer.showMessage(UiMessages.INVALID_INPUT)
+                printer.showMessageLine(UiMessages.INVALID_INPUT)
                 return
             }
         runBlocking {
@@ -96,15 +96,15 @@ class AdminEntityStateManagerUiImpl(
                     newEntityName = newStateName,
                     entityId = stateId
                 )
-                printer.showMessage(UiMessages.STATE_UPDATED_SUCCESSFULLY)
+                printer.showMessageLine(UiMessages.STATE_UPDATED_SUCCESSFULLY)
             } catch (exception: Exception) {
-                printer.showMessage("Failed to update state: ${exception.message}")
+                printer.showMessageLine("Failed to update state: ${exception.message}")
             }
         }
     }
 
     override fun deleteState() {
-        printer.showMessage(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE)
+        printer.showMessageLine(UiMessages.PLEASE_ENTER_STATE_NAME_YOU_WANT_TO_DELETE)
         reader.readStringOrNull().takeIf { stateName ->
             stateName != null
         }?.let { stateName ->
@@ -119,14 +119,14 @@ class AdminEntityStateManagerUiImpl(
                     )
                     showStateDeletedMessage()
                 } catch (exception: Exception) {
-                    printer.showMessage("Failed to delete state: ${exception.message}")
+                    printer.showMessageLine("Failed to delete state: ${exception.message}")
                 }
             }
-        } ?: printer.showMessage(UiMessages.INVALID_INPUT)
+        } ?: printer.showMessageLine(UiMessages.INVALID_INPUT)
     }
 
     private fun showStateDeletedMessage() {
-        printer.showMessage(UiMessages.STATE_DELETED_SUCCESSFULLY)
+        printer.showMessageLine(UiMessages.STATE_DELETED_SUCCESSFULLY)
     }
 
     override fun showAllStates() {

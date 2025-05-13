@@ -30,14 +30,14 @@ class TaskManagerUiImp(
     private val loginUseCase: LoginUseCase
 ) : TaskManagerUi {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        printer.showMessage(throwable.message ?: "Unknown error")
+        printer.showMessageLine(throwable.message ?: "Unknown error")
     }
     val timestamp = DateHandlerImp().getCurrentDateTime()
 
     override fun launchUi() {
 
         if (loginUseCase.getCurrentUser() == null) {
-            printer.showMessage(UiMessages.INVALID_USER)
+            printer.showMessageLine(UiMessages.INVALID_USER)
             return
         }
 
@@ -74,7 +74,7 @@ class TaskManagerUiImp(
                     printer.printTaskList(it)
                 }
             } catch (ex: Exception) {
-                printer.showMessage(ex.message ?: "Unknown Error")
+                printer.showMessageLine(ex.message ?: "Unknown Error")
             }
         }
     }
@@ -84,13 +84,13 @@ class TaskManagerUiImp(
         if (projectName.isEmpty()) return
 
         val (name, description, stateName) = readCreateTaskInput()
-            ?: return printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
+            ?: return printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT)
 
         val stateId = runBlocking(coroutineExceptionHandler) {
             try {
                 manageStateUseCase.getEntityStateIdByName(stateName)
             } catch (ex: Exception) {
-                printer.showMessage(ex.message ?: "Unknown Error")
+                printer.showMessageLine(ex.message ?: "Unknown Error")
                 null
             }
         } ?: return
@@ -116,7 +116,7 @@ class TaskManagerUiImp(
                 )
                 printer.printTask(task)
             } catch (ex: Exception) {
-                printer.showMessage(ex.message ?: "Unknown Error")
+                printer.showMessageLine(ex.message ?: "Unknown Error")
             }
         }
     }
@@ -131,7 +131,7 @@ class TaskManagerUiImp(
             val existingTask = manageTasksUseCase.getTaskByName(taskName)
 
             val updateInput = readUpdateTaskInput()
-                ?: return@runBlocking printer.showMessage(UiMessages.EMPTY_TASK_INPUT)
+                ?: return@runBlocking printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT)
 
             val (newName, newDescription, newStateName) = updateInput
 
@@ -156,7 +156,7 @@ class TaskManagerUiImp(
             )
             printer.printTask(updatedTask)
         } catch (ex: Exception) {
-            printer.showMessage(ex.message ?: "Unknown Error.")
+            printer.showMessageLine(ex.message ?: "Unknown Error.")
         }
     }
 
@@ -178,9 +178,9 @@ class TaskManagerUiImp(
                 entityId = task.id,
                 additionalInfo = projectName
             )
-            printer.showMessage(UiMessages.TASK_DELETE_SUCCESSFULLY)
+            printer.showMessageLine(UiMessages.TASK_DELETE_SUCCESSFULLY)
         } catch (ex: Exception) {
-            printer.showMessage(ex.message ?: "Unknown Error")
+            printer.showMessageLine(ex.message ?: "Unknown Error")
         }
     }
 
@@ -191,7 +191,7 @@ class TaskManagerUiImp(
             printer.printTaskList(tasks)
             tasks
         } catch (ex: Exception) {
-            printer.showMessage(ex.message ?: "Unknown Error")
+            printer.showMessageLine(ex.message ?: "Unknown Error")
             emptyList()
         }
     }
@@ -202,7 +202,7 @@ class TaskManagerUiImp(
             val assignments = manageTasksInProjectUseCase.getAllTasksByUserName(userName)
             printer.printMateTaskAssignments(assignments)
         } catch (ex: Exception) {
-            printer.showMessage(ex.message ?: "Unknown Error")
+            printer.showMessageLine(ex.message ?: "Unknown Error")
         }
     }
 
@@ -212,31 +212,31 @@ class TaskManagerUiImp(
             val task = manageTasksUseCase.getTaskByName(taskName)
             printer.printTask(task)
         } catch (ex: Exception) {
-            printer.showMessage(ex.message ?: "Unknown Error")
+            printer.showMessageLine(ex.message ?: "Unknown Error")
         }
     }
 
     private fun readCreateTaskInput(): Triple<String, String, String>? {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
+        printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
         val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (name == null) {
-            printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
+            printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT)
             return null
         }
 
-        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
+        printer.showMessageLine(UiMessages.TASK_DESCRIPTION_PROMPT)
         val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (description == null) {
-            printer.showMessage(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
+            printer.showMessageLine(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
             if (confirm.isNullOrBlank()) return null
             return readCreateTaskInput()
         }
 
-        printer.showMessage(UiMessages.TASK_STATE_PROMPT)
+        printer.showMessageLine(UiMessages.TASK_STATE_PROMPT)
         val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (stateName == null) {
-            printer.showMessage(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
+            printer.showMessageLine(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
             if (confirm.isNullOrBlank()) return null
             return readCreateTaskInput()
@@ -246,28 +246,28 @@ class TaskManagerUiImp(
     }
 
     private fun readUpdateTaskInput(): Triple<String, String, String>? {
-        printer.showMessage(UiMessages.NEW_TASK_NAME_PROMPT)
+        printer.showMessageLine(UiMessages.NEW_TASK_NAME_PROMPT)
         val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (name == null) {
-            printer.showMessage(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
+            printer.showMessageLine(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
             if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
-        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
+        printer.showMessageLine(UiMessages.TASK_DESCRIPTION_PROMPT)
         val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (description == null) {
-            printer.showMessage(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
+            printer.showMessageLine(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
             if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
             return null
         }
 
-        printer.showMessage(UiMessages.TASK_STATE_PROMPT)
+        printer.showMessageLine(UiMessages.TASK_STATE_PROMPT)
         val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (stateName == null) {
-            printer.showMessage(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
+            printer.showMessageLine(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val confirm = reader.readStringOrNull()
             if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
             return null
@@ -278,11 +278,11 @@ class TaskManagerUiImp(
 
     private fun getProjectByName(): String {
         while (true) {
-            printer.showMessage(UiMessages.PROJECT_NAME_PROMPT)
+            printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT)
             val projectNameInput = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
 
             if (projectNameInput == null) {
-                printer.showMessage(UiMessages.EMPTY_PROJECT_NAME_INPUT)
+                printer.showMessageLine(UiMessages.EMPTY_PROJECT_NAME_INPUT)
                 continue
             }
 
@@ -291,7 +291,7 @@ class TaskManagerUiImp(
                     getProjectsUseCase.getProjectByName(projectNameInput)
                     true
                 } catch (ex: Exception) {
-                    printer.showMessage(ex.message ?: "Unknown Error")
+                    printer.showMessageLine(ex.message ?: "Unknown Error")
                     false
                 }
             }
@@ -300,7 +300,7 @@ class TaskManagerUiImp(
                 return projectNameInput
             }
 
-            printer.showMessage(UiMessages.INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
+            printer.showMessageLine(UiMessages.INVALID_PROJECT_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
             val userInput = reader.readStringOrNull()
             if (userInput.isNullOrBlank()) {
                 return ""
@@ -312,10 +312,10 @@ class TaskManagerUiImp(
 
     private fun getTaskName(): String {
         while (true) {
-            printer.showMessage(UiMessages.TASK_NAME_PROMPT)
+            printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
             val taskName = uiUtils.readNonBlankInputOrNull(reader)
             if (taskName == null) {
-                printer.showMessage(UiMessages.EMPTY_TASK_NAME_INPUT)
+                printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT)
                 continue
             }
             return taskName
@@ -324,10 +324,10 @@ class TaskManagerUiImp(
 
     private fun getUserName(): String {
         while (true) {
-            printer.showMessage(UiMessages.USER_NAME_PROMPT)
+            printer.showMessageLine(UiMessages.USER_NAME_PROMPT)
             val userName = uiUtils.readNonBlankInputOrNull(reader)
             if (userName == null) {
-                printer.showMessage(UiMessages.EMPTY_USER_NAME_INPUT)
+                printer.showMessageLine(UiMessages.EMPTY_USER_NAME_INPUT)
                 continue
             }
             return userName
@@ -338,13 +338,13 @@ class TaskManagerUiImp(
 
 
     private fun printTaskOptionsMenu() {
-        printer.showMessage("========================= Tasks Option =========================")
-        printer.showMessage("Please Choose an option. Pick a number between 0 and 7!\n")
+        printer.showMessageLine("========================= Tasks Option =========================")
+        printer.showMessageLine("Please Choose an option. Pick a number between 0 and 7!\n")
 
         TaskOptions.entries.forEach { println("${it.option}. ${it.label}") }
 
-        printer.showMessage("-----------------------------------------------------")
-        printer.showMessage("Choose an option: ")
+        printer.showMessageLine("-----------------------------------------------------")
+        printer.showMessageLine("Choose an option: ")
     }
 
 }

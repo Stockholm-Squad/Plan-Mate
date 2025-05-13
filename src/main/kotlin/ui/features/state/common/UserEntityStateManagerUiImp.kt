@@ -23,7 +23,7 @@ class UserEntityStateManagerUiImp(
     }
 
     private fun handleFailure(throwable: Throwable) {
-        printer.showMessage("Failed to Load data, ${throwable.message}")
+        printer.showMessageLine("Failed to Load data, ${throwable.message}")
     }
 
     private fun handleSuccess(stateStates: List<EntityState>) {

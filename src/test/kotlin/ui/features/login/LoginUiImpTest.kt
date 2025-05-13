@@ -54,7 +54,7 @@ class LoginUiImpTest {
             )
         } returns Result.failure(InvalidUserName())
         ui.authenticateUser()
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @ParameterizedTest
@@ -75,7 +75,7 @@ class LoginUiImpTest {
 
         ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @Test
@@ -88,7 +88,7 @@ class LoginUiImpTest {
 
         ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @Test
@@ -101,7 +101,7 @@ class LoginUiImpTest {
 
         ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessage(expectedMessage) }
+        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
 
     @Test

@@ -45,7 +45,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.updateState()
 
-        verify { printer.showMessage("State updated successfully ^_^") }
+        verify { printer.showMessageLine("State updated successfully ^_^") }
     }
     @Test
     fun `UpdateState() should print state updated successfully when a valid name`() {
@@ -64,8 +64,8 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         adminStateManagerUi.updateState()
 
         //Then
-        verify { printer.showMessage("Please enter the state you want to update: ") }
-        verify { printer.showMessage("State updated successfully ^_^") }
+        verify { printer.showMessageLine("Please enter the state you want to update: ") }
+        verify { printer.showMessageLine("State updated successfully ^_^") }
     }
 
     @Test
@@ -83,7 +83,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         adminStateManagerUi.updateState()
 
         //Then
-        verify { printer.showMessage("Failed to Update state: " + NotAllowedStateNameException().message) }
+        verify { printer.showMessageLine("Failed to Update state: " + NotAllowedStateNameException().message) }
     }
 
     @Test
@@ -95,7 +95,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         adminStateManagerUi.updateState()
 
         //Then
-        verify { printer.showMessage("Invalid input") }
+        verify { printer.showMessageLine("Invalid input") }
     }
 
     @Test
@@ -104,7 +104,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.updateState()
 
-        verify { printer.showMessage("Invalid input") }
+        verify { printer.showMessageLine("Invalid input") }
     }
 
     @Test
@@ -114,7 +114,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.deleteState()
 
-        verify { printer.showMessage("State deleted successfully ^_^") }
+        verify { printer.showMessageLine("State deleted successfully ^_^") }
     }
 
     @Test
@@ -124,7 +124,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.deleteState()
 
-        verify { printer.showMessage("Failed to Delete state: some error") }
+        verify { printer.showMessageLine("Failed to Delete state: some error") }
     }
     @Test
     fun `deleteState() should show invalid input when the input equal null`() {
@@ -132,8 +132,8 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.deleteState()
 
-        verify {         printer.showMessage("Please enter the state you want to delete: ")
-            printer.showMessage("Invalid input") }
+        verify {         printer.showMessageLine("Please enter the state you want to delete: ")
+            printer.showMessageLine("Invalid input") }
     }
 
 
@@ -148,8 +148,8 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessage("Please enter the state you want to delete: ") }
-        verify { printer.showMessage("State deleted successfully ^_^") }
+        verify { printer.showMessageLine("Please enter the state you want to delete: ") }
+        verify { printer.showMessageLine("State deleted successfully ^_^") }
     }
 
     @Test
@@ -165,7 +165,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessage("Failed to Delete state: " + StateNotExistException().message) }
+        verify { printer.showMessageLine("Failed to Delete state: " + StateNotExistException().message) }
     }
     @Test
     fun `addState should succeed with valid input`() {
@@ -174,8 +174,8 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.addState()
 
-        verify { printer.showMessage("Please enter name for the state:") }
-        verify { printer.showMessage("State added successfully ^_^") }
+        verify { printer.showMessageLine("Please enter name for the state:") }
+        verify { printer.showMessageLine("State added successfully ^_^") }
     }
 
     @Test
@@ -184,7 +184,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
 
         adminStateManagerUi.addState()
 
-        verify { printer.showMessage("Invalid input") }
+        verify { printer.showMessageLine("Invalid input") }
     }
     @Test
     fun `addState() should add success when enter valid state`() {
@@ -197,8 +197,8 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         adminStateManagerUi.addState()
 
         //Then
-        verify { printer.showMessage("Please enter name for the state:") }
-        verify { printer.showMessage("State added successfully ^_^") }
+        verify { printer.showMessageLine("Please enter name for the state:") }
+        verify { printer.showMessageLine("State added successfully ^_^") }
     }
 
     @Test
@@ -212,7 +212,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Failed to Add state: The state is already exist!") }
+        verify { printer.showMessageLine("Failed to Add state: The state is already exist!") }
 
     }
 
@@ -227,7 +227,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Failed to Add state: Only letters are allowed!") }
+        verify { printer.showMessageLine("Failed to Add state: Only letters are allowed!") }
     }
 
     @Test
@@ -241,7 +241,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Failed to Add state: The state name is too long!") }
+        verify { printer.showMessageLine("Failed to Add state: The state name is too long!") }
     }
 
     @Test
@@ -251,7 +251,7 @@ class AdminProjectProjectStateDtoManagerUiImpImplTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessage("Invalid input") }
+        verify { printer.showMessageLine("Invalid input") }
     }
 
     @Test

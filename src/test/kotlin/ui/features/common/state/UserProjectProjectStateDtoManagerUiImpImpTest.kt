@@ -35,8 +35,8 @@ class UserProjectProjectStateDtoManagerUiImpImpTest {
         userStateManagerUi.showAllStates()
 
         //Then
-        verify { printer.showMessage("Failed to Load data, " + NoStatesFoundedException().message) }
-        verify { printer.showMessage("Please try again ^_^") }
+        verify { printer.showMessageLine("Failed to Load data, " + NoStatesFoundedException().message) }
+        verify { printer.showMessageLine("Please try again ^_^") }
 
     }
 

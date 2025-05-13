@@ -77,7 +77,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.EXITING) }
+        verify { printer.showMessageLine(UiMessages.EXITING) }
     }
 
     @Test
@@ -86,7 +86,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
@@ -95,7 +95,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
@@ -104,7 +104,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
@@ -114,7 +114,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify(exactly = 2) { printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
+        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
     }
 
     @Test
@@ -124,7 +124,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.EXITING) }
+        verify { printer.showMessageLine(UiMessages.EXITING) }
     }
 
     @Test
@@ -133,7 +133,7 @@ class AuditSystemManagerUiImpTest {
 
         auditSystemUi.invoke(user)
 
-        verify { printer.showMessage(UiMessages.INVALID_SELECTION_MESSAGE) }
+        verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
     
     @Test
@@ -146,7 +146,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify { printer.showMessage("project error") }
+        verify { printer.showMessageLine("project error") }
     }
 
     @Test
@@ -159,7 +159,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify { printer.showMessage("task error") }
+        verify { printer.showMessageLine("task error") }
     }
 
     @Test
@@ -172,7 +172,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify(exactly = 2) { printer.showMessage(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
+        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
     }
 
     @Test
@@ -185,7 +185,7 @@ class AuditSystemManagerUiImpTest {
         auditSystemUi.invoke(user)
 
         // Then
-        verify { printer.showMessage("audit list error") }
+        verify { printer.showMessageLine("audit list error") }
     }
 
 

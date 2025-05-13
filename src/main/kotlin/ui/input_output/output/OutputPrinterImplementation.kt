@@ -6,8 +6,12 @@ import org.example.logic.entities.Task
 
 class OutputPrinterImplementation : OutputPrinter {
 
-    override fun showMessage(message: String) {
+    override fun showMessageLine(message: String) {
         println(message)
+    }
+
+    override fun showMessage(message: String) {
+        print(message)
     }
 
     override fun printTask(task: Task) {
