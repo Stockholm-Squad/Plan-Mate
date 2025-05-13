@@ -12,6 +12,7 @@ import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.AdminEntityStateManagerUi
 import org.example.ui.features.state.ShowAllEntityStateManagerUi
+import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
