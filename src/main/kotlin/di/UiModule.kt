@@ -2,8 +2,7 @@ package org.example.di
 
 import org.example.ui.PlanMateConsoleUi
 import org.example.ui.features.addusertoproject.AddUserToProjectUI
-import org.example.ui.features.audit.AuditManagerUi
-import org.example.ui.features.audit.AuditManagerUiImp
+import org.example.ui.features.audit.AuditManagerUI
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.login.LoginUiImp
@@ -27,7 +26,7 @@ import org.koin.dsl.module
 val uiModule = module {
     singleOf(::PlanMateConsoleUi)
 
-    factory<AuditManagerUi> { AuditManagerUiImp(get(), get(), get(), get()) }
+    factory<AuditManagerUI> { AuditManagerUI(get(), get(), get(), get()) }
     factory<LoginUi> { LoginUiImp(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUiImp(get(), get(), get()) }
     factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get(), get()) }

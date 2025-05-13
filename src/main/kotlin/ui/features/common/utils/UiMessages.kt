@@ -14,10 +14,10 @@ object UiMessages {
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
     const val PROJECT_NAME_PROMPT = "Enter project name:"
     const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
-    const val PLEASE_SELECT_OPTION = "Please select an option:"
+    const val PLEASE_SELECT_OPTION = "Please select an option: "
     const val Y = "y"
-    const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please choose a valid number."
-    const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n):"
+    const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please try again ^_^"
+    const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n): "
     const val EXITING = "Exiting"
     const val INVALID_USER = "Invalid user"
     const val WHAT_DO_YOU_NEED = "What do you need ^_^"
@@ -38,6 +38,8 @@ object UiMessages {
         "Invalid description entered.\nPress Enter to return to the main menu or 'Y' to try again."
     const val INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU =
         "Invalid state name entered.\nPress Enter to return to the main menu or 'Y' to try again."
+    const val FAILED_TO_LOAD_AUDITS = "Failed to load audit,"
+    const val UNKNOWN_ERROR = "Unknown error!!"
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """

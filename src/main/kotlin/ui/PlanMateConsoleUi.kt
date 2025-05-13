@@ -3,7 +3,7 @@ package org.example.ui
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
 import org.example.ui.features.addusertoproject.AddUserToProjectUI
-import org.example.ui.features.audit.AuditManagerUi
+import org.example.ui.features.audit.AuditManagerUI
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
@@ -16,7 +16,7 @@ import org.example.ui.input_output.output.OutputPrinter
 
 class PlanMateConsoleUi(
     private val loginUi: LoginUi,
-    private val manageAuditUi: AuditManagerUi,
+    private val manageAuditUi: AuditManagerUI,
     private val manageProjectUi: ProjectManagerUi,
     private val stateManagerUi: EntityStateManageUi,
     private val taskManagerUi: TaskManagerUi,
@@ -61,7 +61,7 @@ class PlanMateConsoleUi(
             when (choice) {
                 MateChoice.MANAGE_TASKS.choice -> taskManagerUi.launchUi()
                 MateChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi()
-                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.invoke()
+                MateChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.launchUi()
                 MateChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
@@ -77,7 +77,7 @@ class PlanMateConsoleUi(
                 AdminChoice.MANAGE_STATES.choice -> stateManagerUi.launchUi()
                 AdminChoice.ADD_MATE.choice -> createUserUi.launchUi()
                 AdminChoice.ADD_MATE_TO_PROJECT.choice -> addUserToProjectUI.launchUi()
-                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.invoke()
+                AdminChoice.SHOW_AUDIT_LOG.choice -> manageAuditUi.launchUi()
                 AdminChoice.LOGOUT.choice -> logout()
                 else -> showErrorChoice()
             }
