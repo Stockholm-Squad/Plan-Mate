@@ -51,7 +51,7 @@ class TaskCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file has only header`() = runTest {
-            File(testFilePath).writeText("id,projectName,title,description,stateId,createdDate,updatedDate")
+            File(testFilePath).writeText("id,projectTitle,title,description,stateId,createdDate,updatedDate")
 
             val result = taskCSVReaderWriter.read()
             assertTrue(result.isEmpty())
@@ -61,7 +61,7 @@ class TaskCSVReaderWriterTest {
         fun `read should return tasks when file contains valid data`() = runTest {
             File(testFilePath).writeText(
                 """
-                id,projectName,title,description,stateId,createdDate,updatedDate
+                id,projectTitle,title,description,stateId,createdDate,updatedDate
                 task1,projectA,Title 1,Description 1,state1,2023-01-01,2023-01-02
                 task2,projectB,Title 2,Description 2,state2,2023-02-01,2023-02-02
                 """.trimIndent()
@@ -71,14 +71,14 @@ class TaskCSVReaderWriterTest {
 
             assertEquals(2, result.size)
             assertEquals("task1", result[0].id)
-            assertEquals("projectA", result[0].projectName)
+            assertEquals("projectA", result[0].projectTitle)
             assertEquals("Title 1", result[0].title)
             assertEquals("Description 1", result[0].description)
             assertEquals("state1", result[0].stateId)
             assertEquals("2023-01-01", result[0].createdDate)
             assertEquals("2023-01-02", result[0].updatedDate)
             assertEquals("task2", result[1].id)
-            assertEquals("projectB", result[1].projectName)
+            assertEquals("projectB", result[1].projectTitle)
             assertEquals("Title 2", result[1].title)
             assertEquals("Description 2", result[1].description)
             assertEquals("state2", result[1].stateId)
@@ -148,7 +148,7 @@ class TaskCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,projectName,title,description,stateId,createdDate,updatedDate", content.trim())
+            assertEquals("id,projectTitle,title,description,stateId,createdDate,updatedDate", content.trim())
         }
     }
 
@@ -194,7 +194,7 @@ class TaskCSVReaderWriterTest {
             assertTrue(result)
 
             val content = File(testFilePath).readText()
-            assertEquals("id,projectName,title,description,stateId,createdDate,updatedDate", content.trim())
+            assertEquals("id,projectTitle,title,description,stateId,createdDate,updatedDate", content.trim())
         }
 
         @Test
