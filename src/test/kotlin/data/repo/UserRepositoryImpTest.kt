@@ -1,15 +1,13 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.coEvery
 import io.mockk.mockk
+import org.example.logic.entities.User
+import io.mockk.coEvery
 import kotlinx.coroutines.test.runTest
 import org.example.data.repo.UserRepositoryImp
-import org.example.data.source.MateTaskAssignmentDataSource
-import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.example.logic.*
-import org.example.logic.entities.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,7 +22,7 @@ class UserRepositoryImpTest {
     fun setUp() {
         userDataSource = mockk(relaxed = true)
         userRepo = UserRepositoryImp(
-            userDataSource = userDataSource
+            userDataSource = userDataSource,
         )
     }
 
@@ -123,7 +121,7 @@ class UserRepositoryImpTest {
         val projectId = UUID.randomUUID()
         coEvery {
             userDataSource.addUserToProject(
-                projectId.toString(),
+                projectId = projectId.toString(),
                 username = "username"
             )
         } returns true
@@ -132,6 +130,7 @@ class UserRepositoryImpTest {
         //Then
         assertThat(result).isTrue()
     }
+
     @Test
     fun `addUserToProject() should return false when user not added`() = runTest {
         // Given
@@ -147,6 +146,7 @@ class UserRepositoryImpTest {
         //Then
         assertThat(result).isFalse()
     }
+
     @Test
     fun `addUserToProject() should throw exception when datasource fails`() = runTest {
         // Given
@@ -162,6 +162,7 @@ class UserRepositoryImpTest {
             userRepo.addUserToProject(projectId = projectId, username = "username")
         }
     }
+
     @Test
     fun `deleteUserFromProject() should return true when user deleted`() = runTest {
         // Given
