@@ -1,8 +1,10 @@
 package utils
 
 import data.dto.AuditDto
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
-import org.example.data.utils.DateHandlerImp
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.example.logic.entities.Audit
 import org.example.logic.entities.EntityType
 import java.util.*
@@ -13,7 +15,7 @@ fun buildAudit(
     entityTypeId: UUID = UUID.fromString("e3a85f64-5717-4562-b3fc-2c963f66dabc"),
     userId: UUID = UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1"),
     description: String = "Added",
-    createdAt: LocalDateTime = DateHandlerImp().getCurrentDateTime()
+    createdAt: LocalDateTime = (Instant.parse("2024-05-01T10:00:00Z")).toLocalDateTime(TimeZone.currentSystemDefault()),
 ): Audit = Audit(
     id = id,
     entityType = entityType,
@@ -24,17 +26,17 @@ fun buildAudit(
 )
 
 fun buildAuditModel(
-    id: String,
-    entityType: String,
-    entityId: String,
-    userId: String,
-    changeDescription: String,
-    createdAt: String
+    id: String = "f3a85f64-5717-4562-b3fc-2c963f66bfa1",
+    entityType: String = EntityType.PROJECT.name,
+    entityTypeId: String = "e3a85f64-5717-4562-b3fc-2c963f66dabc",
+    userId: String = "a3a85f64-5717-4562-b3fc-2c963f66abc1",
+    description: String = "Added",
+    createdAt: String = "2024-05-01T10:00:00Z",
 ): AuditDto = AuditDto(
     id = id,
     entityType = entityType,
-    entityTypeId = entityId,
+    entityTypeId = entityTypeId,
     userId = userId,
-    description = changeDescription,
+    description = description,
     dateTime = createdAt,
 )
