@@ -28,7 +28,7 @@ class ManageTasksInProjectUseCaseTest {
     private val taskId = UUID.randomUUID()
     private val testTask = buildTask(
         id = taskId,
-        name = "Test Task",
+        title = "Test Task",
         stateId = UUID.randomUUID(),
         projectName = "plan-mate",
     )

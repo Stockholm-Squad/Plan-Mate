@@ -16,7 +16,24 @@ val taskId3 = UUID.randomUUID()
 val stateId1 = UUID.randomUUID()
 val stateId2 = UUID.randomUUID()
 val stateId3 = UUID.randomUUID()
-
+val task = Task(
+    id = taskId1,
+    projectName = "Project A",
+    title = "Task 1",
+    description = "First task",
+    stateId = stateId1,
+    createdDate = currentTime,
+    updatedDate = currentTime
+)
+val taskDto =  TaskDto(
+    id = taskId1.toString(),
+    projectName = "Project A",
+    title = "Task 1",
+    description = "First task",
+    stateId = stateId1.toString(),
+    createdDate = currentTime.toString(),
+    updatedDate = currentTime.toString()
+)
 val tasksList = listOf(
     Task(
         id = taskId1,
