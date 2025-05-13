@@ -53,6 +53,8 @@ object UiMessages {
     const val ENTER_USER_NAME_TO_REMOVE_PROJECT = "Enter username to remove from project"
     const val USER_DELETED_FROM_PROJECT = "user deleted from project Successfully ^_^"
     const val FAILED_TO_DELETE_USER_FROM_PROJECT = "Failed to delete user from project"
+    const val LOGIN_USER_NAME_PROMPT = "Please enter your user name: "
+    const val LOGIN_PASSWORD_PROMPT = "Please enter your Password: "
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """
