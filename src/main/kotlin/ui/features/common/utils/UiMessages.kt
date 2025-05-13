@@ -12,9 +12,9 @@ object UiMessages {
     const val EMPTY_USER_NAME_INPUT = "Empty user name."
     const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
-    const val PROJECT_NAME_PROMPT = "Enter project name:"
+    const val PROJECT_NAME_PROMPT = "Enter project name: "
     const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
-    const val PLEASE_SELECT_OPTION = "Please select an option: "
+    const val SELECT_OPTION = "Please select an option: "
     const val Y = "y"
     const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please try again ^_^"
     const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n): "
@@ -40,6 +40,19 @@ object UiMessages {
         "Invalid state name entered.\nPress Enter to return to the main menu or 'Y' to try again."
     const val FAILED_TO_LOAD_AUDITS = "Failed to load audit,"
     const val UNKNOWN_ERROR = "Unknown error!!"
+    const val ADD_NEW_USER_FIRST = "Would you like to add a new user first? (y/n): "
+    const val ENTER_USER_NAME_TO_ASSIGN_TO_PROJECT = "Enter username to assign or leave it blank to back: "
+    const val FAILED_TO_ASSIGN_USER_TO_PROJECT = "Failed to Assign user to project"
+    const val PLEASE_TRY_AGAIN = "Please try again ^_^"
+    const val ENTER_PROJECT_NAME_TO_VIEW_ASSIGNED_USER = "Enter project name to view assigned users (leave blank to cancel): "
+    const val USER_ASSIGNED_TO_PROJECT = "User Assigned to project successfully ^_^"
+    const val FAILED_LOADING_USER_ASSIGNED_TO_PROJECT = "Filed on loading Users assigned to project"
+    const val NO_USERS_ASSIGNED_TO_PROJECT = "No users assigned to this project"
+    const val USERS_ASSIGNED_TO = "Users assigned to"
+    const val OR_LEAVE_IT_BLANK_TO_BACK = "or leave it blank to back: "
+    const val ENTER_USER_NAME_TO_REMOVE_PROJECT = "Enter username to remove from project"
+    const val USER_DELETED_FROM_PROJECT = "user deleted from project Successfully ^_^"
+    const val FAILED_TO_DELETE_USER_FROM_PROJECT = "Failed to delete user from project"
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """
@@ -47,7 +60,7 @@ object UiMessages {
         | 1. Show Project Audits                  |
         | 2. Show Task Audits                     |
         | 3. Show All Audits                      |
-        | 4. Exit                                 |
+        | 0. Exit                                 |
     """.trimIndent()
     const val PROMPT_TASK_NAME = "Enter Task name: "
     const val PROMPT_PROJECT_NAME = "Enter Project Name: "
@@ -62,7 +75,8 @@ object UiMessages {
         | 4. Add Mate                                          |
         | 5. Add Mate To Project                               |
         | 6. Show Audit                                        |
-        | 7. Log out                                           |
+        | 0. Log out                                           |
+        |------------------------------------------------------|
     """.trimIndent()
 
     val MAIN_MENU_WELCOME_MESSAGE_FOR_MATE = """
@@ -71,6 +85,18 @@ object UiMessages {
         | 1. Manage tasks                                      |
         | 2. Manage states                                     |
         | 3. Show Audit                                        |
-        | 4. Log out                                           |
+        | 0. Log out                                           |
+        |------------------------------------------------------|
     """.trimIndent()
+
+
+    val SHOW_ADD_USER_TO_PROJECT_OPTIONS = """
+        |--------------- Users In Project Management --------------|
+        | 1. Assign users to project                               |
+        | 2. View users assigned to project                        |
+        | 3. Remove user from project                              |
+        | 0. Exit                                                  |
+        |----------------------------------------------------------|
+    """.trimIndent()
+
 }

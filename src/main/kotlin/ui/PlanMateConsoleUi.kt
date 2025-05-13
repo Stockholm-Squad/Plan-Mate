@@ -95,7 +95,7 @@ enum class MateChoice(
     MANAGE_TASKS(1),
     MANAGE_STATES(2),
     SHOW_AUDIT_LOG(3),
-    LOGOUT(4),
+    LOGOUT(0),
 }
 
 enum class AdminChoice(
@@ -107,5 +107,5 @@ enum class AdminChoice(
     ADD_MATE(4),
     ADD_MATE_TO_PROJECT(5),
     SHOW_AUDIT_LOG(6),
-    LOGOUT(7),
+    LOGOUT(0),
 }

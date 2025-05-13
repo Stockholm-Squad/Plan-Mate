@@ -30,7 +30,7 @@ class AuditManagerUI(
                 1 -> displayAuditsByProjectName()
                 2 -> displayAuditsByTaskName()
                 3 -> displayAllAudits()
-                4 -> printer.showMessageLine(UiMessages.EXITING)
+                0 -> printer.showMessageLine(UiMessages.EXITING)
                 else -> printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE)
             }
         } while (askSearchAgain() == true)
@@ -87,7 +87,7 @@ class AuditManagerUI(
     }
 
     private fun getMainMenuOption(): Int {
-        printer.showMessage(UiMessages.PLEASE_SELECT_OPTION)
+        printer.showMessage(UiMessages.SELECT_OPTION)
         return reader.readStringOrNull()?.toIntOrNull() ?: 0
     }
 

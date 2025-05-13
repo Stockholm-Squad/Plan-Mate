@@ -6,6 +6,7 @@ import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
@@ -19,51 +20,40 @@ class AddUserToProjectUI(
 ) : UiLauncher {
 
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
-        outputPrinter.showMessageLine(throwable.message ?: "Unknown error")
+        outputPrinter.showMessageLine(throwable.message ?: UiMessages.UNKNOWN_ERROR)
     }
 
     override fun launchUi() {
         while (true) {
-            showMenu()
+            outputPrinter.showMessageLine(UiMessages.SHOW_ADD_USER_TO_PROJECT_OPTIONS)
             if (handleUserChoice()) return
         }
     }
 
     private fun handleUserChoice(): Boolean {
-        outputPrinter.showMessage("Enter your choice: ")
-        when (inputReader.readStringOrNull()) {
-            "1" -> assignUsersToProject()
-            "2" -> showUsersAssignedToProject()
-            "3" -> removeUserFromProject()
-            "0" -> return true
-            else -> outputPrinter.showMessageLine("Invalid choice, please try again ^_^")
+        outputPrinter.showMessage(UiMessages.SELECT_OPTION)
+        when (inputReader.readIntOrNull()) {
+            1 -> assignUsersToProject()
+            2 -> showUsersAssignedToProject()
+            3 -> removeUserFromProject()
+            0 -> return true
+            else -> outputPrinter.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE)
         }
         return false
     }
 
-    private fun showMenu() {
-        outputPrinter.showMessageLine("--------------------------------------------------")
-        outputPrinter.showMessageLine("Users In Project Management:")
-        outputPrinter.showMessageLine("1. Assign users to project")
-        outputPrinter.showMessageLine("2. View users assigned to project")
-        outputPrinter.showMessageLine("3. Remove user from project")
-        outputPrinter.showMessageLine("0. Back")
-        outputPrinter.showMessageLine("--------------------------------------------------")
-    }
-
     private fun assignUsersToProject() {
         do {
-            outputPrinter.showMessageLine("--------------------------------------------------")
-            outputPrinter.showMessage("Would you like to add a new user first? (yes/no): ")
-            if (inputReader.readStringOrNull().equals("yes", ignoreCase = true)) {
+            outputPrinter.showMessage(UiMessages.ADD_NEW_USER_FIRST)
+            if (inputReader.readStringOrNull().equals(UiMessages.Y, ignoreCase = true)) {
                 createUserUiImp.launchUi()
             }
 
-            outputPrinter.showMessage("Enter username to assign or leave it blank to back: ")
+            outputPrinter.showMessage(UiMessages.ENTER_USER_NAME_TO_ASSIGN_TO_PROJECT)
             val username = inputReader.readStringOrNull() ?: return
             if (username.equals("done", ignoreCase = true)) break
 
-            outputPrinter.showMessage("Enter project Name: ")
+            outputPrinter.showMessage(UiMessages.PROJECT_NAME_PROMPT)
             val projectName = inputReader.readStringOrNull() ?: continue
             if (assignUserToProject(username, projectName)) return
 
@@ -76,28 +66,30 @@ class AddUserToProjectUI(
                 handleAssignUserToProjectMessage(
                     manageUsersAssignedToProjectUseCase.addUserToProject(
                         getProjectsUseCase.getProjectByName(projectName).id, username
-                    ),
-                    username,
-                    projectName
+                    )
                 )
             } catch (e: Exception) {
-                outputPrinter.showMessageLine("Failed to Assign user to project: ${e.message}")
-                outputPrinter.showMessageLine("Please try again ^_^")
+                failedToAssignUserToProject(e)
                 false
             }
         }
 
-    private fun handleAssignUserToProjectMessage(isProjectAdded: Boolean, username: String, projectName: String) =
+    private fun failedToAssignUserToProject(e: Exception) {
+        outputPrinter.showMessageLine("${UiMessages.FAILED_TO_ASSIGN_USER_TO_PROJECT}, ${e.message}")
+        outputPrinter.showMessageLine(UiMessages.PLEASE_TRY_AGAIN)
+    }
+
+    private fun handleAssignUserToProjectMessage(isProjectAdded: Boolean) =
         if (isProjectAdded) {
-            outputPrinter.showMessageLine("$username assigned to $projectName successfully ^_^")
+            outputPrinter.showMessageLine(UiMessages.USER_ASSIGNED_TO_PROJECT)
             true
         } else {
-            outputPrinter.showMessageLine("Failed to assign user to project")
+            failedToAssignUserToProject(Exception(""))
             false
         }
 
     private fun showUsersAssignedToProject() {
-        outputPrinter.showMessage("Enter project name to view assigned users (leave blank to cancel): ")
+        outputPrinter.showMessage(UiMessages.ENTER_PROJECT_NAME_TO_VIEW_ASSIGNED_USER)
         inputReader.readStringOrNull()?.let { projectName ->
             runBlocking(errorHandler) {
                 try {
@@ -108,8 +100,8 @@ class AddUserToProjectUI(
                         projectName
                     )
                 } catch (e: Exception) {
-                    outputPrinter.showMessageLine("Filed on loading Users assigned to $projectName ${e.message}")
-                    outputPrinter.showMessageLine("Please try again ^_^")
+                    outputPrinter.showMessageLine("${UiMessages.FAILED_LOADING_USER_ASSIGNED_TO_PROJECT}, ${e.message}")
+                    outputPrinter.showMessageLine(UiMessages.PLEASE_TRY_AGAIN)
                 }
             }
         }
@@ -117,9 +109,9 @@ class AddUserToProjectUI(
 
     private fun handleUsersAssignedToProjectMessages(users: List<User>, input: String) {
         if (users.isEmpty()) {
-            outputPrinter.showMessageLine("No users assigned to this project")
+            outputPrinter.showMessageLine(UiMessages.NO_USERS_ASSIGNED_TO_PROJECT)
         } else {
-            outputPrinter.showMessageLine("Users assigned to project '$input':")
+            outputPrinter.showMessageLine("${UiMessages.USERS_ASSIGNED_TO} $input: ")
             users.forEachIndexed { index, user ->
                 outputPrinter.showMessageLine("${index + 1}. ${user.username}")
             }
@@ -127,17 +119,17 @@ class AddUserToProjectUI(
     }
 
     private fun removeUserFromProject() {
-        outputPrinter.showMessage("Enter project name (leave blank to cancel): ")
+        outputPrinter.showMessage("${UiMessages.PROMPT_PROJECT_NAME} ${UiMessages.OR_LEAVE_IT_BLANK_TO_BACK}")
         runBlocking(errorHandler) {
             inputReader.readStringOrNull()?.let { projectName ->
-                outputPrinter.showMessage("Enter username to remove from project (leave blank to cancel): ")
+                outputPrinter.showMessage("${UiMessages.ENTER_USER_NAME_TO_REMOVE_PROJECT} ${UiMessages.OR_LEAVE_IT_BLANK_TO_BACK}")
                 inputReader.readStringOrNull()?.let { username ->
                     try {
                         manageUsersAssignedToProjectUseCase.deleteUserFromProject(projectName, username)
-                        outputPrinter.showMessageLine("$username deleted from $projectName Successfully ^_^")
+                        outputPrinter.showMessageLine(UiMessages.USER_DELETED_FROM_PROJECT)
                     } catch (e: Exception) {
-                        outputPrinter.showMessageLine("Filed to delete $username from $projectName ${e.message}")
-                        outputPrinter.showMessageLine("Please try again ^_^")
+                        outputPrinter.showMessageLine("${UiMessages.FAILED_TO_DELETE_USER_FROM_PROJECT} ${e.message}")
+                        outputPrinter.showMessageLine(UiMessages.PLEASE_TRY_AGAIN)
                     }
                 }
             }
