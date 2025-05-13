@@ -8,8 +8,30 @@ object UiMessages {
     const val EMPTY_TASK_INPUT = "Inputs are empty"
     const val USER_NAME_PROMPT = "Enter User name: "
     const val PASSWORD_PROMPT = "Enter password: "
+    const val NO_PROJECTS_FOUND = "No projects found"
+    const val PROJECT_DETAILS = "Project Details:"
+    const val NAME = "Name:"
+    const val STATE = "State:"
+    const val NEW = "new"
+    const val CURRENT_STATE = "Current state:"
+    const val ENTER_NEW_STATE = "Enter new state Name"
+    const val PROJECT_ADDED = "Project added successfully"
+    const val PROJECT_UPDATED = "Project updated successfully"
+    const val PROJECT_DELETED = "Project deleted successfully"
+    const val FAILED_TO_DELETE_PROJECT = "Failed to delete project"
+    const val FAILED_TO_UPDATE_PROJECT = "Failed to update project"
+    const val PROJECT_DOES_NOT_EXIST = "project doesn't changed"
+    const val ENTER_NEW_PROJECT_NAME = "Enter new project name"
+    const val ENTER_PROJECT_NAME_TO_DELETE = "Enter project Name to delete"
+    const val LEAVE_BLANK_TO_KEEP = "leave blank to keep"
+    const val FAILED_TO_ADD_PROJECT = "Failed to add project"
+    const val ENTER_PROJECT_NAME_TO_UPDATE = "Enter project Name to update"
+    const val YOU_LIKE_TO_ADD_TASKS = "Would you like to add tasks to this project? (Y/N): "
+    const val AVAILABLE_STATE = "Available states:"
+    const val ENTER_STATE_NAME_OR_NEW_TO_CREATE = "Enter state Name (or 'new' to create a new state)"
     const val TASK_DELETE_SUCCESSFULLY = "Task deleted successfully."
     const val EMPTY_TASK_NAME_INPUT = "Task name cannot be empty."
+    const val PROJECT_CAN_NOT_BE_EMPTY = "Project name cannot be empty."
     const val EMPTY_USER_NAME_INPUT = "Empty user name."
     const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
     const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
@@ -17,6 +39,7 @@ object UiMessages {
     const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
     const val SELECT_OPTION = "Please select an option: "
     const val Y = "y"
+    const val N = "n"
     const val INVALID_SELECTION_MESSAGE = "Invalid selection. Please try again ^_^"
     const val SEARCH_AGAIN_PROMPT = "\nWould you like to search again? (y/n): "
     const val EXITING = "Exiting"
@@ -64,7 +87,7 @@ object UiMessages {
     const val FAILED_TO_ADD_STATE = "Failed to add state:"
     const val ADDING_NEW_USER = "➕ Adding new user..."
     const val USER_ADDED = "✅ User added successfully!"
-    const val FAILED_TO_ADD_USER ="Failed to add user"
+    const val FAILED_TO_ADD_USER = "Failed to add user"
 
     //audit constants
     val SHOW_AUDIT_OPTIONS = """
@@ -117,6 +140,17 @@ object UiMessages {
         | 2. Add state                                             |
         | 3. Update state                                          |
         | 4. Delete state                                          |
+        | 0. Exit                                                  |
+        |----------------------------------------------------------|
+    """.trimIndent()
+
+    val SHOW_PROJECT_MANAGEMENT_OPTIONS = """
+        |------------------ Project Management --------------------|
+        | 1. Show all projects                                     |
+        | 2. Show project details                                  |
+        | 3. Add project                                           |
+        | 4. Update project                                        |
+        | 5. Delete project                                        |
         | 0. Exit                                                  |
         |----------------------------------------------------------|
     """.trimIndent()

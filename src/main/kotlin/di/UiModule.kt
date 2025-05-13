@@ -6,7 +6,6 @@ import org.example.ui.features.audit.AuditManagerUI
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.features.login.LoginUi
 import org.example.ui.features.project.ProjectManagerUi
-import org.example.ui.features.project.ProjectManagerUiImp
 import org.example.ui.features.state.AdminEntityStateManagerUi
 import org.example.ui.features.state.EntityStateManagerUi
 import org.example.ui.features.state.ShowAllEntityStateManagerUi
@@ -22,7 +21,7 @@ val uiModule = module {
     factory<AuditManagerUI> { AuditManagerUI(get(), get(), get(), get()) }
     factory<LoginUi> { LoginUi(get(), get(), get()) }
     factory<CreateUserUi> { CreateUserUi(get(), get(), get()) }
-    factory<ProjectManagerUi> { ProjectManagerUiImp(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory<ProjectManagerUi> { ProjectManagerUi(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory<AddUserToProjectUI> { AddUserToProjectUI(get(), get(), get(), get(), get()) }
     factory<ShowAllEntityStateManagerUi> { ShowAllEntityStateManagerUi(get(), get()) }
     factory<AdminEntityStateManagerUi> { AdminEntityStateManagerUi(get(), get(), get(), get(), get()) }

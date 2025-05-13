@@ -2,7 +2,7 @@ package ui.features.project
 
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
-import org.example.ui.features.project.ProjectManagerUiImp
+import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
@@ -15,7 +15,7 @@ class ProjectManagerUiImpTest {
     private lateinit var CreateUserUi: CreateUserUi
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
-    private lateinit var projectManagerUiImp: ProjectManagerUiImp
+    private lateinit var projectManagerUi: ProjectManagerUi
     private lateinit var manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase
 
 
