@@ -127,38 +127,6 @@ class TaskCSVDataSourceTest {
         assertThat(result).isEmpty()
     }
     
-//    @Test
-//    fun `getAllTasksByUserName should return tasks assigned to user`() = runTest {
-//        // Given
-//        coEvery {
-//            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("Thoraya")
-//        } returns listOf(MateTaskAssignmentDto("Thoraya", "2"))
-//        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-//
-//        // When
-//        val result = dataSource.getAllTasksByUserName("Thoraya")
-//
-//        // Then
-//        assertThat(result).containsExactly(task2)
-//    }
-//
-//    @Test
-//    fun `getAllTasksByUserName should return empty list when user has no tasks`() = runTest {
-//        // Given
-//        coEvery {
-//            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("empty_user")
-//        } returns listOf()
-//        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-//
-//        // When
-//        val result = dataSource.getAllTasksByUserName("empty_user")
-//
-//        // Then
-//        assertThat(result).isEmpty()
-//    }
-//
-//
-
     @Test
     fun `getUsersMateTaskByTaskId should return list of users assigned to taskId`() = runTest {
         // Given
