@@ -2,17 +2,17 @@ package data.source.remote.mongo
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.ProjectDto
+import data.dto.UserAssignedToProjectDto
 import kotlinx.coroutines.flow.toList
 import org.example.data.source.ProjectDataSource
-import org.example.data.source.UserAssignedToProjectDataSource
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
 import org.litote.kmongo.setValue
 
 class ProjectMongoDataSource(
     private val projectCollection: MongoCollection<ProjectDto>,
-    private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
-) : ProjectDataSource {
+    private val userAssignedToProjectCollection: MongoCollection<UserAssignedToProjectDto>,
+    ) : ProjectDataSource {
 
     override suspend fun addProject(project: ProjectDto): Boolean =
         projectCollection.insertOne(project).insertedId != null
@@ -30,8 +30,10 @@ class ProjectMongoDataSource(
 
     override suspend fun getProjectsByUsername(username: String): List<ProjectDto> =
         projectCollection.find(
-            ProjectDto::id `in` userAssignedToProjectDataSource
-                .getUsersAssignedToProjectByUserName(username)
+            ProjectDto::id `in` getUsersAssignedToProjectByUserName(username)
                 .map { userToProject -> userToProject.projectId }
         ).toList()
+
+    override suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
+        userAssignedToProjectCollection.find(UserAssignedToProjectDto::username eq userName).toList()
 }

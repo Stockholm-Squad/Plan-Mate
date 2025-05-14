@@ -3,10 +3,10 @@ package data.source.remote.mongo
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.MateTaskAssignmentDto
+import data.dto.UserAssignedToProjectDto
 import data.dto.UserDto
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -16,7 +16,7 @@ import org.litote.kmongo.setValue
 class UserMongoDataSource(
     private val userCollection: MongoCollection<UserDto>,
     private val mateTaskAssignmentCollection: MongoCollection<MateTaskAssignmentDto>,
-    private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
+    private val userAssignedToProjectCollection: MongoCollection<UserAssignedToProjectDto>,
 ) : UserDataSource {
 
     override suspend fun addUser(user: UserDto): Boolean = userCollection.insertOne(user).insertedId != null
@@ -24,7 +24,7 @@ class UserMongoDataSource(
     override suspend fun getAllUsers(): List<UserDto> = userCollection.find().toList()
 
     override suspend fun getUsersByProjectId(projectId: String): List<UserDto> =
-        userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId(projectId)
+        getUsersAssignedToProjectByProjectId(projectId)
             .map { userToProject -> userToProject.username }
             .takeIf { userNames -> userNames.isNotEmpty() }
             ?.let { userCollection.find(UserDto::username `in` it).toList() }
@@ -45,12 +45,6 @@ class UserMongoDataSource(
     override suspend fun deleteUser(user: UserDto): Boolean =
         userCollection.deleteOne(UserDto::id eq user.id).deletedCount > 0
 
-    override suspend fun deleteUserFromProject(projectId: String, username: String): Boolean =
-        userAssignedToProjectDataSource.deleteUserFromProject(userName = username, projectId = projectId)
-
-    override suspend fun addUserToProject(projectId: String, username: String): Boolean =
-        userAssignedToProjectDataSource.addUserToProject(userName = username, projectId = projectId)
-
     override suspend fun addUserToTask(username: String, taskId: String): Boolean =
         mateTaskAssignmentCollection.insertOne(
             MateTaskAssignmentDto(
@@ -66,5 +60,24 @@ class UserMongoDataSource(
                 MateTaskAssignmentDto::taskId eq taskId
             )
         ).deletedCount > 0
+
+    override suspend fun addUserToProject(projectId: String, userName: String): Boolean =
+        userAssignedToProjectCollection.insertOne(
+            UserAssignedToProjectDto(
+                username = userName,
+                projectId = projectId
+            )
+        ).insertedId != null
+
+    override suspend fun deleteUserFromProject(projectId: String, userName: String): Boolean =
+        userAssignedToProjectCollection.deleteOne(
+            and(
+                UserAssignedToProjectDto::username eq userName,
+                UserAssignedToProjectDto::projectId eq projectId
+            )
+        ).deletedCount > 0
+
+    override suspend fun getUsersAssignedToProjectByProjectId(projectId: String): List<UserAssignedToProjectDto> =
+        userAssignedToProjectCollection.find(UserAssignedToProjectDto::projectId eq projectId).toList()
 
 }

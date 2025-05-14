@@ -23,7 +23,8 @@ val remoteDataSourceModule = module {
     }
     single<ProjectDataSource> {
         ProjectMongoDataSource(
-            (get<MongoProvider>().provideCollection(PROJECTS_COLLECTION_NAME, ProjectDto::class.java)), get()
+            (get<MongoProvider>().provideCollection(PROJECTS_COLLECTION_NAME, ProjectDto::class.java)),
+            (get<MongoProvider>().provideCollection(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME, UserAssignedToProjectDto::class.java)),
         )
     }
     single<TaskDataSource> {
@@ -42,7 +43,7 @@ val remoteDataSourceModule = module {
         UserMongoDataSource(
             (get<MongoProvider>().provideCollection(USERS_COLLECTION_NAME, UserDto::class.java)),
             (get<MongoProvider>().provideCollection(MATE_TASK_ASSIGNMENT_COLLECTION_NAME, MateTaskAssignmentDto::class.java)),
-            userAssignedToProjectDataSource = get(),
+            (get<MongoProvider>().provideCollection(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME, UserAssignedToProjectDto::class.java)),
         )
     }
     single<TaskInProjectDataSource> {
@@ -50,26 +51,16 @@ val remoteDataSourceModule = module {
             (get<MongoProvider>().provideCollection(TASK_IN_PROJECT_COLLECTION_NAME, TaskInProjectDto::class.java))
         )
     }
-    single<UserAssignedToProjectDataSource> {
-        UserAssignedToProjectMongoDataSource(
-            (get<MongoProvider>().provideCollection(
-                USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME,
-                UserAssignedToProjectDto::class.java
-            ))
-        )
-    }
 }
 
 val localDataSourceModule = module {
     factory<TaskInProjectDataSource> { TaskInProjectCSVDataSource(get(named("taskInProjectReaderWriter"))) }
-    factory<UserAssignedToProjectDataSource> { UserAssignedToProjectCSVDataSource(get(named("userAssignedToProjectReaderWriter"))) }
-//    factory<MateTaskAssignmentDataSource> { MateTaskAssignmentCSVDataSource(get(named("mateTaskAssignmentReaderWriter"))) }
 
     factory<AuditDataSource> { AuditCSVDataSource(get(named("auditReaderWriter"))) }
     factory<ProjectDataSource> {
         ProjectCSVDataSource(
             get(named("projectReaderWriter")),
-            get()
+            get(named("userAssignedToProjectReaderWriter")),
         )
     }
     factory<EntityStateDataSource> { EntityStateCSVDataSource(get(named("entityStateReaderWriter"))) }
@@ -82,7 +73,7 @@ val localDataSourceModule = module {
         UserCSVDataSource(
             get(named("userReaderWriter")),
             get(named("mateTaskAssignmentReaderWriter")),
-            userAssignedToProjectDataSource = get(),
+            get(named("userAssignedToProjectReaderWriter")),
         )
     }
 }

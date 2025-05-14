@@ -1,5 +1,6 @@
 package org.example.data.source
 
+import data.dto.UserAssignedToProjectDto
 import data.dto.UserDto
 
 interface UserDataSource {
@@ -14,4 +15,6 @@ interface UserDataSource {
     suspend fun addUserToProject(projectId: String, username: String): Boolean
     suspend fun addUserToTask(username: String, taskId: String): Boolean
     suspend fun deleteUserFromTask(username: String, taskId: String): Boolean
+    suspend fun getUsersAssignedToProjectByProjectId(projectId: String): List<UserAssignedToProjectDto>
+
 }
