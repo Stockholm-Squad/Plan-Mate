@@ -1,15 +1,16 @@
 package org.example.data.source.local
 
+import data.dto.MateTaskAssignmentDto
 import data.dto.UserDto
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 
 class UserCSVDataSource(
     private val userReaderWriter: IReaderWriter<UserDto>,
+    private val mateTaskAssignmentReaderWriter: IReaderWriter<MateTaskAssignmentDto>,
     private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
-    private val mateTaskAssignmentDataSource: MateTaskAssignmentDataSource,
+
 ) : UserDataSource {
     override suspend fun addUser(user: UserDto): Boolean = userReaderWriter.append(listOf(user))
 
@@ -41,8 +42,9 @@ class UserCSVDataSource(
         userAssignedToProjectDataSource.addUserToProject(userName = username, projectId = projectId)
 
     override suspend fun addUserToTask(username: String, taskId: String): Boolean =
-        mateTaskAssignmentDataSource.addUserToTask(username = username, taskId = taskId)
+        mateTaskAssignmentReaderWriter.append(listOf(MateTaskAssignmentDto(username, taskId)))
 
     override suspend fun deleteUserFromTask(username: String, taskId: String): Boolean =
-        mateTaskAssignmentDataSource.deleteUserFromTask(username = username, taskId = taskId)
+        mateTaskAssignmentReaderWriter.read().filterNot { mateTaskAssignment -> mateTaskAssignment.taskId == taskId }
+            .let { filteredMateTaskAssignment -> mateTaskAssignmentReaderWriter.overWrite(filteredMateTaskAssignment) }
 }

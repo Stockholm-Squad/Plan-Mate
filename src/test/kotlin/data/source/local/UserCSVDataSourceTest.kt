@@ -1,17 +1,18 @@
 package data.source.local
 
 import com.google.common.truth.Truth.assertThat
+import data.dto.MateTaskAssignmentDto
 import data.dto.UserAssignedToProjectDto
 import data.dto.UserDto
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.example.data.source.local.UserCSVDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
+import org.example.data.source.local.csv_reader_writer.MateTaskAssignmentCSVReaderWriter
 import org.example.logic.entities.UserRole
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,18 +21,22 @@ class UserCSVDataSourceTest {
 
     private lateinit var userReaderWriter: IReaderWriter<UserDto>
     private lateinit var userAssignedToProjectDataSource: UserAssignedToProjectDataSource
-    private lateinit var mateTaskAssignmentDataSource: MateTaskAssignmentDataSource
+    private lateinit var mateTaskAssignmentReaderWriter: MateTaskAssignmentCSVReaderWriter
     private lateinit var dataSource: UserDataSource
 
     private val user1 = UserDto(id = "1", username = "Thoraya", hashedPassword = "lll", UserRole.MATE.name)
     private val user2 = UserDto(id = "2", username = "Yasmeen", hashedPassword = "lll", UserRole.MATE.name)
 
+    private val dto1 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task1")
+    private val dto2 = MateTaskAssignmentDto(username = "Hanan", taskId = "task2")
+    private val dto3 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task3")
+
     @BeforeEach
     fun setup() {
         userReaderWriter = mockk()
         userAssignedToProjectDataSource = mockk()
-        mateTaskAssignmentDataSource = mockk()
-        dataSource = UserCSVDataSource(userReaderWriter, userAssignedToProjectDataSource, mateTaskAssignmentDataSource)
+        mateTaskAssignmentReaderWriter = mockk()
+        dataSource = UserCSVDataSource(userReaderWriter, mateTaskAssignmentReaderWriter, userAssignedToProjectDataSource)
     }
 
     @Test
@@ -187,29 +192,88 @@ class UserCSVDataSourceTest {
         coVerify { userAssignedToProjectDataSource.addUserToProject("1", "Thoraya") }
     }
 
+//    @Test
+//    fun `addUserToTask should call underlying dataSource and return result`() = runTest {
+//        // Given
+//        coEvery { mateTaskAssignmentDataSource.addUserToTask("Thoraya", "t1") } returns true
+//
+//        // When
+//        val result = dataSource.addUserToTask("Thoraya", "t1")
+//
+//        // Then
+//        assertThat(result).isTrue()
+//        coVerify { mateTaskAssignmentDataSource.addUserToTask("Thoraya", "t1") }
+//    }
+//
+//    @Test
+//    fun `deleteUserFromTask should call underlying dataSource and return result`() = runTest {
+//        // Given
+//        coEvery { mateTaskAssignmentDataSource.deleteUserFromTask("Thoraya", "t1") } returns true
+//
+//        // When
+//        val result = dataSource.deleteUserFromTask("Thoraya", "t1")
+//
+//        // Then
+//        assertThat(result).isTrue()
+//        coVerify { mateTaskAssignmentDataSource.deleteUserFromTask("Thoraya", "t1") }
+//    }
+
     @Test
-    fun `addUserToTask should call underlying dataSource and return result`() = runTest {
+    fun `addUserToTask should append assignment and return true`() = runTest {
         // Given
-        coEvery { mateTaskAssignmentDataSource.addUserToTask("Thoraya", "t1") } returns true
+        val expectedDto = MateTaskAssignmentDto("Thoraya", "task1")
+        coEvery { mateTaskAssignmentReaderWriter.append(listOf(expectedDto)) } returns true
 
         // When
-        val result = dataSource.addUserToTask("Thoraya", "t1")
+        val result = dataSource.addUserToTask("Thoraya", "task1")
 
         // Then
         assertThat(result).isTrue()
-        coVerify { mateTaskAssignmentDataSource.addUserToTask("Thoraya", "t1") }
+        coVerify { mateTaskAssignmentReaderWriter.append(listOf(expectedDto)) }
     }
 
     @Test
-    fun `deleteUserFromTask should call underlying dataSource and return result`() = runTest {
+    fun `addUserToTask should return false if append fails`() = runTest {
         // Given
-        coEvery { mateTaskAssignmentDataSource.deleteUserFromTask("Thoraya", "t1") } returns true
+        val expectedDto = MateTaskAssignmentDto("Thoraya", "task1")
+        coEvery { mateTaskAssignmentReaderWriter.append(listOf(expectedDto)) } returns false
 
         // When
-        val result = dataSource.deleteUserFromTask("Thoraya", "t1")
+        val result = dataSource.addUserToTask("Thoraya", "task1")
+
+        // Then
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `deleteUserFromTask should remove entries with matching taskId and return true`() = runTest {
+        // Given
+        coEvery { mateTaskAssignmentReaderWriter.read() } returns listOf(dto1, dto2, dto3)
+        coEvery { mateTaskAssignmentReaderWriter.overWrite(any()) } returns true
+
+        // When
+        val result = dataSource.deleteUserFromTask("Thoraya", "task1")
 
         // Then
         assertThat(result).isTrue()
-        coVerify { mateTaskAssignmentDataSource.deleteUserFromTask("Thoraya", "t1") }
+        coVerify {
+            mateTaskAssignmentReaderWriter.overWrite(
+                match { it.none { dto -> dto.taskId == "task1" } }
+            )
+        }
     }
+
+    @Test
+    fun `deleteUserFromTask should return false if overwrite fails`() = runTest {
+        // Given
+        coEvery { mateTaskAssignmentReaderWriter.read() } returns listOf(dto1, dto2)
+        coEvery { mateTaskAssignmentReaderWriter.overWrite(any()) } returns false
+
+        // When
+        val result = dataSource.deleteUserFromTask("Thoraya", "task1")
+
+        // Then
+        assertThat(result).isFalse()
+    }
+
 }

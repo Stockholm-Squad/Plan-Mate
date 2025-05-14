@@ -1,17 +1,18 @@
 package data.source.remote.mongo
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import data.dto.MateTaskAssignmentDto
 import data.dto.TaskDto
 import kotlinx.coroutines.flow.toList
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.TaskDataSource
 import org.example.data.source.TaskInProjectDataSource
+import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
 
 class TaskMongoDataSource(
     private val taskCollection: MongoCollection<TaskDto>,
-    private val mateTaskAssignmentDataSource: MateTaskAssignmentDataSource,
+    private val mateTaskAssignmentCollection: MongoCollection<MateTaskAssignmentDto>,
     private val taskInProjectDataSource: TaskInProjectDataSource,
 ) : TaskDataSource {
 
@@ -40,6 +41,12 @@ class TaskMongoDataSource(
         taskInProjectDataSource.deleteTaskFromProject(projectId = projectId, taskId = taskId)
 
     override suspend fun getAllTasksByUserName(username: String): List<TaskDto> =
-        mateTaskAssignmentDataSource.getUsersMateTaskByUserName(username).map { it.taskId }
+        getUsersMateTaskByUserName(username).map { it.taskId }
             .let { mateTaskAssignments -> getTasksByIds(mateTaskAssignments) }
+
+    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::taskId eq taskId).toList()
+
+    override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentCollection.find(MateTaskAssignmentDto::username eq username).toList()
 }

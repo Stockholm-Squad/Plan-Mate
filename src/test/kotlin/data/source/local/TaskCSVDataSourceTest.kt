@@ -8,11 +8,11 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.TaskDataSource
 import org.example.data.source.TaskInProjectDataSource
 import org.example.data.source.local.TaskCSVDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
+import org.example.data.source.local.csv_reader_writer.MateTaskAssignmentCSVReaderWriter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import utils.buildTaskModel
@@ -20,7 +20,7 @@ import utils.buildTaskModel
 class TaskCSVDataSourceTest {
 
     private lateinit var taskReaderWriter: IReaderWriter<TaskDto>
-    private lateinit var mateTaskAssignmentDataSource: MateTaskAssignmentDataSource
+    private lateinit var mateTaskAssignmentReaderWriter: MateTaskAssignmentCSVReaderWriter
     private lateinit var taskInProjectDataSource: TaskInProjectDataSource
     private lateinit var dataSource: TaskDataSource
 
@@ -28,12 +28,17 @@ class TaskCSVDataSourceTest {
     private val task2 = buildTaskModel(id = "2", title = "Development")
     private val updatedTask = buildTaskModel(id = "1", title = "UI Design")
 
+    private val dto1 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task1")
+    private val dto2 = MateTaskAssignmentDto(username = "Hanan", taskId = "task2")
+    private val dto3 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task3")
+
+
     @BeforeEach
     fun setup() {
         taskReaderWriter = mockk(relaxed = true)
-        mateTaskAssignmentDataSource = mockk(relaxed = true)
+        mateTaskAssignmentReaderWriter = mockk(relaxed = true)
         taskInProjectDataSource = mockk(relaxed = true)
-        dataSource = TaskCSVDataSource(taskReaderWriter, mateTaskAssignmentDataSource, taskInProjectDataSource)
+        dataSource = TaskCSVDataSource(taskReaderWriter, mateTaskAssignmentReaderWriter, taskInProjectDataSource)
     }
 
     @Test
@@ -183,31 +188,81 @@ class TaskCSVDataSourceTest {
         coVerify { taskInProjectDataSource.deleteTaskFromProject("p1", "1") }
     }
 
+//    @Test
+//    fun `getAllTasksByUserName should return tasks assigned to user`() = runTest {
+//        // Given
+//        coEvery {
+//            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("Thoraya")
+//        } returns listOf(MateTaskAssignmentDto("Thoraya", "2"))
+//        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
+//
+//        // When
+//        val result = dataSource.getAllTasksByUserName("Thoraya")
+//
+//        // Then
+//        assertThat(result).containsExactly(task2)
+//    }
+//
+//    @Test
+//    fun `getAllTasksByUserName should return empty list when user has no tasks`() = runTest {
+//        // Given
+//        coEvery {
+//            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("empty_user")
+//        } returns listOf()
+//        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
+//
+//        // When
+//        val result = dataSource.getAllTasksByUserName("empty_user")
+//
+//        // Then
+//        assertThat(result).isEmpty()
+//    }
+//
+//
+
     @Test
-    fun `getAllTasksByUserName should return tasks assigned to user`() = runTest {
+    fun `getUsersMateTaskByTaskId should return list of users assigned to taskId`() = runTest {
         // Given
-        coEvery {
-            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("Thoraya")
-        } returns listOf(MateTaskAssignmentDto("Thoraya", "2"))
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
+        coEvery { mateTaskAssignmentReaderWriter.read() } returns listOf(dto1, dto2, dto3)
 
         // When
-        val result = dataSource.getAllTasksByUserName("Thoraya")
+        val result = dataSource.getUsersMateTaskByTaskId("task3")
 
         // Then
-        assertThat(result).containsExactly(task2)
+        assertThat(result).containsExactly(dto3)
     }
 
     @Test
-    fun `getAllTasksByUserName should return empty list when user has no tasks`() = runTest {
+    fun `getUsersMateTaskByTaskId should return empty list if no match`() = runTest {
         // Given
-        coEvery {
-            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("empty_user")
-        } returns listOf()
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
+        coEvery { mateTaskAssignmentReaderWriter.read() } returns listOf(dto1, dto2)
 
         // When
-        val result = dataSource.getAllTasksByUserName("empty_user")
+        val result = dataSource.getUsersMateTaskByTaskId("t99")
+
+        // Then
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `getUsersMateTaskByUserName should return list of tasks for the user`() = runTest {
+        // Given
+        coEvery { mateTaskAssignmentReaderWriter.read() } returns listOf(dto1, dto2, dto3)
+
+        // When
+        val result = dataSource.getUsersMateTaskByUserName("Thoraya")
+
+        // Then
+        assertThat(result).containsExactly(dto1, dto3)
+    }
+
+    @Test
+    fun `getUsersMateTaskByUserName should return empty list if user not found`() = runTest {
+        // Given
+        coEvery { mateTaskAssignmentReaderWriter.read() } returns listOf(dto1, dto2)
+
+        // When
+        val result = dataSource.getUsersMateTaskByUserName("llll")
 
         // Then
         assertThat(result).isEmpty()

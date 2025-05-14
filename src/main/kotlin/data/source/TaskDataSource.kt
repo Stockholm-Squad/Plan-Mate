@@ -1,5 +1,6 @@
 package org.example.data.source
 
+import data.dto.MateTaskAssignmentDto
 import data.dto.TaskDto
 
 interface TaskDataSource {
@@ -12,4 +13,7 @@ interface TaskDataSource {
     suspend fun addTaskInProject(projectId: String, taskId: String): Boolean
     suspend fun deleteTaskFromProject(projectId: String, taskId: String): Boolean
     suspend fun getAllTasksByUserName(username: String): List<TaskDto>
+
+    suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto>
+    suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto>
 }

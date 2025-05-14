@@ -1,14 +1,14 @@
 package org.example.data.source.local
 
+import data.dto.MateTaskAssignmentDto
 import data.dto.TaskDto
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.TaskDataSource
 import org.example.data.source.TaskInProjectDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 
 class TaskCSVDataSource(
     private val taskReaderWriter: IReaderWriter<TaskDto>,
-    private val mateTaskAssignmentDataSource: MateTaskAssignmentDataSource,
+    private val mateTaskAssignmentReaderWriter: IReaderWriter<MateTaskAssignmentDto>,
     private val taskInProjectDataSource: TaskInProjectDataSource,
 ) : TaskDataSource {
     override suspend fun getAllTasks(): List<TaskDto> = taskReaderWriter.read()
@@ -38,6 +38,12 @@ class TaskCSVDataSource(
         taskInProjectDataSource.deleteTaskFromProject(projectId = projectId, taskId = taskId)
 
     override suspend fun getAllTasksByUserName(username: String): List<TaskDto> =
-        mateTaskAssignmentDataSource.getUsersMateTaskByUserName(username).map { it.taskId }
+        getUsersMateTaskByUserName(username).map { it.taskId }
             .let { mateTaskAssignments -> getTasksByIds(mateTaskAssignments) }
+
+    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.taskId == taskId }
+
+    override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
+        mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.username == username }
 }

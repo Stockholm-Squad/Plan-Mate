@@ -2,20 +2,21 @@ package data.source.remote.mongo
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import data.dto.MateTaskAssignmentDto
 import data.dto.UserDto
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
+import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
 import org.litote.kmongo.setValue
 
 class UserMongoDataSource(
     private val userCollection: MongoCollection<UserDto>,
+    private val mateTaskAssignmentCollection: MongoCollection<MateTaskAssignmentDto>,
     private val userAssignedToProjectDataSource: UserAssignedToProjectDataSource,
-    private val mateTaskAssignmentDataSource: MateTaskAssignmentDataSource,
 ) : UserDataSource {
 
     override suspend fun addUser(user: UserDto): Boolean = userCollection.insertOne(user).insertedId != null
@@ -51,8 +52,19 @@ class UserMongoDataSource(
         userAssignedToProjectDataSource.addUserToProject(userName = username, projectId = projectId)
 
     override suspend fun addUserToTask(username: String, taskId: String): Boolean =
-        mateTaskAssignmentDataSource.addUserToTask(username = username, taskId = taskId)
+        mateTaskAssignmentCollection.insertOne(
+            MateTaskAssignmentDto(
+                username = username,
+                taskId = taskId
+            )
+        ).insertedId != null
 
     override suspend fun deleteUserFromTask(username: String, taskId: String): Boolean =
-        mateTaskAssignmentDataSource.deleteUserFromTask(username = username, taskId = taskId)
+        mateTaskAssignmentCollection.deleteOne(
+            and(
+                MateTaskAssignmentDto::username eq username,
+                MateTaskAssignmentDto::taskId eq taskId
+            )
+        ).deletedCount > 0
+
 }
