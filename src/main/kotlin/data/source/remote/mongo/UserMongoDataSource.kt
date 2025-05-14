@@ -80,4 +80,7 @@ class UserMongoDataSource(
     private suspend fun getUsersAssignedToProjectByProjectId(projectId: String): List<UserAssignedToProjectDto> =
         userAssignedToProjectCollection.find(UserAssignedToProjectDto::projectId eq projectId).toList()
 
+    override suspend fun getUserByUsername(username: String): UserDto? =
+        userCollection.find(Filters.eq(UserDto::username.name, username)).firstOrNull()
+
 }

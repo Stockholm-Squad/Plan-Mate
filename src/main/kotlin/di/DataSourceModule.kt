@@ -46,6 +46,9 @@ val remoteDataSourceModule = module {
             (get<MongoProvider>().provideCollection(USER_ASSIGNED_TO_PROJECT_COLLECTION_NAME, UserAssignedToProjectDto::class.java)),
         )
     }
+    factory<CurrentUserDataSource> {
+        CurrentUserMemoryDataSource()
+    }
 }
 
 val localDataSourceModule = module {
@@ -68,5 +71,8 @@ val localDataSourceModule = module {
             get(named("mateTaskAssignmentReaderWriter")),
             get(named("userAssignedToProjectReaderWriter")),
         )
+    }
+    factory<CurrentUserDataSource> {
+        CurrentUserMemoryDataSource()
     }
 }
