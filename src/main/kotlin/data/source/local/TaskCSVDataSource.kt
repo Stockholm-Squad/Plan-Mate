@@ -2,14 +2,14 @@ package org.example.data.source.local
 
 import data.dto.MateTaskAssignmentDto
 import data.dto.TaskDto
+import data.dto.TaskInProjectDto
 import org.example.data.source.TaskDataSource
-import org.example.data.source.TaskInProjectDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 
 class TaskCSVDataSource(
     private val taskReaderWriter: IReaderWriter<TaskDto>,
     private val mateTaskAssignmentReaderWriter: IReaderWriter<MateTaskAssignmentDto>,
-    private val taskInProjectDataSource: TaskInProjectDataSource,
+    private val taskInProjectReaderWriter: IReaderWriter<TaskInProjectDto>,
 ) : TaskDataSource {
     override suspend fun getAllTasks(): List<TaskDto> = taskReaderWriter.read()
 
@@ -25,17 +25,11 @@ class TaskCSVDataSource(
 
 
     override suspend fun getTasksInProject(projectId: String): List<TaskDto> =
-        taskInProjectDataSource.getTasksInProjectByProjectId(projectId).map { it.taskId }
+        getTasksInProjectByProjectId(projectId).map { it.taskId }
             .let { taskIds -> getTasksByIds(taskIds) }
 
     override suspend fun getTasksByIds(taskIds: List<String>): List<TaskDto> =
         getAllTasks().filter { task -> task.id in taskIds }
-
-    override suspend fun addTaskInProject(projectId: String, taskId: String): Boolean =
-        taskInProjectDataSource.addTaskInProject(projectId = projectId, taskId = taskId)
-
-    override suspend fun deleteTaskFromProject(projectId: String, taskId: String): Boolean =
-        taskInProjectDataSource.deleteTaskFromProject(projectId = projectId, taskId = taskId)
 
     override suspend fun getAllTasksByUserName(username: String): List<TaskDto> =
         getUsersMateTaskByUserName(username).map { it.taskId }
@@ -46,4 +40,17 @@ class TaskCSVDataSource(
 
     override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
         mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.username == username }
+
+    override suspend fun addTaskInProject(projectId: String, taskId: String): Boolean =
+        taskInProjectReaderWriter.append(listOf(TaskInProjectDto(projectId = projectId, taskId = taskId)))
+
+    override suspend fun deleteTaskFromProject(projectId: String, taskId: String): Boolean =
+        getAllTasksInProject().filterNot { taskInProject -> taskInProject.projectId == projectId && taskInProject.taskId == taskId }
+            .let { updatedTaskInProjectList -> taskInProjectReaderWriter.overWrite(updatedTaskInProjectList) }
+
+    override suspend fun getAllTasksInProject(): List<TaskInProjectDto> =
+        taskInProjectReaderWriter.read()
+
+    override suspend fun getTasksInProjectByProjectId(projectId: String): List<TaskInProjectDto> =
+        getAllTasksInProject().filter { taskInProject -> taskInProject.projectId == projectId }
 }
