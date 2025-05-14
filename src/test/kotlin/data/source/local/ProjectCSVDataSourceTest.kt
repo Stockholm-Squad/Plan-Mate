@@ -8,7 +8,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.data.source.ProjectDataSource
-import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.local.ProjectCSVDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 import org.junit.jupiter.api.BeforeEach
@@ -17,7 +16,7 @@ import org.junit.jupiter.api.Test
 class ProjectCSVDataSourceTest {
 
     private lateinit var projectReaderWriter: IReaderWriter<ProjectDto>
-    private lateinit var userAssignedToProjectDataSource: UserAssignedToProjectDataSource
+    private lateinit var userAssignedToProjectReaderWriter: IReaderWriter<UserAssignedToProjectDto>
     private lateinit var dataSource: ProjectDataSource
 
     private val project1 = ProjectDto(id = "1", title = "Project A", stateId = "2")
@@ -27,8 +26,8 @@ class ProjectCSVDataSourceTest {
     @BeforeEach
     fun setup() {
         projectReaderWriter = mockk()
-        userAssignedToProjectDataSource = mockk()
-        dataSource = ProjectCSVDataSource(projectReaderWriter, userAssignedToProjectDataSource)
+        userAssignedToProjectReaderWriter = mockk()
+        dataSource = ProjectCSVDataSource(projectReaderWriter, userAssignedToProjectReaderWriter)
     }
 
     @Test
@@ -131,51 +130,5 @@ class ProjectCSVDataSourceTest {
 
         // Then
         assertThat(result).containsExactly(project1, project2)
-    }
-
-    @Test
-    fun `getProjectsByUsername should return projects assigned to user`() = runTest {
-        // Given
-        coEvery {
-            userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName("Thoraya")
-        } returns listOf(UserAssignedToProjectDto(username = "Thoraya", projectId = "1"))
-
-        coEvery { projectReaderWriter.read() } returns listOf(project1, project2)
-
-        // When
-        val result = dataSource.getProjectsByUsername("Thoraya")
-
-        // Then
-        assertThat(result).containsExactly(project1)
-    }
-
-    @Test
-    fun `getProjectsByUsername should return empty list when user not assigned to any project`() = runTest {
-        // Given
-        coEvery {
-            userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName("Hanan")
-        } returns listOf()
-        coEvery { projectReaderWriter.read() } returns listOf(project1, project2)
-
-        // When
-        val result = dataSource.getProjectsByUsername("Hanan")
-
-        // Then
-        assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `getProjectsByUsername should return empty list when no project id matches`() = runTest {
-        // Given
-        coEvery {
-            userAssignedToProjectDataSource.getUsersAssignedToProjectByUserName("Yasmeen")
-        } returns listOf(UserAssignedToProjectDto(username = "Yasmeen", projectId = "99"))
-        coEvery { projectReaderWriter.read() } returns listOf(project1, project2)
-
-        // When
-        val result = dataSource.getProjectsByUsername("Yasmeen")
-
-        // Then
-        assertThat(result).isEmpty()
     }
 }

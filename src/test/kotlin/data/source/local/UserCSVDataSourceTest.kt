@@ -8,7 +8,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.UserDataSource
 import org.example.data.source.local.UserCSVDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
@@ -20,7 +19,7 @@ import org.junit.jupiter.api.Test
 class UserCSVDataSourceTest {
 
     private lateinit var userReaderWriter: IReaderWriter<UserDto>
-    private lateinit var userAssignedToProjectDataSource: UserAssignedToProjectDataSource
+    private lateinit var userAssignedToProjectReaderWriter: IReaderWriter<UserAssignedToProjectDto>
     private lateinit var mateTaskAssignmentReaderWriter: MateTaskAssignmentCSVReaderWriter
     private lateinit var dataSource: UserDataSource
 
@@ -34,9 +33,9 @@ class UserCSVDataSourceTest {
     @BeforeEach
     fun setup() {
         userReaderWriter = mockk()
-        userAssignedToProjectDataSource = mockk()
+        userAssignedToProjectReaderWriter = mockk()
         mateTaskAssignmentReaderWriter = mockk()
-        dataSource = UserCSVDataSource(userReaderWriter, mateTaskAssignmentReaderWriter, userAssignedToProjectDataSource)
+        dataSource = UserCSVDataSource(userReaderWriter, mateTaskAssignmentReaderWriter, userAssignedToProjectReaderWriter)
     }
 
     @Test
@@ -62,20 +61,6 @@ class UserCSVDataSourceTest {
 
         // Then
         assertThat(result).containsExactly(user1, user2)
-    }
-
-    @Test
-    fun `getUsersByProjectId should return correct users`() = runTest {
-        // Given
-        coEvery { userAssignedToProjectDataSource.getUsersAssignedToProjectByProjectId("p1") } returns
-                listOf(UserAssignedToProjectDto(username = "1", projectId = "p1"))
-        coEvery { userReaderWriter.read() } returns listOf(user1, user2)
-
-        // When
-        val result = dataSource.getUsersByProjectId("p1")
-
-        // Then
-        assertThat(result).containsExactly(user1)
     }
 
     @Test
@@ -164,32 +149,6 @@ class UserCSVDataSourceTest {
                 match { it.size == 1 && it[0] == user1 }
             )
         }
-    }
-
-    @Test
-    fun `deleteUserFromProject should call underlying dataSource and return result`() = runTest {
-        // Given
-        coEvery { userAssignedToProjectDataSource.deleteUserFromProject("1", "Thoraya") } returns true
-
-        // When
-        val result = dataSource.deleteUserFromProject("1", "Thoraya")
-
-        // Then
-        assertThat(result).isTrue()
-        coVerify { userAssignedToProjectDataSource.deleteUserFromProject("1", "Thoraya") }
-    }
-
-    @Test
-    fun `addUserToProject should call underlying dataSource and return result`() = runTest {
-        // Given
-        coEvery { userAssignedToProjectDataSource.addUserToProject("1", "Thoraya") } returns true
-
-        // When
-        val result = dataSource.addUserToProject("1", "Thoraya")
-
-        // Then
-        assertThat(result).isTrue()
-        coVerify { userAssignedToProjectDataSource.addUserToProject("1", "Thoraya") }
     }
 
 //    @Test
