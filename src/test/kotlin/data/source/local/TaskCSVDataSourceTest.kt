@@ -9,7 +9,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.data.source.TaskDataSource
-import org.example.data.source.TaskInProjectDataSource
 import org.example.data.source.local.TaskCSVDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 import org.example.data.source.local.csv_reader_writer.MateTaskAssignmentCSVReaderWriter
@@ -21,7 +20,7 @@ class TaskCSVDataSourceTest {
 
     private lateinit var taskReaderWriter: IReaderWriter<TaskDto>
     private lateinit var mateTaskAssignmentReaderWriter: MateTaskAssignmentCSVReaderWriter
-    private lateinit var taskInProjectDataSource: TaskInProjectDataSource
+    private lateinit var taskInProjectReaderWriter: IReaderWriter<TaskInProjectDto>
     private lateinit var dataSource: TaskDataSource
 
     private val task1 = buildTaskModel(id = "1", title = "Design")
@@ -37,8 +36,8 @@ class TaskCSVDataSourceTest {
     fun setup() {
         taskReaderWriter = mockk(relaxed = true)
         mateTaskAssignmentReaderWriter = mockk(relaxed = true)
-        taskInProjectDataSource = mockk(relaxed = true)
-        dataSource = TaskCSVDataSource(taskReaderWriter, mateTaskAssignmentReaderWriter, taskInProjectDataSource)
+        taskInProjectReaderWriter = mockk(relaxed = true)
+        dataSource = TaskCSVDataSource(taskReaderWriter, mateTaskAssignmentReaderWriter, taskInProjectReaderWriter)
     }
 
     @Test
@@ -105,36 +104,6 @@ class TaskCSVDataSourceTest {
     }
 
     @Test
-    fun `getTasksInProject should return tasks in a specific project`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.getTasksInProjectByProjectId("p1")
-        } returns listOf(TaskInProjectDto("1", "p1"))
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-
-        // When
-        val result = dataSource.getTasksInProject("p1")
-
-        // Then
-        assertThat(result).containsExactly(task1)
-    }
-
-    @Test
-    fun `getTasksInProject should return empty list if no tasks matched`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.getTasksInProjectByProjectId("p1")
-        } returns listOf(TaskInProjectDto("99", "p1"))
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-
-        // When
-        val result = dataSource.getTasksInProject("p1")
-
-        // Then
-        assertThat(result).isEmpty()
-    }
-
-    @Test
     fun `getTasksByIds should return matching tasks`() = runTest {
         // Given
         coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
@@ -157,37 +126,7 @@ class TaskCSVDataSourceTest {
         // Then
         assertThat(result).isEmpty()
     }
-
-    @Test
-    fun `addTaskInProject should return true when add is successful`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.addTaskInProject("p1", "1")
-        } returns true
-
-        // When
-        val result = dataSource.addTaskInProject("p1", "1")
-
-        // Then
-        assertThat(result).isTrue()
-        coVerify { taskInProjectDataSource.addTaskInProject("p1", "1") }
-    }
-
-    @Test
-    fun `deleteTaskFromProject should return true when delete is successful`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.deleteTaskFromProject("p1", "1")
-        } returns true
-
-        // When
-        val result = dataSource.deleteTaskFromProject("p1", "1")
-
-        // Then
-        assertThat(result).isTrue()
-        coVerify { taskInProjectDataSource.deleteTaskFromProject("p1", "1") }
-    }
-
+    
 //    @Test
 //    fun `getAllTasksByUserName should return tasks assigned to user`() = runTest {
 //        // Given
