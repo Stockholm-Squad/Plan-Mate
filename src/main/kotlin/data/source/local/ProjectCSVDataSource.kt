@@ -27,7 +27,7 @@ class ProjectCSVDataSource(
             .map { it.projectId }
             .let { projectIds -> getAllProjects().filter { it.id in projectIds } }
 
-    override suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
+    private suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
         userAssignedToProjectReaderWriter.read().filter { userAssignedToProject ->
             userAssignedToProject.projectId == userName
         }

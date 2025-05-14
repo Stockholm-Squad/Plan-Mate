@@ -39,10 +39,10 @@ class TaskMongoDataSource(
         getUsersMateTaskByUserName(username).map { it.taskId }
             .let { mateTaskAssignments -> getTasksByIds(mateTaskAssignments) }
 
-    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
+    private suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
         mateTaskAssignmentCollection.find(MateTaskAssignmentDto::taskId eq taskId).toList()
 
-    override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
+    private suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
         mateTaskAssignmentCollection.find(MateTaskAssignmentDto::username eq username).toList()
 
     override suspend fun addTaskInProject(projectId: String, taskId: String): Boolean =
@@ -56,9 +56,9 @@ class TaskMongoDataSource(
             )
         ).deletedCount > 0
 
-    override suspend fun getAllTasksInProject(): List<TaskInProjectDto> =
+    private suspend fun getAllTasksInProject(): List<TaskInProjectDto> =
         taskInProjectCollection.find().toList()
 
-    override suspend fun getTasksInProjectByProjectId(projectId: String): List<TaskInProjectDto> =
+    private suspend fun getTasksInProjectByProjectId(projectId: String): List<TaskInProjectDto> =
         taskInProjectCollection.find(TaskInProjectDto::projectId eq projectId).toList()
 }

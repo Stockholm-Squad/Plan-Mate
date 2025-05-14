@@ -34,6 +34,6 @@ class ProjectMongoDataSource(
                 .map { userToProject -> userToProject.projectId }
         ).toList()
 
-    override suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
+    private suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
         userAssignedToProjectCollection.find(UserAssignedToProjectDto::username eq userName).toList()
 }

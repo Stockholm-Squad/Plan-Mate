@@ -77,7 +77,7 @@ class UserMongoDataSource(
             )
         ).deletedCount > 0
 
-    override suspend fun getUsersAssignedToProjectByProjectId(projectId: String): List<UserAssignedToProjectDto> =
+    private suspend fun getUsersAssignedToProjectByProjectId(projectId: String): List<UserAssignedToProjectDto> =
         userAssignedToProjectCollection.find(UserAssignedToProjectDto::projectId eq projectId).toList()
 
 }

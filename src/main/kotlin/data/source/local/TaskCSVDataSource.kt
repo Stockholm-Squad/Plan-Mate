@@ -35,10 +35,10 @@ class TaskCSVDataSource(
         getUsersMateTaskByUserName(username).map { it.taskId }
             .let { mateTaskAssignments -> getTasksByIds(mateTaskAssignments) }
 
-    override suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
+    private suspend fun getUsersMateTaskByTaskId(taskId: String): List<MateTaskAssignmentDto> =
         mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.taskId == taskId }
 
-    override suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
+    private suspend fun getUsersMateTaskByUserName(username: String): List<MateTaskAssignmentDto> =
         mateTaskAssignmentReaderWriter.read().filter { mateTaskAssignment -> mateTaskAssignment.username == username }
 
     override suspend fun addTaskInProject(projectId: String, taskId: String): Boolean =
@@ -48,9 +48,9 @@ class TaskCSVDataSource(
         getAllTasksInProject().filterNot { taskInProject -> taskInProject.projectId == projectId && taskInProject.taskId == taskId }
             .let { updatedTaskInProjectList -> taskInProjectReaderWriter.overWrite(updatedTaskInProjectList) }
 
-    override suspend fun getAllTasksInProject(): List<TaskInProjectDto> =
+    private suspend fun getAllTasksInProject(): List<TaskInProjectDto> =
         taskInProjectReaderWriter.read()
 
-    override suspend fun getTasksInProjectByProjectId(projectId: String): List<TaskInProjectDto> =
+    private suspend fun getTasksInProjectByProjectId(projectId: String): List<TaskInProjectDto> =
         getAllTasksInProject().filter { taskInProject -> taskInProject.projectId == projectId }
 }
