@@ -4,9 +4,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.data.repo.TaskRepositoryImp
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.TaskDataSource
-import org.example.data.source.TaskInProjectDataSource
 import org.example.logic.repository.TaskRepository
 import org.junit.jupiter.api.BeforeEach
 import com.google.common.truth.Truth.assertThat

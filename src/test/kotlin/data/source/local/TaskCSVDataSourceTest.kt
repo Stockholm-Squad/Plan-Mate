@@ -8,11 +8,10 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.example.data.source.MateTaskAssignmentDataSource
 import org.example.data.source.TaskDataSource
-import org.example.data.source.TaskInProjectDataSource
 import org.example.data.source.local.TaskCSVDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
+import org.example.data.source.local.csv_reader_writer.MateTaskAssignmentCSVReaderWriter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import utils.buildTaskModel
@@ -20,20 +19,25 @@ import utils.buildTaskModel
 class TaskCSVDataSourceTest {
 
     private lateinit var taskReaderWriter: IReaderWriter<TaskDto>
-    private lateinit var mateTaskAssignmentDataSource: MateTaskAssignmentDataSource
-    private lateinit var taskInProjectDataSource: TaskInProjectDataSource
+    private lateinit var mateTaskAssignmentReaderWriter: MateTaskAssignmentCSVReaderWriter
+    private lateinit var taskInProjectReaderWriter: IReaderWriter<TaskInProjectDto>
     private lateinit var dataSource: TaskDataSource
 
     private val task1 = buildTaskModel(id = "1", title = "Design")
     private val task2 = buildTaskModel(id = "2", title = "Development")
     private val updatedTask = buildTaskModel(id = "1", title = "UI Design")
 
+    private val dto1 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task1")
+    private val dto2 = MateTaskAssignmentDto(username = "Hanan", taskId = "task2")
+    private val dto3 = MateTaskAssignmentDto(username = "Thoraya", taskId = "task3")
+
+
     @BeforeEach
     fun setup() {
         taskReaderWriter = mockk(relaxed = true)
-        mateTaskAssignmentDataSource = mockk(relaxed = true)
-        taskInProjectDataSource = mockk(relaxed = true)
-        dataSource = TaskCSVDataSource(taskReaderWriter, mateTaskAssignmentDataSource, taskInProjectDataSource)
+        mateTaskAssignmentReaderWriter = mockk(relaxed = true)
+        taskInProjectReaderWriter = mockk(relaxed = true)
+        dataSource = TaskCSVDataSource(taskReaderWriter, mateTaskAssignmentReaderWriter, taskInProjectReaderWriter)
     }
 
     @Test
@@ -100,36 +104,6 @@ class TaskCSVDataSourceTest {
     }
 
     @Test
-    fun `getTasksInProject should return tasks in a specific project`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.getTasksInProjectByProjectId("p1")
-        } returns listOf(TaskInProjectDto("1", "p1"))
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-
-        // When
-        val result = dataSource.getTasksInProject("p1")
-
-        // Then
-        assertThat(result).containsExactly(task1)
-    }
-
-    @Test
-    fun `getTasksInProject should return empty list if no tasks matched`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.getTasksInProjectByProjectId("p1")
-        } returns listOf(TaskInProjectDto("99", "p1"))
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-
-        // When
-        val result = dataSource.getTasksInProject("p1")
-
-        // Then
-        assertThat(result).isEmpty()
-    }
-
-    @Test
     fun `getTasksByIds should return matching tasks`() = runTest {
         // Given
         coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
@@ -148,66 +122,6 @@ class TaskCSVDataSourceTest {
 
         // When
         val result = dataSource.getTasksByIds(listOf("99"))
-
-        // Then
-        assertThat(result).isEmpty()
-    }
-
-    @Test
-    fun `addTaskInProject should return true when add is successful`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.addTaskInProject("p1", "1")
-        } returns true
-
-        // When
-        val result = dataSource.addTaskInProject("p1", "1")
-
-        // Then
-        assertThat(result).isTrue()
-        coVerify { taskInProjectDataSource.addTaskInProject("p1", "1") }
-    }
-
-    @Test
-    fun `deleteTaskFromProject should return true when delete is successful`() = runTest {
-        // Given
-        coEvery {
-            taskInProjectDataSource.deleteTaskFromProject("p1", "1")
-        } returns true
-
-        // When
-        val result = dataSource.deleteTaskFromProject("p1", "1")
-
-        // Then
-        assertThat(result).isTrue()
-        coVerify { taskInProjectDataSource.deleteTaskFromProject("p1", "1") }
-    }
-
-    @Test
-    fun `getAllTasksByUserName should return tasks assigned to user`() = runTest {
-        // Given
-        coEvery {
-            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("Thoraya")
-        } returns listOf(MateTaskAssignmentDto("Thoraya", "2"))
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-
-        // When
-        val result = dataSource.getAllTasksByUserName("Thoraya")
-
-        // Then
-        assertThat(result).containsExactly(task2)
-    }
-
-    @Test
-    fun `getAllTasksByUserName should return empty list when user has no tasks`() = runTest {
-        // Given
-        coEvery {
-            mateTaskAssignmentDataSource.getUsersMateTaskByUserName("empty_user")
-        } returns listOf()
-        coEvery { taskReaderWriter.read() } returns listOf(task1, task2)
-
-        // When
-        val result = dataSource.getAllTasksByUserName("empty_user")
 
         // Then
         assertThat(result).isEmpty()

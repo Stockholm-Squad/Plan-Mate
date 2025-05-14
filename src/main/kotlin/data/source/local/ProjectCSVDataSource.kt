@@ -1,13 +1,13 @@
 package org.example.data.source.local
 
 import data.dto.ProjectDto
+import data.dto.UserAssignedToProjectDto
 import org.example.data.source.ProjectDataSource
-import org.example.data.source.UserAssignedToProjectDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
 
 class ProjectCSVDataSource(
     private val projectReaderWriter: IReaderWriter<ProjectDto>,
-    private val userAssignedToProjectReaderWriter: UserAssignedToProjectDataSource,
+    private val userAssignedToProjectReaderWriter: IReaderWriter<UserAssignedToProjectDto>,
 ) : ProjectDataSource {
     override suspend fun addProject(project: ProjectDto): Boolean = projectReaderWriter.append(listOf(project))
 
@@ -23,7 +23,12 @@ class ProjectCSVDataSource(
         projectReaderWriter.read()
 
     override suspend fun getProjectsByUsername(username: String): List<ProjectDto> =
-        userAssignedToProjectReaderWriter.getUsersAssignedToProjectByUserName(username)
+        getUsersAssignedToProjectByUserName(username)
             .map { it.projectId }
             .let { projectIds -> getAllProjects().filter { it.id in projectIds } }
+
+    private suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
+        userAssignedToProjectReaderWriter.read().filter { userAssignedToProject ->
+            userAssignedToProject.projectId == userName
+        }
 }
