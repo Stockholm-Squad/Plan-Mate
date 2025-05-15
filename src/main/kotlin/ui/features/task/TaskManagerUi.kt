@@ -216,65 +216,45 @@ class TaskManagerUi(
     }
 
     private fun readCreateTaskInput(): TaskInput? {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
-        val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (name == null) {
-            printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT)
-            return null
-        }
+        val name = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_NAME_PROMPT,
+            invalidMessage = UiMessages.EMPTY_TASK_NAME_INPUT,
+            allowRetry = false
+        ) ?: return null
 
-        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
-        val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (description == null) {
-            printer.showMessageLine(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readCreateTaskInput()
-        }
+        val description = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_DESCRIPTION_PROMPT,
+            invalidMessage = UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        printer.showMessage(UiMessages.TASK_STATE_PROMPT)
-        val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (stateName == null) {
-            printer.showMessageLine(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readCreateTaskInput()
-        }
+        val stateName = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_STATE_PROMPT,
+            invalidMessage = UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
         return TaskInput(name, description, stateName)
     }
 
 
-    private fun readUpdateTaskInput(): Triple<String, String, String>? {
-        printer.showMessageLine(UiMessages.NEW_TASK_NAME_PROMPT)
-        val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (name == null) {
-            printer.showMessageLine(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
-            return null
-        }
+    private fun readUpdateTaskInput(): TaskInput? {
+        val name = readNonBlankInputOrNull(
+            promptMessage = UiMessages.NEW_TASK_NAME_PROMPT,
+            invalidMessage = UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        printer.showMessageLine(UiMessages.TASK_DESCRIPTION_PROMPT)
-        val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (description == null) {
-            printer.showMessageLine(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
-            return null
-        }
+        val description = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_DESCRIPTION_PROMPT,
+            invalidMessage = UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        printer.showMessageLine(UiMessages.TASK_STATE_PROMPT)
-        val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (stateName == null) {
-            printer.showMessageLine(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
-            return null
-        }
+        val stateName = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_STATE_PROMPT,
+            invalidMessage = UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        return Triple(name, description, stateName)
+        return TaskInput(name, description, stateName)
     }
+
 
     private fun getProjectByName(): String {
         while (true) {
@@ -310,6 +290,30 @@ class TaskManagerUi(
         }
     }
 
+    private fun readNonBlankInputOrNull(
+        promptMessage: String,
+        invalidMessage: String,
+        retryPromptMessage: String = "Enter Y to retry or anything else to cancel:",
+        confirmRetryValue: String = "Y",
+        allowRetry: Boolean = true
+    ): String? {
+        printer.showMessageLine(promptMessage)
+        val input = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+        if (input != null) return input
+
+        printer.showMessageLine(invalidMessage)
+        if (!allowRetry) return null
+
+        printer.showMessageLine(retryPromptMessage)
+        val confirm = reader.readStringOrNull()
+        if (confirm.equals(confirmRetryValue, ignoreCase = true)) {
+            return readNonBlankInputOrNull(promptMessage, invalidMessage, retryPromptMessage, confirmRetryValue, allowRetry)
+        }
+
+        return null
+    }
+
+
     private fun getTaskName(): String {
         while (true) {
             printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
@@ -321,6 +325,7 @@ class TaskManagerUi(
             return taskName
         }
     }
+
 
     private fun getUserName(): String {
         while (true) {
