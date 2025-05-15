@@ -3,8 +3,8 @@ package org.example.ui.features.addusertoproject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.runBlocking
 import org.example.logic.entities.User
-import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
+import org.example.logic.usecase.project.AdminProjectManagementUseCase
+import org.example.logic.usecase.project.UserProjectManagementUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.user.CreateUserUi
@@ -14,8 +14,8 @@ import org.example.ui.input_output.output.OutputPrinter
 class AddUserToProjectUI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val getProjectsUseCase: GetProjectsUseCase,
-    private val manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase,
+    private val userProjectManagementUseCase: UserProjectManagementUseCase,
+    private val adminProjectManagementUseCase: AdminProjectManagementUseCase,
     private val createUserUiImp: CreateUserUi,
 ) : UiLauncher {
 
@@ -64,8 +64,8 @@ class AddUserToProjectUI(
         runBlocking(errorHandler) {
             try {
                 handleAssignUserToProjectMessage(
-                    manageUsersAssignedToProjectUseCase.addUserToProject(
-                        getProjectsUseCase.getProjectByName(projectName).id, username
+                    adminProjectManagementUseCase.addUserToProject(
+                        userProjectManagementUseCase.getProjectByName(projectName).id, username
                     )
                 )
             } catch (e: Exception) {
@@ -94,8 +94,8 @@ class AddUserToProjectUI(
             runBlocking(errorHandler) {
                 try {
                     handleUsersAssignedToProjectMessages(
-                        manageUsersAssignedToProjectUseCase.getUsersByProjectId(
-                            getProjectsUseCase.getProjectByName(projectName).id
+                        adminProjectManagementUseCase.getUsersByProjectId(
+                            userProjectManagementUseCase.getProjectByName(projectName).id
                         ),
                         projectName
                     )
@@ -125,7 +125,7 @@ class AddUserToProjectUI(
                 outputPrinter.showMessage("${UiMessages.ENTER_USER_NAME_TO_REMOVE_PROJECT} ${UiMessages.OR_LEAVE_IT_BLANK_TO_BACK}")
                 inputReader.readStringOrNull()?.let { username ->
                     try {
-                        manageUsersAssignedToProjectUseCase.deleteUserFromProject(projectName, username)
+                        adminProjectManagementUseCase.deleteUserFromProject(projectName, username)
                         outputPrinter.showMessageLine(UiMessages.USER_DELETED_FROM_PROJECT)
                     } catch (e: Exception) {
                         outputPrinter.showMessageLine("${UiMessages.FAILED_TO_DELETE_USER_FROM_PROJECT} ${e.message}")

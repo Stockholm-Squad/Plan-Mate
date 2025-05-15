@@ -6,8 +6,7 @@ import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
 import org.example.logic.usecase.audit.AuditServicesUseCase
-import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageTasksInProjectUseCase
+import org.example.logic.usecase.project.UserProjectManagementUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.utils.DateHandlerImp
@@ -24,8 +23,7 @@ class TaskManagerUi(
     private val uiUtils: UiUtils,
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageEntityStatesUseCase,
-    private val getProjectsUseCase: GetProjectsUseCase,
-    private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
+    private val userProjectManagementUseCase: UserProjectManagementUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
 ) : UiLauncher {
@@ -96,7 +94,7 @@ class TaskManagerUi(
 
         runBlocking(coroutineExceptionHandler) {
             try {
-                val project = getProjectsUseCase.getProjectByName(projectName)
+                val project = userProjectManagementUseCase.getProjectByName(projectName)
 
                 val task = Task(
                     projectTitle = projectName,
@@ -107,7 +105,7 @@ class TaskManagerUi(
                     updatedDate = timestamp
                 )
                 manageTasksUseCase.addTask(task, project.id)
-                manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
+                userProjectManagementUseCase.addTaskToProject(project.id, task.id)
                 auditServicesUseCase.addAuditForAddEntity(
                     EntityType.TASK, task.title,
                     entityId = task.id,
@@ -141,7 +139,7 @@ class TaskManagerUi(
                 stateId = newStateId,
                 updatedDate = timestamp
             )
-            getProjectsUseCase.getProjectByName(projectName)
+            userProjectManagementUseCase.getProjectByName(projectName)
 
             manageTasksUseCase.updateTask(updatedTask)
             auditServicesUseCase.addAuditForUpdateEntity(
@@ -169,8 +167,8 @@ class TaskManagerUi(
             val task = manageTasksUseCase.getTaskByName(taskName)
             manageTasksUseCase.deleteTaskByName(taskName)
 
-            val project = getProjectsUseCase.getProjectByName(projectName)
-            manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
+            val project = userProjectManagementUseCase.getProjectByName(projectName)
+            userProjectManagementUseCase.deleteTaskFromProject(project.id, task.id)
             auditServicesUseCase.addAuditForDeleteEntity(
                 entityType = EntityType.TASK,
                 entityName = taskName,
@@ -186,7 +184,7 @@ class TaskManagerUi(
     fun showAllTasksInProject(): List<Task> = runBlocking(coroutineExceptionHandler) {
         try {
             val projectName = getProjectByName()
-            val tasks = manageTasksInProjectUseCase.getTasksInProjectByName(projectName)
+            val tasks = userProjectManagementUseCase.getTasksInProjectByName(projectName)
             printer.printTaskList(tasks)
             tasks
         } catch (ex: Exception) {
@@ -198,7 +196,7 @@ class TaskManagerUi(
     private fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
         try {
             val userName = getUserName()
-            val assignments = manageTasksInProjectUseCase.getAllTasksByUserName(userName)
+            val assignments = userProjectManagementUseCase.getAllTasksByUserName(userName)
             printer.printMateTaskAssignments(assignments)
         } catch (ex: Exception) {
             printer.showMessageLine(ex.message ?: UiMessages.UNKNOWN_ERROR)
@@ -287,7 +285,7 @@ class TaskManagerUi(
 
             val isValidProject = runBlocking {
                 try {
-                    getProjectsUseCase.getProjectByName(projectNameInput)
+                    userProjectManagementUseCase.getProjectByName(projectNameInput)
                     true
                 } catch (ex: Exception) {
                     printer.showMessageLine(ex.message ?: UiMessages.UNKNOWN_ERROR)
