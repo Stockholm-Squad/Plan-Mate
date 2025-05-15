@@ -5,8 +5,8 @@ import kotlinx.coroutines.runBlocking
 import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.EntityType
 import org.example.logic.usecase.audit.AuditServicesUseCase
-import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageProjectUseCase
+import org.example.logic.usecase.project.AdminProjectManagementUseCase
+import org.example.logic.usecase.project.UserProjectManagementUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
@@ -20,8 +20,8 @@ import org.example.ui.input_output.output.OutputPrinter
 class ProjectManagerUi(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val manageProjectUseCase: ManageProjectUseCase,
-    private val getProjectsUseCase: GetProjectsUseCase,
+    private val adminProjectManagementUseCase: AdminProjectManagementUseCase,
+    private val userProjectManagementUseCase: UserProjectManagementUseCase,
     private val adminStateManagerUi: AdminEntityStateManagerUi,
     private val showAllEntityStateManagerUi: ShowAllEntityStateManagerUi,
     private val manageStatesUseCase: ManageEntityStatesUseCase,
@@ -58,7 +58,7 @@ class ProjectManagerUi(
 
     private fun showAllProjects() = runBlocking(errorHandler) {
         try {
-            getProjectsUseCase.getAllProjects().let { projects ->
+            userProjectManagementUseCase.getAllProjects().let { projects ->
                 if (projects.isEmpty()) {
                     outputPrinter.showMessageLine(UiMessages.NO_PROJECTS_FOUND)
                 } else {
@@ -86,7 +86,7 @@ class ProjectManagerUi(
 
         runBlocking(errorHandler) {
             try {
-                getProjectsUseCase.getProjectByName(projectName).let { project ->
+                userProjectManagementUseCase.getProjectByName(projectName).let { project ->
                     outputPrinter.showMessageLine(UiMessages.PROJECT_DETAILS)
                     outputPrinter.showMessageLine("${UiMessages.NAME} ${project.title}")
                     val stateName: String = manageStatesUseCase.getEntityStateNameByStateId(project.stateId)
@@ -108,9 +108,9 @@ class ProjectManagerUi(
 
         runBlocking(errorHandler) {
             try {
-                manageProjectUseCase.addProject(projectName, stateName).let { success ->
+                adminProjectManagementUseCase.addProject(projectName, stateName).let { success ->
                     if (success) {
-                        val project = getProjectsUseCase.getProjectByName(projectName)
+                        val project = userProjectManagementUseCase.getProjectByName(projectName)
                         auditServicesUseCase.addAuditForAddEntity(
                             entityType = EntityType.PROJECT,
                             entityName = projectName,
@@ -167,7 +167,7 @@ class ProjectManagerUi(
         val projectName = inputReader.readStringOrNull() ?: return@runBlocking
 
         try {
-            getProjectsUseCase.getProjectByName(projectName).let { project ->
+            userProjectManagementUseCase.getProjectByName(projectName).let { project ->
                 val projectStateName: String =
                     manageStatesUseCase.getEntityStateNameByStateId(project.stateId)
                 outputPrinter.showMessage("${UiMessages.ENTER_NEW_PROJECT_NAME} (${UiMessages.LEAVE_BLANK_TO_KEEP} '${project.title}'): ")
@@ -181,7 +181,7 @@ class ProjectManagerUi(
                     ?: return@runBlocking outputPrinter.showMessageLine(UiMessages.INVALID_INPUT)
 
                 if (newName != null) {
-                    manageProjectUseCase.updateProject(
+                    adminProjectManagementUseCase.updateProject(
                         project.id,
                         newName,
                         newProjectStateName,
@@ -214,8 +214,8 @@ class ProjectManagerUi(
 
         runBlocking(errorHandler) {
             try {
-                val project = getProjectsUseCase.getProjectByName(projectName)
-                manageProjectUseCase.removeProjectByName(projectName).let { success ->
+                val project = userProjectManagementUseCase.getProjectByName(projectName)
+                adminProjectManagementUseCase.removeProjectByName(projectName).let { success ->
                     if (success) {
                         auditServicesUseCase.addAuditForDeleteEntity(
                             entityType = EntityType.PROJECT,
