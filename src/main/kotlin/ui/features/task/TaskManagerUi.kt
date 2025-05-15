@@ -215,7 +215,7 @@ class TaskManagerUi(
         }
     }
 
-    private fun readCreateTaskInput(): Triple<String, String, String>? {
+    private fun readCreateTaskInput(): TaskInput? {
         printer.showMessage(UiMessages.TASK_NAME_PROMPT)
         val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
         if (name == null) {
@@ -240,9 +240,10 @@ class TaskManagerUi(
             if (confirm.isNullOrBlank()) return null
             return readCreateTaskInput()
         }
-        return Triple(name, description, stateName)
 
+        return TaskInput(name, description, stateName)
     }
+
 
     private fun readUpdateTaskInput(): Triple<String, String, String>? {
         printer.showMessageLine(UiMessages.NEW_TASK_NAME_PROMPT)
