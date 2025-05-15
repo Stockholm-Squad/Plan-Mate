@@ -58,4 +58,7 @@ class UserCSVDataSource(
             userAssignedToProject.projectId == projectId
         }
 
+    override suspend fun getUserByUsername(username: String): UserDto? =
+        getAllUsers().find { user -> user.username == username }
+
 }

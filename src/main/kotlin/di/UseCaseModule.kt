@@ -30,7 +30,7 @@ val useCaseModule = module {
     single<AddAuditUseCase> { AddAuditUseCase(get(), get()) }
     single<AuditServicesUseCase> { AuditServicesUseCase(get(), get(), get()) }
     single<AuditDescriptionProvider> { AuditDescriptionProvider() }
-    single<LoginUseCase> { LoginUseCase(get(), get(), get()) }
+    single<LoginUseCase> { LoginUseCase(get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get()) }
     factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get()) }
     factory<GetProjectsUseCase> { GetProjectsUseCase(get()) }
