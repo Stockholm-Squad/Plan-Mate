@@ -7,7 +7,6 @@ import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
 import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.utils.DateHandlerImp
@@ -25,7 +24,6 @@ class TaskManagerUi(
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
 ) : UiLauncher {
@@ -107,7 +105,7 @@ class TaskManagerUi(
                     updatedDate = timestamp
                 )
                 manageTasksUseCase.addTask(task, project.id)
-                manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
+                manageTasksUseCase.addTaskToProject(project.id, task.id)
                 auditServicesUseCase.addAuditForAddEntity(
                     EntityType.TASK, task.title,
                     entityId = task.id,
@@ -170,7 +168,7 @@ class TaskManagerUi(
             manageTasksUseCase.deleteTaskByName(taskName)
 
             val project = getProjectsUseCase.getProjectByName(projectName)
-            manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
+            manageTasksUseCase.deleteTaskFromProject(project.id, task.id)
             auditServicesUseCase.addAuditForDeleteEntity(
                 entityType = EntityType.TASK,
                 entityName = taskName,
@@ -186,7 +184,7 @@ class TaskManagerUi(
     fun showAllTasksInProject(): List<Task> = runBlocking(coroutineExceptionHandler) {
         try {
             val projectName = getProjectByName()
-            val tasks = manageTasksInProjectUseCase.getTasksInProjectByName(projectName)
+            val tasks = manageTasksUseCase.getTasksInProjectByName(projectName)
             printer.printTaskList(tasks)
             tasks
         } catch (ex: Exception) {
@@ -198,7 +196,7 @@ class TaskManagerUi(
     private fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
         try {
             val userName = getUserName()
-            val assignments = manageTasksInProjectUseCase.getAllTasksByUserName(userName)
+            val assignments = manageTasksUseCase.getAllTasksByUserName(userName)
             printer.printMateTaskAssignments(assignments)
         } catch (ex: Exception) {
             printer.showMessageLine(ex.message ?: UiMessages.UNKNOWN_ERROR)
