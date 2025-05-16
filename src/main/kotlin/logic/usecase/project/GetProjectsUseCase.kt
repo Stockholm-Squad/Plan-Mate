@@ -1,6 +1,5 @@
 package org.example.logic.usecase.project
 
-import org.example.logic.ProjectNotFoundException
 import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
 
@@ -13,15 +12,6 @@ class GetProjectsUseCase(
     }
 
     suspend fun getProjectByName(projectName: String): Project {
-        return getProjectFromList(
-            projectName,
-            projectRepository.getAllProjects(),
-        )
-    }
-
-    private fun getProjectFromList(projectName: String, allProjects: List<Project>): Project {
-        return allProjects.find { project ->
-            project.title == projectName
-        } ?: throw ProjectNotFoundException()
+        return projectRepository.getProjectByName(projectName)
     }
 }

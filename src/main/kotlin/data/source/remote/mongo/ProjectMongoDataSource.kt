@@ -3,8 +3,10 @@ package data.source.remote.mongo
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.ProjectDto
 import data.dto.UserAssignedToProjectDto
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.example.data.source.ProjectDataSource
+import org.example.logic.ProjectNotFoundException
 import org.litote.kmongo.eq
 import org.litote.kmongo.`in`
 import org.litote.kmongo.setValue
@@ -33,6 +35,16 @@ class ProjectMongoDataSource(
             ProjectDto::id `in` getUsersAssignedToProjectByUserName(username)
                 .map { userToProject -> userToProject.projectId }
         ).toList()
+
+    override suspend fun getProjectByName(projectName: String): ProjectDto {
+        return projectCollection.find(ProjectDto::title eq projectName).firstOrNull()
+            ?: throw ProjectNotFoundException()
+    }
+
+    override suspend fun getProjectById(projectId: String): ProjectDto {
+        return projectCollection.find(ProjectDto::id eq projectId).firstOrNull()
+            ?: throw ProjectNotFoundException()
+    }
 
     private suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
         userAssignedToProjectCollection.find(UserAssignedToProjectDto::username eq userName).toList()
