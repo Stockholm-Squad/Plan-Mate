@@ -4,12 +4,10 @@ import org.example.data.mapper.mapToProjectEntity
 import org.example.data.mapper.mapToProjectModel
 import org.example.data.source.ProjectDataSource
 import org.example.data.utils.tryToExecute
-import org.example.logic.NoProjectAddedException
-import org.example.logic.NoProjectDeletedException
-import org.example.logic.NoProjectUpdatedException
-import org.example.logic.NoProjectsFoundException
+import org.example.logic.*
 import org.example.logic.entities.Project
 import org.example.logic.repository.ProjectRepository
+import java.util.UUID
 
 class ProjectRepositoryImp(
     private val projectDataSource: ProjectDataSource
@@ -21,6 +19,19 @@ class ProjectRepositoryImp(
         onFailure = { throw NoProjectsFoundException() },
     )
 
+    override suspend fun getProjectByName(projectName: String): Project = tryToExecute(
+        function = { projectDataSource.getProjectByName(projectName) },
+        onSuccess = { projectModel -> projectModel.mapToProjectEntity() ?: throw ProjectNotFoundException() },
+        onFailure = { throw ProjectNotFoundException() },
+    )
+
+    override suspend fun getProjectById(projectId: UUID): Project {
+        return tryToExecute(
+            function = { projectDataSource.getProjectById(projectId.toString()) },
+            onSuccess = { projectModel -> projectModel.mapToProjectEntity() ?: throw ProjectNotFoundException() },
+            onFailure = { throw ProjectNotFoundException() },
+        )
+    }
 
     override suspend fun addProject(project: Project): Boolean = tryToExecute(
         function = { projectDataSource.addProject(project.mapToProjectModel()) },

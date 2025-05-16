@@ -4,6 +4,7 @@ import data.dto.ProjectDto
 import data.dto.UserAssignedToProjectDto
 import org.example.data.source.ProjectDataSource
 import org.example.data.source.local.csv_reader_writer.IReaderWriter
+import org.example.logic.ProjectNotFoundException
 
 class ProjectCSVDataSource(
     private val projectReaderWriter: IReaderWriter<ProjectDto>,
@@ -26,6 +27,18 @@ class ProjectCSVDataSource(
         getUsersAssignedToProjectByUserName(username)
             .map { it.projectId }
             .let { projectIds -> getAllProjects().filter { it.id in projectIds } }
+
+    override suspend fun getProjectByName(projectName: String): ProjectDto {
+        return getAllProjects().find { project ->
+            project.title == projectName
+        } ?: throw ProjectNotFoundException()
+    }
+
+    override suspend fun getProjectById(projectId: String): ProjectDto {
+        return getAllProjects().find { project ->
+            project.id == projectId
+        } ?: throw ProjectNotFoundException()
+    }
 
     private suspend fun getUsersAssignedToProjectByUserName(userName: String): List<UserAssignedToProjectDto> =
         userAssignedToProjectReaderWriter.read().filter { userAssignedToProject ->

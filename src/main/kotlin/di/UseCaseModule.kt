@@ -6,10 +6,7 @@ import org.example.logic.usecase.audit.AddAuditUseCase
 import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
-import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.project.ManageTasksInProjectUseCase
-import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
+import org.example.logic.usecase.project.*
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.user.AddUserUseCase
@@ -33,6 +30,7 @@ val useCaseModule = module {
     single<LoginUseCase> { LoginUseCase(get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get()) }
     factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get()) }
+    factory<ProjectValidationUseCase> { ProjectValidationUseCase(get()) }
     factory<GetProjectsUseCase> { GetProjectsUseCase(get()) }
     factory<ManageTasksInProjectUseCase> { ManageTasksInProjectUseCase(get(), get()) }
     factory<ManageUsersAssignedToProjectUseCase> { ManageUsersAssignedToProjectUseCase(get(), get(), get()) }
