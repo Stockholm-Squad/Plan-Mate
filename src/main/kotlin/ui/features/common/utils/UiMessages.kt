@@ -34,7 +34,7 @@ object UiMessages {
     const val PROJECT_CAN_NOT_BE_EMPTY = "Project name cannot be empty."
     const val EMPTY_USER_NAME_INPUT = "Empty user name."
     const val INVALID_OPTION = "Invalid option. Please choose a valid option from the menu."
-    const val GOODBYE = "Goodbye! Thank you for using the Task Manager."
+    const val GOODBYE = "Goodbye! Thank you for using the planMate System."
     const val PROJECT_NAME_PROMPT = "Enter project name: "
     const val EMPTY_PROJECT_NAME_INPUT = "Invalid empty project name"
     const val SELECT_OPTION = "Please select an option: "
