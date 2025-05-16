@@ -104,19 +104,20 @@ class ProjectManagerUi(
         val projectName = inputReader.readStringOrNull() ?: run {
             return
         }
-        val stateName = enterStateForProject()
+        val stateName = enterStateForProject() ?: return
 
         runBlocking(errorHandler) {
             try {
                 manageProjectUseCase.addProject(projectName, stateName).let { success ->
                     if (success) {
-                        val project = getProjectsUseCase.getProjectByName(projectName)
-                        auditServicesUseCase.addAuditForAddEntity(
-                            entityType = EntityType.PROJECT,
-                            entityName = projectName,
-                            entityId = project.id,
-                            additionalInfo = stateName
-                        )
+                        getProjectsUseCase.getProjectByName(projectName).also { project ->
+                            auditServicesUseCase.addAuditForAddEntity(
+                                entityType = EntityType.PROJECT,
+                                entityName = projectName,
+                                entityId = project.id,
+                                additionalInfo = stateName
+                            )
+                        }
                         outputPrinter.showMessageLine(UiMessages.PROJECT_ADDED)
                         do {
                             outputPrinter.showMessageLine(UiMessages.YOU_LIKE_TO_ADD_TASKS)
@@ -126,8 +127,9 @@ class ProjectManagerUi(
                                 taskManagerUi.addTask(projectName)
                             }
                         } while (true)
-                    } else
+                    } else {
                         outputPrinter.showMessageLine(UiMessages.FAILED_TO_ADD_PROJECT)
+                    }
                 }
             } catch (e: Exception) {
                 outputPrinter.showMessageLine("${UiMessages.FAILED_TO_ADD_PROJECT} ${e.message}")
@@ -135,17 +137,14 @@ class ProjectManagerUi(
         }
     }
 
-    private fun enterStateForProject(): String {
+    private fun enterStateForProject(): String? {
         outputPrinter.showMessageLine(UiMessages.AVAILABLE_STATE)
         showAllEntityStateManagerUi.launchUi()
+
         while (true) {
             outputPrinter.showMessage("${UiMessages.ENTER_STATE_NAME_OR_NEW_TO_CREATE} ${UiMessages.OR_LEAVE_IT_BLANK_TO_BACK}")
             when (val stateName = inputReader.readStringOrNull()) {
-                UiMessages.NEW -> addState()
-                null -> {
-                    outputPrinter.showMessageLine(UiMessages.INVALID_INPUT)
-                }
-
+                UiMessages.NEW -> adminStateManagerUi.addState()
                 else -> {
                     return stateName
                 }
@@ -153,13 +152,6 @@ class ProjectManagerUi(
         }
     }
 
-    private fun addState() {
-        return try {
-            adminStateManagerUi.addState()
-        } catch (exception: Exception) {
-            outputPrinter.showMessageLine(exception.message ?: UiMessages.UNKNOWN_ERROR)
-        }
-    }
 
     fun updateProject() = runBlocking(errorHandler) {
 
@@ -178,30 +170,29 @@ class ProjectManagerUi(
                 showAllEntityStateManagerUi.launchUi()
                 outputPrinter.showMessageLine("${UiMessages.ENTER_NEW_STATE} (${UiMessages.LEAVE_BLANK_TO_KEEP} '${projectStateName}'): ")
                 val newProjectStateName = inputReader.readStringOrNull()
-                    ?: return@runBlocking outputPrinter.showMessageLine(UiMessages.INVALID_INPUT)
 
-                if (newName != null) {
+                if (newName != null || newProjectStateName != null) {
                     manageProjectUseCase.updateProject(
                         project.id,
-                        newName,
-                        newProjectStateName,
-
-                        ).let { success ->
+                        newName ?: project.title,
+                        newProjectStateName ?: projectStateName,
+                    ).let { success ->
                         if (success) {
                             auditServicesUseCase.addAuditForUpdateEntity(
                                 entityType = EntityType.PROJECT,
                                 existEntityName = project.title,
-                                newEntityName = newName,
+                                newEntityName = newName ?: project.title,
                                 entityId = project.id,
-                                newStateName = newProjectStateName
+                                newStateName = newProjectStateName ?: projectStateName,
                             )
                             outputPrinter.showMessageLine(UiMessages.PROJECT_UPDATED)
                         } else {
                             outputPrinter.showMessageLine(UiMessages.FAILED_TO_UPDATE_PROJECT)
                         }
-
                     }
-                } else outputPrinter.showMessageLine(UiMessages.PROJECT_DOES_NOT_EXIST)
+                } else {
+                    outputPrinter.showMessageLine(UiMessages.PROJECT_DOES_NOT_EXIST)
+                }
             }
         } catch (e: Exception) {
             outputPrinter.showMessageLine("${UiMessages.FAILED_TO_UPDATE_PROJECT} ${e.message}")

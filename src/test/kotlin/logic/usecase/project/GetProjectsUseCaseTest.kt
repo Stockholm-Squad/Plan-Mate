@@ -42,42 +42,38 @@ class GetProjectsUseCaseTest {
     fun `getProjectByName() should return project when it exists`() = runTest {
         // Given
         val expectedProject = buildProject( name = "Test Project")
-        coEvery { projectRepository.getAllProjects() } returns listOf(expectedProject)
+        coEvery { projectRepository.getProjectByName(expectedProject.title) } returns expectedProject
 
         // When
         val result = getProjectsUseCase.getProjectByName(expectedProject.title)
 
         // Then
         assertThat(result).isEqualTo(expectedProject)
-        coVerify { projectRepository.getAllProjects() }
     }
 
     @Test
     fun `getProjectByName() should throw when project does not exist`() = runTest {
         // Given
-        val allProjects = listOf(
-            buildProject(id = UUID.randomUUID(), name = "Project 1"),
-            buildProject(id = UUID.randomUUID(), name = "Project 2")
-        )
-        coEvery { projectRepository.getAllProjects() } returns allProjects
+        val projectName = "plan-mate"
+
+        coEvery { projectRepository.getProjectByName(projectName) } throws ProjectNotFoundException()
 
         // When & Then
-        assertThrows<ProjectNotFoundException> { getProjectsUseCase.getProjectByName("plan-mate") }
+        assertThrows<ProjectNotFoundException> { getProjectsUseCase.getProjectByName(projectName) }
     }
 
     @Test
     fun `should return failure when repository fails`() = runTest {
         // Given
-        val projectId = "123"
+        val projectName = "plan-mate"
 
-        coEvery { projectRepository.getAllProjects() } throws NoProjectsFoundException()
+        coEvery { projectRepository.getProjectByName(projectName) } throws NoProjectsFoundException()
 
 
         // When & Then
         assertThrows<NoProjectsFoundException> {
-            getProjectsUseCase.getProjectByName(projectId)
+            getProjectsUseCase.getProjectByName(projectName)
         }
-        coVerify { projectRepository.getAllProjects() }
     }
 }
 
