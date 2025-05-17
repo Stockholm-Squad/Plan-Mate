@@ -20,7 +20,7 @@ object UiMessages {
     const val PROJECT_DELETED = "Project deleted successfully"
     const val FAILED_TO_DELETE_PROJECT = "Failed to delete project"
     const val FAILED_TO_UPDATE_PROJECT = "Failed to update project"
-    const val PROJECT_DOES_NOT_EXIST = "project doesn't changed"
+    const val PROJECT_DOES_NOT_CHANGED = "project doesn't changed"
     const val ENTER_NEW_PROJECT_NAME = "Enter new project name"
     const val ENTER_PROJECT_NAME_TO_DELETE = "Enter project Name to delete"
     const val LEAVE_BLANK_TO_KEEP = "leave blank to keep"
