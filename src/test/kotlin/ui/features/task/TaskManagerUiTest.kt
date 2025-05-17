@@ -193,6 +193,71 @@ class TaskManagerUiTest {
     }
 
     @Test
+    fun `addTask() should print EMPTY_TASK_INPUT and return when readCreateTaskInput returns null`() = runBlocking {
+        // Given
+        val projectName = "MyProject"
+        every { reader.readStringOrNull() } returnsMany listOf(projectName, null) // simulate task input null
+        coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk(relaxed = true)
+
+        // When
+        taskManagerUi.addTask(null)
+
+        // Then
+        verify { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) }
+        coVerify(exactly = 0) { manageTasksUseCase.addTask(any(), any()) }
+    }
+
+    @Test
+    fun `addTask() should show error message and return when getEntityStateIdByName throws`() = runBlocking {
+        // Given
+        val projectName = "MyProject"
+        val taskInput = TaskInput("taskName", "desc", "stateName")
+
+        every { reader.readStringOrNull() } returnsMany listOf(
+            projectName,
+            taskInput.name,
+            taskInput.description,
+            taskInput.stateName
+        )
+        coEvery { manageStateUseCase.getEntityStateIdByName(taskInput.stateName) } throws Exception("State error")
+
+        // When
+        taskManagerUi.addTask(null)
+
+        // Then
+        verify { printer.showMessageLine("State error") }
+        coVerify(exactly = 0) { manageTasksUseCase.addTask(any(), any()) }
+    }
+
+    @Test
+    fun `addTask() should show error message when exception thrown during adding task or audit`() = runBlocking {
+        // Given
+        val projectName = "MyProject"
+        val taskInput = TaskInput("taskName", "desc", "stateName")
+        val stateId1 = UUID.randomUUID()
+        val projectId = UUID.randomUUID()
+
+        every { reader.readStringOrNull() } returnsMany listOf(
+            projectName,
+            taskInput.name,
+            taskInput.description,
+            taskInput.stateName
+        )
+        coEvery { manageStateUseCase.getEntityStateIdByName(taskInput.stateName) } returns stateId1
+        coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk(relaxed = true) {
+            every { id } returns projectId
+            every { title } returns projectName
+        }
+        coEvery { manageTasksUseCase.addTask(any(), projectId) } throws Exception("Add task failed")
+
+        // When
+        taskManagerUi.addTask(null)
+
+        // Then
+        verify { printer.showMessageLine("Add task failed") }
+    }
+
+    @Test
     fun `updateTask() should return early and print message when update input is null`() = runTest {
         // Given
         val taskName = "TaskX"
