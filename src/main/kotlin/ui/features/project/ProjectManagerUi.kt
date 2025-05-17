@@ -56,7 +56,7 @@ class ProjectManagerUi(
         }
     }
 
-    private fun showAllProjects() = runBlocking(errorHandler) {
+    fun showAllProjects() = runBlocking(errorHandler) {
         try {
             getProjectsUseCase.getAllProjects().let { projects ->
                 if (projects.isEmpty()) {
@@ -72,8 +72,7 @@ class ProjectManagerUi(
         }
     }
 
-
-    private fun showProjectByName() {
+    fun showProjectByName() {
         var projectName: String?
         do {
             outputPrinter.showMessage(UiMessages.PROJECT_NAME_PROMPT)
@@ -152,7 +151,6 @@ class ProjectManagerUi(
         }
     }
 
-
     fun updateProject() = runBlocking(errorHandler) {
 
         outputPrinter.showMessage("${UiMessages.ENTER_PROJECT_NAME_TO_UPDATE} ${UiMessages.OR_LEAVE_IT_BLANK_TO_BACK}")
@@ -191,7 +189,7 @@ class ProjectManagerUi(
                         }
                     }
                 } else {
-                    outputPrinter.showMessageLine(UiMessages.PROJECT_DOES_NOT_EXIST)
+                    outputPrinter.showMessageLine(UiMessages.PROJECT_DOES_NOT_CHANGED)
                 }
             }
         } catch (e: Exception) {
