@@ -30,7 +30,6 @@ class TaskManagerUi(
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessageLine(throwable.message ?: UiMessages.UNKNOWN_ERROR)
     }
-    val timestamp = DateHandlerImp().getCurrentDateTime()
 
     override fun launchUi() {
 
@@ -101,8 +100,8 @@ class TaskManagerUi(
                     title = name,
                     description = description,
                     stateId = stateId,
-                    createdDate = timestamp,
-                    updatedDate = timestamp
+                    createdDate = DateHandlerImp().getCurrentDateTime(),
+                    updatedDate = DateHandlerImp().getCurrentDateTime()
                 )
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksUseCase.addTaskToProject(project.id, task.id)
@@ -137,7 +136,7 @@ class TaskManagerUi(
                 title = newName,
                 description = newDescription,
                 stateId = newStateId,
-                updatedDate = timestamp
+                updatedDate = DateHandlerImp().getCurrentDateTime()
             )
             getProjectsUseCase.getProjectByName(projectName)
 
@@ -193,7 +192,7 @@ class TaskManagerUi(
         }
     }
 
-    private fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
+    fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
         try {
             val userName = getUserName()
             val assignments = manageTasksUseCase.getAllTasksByUserName(userName)
@@ -203,7 +202,7 @@ class TaskManagerUi(
         }
     }
 
-    private fun getTaskByName() = runBlocking(coroutineExceptionHandler) {
+    fun getTaskByName() = runBlocking(coroutineExceptionHandler) {
         try {
             val taskName = getTaskName()
             val task = manageTasksUseCase.getTaskByName(taskName)
@@ -305,7 +304,13 @@ class TaskManagerUi(
         printer.showMessageLine(retryPromptMessage)
         val confirm = reader.readStringOrNull()
         if (confirm.equals(confirmRetryValue, ignoreCase = true)) {
-            return readNonBlankInputOrNull(promptMessage, invalidMessage, retryPromptMessage, confirmRetryValue, allowRetry)
+            return readNonBlankInputOrNull(
+                promptMessage,
+                invalidMessage,
+                retryPromptMessage,
+                confirmRetryValue,
+                allowRetry
+            )
         }
 
         return null
