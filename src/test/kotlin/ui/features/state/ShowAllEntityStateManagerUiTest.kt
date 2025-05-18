@@ -1,4 +1,4 @@
-package ui.features.common.state
+package ui.features.state
 
 import io.mockk.coEvery
 import io.mockk.mockk

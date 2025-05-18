@@ -1,3 +1,5 @@
+package ui.features.audit
+
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import logic.usecase.login.LoginUseCase
