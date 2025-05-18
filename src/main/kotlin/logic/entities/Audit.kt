@@ -13,5 +13,5 @@ data class Audit(
 )
 
 enum class EntityType {
-    TASK, PROJECT, STATE,UNKOWN
+    TASK, PROJECT, STATE,UNKNOWN
 }
