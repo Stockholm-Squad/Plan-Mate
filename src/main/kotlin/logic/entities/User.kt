@@ -15,8 +15,8 @@ enum class UserRole {
     MATE;
 
     companion object {
-        fun find(roleName: String): UserRole? {
-            return entries.find { it.name == roleName }
+        fun getUserRole(roleName: String): UserRole {
+            return entries.find { it.name == roleName } ?: throw Exception("Unknown role type: $roleName")
         }
     }
 }
