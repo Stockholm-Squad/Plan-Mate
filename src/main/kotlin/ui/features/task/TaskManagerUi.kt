@@ -7,7 +7,6 @@ import org.example.logic.entities.EntityType
 import org.example.logic.entities.Task
 import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageTasksInProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.utils.DateHandlerImp
@@ -25,7 +24,6 @@ class TaskManagerUi(
     private val manageTasksUseCase: ManageTasksUseCase,
     private val manageStateUseCase: ManageEntityStatesUseCase,
     private val getProjectsUseCase: GetProjectsUseCase,
-    private val manageTasksInProjectUseCase: ManageTasksInProjectUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
 ) : UiLauncher {
@@ -107,7 +105,7 @@ class TaskManagerUi(
                     updatedDate = timestamp
                 )
                 manageTasksUseCase.addTask(task, project.id)
-                manageTasksInProjectUseCase.addTaskToProject(project.id, task.id)
+                manageTasksUseCase.addTaskToProject(project.id, task.id)
                 auditServicesUseCase.addAuditForAddEntity(
                     EntityType.TASK, task.title,
                     entityId = task.id,
@@ -170,7 +168,7 @@ class TaskManagerUi(
             manageTasksUseCase.deleteTaskByName(taskName)
 
             val project = getProjectsUseCase.getProjectByName(projectName)
-            manageTasksInProjectUseCase.deleteTaskFromProject(project.id, task.id)
+            manageTasksUseCase.deleteTaskFromProject(project.id, task.id)
             auditServicesUseCase.addAuditForDeleteEntity(
                 entityType = EntityType.TASK,
                 entityName = taskName,
@@ -186,7 +184,7 @@ class TaskManagerUi(
     fun showAllTasksInProject(): List<Task> = runBlocking(coroutineExceptionHandler) {
         try {
             val projectName = getProjectByName()
-            val tasks = manageTasksInProjectUseCase.getTasksInProjectByName(projectName)
+            val tasks = manageTasksUseCase.getTasksInProjectByName(projectName)
             printer.printTaskList(tasks)
             tasks
         } catch (ex: Exception) {
@@ -198,7 +196,7 @@ class TaskManagerUi(
     private fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
         try {
             val userName = getUserName()
-            val assignments = manageTasksInProjectUseCase.getAllTasksByUserName(userName)
+            val assignments = manageTasksUseCase.getAllTasksByUserName(userName)
             printer.printMateTaskAssignments(assignments)
         } catch (ex: Exception) {
             printer.showMessageLine(ex.message ?: UiMessages.UNKNOWN_ERROR)
@@ -215,65 +213,46 @@ class TaskManagerUi(
         }
     }
 
-    private fun readCreateTaskInput(): Triple<String, String, String>? {
-        printer.showMessage(UiMessages.TASK_NAME_PROMPT)
-        val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (name == null) {
-            printer.showMessageLine(UiMessages.EMPTY_TASK_NAME_INPUT)
-            return null
-        }
+    private fun readCreateTaskInput(): TaskInput? {
+        val name = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_NAME_PROMPT,
+            invalidMessage = UiMessages.EMPTY_TASK_NAME_INPUT,
+            allowRetry = false
+        ) ?: return null
 
-        printer.showMessage(UiMessages.TASK_DESCRIPTION_PROMPT)
-        val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (description == null) {
-            printer.showMessageLine(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readCreateTaskInput()
-        }
+        val description = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_DESCRIPTION_PROMPT,
+            invalidMessage = UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        printer.showMessage(UiMessages.TASK_STATE_PROMPT)
-        val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (stateName == null) {
-            printer.showMessageLine(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.isNullOrBlank()) return null
-            return readCreateTaskInput()
-        }
-        return Triple(name, description, stateName)
+        val stateName = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_STATE_PROMPT,
+            invalidMessage = UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
+        return TaskInput(name, description, stateName)
     }
 
-    private fun readUpdateTaskInput(): Triple<String, String, String>? {
-        printer.showMessageLine(UiMessages.NEW_TASK_NAME_PROMPT)
-        val name = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (name == null) {
-            printer.showMessageLine(UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
-            return null
-        }
 
-        printer.showMessageLine(UiMessages.TASK_DESCRIPTION_PROMPT)
-        val description = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (description == null) {
-            printer.showMessageLine(UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
-            return null
-        }
+    private fun readUpdateTaskInput(): TaskInput? {
+        val name = readNonBlankInputOrNull(
+            promptMessage = UiMessages.NEW_TASK_NAME_PROMPT,
+            invalidMessage = UiMessages.INVALID_TASK_NAME_INPUT_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        printer.showMessageLine(UiMessages.TASK_STATE_PROMPT)
-        val stateName = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
-        if (stateName == null) {
-            printer.showMessageLine(UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU)
-            val confirm = reader.readStringOrNull()
-            if (confirm.equals("Y", ignoreCase = true)) return readUpdateTaskInput()
-            return null
-        }
+        val description = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_DESCRIPTION_PROMPT,
+            invalidMessage = UiMessages.INVALID_DESCRIPTION_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
 
-        return Triple(name, description, stateName)
+        val stateName = readNonBlankInputOrNull(
+            promptMessage = UiMessages.TASK_STATE_PROMPT,
+            invalidMessage = UiMessages.INVALID_STATE_NAME_DO_YOU_WANT_TO_RETURN_MAIN_MENU
+        ) ?: return null
+
+        return TaskInput(name, description, stateName)
     }
+
 
     private fun getProjectByName(): String {
         while (true) {
@@ -309,6 +288,30 @@ class TaskManagerUi(
         }
     }
 
+    private fun readNonBlankInputOrNull(
+        promptMessage: String,
+        invalidMessage: String,
+        retryPromptMessage: String = "Enter Y to retry or anything else to cancel:",
+        confirmRetryValue: String = "Y",
+        allowRetry: Boolean = true
+    ): String? {
+        printer.showMessageLine(promptMessage)
+        val input = reader.readStringOrNull()?.takeIf { it.isNotBlank() }
+        if (input != null) return input
+
+        printer.showMessageLine(invalidMessage)
+        if (!allowRetry) return null
+
+        printer.showMessageLine(retryPromptMessage)
+        val confirm = reader.readStringOrNull()
+        if (confirm.equals(confirmRetryValue, ignoreCase = true)) {
+            return readNonBlankInputOrNull(promptMessage, invalidMessage, retryPromptMessage, confirmRetryValue, allowRetry)
+        }
+
+        return null
+    }
+
+
     private fun getTaskName(): String {
         while (true) {
             printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
@@ -320,6 +323,7 @@ class TaskManagerUi(
             return taskName
         }
     }
+
 
     private fun getUserName(): String {
         while (true) {
