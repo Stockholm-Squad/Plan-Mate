@@ -32,6 +32,7 @@ class LoginUi(
         return runBlocking {
             try {
                 loginUseCase.loginUser(username, password)
+                loginUseCase.getCurrentUser()
             } catch (e: Exception) {
                 handleFailure(e.message ?: UiMessages.UNKNOWN_ERROR)
                 null
