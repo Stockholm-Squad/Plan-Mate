@@ -7,16 +7,17 @@ data class User(
     val id: UUID = UUID.randomUUID(),
     val username: String,
     val hashedPassword: String,
-    val userRole: UserRole = UserRole.MATE
+    val userRole: UserRole = UserRole.MATE,
 )
 
 enum class UserRole {
     ADMIN,
-    MATE;
+    MATE,
+    UNKNOWN;
 
     companion object {
         fun getUserRole(roleName: String): UserRole {
-            return entries.find { it.name == roleName } ?: throw Exception("Unknown role type: $roleName")
+            return entries.find { it.name == roleName } ?: UNKNOWN
         }
     }
 }
