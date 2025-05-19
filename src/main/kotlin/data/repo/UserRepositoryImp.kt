@@ -70,19 +70,8 @@ class UserRepositoryImp(
             onFailure = { throw UserDoesNotExistException() }
         )
 
-
-    override suspend fun loginUser(username: String, password: String): User =
-        tryToExecute(
-            function = { userDataSource.getUserByUsername(username) },
-            onSuccess = { user ->
-                if (user == null) throw UserDoesNotExistException()
-                if (hashingService.verify(password, user.hashedPassword)) {
-                    currentUserDataSource.setCurrentUser(user)
-                    user.mapToUserEntity() ?: throw UserDoesNotExistException()
-                } else throw IncorrectPasswordException()
-            },
-            onFailure = { throw UserDoesNotExistException() }
-        )
+    override suspend fun loginUser(user: User) =
+        currentUserDataSource.setCurrentUser(user.mapToUserModel())
 
     override fun getCurrentUser(): User? = currentUserDataSource.getCurrentUser()?.mapToUserEntity()
 
