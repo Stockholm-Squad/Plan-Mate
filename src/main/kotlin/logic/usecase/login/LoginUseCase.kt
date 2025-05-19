@@ -12,7 +12,7 @@ import org.example.logic.utils.HashingService
 class LoginUseCase(
     private val userRepository: UserRepository,
     private val hashingService: HashingService,
-    private val validateUserDataUseCase: ValidateUserDataUseCase,
+    private val validateUserDataUseCase: ValidateUserDataUseCase
 ) {
     suspend fun loginUser(username: String, password: String) =
         validateUserDataUseCase.isValidUserName(username.trim()).takeIf { isValidUserName ->

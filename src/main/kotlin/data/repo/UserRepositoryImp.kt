@@ -8,13 +8,11 @@ import org.example.data.utils.tryToExecute
 import org.example.logic.*
 import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
-import org.example.logic.utils.HashingService
 import java.util.*
 
 class UserRepositoryImp(
     private val userDataSource: UserDataSource,
-    private val currentUserDataSource: CurrentUserDataSource,
-    private val hashingService: HashingService,
+    private val currentUserDataSource: CurrentUserDataSource
 ) : UserRepository {
 
     override suspend fun addUser(user: User): Boolean = tryToExecute(
