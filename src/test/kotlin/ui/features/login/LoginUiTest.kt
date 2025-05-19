@@ -1,10 +1,7 @@
 package ui.features.login
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import logic.usecase.login.LoginUseCase
 import modle.buildUser
@@ -127,7 +124,8 @@ class LoginUiTest {
                 username = "userName",
                 password = "userNamePassword"
             )
-        } returns user
+        } just runs
+        coEvery { useCase.getCurrentUser() } returns user
         assertThat(ui.authenticateUser()).isEqualTo(user)
     }
 
