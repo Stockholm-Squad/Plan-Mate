@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import org.example.logic.NoEntityStateFoundException
 import org.example.logic.entities.EntityState
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.ShowAllEntityStateManagerUi
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
@@ -35,8 +36,7 @@ class ShowAllEntityStateManagerUiTest {
         showAllEntityStateManagerUi.launchUi()
 
         //Then
-        verify { printer.showMessageLine("Failed to Load data, " + NoEntityStateFoundException().message) }
-        verify { printer.showMessageLine("Please try again ^_^") }
+        verify { printer.showMessageLine("${UiMessages.FAILED_TO_LOAD_STATE}, ${NoEntityStateFoundException().message}") }
 
     }
 
