@@ -37,12 +37,11 @@ class LoginUiTest {
             every { id } returns UUID.randomUUID()
             every { username } returns "testUser"
         }
-        every { loginUseCase.getCurrentUser() } returns null
+        every { loginUseCase.getCurrentUser() } returns null andThen user
         every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
         every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
         every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
         coEvery { loginUseCase.loginUser("testUser", "password") } just runs
-        coEvery { loginUseCase.getCurrentUser() } returns user
 
         // When
         loginUi.launchUi()
@@ -113,12 +112,11 @@ class LoginUiTest {
             every { id } returns UUID.randomUUID()
             every { username } returns "testUser"
         }
-        every { loginUseCase.getCurrentUser() } returns null
+        every { loginUseCase.getCurrentUser() } returns null andThen user
         every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
         every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
         every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
         coEvery { loginUseCase.loginUser("testUser", "password") } just runs
-        coEvery { loginUseCase.getCurrentUser() } returns user
 
         // When
         val result = loginUi.authenticateUser()
