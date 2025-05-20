@@ -1,14 +1,14 @@
 package org.example.ui.features.user
 
 import kotlinx.coroutines.runBlocking
-import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.usecase.user.ManageUserUseCase
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 
 class CreateUserUi(
-    private val createUserUseCase: AddUserUseCase,
+    private val createUserUseCase: ManageUserUseCase,
     private val printer: OutputPrinter,
     private val inputReader: InputReader,
 ) : UiLauncher {

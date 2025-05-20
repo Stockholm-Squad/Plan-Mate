@@ -1,22 +1,25 @@
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+package ui.features.audit
+
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
+import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.User
 import org.example.logic.entities.UserRole
-import org.example.logic.usecase.audit.ManageAuditSystemUseCase
+import org.example.logic.usecase.audit.GetAuditUseCase
 import org.example.ui.features.audit.AuditManagerUI
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.utils.UiMessages
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AuditSystemManagerUiImpTest {
+class AuditManagerUITest {
 
-    private lateinit var useCase: ManageAuditSystemUseCase
+    private lateinit var useCase: GetAuditUseCase
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
-    private lateinit var auditSystemUi: AuditManagerUI
+    private lateinit var auditManagerUi: AuditManagerUI
+    private lateinit var loginUseCase: LoginUseCase
     private lateinit var user: User
 
     @BeforeEach
@@ -24,11 +27,12 @@ class AuditSystemManagerUiImpTest {
         useCase = mockk(relaxed = true)
         reader = mockk()
         printer = mockk(relaxed = true)
-
-        auditSystemUi = AuditManagerUI(
-            useCase,
+        loginUseCase = mockk(relaxed = true)
+        auditManagerUi = AuditManagerUI(
+            useCase = useCase,
             reader = reader,
-            printer = printer
+            printer = printer,
+            loginUseCase = loginUseCase
         )
 
         user = User(
@@ -39,43 +43,43 @@ class AuditSystemManagerUiImpTest {
     }
 
     @Test
-    fun `invoke should call displayAuditsByProjectName when option 1 is selected`() {
+    fun `invoke should call displayAuditsByProjectName when option 1 is selected`() = runTest {
         // Given
         every { reader.readStringOrNull() } returnsMany listOf("1", "projectA", "n")
-        every { useCase.getProjectAuditsByName("projectA") } returns Result.success(emptyList())
+        coEvery { useCase.getAuditsForProjectByName("projectA") } returns emptyList()
 
         // When
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         // Then
-        verify { useCase.getProjectAuditsByName("projectA") }
+        coVerify { useCase.getAuditsForProjectByName("projectA") }
     }
 
     @Test
-    fun `invoke should call displayAuditsByTaskName when option 2 is selected`() {
+    fun `invoke should call displayAuditsByTaskName when option 2 is selected`() = runTest {
         every { reader.readStringOrNull() } returnsMany listOf("2", "taskA", "n")
-        every { useCase.getTaskAuditsByName("taskA") } returns Result.success(emptyList())
+        coEvery { useCase.getAuditsForTaskByName("taskA") } returns emptyList()
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
-        verify { useCase.getTaskAuditsByName("taskA") }
+        coVerify { useCase.getAuditsForTaskByName("taskA") }
     }
 
     @Test
-    fun `invoke should call displayAllAudits when option 3 is selected`() {
+    fun `invoke should call displayAllAudits when option 3 is selected`() = runTest {
         every { reader.readStringOrNull() } returnsMany listOf("3", "n")
-        every { useCase.getAuditsByUserId(user.id) } returns Result.success(emptyList())
+        coEvery { useCase.getAuditsForUserById(user.id) } returns emptyList()
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
-        verify { useCase.getAuditsByUserId(user.id) }
+        coVerify { useCase.getAuditsForUserById(user.id) }
     }
 
     @Test
     fun `invoke should print exiting message when option 4 is selected`() {
         every { reader.readStringOrNull() } returnsMany listOf("4", "n")
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         verify { printer.showMessageLine(UiMessages.EXITING) }
     }
@@ -84,7 +88,7 @@ class AuditSystemManagerUiImpTest {
     fun `invoke should handle invalid menu input`() {
         every { reader.readStringOrNull() } returnsMany listOf("abc", "n")
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
@@ -93,7 +97,7 @@ class AuditSystemManagerUiImpTest {
     fun `invoke should handle invalid project name when selected`() {
         every { reader.readStringOrNull() } returnsMany listOf("1", null, "n")
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
@@ -102,27 +106,27 @@ class AuditSystemManagerUiImpTest {
     fun `invoke should handle invalid task name when selected`() {
         every { reader.readStringOrNull() } returnsMany listOf("2", null, "n")
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
 
     @Test
-    fun `askSearchAgain should return true when Y is entered`() {
+    fun `askSearchAgain should return true when Y is entered`() = runTest {
         every { reader.readStringOrNull() } returnsMany listOf("1", "proj", "y", "4", "n")
-        every { useCase.getProjectAuditsByName("proj") } returns Result.success(emptyList())
+        coEvery { useCase.getAuditsForProjectByName("proj") } returns emptyList()
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
-        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
+        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_OPTIONS) }
     }
 
     @Test
-    fun `askSearchAgain should return null when input is blank or n`() {
+    fun `askSearchAgain should return null when input is blank or n`() = runTest {
         every { reader.readStringOrNull() } returnsMany listOf("1", "proj", " ", "4", "n")
-        every { useCase.getProjectAuditsByName("proj") } returns Result.success(emptyList())
+        coEvery { useCase.getAuditsForProjectByName("proj") } returns emptyList()
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         verify { printer.showMessageLine(UiMessages.EXITING) }
     }
@@ -131,58 +135,58 @@ class AuditSystemManagerUiImpTest {
     fun `getMainMenuOption should return 0 on invalid input`() {
         every { reader.readStringOrNull() } returnsMany listOf("", "n")
 
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         verify { printer.showMessageLine(UiMessages.INVALID_SELECTION_MESSAGE) }
     }
-    
+
     @Test
-    fun `displayAuditsByProjectName should show error message on failure`() {
+    fun `displayAuditsByProjectName should show error message on failure`() = runTest {
         // Given
         every { reader.readStringOrNull() } returnsMany listOf("1", "projectFail", "n")
-        every { useCase.getProjectAuditsByName("projectFail") } returns Result.failure(Exception("project error"))
+        coEvery { useCase.getAuditsForProjectByName("projectFail") } throws Exception("project error")
 
         // When
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         // Then
         verify { printer.showMessageLine("project error") }
     }
 
     @Test
-    fun `displayAuditsByTaskName should show error message on failure`() {
+    fun `displayAuditsByTaskName should show error message on failure`() = runTest {
         // Given
         every { reader.readStringOrNull() } returnsMany listOf("2", "taskFail", "n")
-        every { useCase.getTaskAuditsByName("taskFail") } returns Result.failure(Exception("task error"))
+        coEvery { useCase.getAuditsForTaskByName("taskFail") } throws Exception("task error")
 
         // When
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         // Then
         verify { printer.showMessageLine("task error") }
     }
 
     @Test
-    fun `askSearchAgain should handle uppercase and lowercase Y`() {
+    fun `askSearchAgain should handle uppercase and lowercase Y`() = runTest {
         // Given
         every { reader.readStringOrNull() } returnsMany listOf("1", "proj", "Y", "4", "n")
-        every { useCase.getProjectAuditsByName("proj") } returns Result.success(emptyList())
+        coEvery { useCase.getAuditsForProjectByName("proj") } returns emptyList()
 
         // When
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         // Then
-        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_SYSTEM_OPTIONS) }
+        verify(exactly = 2) { printer.showMessageLine(UiMessages.SHOW_AUDIT_OPTIONS) }
     }
 
     @Test
-    fun `displayAllAudits should show error message on failure`() {
+    fun `displayAllAudits should show error message on failure`() = runTest {
         // Given
         every { reader.readStringOrNull() } returnsMany listOf("3", "n")
-        every { useCase.getAuditsByUserId(user.id) } returns Result.failure(Exception("audit list error"))
+        coEvery { useCase.getAuditsForUserById(user.id) } throws Exception("audit list error")
 
         // When
-        auditSystemUi.invoke(user)
+        auditManagerUi.launchUi()
 
         // Then
         verify { printer.showMessageLine("audit list error") }

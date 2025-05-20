@@ -1,19 +1,18 @@
 package ui.features.login
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import logic.model.entities.UserRole
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
+import logic.usecase.login.LoginUseCase
 import modle.buildUser
+import org.example.logic.IncorrectPasswordException
+import org.example.logic.InvalidPasswordException
+import org.example.logic.InvalidUserNameException
+import org.example.logic.UserDoesNotExistException
+import org.example.logic.entities.UserRole
+import org.example.ui.features.login.LoginUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.logic.model.exceptions.IncorrectPassword
-import org.example.logic.model.exceptions.UserDoesNotExist
-import logic.usecase.login.LoginUseCase
-import org.example.logic.model.exceptions.InvalidUserName
-import org.example.logic.model.exceptions.InvalidPassword
-import org.example.ui.features.login.LoginUi
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -42,17 +41,17 @@ class LoginUiTest {
     )
     fun `authenticateUser() should print invalid username when invalid username entered`(
         username: String,
-        password: String
-    ) {
-        val expectedMessage = InvalidUserName().message ?: ""
+        password: String,
+    ) = runTest {
+        val expectedMessage = InvalidUserNameException().message ?: ""
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
-        every {
+        coEvery {
             useCase.loginUser(
                 username = username,
                 password = password
             )
-        } returns Result.failure(InvalidUserName())
+        } throws InvalidUserNameException()
         ui.authenticateUser()
         verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
     }
@@ -64,14 +63,14 @@ class LoginUiTest {
     )
     fun `authenticateUser() should print invalid password when invalid password entered`(
         username: String,
-        password: String
-    ) {
-        val expectedMessage = InvalidPassword().message ?: ""
+        password: String,
+    ) = runTest {
+        val expectedMessage = InvalidPasswordException().message ?: ""
 
         every { reader.readStringOrNull() } returnsMany listOf(username, password)
-        every {
+        coEvery {
             useCase.loginUser(username = username, password = password)
-        } returns Result.failure(InvalidPassword())
+        } throws InvalidPasswordException()
 
         ui.authenticateUser()
 
@@ -79,47 +78,54 @@ class LoginUiTest {
     }
 
     @Test
-    fun `authenticateUser() should print user does not exist when username and password entered with not existing user`() {
-        val expectedMessage = UserDoesNotExist().message ?: ""
-        every { useCase.loginUser(username = "username", password = "password") } returns Result.failure(
-            UserDoesNotExist()
-        )
-        every { reader.readStringOrNull() } returnsMany listOf("username", "password")
+    fun `authenticateUser() should print user does not exist when username and password entered with not existing user`() =
+        runTest {
+            val expectedMessage = UserDoesNotExistException().message ?: ""
+            coEvery {
+                useCase.loginUser(
+                    username = "username",
+                    password = "password"
+                )
+            } throws UserDoesNotExistException()
+            every { reader.readStringOrNull() } returnsMany listOf("username", "password")
 
-        ui.authenticateUser()
+            ui.authenticateUser()
 
-        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
-    }
-
-    @Test
-    fun `authenticateUser() should print incorrect password when incorrect password entered with not existing user`() {
-        val expectedMessage = IncorrectPassword().message ?: ""
-        every { useCase.loginUser(username = "username", password = "password") } returns Result.failure(
-            IncorrectPassword()
-        )
-        every { reader.readStringOrNull() } returnsMany listOf("username", "password")
-
-        ui.authenticateUser()
-
-        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
-    }
+            verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
+        }
 
     @Test
-    fun `authenticateUser() should return user successfully when valid input logs in`() {
+    fun `authenticateUser() should print incorrect password when incorrect password entered with not existing user`() =
+        runTest {
+            val expectedMessage = IncorrectPasswordException().message ?: ""
+            coEvery {
+                useCase.loginUser(
+                    username = "username",
+                    password = "password"
+                )
+            } throws IncorrectPasswordException()
+            every { reader.readStringOrNull() } returnsMany listOf("username", "password")
+
+            ui.authenticateUser()
+
+            verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
+        }
+
+    @Test
+    fun `authenticateUser() should return user successfully when valid input logs in`() = runTest {
         val user = buildUser(
             username = "adminusername",
             hashedPassword = "011a5aee585278f6be5352cd762203df",
             userRole = UserRole.MATE
         )
         every { reader.readStringOrNull() } returnsMany listOf("userName", "userNamePassword")
-        every {
+        coEvery {
             useCase.loginUser(
                 username = "userName",
                 password = "userNamePassword"
             )
-        } returns Result.success(
-            user
-        )
+        } just runs
+        coEvery { useCase.getCurrentUser() } returns user
         assertThat(ui.authenticateUser()).isEqualTo(user)
     }
 
@@ -128,6 +134,7 @@ class LoginUiTest {
         every { reader.readStringOrNull() } returns null andThen "username"
         assertThat(ui.authenticateUser()).isEqualTo(null)
     }
+
     @Test
     fun `authenticateUser() should print invalid message and returns null when password is null`() {
         every { reader.readStringOrNull() } returns "username" andThen null

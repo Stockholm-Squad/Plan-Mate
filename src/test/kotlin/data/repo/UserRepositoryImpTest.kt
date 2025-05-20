@@ -1,15 +1,14 @@
 package data.repo
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.mockk
-import org.example.logic.entities.User
 import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.example.data.repo.UserRepositoryImp
 import org.example.data.source.CurrentUserDataSource
 import org.example.data.source.UserDataSource
 import org.example.logic.*
-import org.example.logic.utils.HashingService
+import org.example.logic.entities.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,17 +19,14 @@ class UserRepositoryImpTest {
     private lateinit var userDataSource: UserDataSource
     private lateinit var userRepo: UserRepositoryImp
     private lateinit var currentUserDataSource: CurrentUserDataSource
-    private lateinit var hashingService: HashingService
 
     @BeforeEach
     fun setUp() {
         userDataSource = mockk(relaxed = true)
         currentUserDataSource = mockk(relaxed = true)
-        hashingService = mockk(relaxed = true)
         userRepo = UserRepositoryImp(
             userDataSource = userDataSource,
-            currentUserDataSource = currentUserDataSource,
-            hashingService = hashingService
+            currentUserDataSource = currentUserDataSource
         )
     }
 

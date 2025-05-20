@@ -13,7 +13,7 @@ interface UserRepository {
     suspend fun deleteUserFromTask(username: String, taskId: UUID): Boolean
 
     suspend fun getUserByUsername(username: String): User
-    suspend fun loginUser(username: String, password: String): User
+    suspend fun loginUser(user: User)
     fun getCurrentUser(): User?
     fun logoutUser()
 
