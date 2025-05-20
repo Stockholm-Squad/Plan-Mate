@@ -1,12 +1,11 @@
 package logic.usecase.login
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import logic.usecase.validation.ValidateUserDataUseCase
 import org.example.logic.*
+import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
 import org.example.logic.utils.HashingService
 import org.junit.jupiter.api.BeforeEach
@@ -16,13 +15,15 @@ import kotlin.test.Test
 class LoginUseCaseTest {
     private lateinit var repository: UserRepository
     private lateinit var validateUserDataUseCase: ValidateUserDataUseCase
+    private lateinit var hashingService: HashingService
     private lateinit var useCase: LoginUseCase
 
     @BeforeEach
     fun setUp() {
         repository = mockk(relaxed = true)
         validateUserDataUseCase = mockk(relaxed = true)
-        useCase = LoginUseCase(repository, validateUserDataUseCase)
+        hashingService = mockk(relaxed = true)
+        useCase = LoginUseCase(repository, hashingService, validateUserDataUseCase)
     }
 
     @Test
@@ -106,7 +107,7 @@ class LoginUseCaseTest {
     fun `loginUser() should return failure when user does not exist`() = runTest {
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } throws UserDoesNotExistException()
+        coEvery { repository.getUserByUsername(any()) } throws UserDoesNotExistException()
 
         assertThrows<UserDoesNotExistException> {
             useCase.loginUser(
@@ -114,14 +115,14 @@ class LoginUseCaseTest {
                 password = "rodinapassword"
             )
         }
-        coVerify(exactly = 1) { repository.loginUser("Rodina", "rodinapassword") }
+        coVerify(exactly = 0) { repository.loginUser(any()) }
     }
 
     @Test
     fun `loginUser() should return failure when user exist and incorrect password `() = runTest {
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } throws IncorrectPasswordException()
+        coEvery { repository.getUserByUsername(any()) } returns User(username =  "johnDoe", hashedPassword = "pass")
 
         assertThrows<IncorrectPasswordException> {
             useCase.loginUser(
@@ -129,7 +130,7 @@ class LoginUseCaseTest {
                 password = "password2"
             )
         }
-        coVerify(exactly = 1) { repository.loginUser("johnDoe", "password2") }
+        coVerify(exactly = 0) { repository.loginUser(any()) }
     }
 
     @Test
@@ -137,7 +138,6 @@ class LoginUseCaseTest {
         val user = mockk<org.example.logic.entities.User>()
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } returns user
 
         val result = useCase.loginUser(
             "johnDoe",
@@ -151,7 +151,7 @@ class LoginUseCaseTest {
     fun `loginUser() should return failure when username and password are correct and user not exist `() = runTest {
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } throws UserDoesNotExistException()
+        coEvery { repository.loginUser(any()) } throws UserDoesNotExistException()
 
         assertThrows<UserDoesNotExistException> {
             useCase.loginUser(
@@ -163,21 +163,21 @@ class LoginUseCaseTest {
 
     @Test
     fun `loginUser() should return success when user and password are valid`() = runTest {
-        val user = mockk<org.example.logic.entities.User>()
+        val user = mockk<User>()
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } returns user
+        coEvery { repository.loginUser(any()) } just runs
 
         val result = useCase.loginUser(username = "johnDoe", password = "hashedPass1")
         assertThat(result).isEqualTo(user)
-        coVerify(exactly = 1) { repository.loginUser("johnDoe", "hashedPass1") }
+        coVerify(exactly = 1) { repository.loginUser(any()) }
     }
 
     @Test
     fun `loginUser() should return failure when repo fails`() = runTest {
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } throws Throwable()
+        coEvery { repository.loginUser(any()) } throws Throwable()
 
         assertThrows<Throwable> {
             useCase.loginUser(
@@ -185,14 +185,14 @@ class LoginUseCaseTest {
                 password = "password2"
             )
         }
-        coVerify(exactly = 1) { repository.loginUser("johnDoe", "password2") }
+        coVerify(exactly = 1) { repository.loginUser(any()) }
     }
 
     @Test
     fun `loginUser() should return failure when users are empty`() = runTest {
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any(), any()) } throws UsersDataAreEmptyException()
+        coEvery { repository.loginUser(any()) } throws UsersDataAreEmptyException()
 
         assertThrows<UsersDataAreEmptyException> {
             useCase.loginUser(
@@ -200,7 +200,7 @@ class LoginUseCaseTest {
                 password = "password2"
             )
         }
-        coVerify(exactly = 1) { repository.loginUser("johnDoe", "password2") }
+        coVerify(exactly = 1) { repository.loginUser(any()) }
     }
 
     @Test

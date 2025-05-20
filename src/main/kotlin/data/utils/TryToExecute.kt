@@ -4,8 +4,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-
-
 suspend fun <T, R> tryToExecute(
     function: suspend () -> T,
     onSuccess: (T) -> R,

@@ -9,5 +9,5 @@ val repositoryModule = module {
     factory<ProjectRepository> { ProjectRepositoryImp(get()) }
     factory<EntityStateRepository> { EntityStateRepositoryImp(get()) }
     factory<TaskRepository> { TaskRepositoryImp(get()) }
-    factory<UserRepository> { UserRepositoryImp(get(), get(), get()) }
+    factory<UserRepository> { UserRepositoryImp(get(), get()) }
 }

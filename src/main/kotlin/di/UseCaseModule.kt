@@ -12,7 +12,7 @@ import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.usecase.user.ManageUserUseCase
 import org.example.logic.utils.DateHandler
 import org.example.logic.utils.DateHandlerImp
 import org.example.logic.utils.HashingService
@@ -25,17 +25,16 @@ val useCaseModule = module {
     single<HashingService> { Md5HashingService() }
     single<DateHandler> { DateHandlerImp() }
 
-    single<AddUserUseCase> { AddUserUseCase(get(), get(), get(), get()) }
+    single<ManageUserUseCase> { ManageUserUseCase(get(), get(), get(), get(), get()) }
     single<GetAuditUseCase> { GetAuditUseCase(get(), get(), get()) }
     single<AddAuditUseCase> { AddAuditUseCase(get(), get()) }
     single<AuditServicesUseCase> { AuditServicesUseCase(get(), get(), get()) }
     single<AuditDescriptionProvider> { AuditDescriptionProvider() }
-    single<LoginUseCase> { LoginUseCase(get(), get()) }
+    single<LoginUseCase> { LoginUseCase(get(), get(), get()) }
     factory<ManageTasksUseCase> { ManageTasksUseCase(get(), get()) }
     factory<ManageProjectUseCase> { ManageProjectUseCase(get(), get(), get()) }
     factory<ProjectValidationUseCase> { ProjectValidationUseCase(get()) }
     factory<GetProjectsUseCase> { GetProjectsUseCase(get()) }
-    factory<ManageUsersAssignedToProjectUseCase> { ManageUsersAssignedToProjectUseCase(get(), get(), get()) }
     factory<ManageEntityStatesUseCase> { ManageEntityStatesUseCase(get()) }
     factory<ValidateUserDataUseCase> { ValidateUserDataUseCase() }
 }

@@ -9,9 +9,15 @@ data class Audit(
     val entityTypeId: UUID,
     val description: String,
     val userId: UUID,
-    val dateTime: LocalDateTime
+    val dateTime: LocalDateTime,
 )
 
 enum class EntityType {
-    TASK, PROJECT, STATE,UNKOWN
+    TASK, PROJECT, STATE, UNKNOWN;
+
+    companion object {
+        fun getAuditType(auditEntityTypeName: String): EntityType {
+            return EntityType.entries.find { it.name == auditEntityTypeName } ?: UNKNOWN
+        }
+    }
 }

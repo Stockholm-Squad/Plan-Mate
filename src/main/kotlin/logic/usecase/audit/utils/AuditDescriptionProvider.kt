@@ -22,7 +22,7 @@ class AuditDescriptionProvider {
             )
 
             EntityType.STATE -> STATE_MESSAGE_TEMPLATE.format(entityType, ADDED_ACTION, entityName, entityId)
-            EntityType.UNKOWN -> EntityType.UNKOWN.name
+            EntityType.UNKNOWN -> EntityType.UNKNOWN.name
         }
     }
 
@@ -54,7 +54,7 @@ class AuditDescriptionProvider {
                 entityType, UPDATED_ACTION, NAME_UPDATE.format(existEntityName, newEntityName), entityId
             )
 
-            EntityType.UNKOWN -> EntityType.UNKOWN.name
+            EntityType.UNKNOWN -> EntityType.UNKNOWN.name
         }
     }
 
@@ -74,7 +74,7 @@ class AuditDescriptionProvider {
             )
 
             EntityType.STATE -> STATE_MESSAGE_TEMPLATE.format(entityType, DELETED_ACTION, entityName, entityId)
-            EntityType.UNKOWN -> EntityType.UNKOWN.name
+            EntityType.UNKNOWN -> EntityType.UNKNOWN.name
         }
     }
 }

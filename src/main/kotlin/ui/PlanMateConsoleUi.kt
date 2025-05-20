@@ -36,7 +36,7 @@ class PlanMateConsoleUi(
         when (user?.userRole) {
             UserRole.ADMIN -> handleAdminUi()
             UserRole.MATE -> handleMateUi()
-            null -> return
+            UserRole.UNKNOWN, null -> return
         }
     }
 

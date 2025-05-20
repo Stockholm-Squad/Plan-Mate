@@ -63,7 +63,7 @@ class TaskManagerUi(
         return false
     }
 
-    fun showAllTasks() {
+    private fun showAllTasks() {
         runBlocking(coroutineExceptionHandler) {
             try {
                 manageTasksUseCase.getAllTasks().also {
@@ -117,7 +117,7 @@ class TaskManagerUi(
         }
     }
 
-    fun updateTask() = runBlocking(coroutineExceptionHandler) {
+    private fun updateTask() = runBlocking(coroutineExceptionHandler) {
         try {
             val projectName = getProjectByName()
             if (projectName.isEmpty()) return@runBlocking
@@ -156,7 +156,7 @@ class TaskManagerUi(
         }
     }
 
-    fun deleteTask() = runBlocking(coroutineExceptionHandler) {
+    private fun deleteTask() = runBlocking(coroutineExceptionHandler) {
         try {
             val projectName = getProjectByName()
             if (projectName.isEmpty()) return@runBlocking
@@ -180,7 +180,7 @@ class TaskManagerUi(
         }
     }
 
-    fun showAllTasksInProject(): List<Task> = runBlocking(coroutineExceptionHandler) {
+    private fun showAllTasksInProject(): List<Task> = runBlocking(coroutineExceptionHandler) {
         try {
             val projectName = getProjectByName()
             val tasks = manageTasksUseCase.getTasksInProjectByName(projectName)

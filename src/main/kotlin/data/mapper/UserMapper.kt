@@ -10,7 +10,7 @@ fun UserDto.mapToUserEntity(): User? {
         id = id.toSafeUUID() ?: return null,
         username = username,
         hashedPassword = hashedPassword,
-        userRole = getRoleType(role)
+        userRole = UserRole.getUserRole(role)
     )
 }
 
@@ -22,10 +22,3 @@ fun User.mapToUserModel(): UserDto {
         role = userRole.toString()
     )
 }
-
-fun getRoleType(role: String): UserRole = when {
-    role.equals("MATE", ignoreCase = true) -> UserRole.MATE
-    role.equals("ADMIN", ignoreCase = true) -> UserRole.ADMIN
-    else -> throw Exception("Unknown role type: $role")
-}
-

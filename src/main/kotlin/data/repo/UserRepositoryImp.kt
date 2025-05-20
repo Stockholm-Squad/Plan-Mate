@@ -8,13 +8,11 @@ import org.example.data.utils.tryToExecute
 import org.example.logic.*
 import org.example.logic.entities.User
 import org.example.logic.repository.UserRepository
-import org.example.logic.utils.HashingService
 import java.util.*
 
 class UserRepositoryImp(
     private val userDataSource: UserDataSource,
-    private val currentUserDataSource: CurrentUserDataSource,
-    private val hashingService: HashingService,
+    private val currentUserDataSource: CurrentUserDataSource
 ) : UserRepository {
 
     override suspend fun addUser(user: User): Boolean = tryToExecute(
@@ -70,19 +68,8 @@ class UserRepositoryImp(
             onFailure = { throw UserDoesNotExistException() }
         )
 
-
-    override suspend fun loginUser(username: String, password: String): User =
-        tryToExecute(
-            function = { userDataSource.getUserByUsername(username) },
-            onSuccess = { user ->
-                if (user == null) throw UserDoesNotExistException()
-                if (hashingService.verify(password, user.hashedPassword)) {
-                    currentUserDataSource.setCurrentUser(user)
-                    user.mapToUserEntity() ?: throw UserDoesNotExistException()
-                } else throw IncorrectPasswordException()
-            },
-            onFailure = { throw UserDoesNotExistException() }
-        )
+    override suspend fun loginUser(user: User) =
+        currentUserDataSource.setCurrentUser(user.mapToUserModel())
 
     override fun getCurrentUser(): User? = currentUserDataSource.getCurrentUser()?.mapToUserEntity()
 
