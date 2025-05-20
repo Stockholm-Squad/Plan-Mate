@@ -4,7 +4,7 @@ import io.mockk.*
 import org.example.logic.entities.Project
 import org.example.logic.entities.User
 import org.example.logic.usecase.project.GetProjectsUseCase
-import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
+import org.example.logic.usecase.user.ManageUserUseCase
 import org.example.ui.features.addusertoproject.AddUserToProjectUI
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.user.CreateUserUi
@@ -12,14 +12,14 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 
 class AddUserToProjectUITest {
     private lateinit var addUserToProjectUI: AddUserToProjectUI
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
     private lateinit var getProjectsUseCase: GetProjectsUseCase
-    private lateinit var manageUsersAssignedToProjectUseCase: ManageUsersAssignedToProjectUseCase
+    private lateinit var manageUserUseCase: ManageUserUseCase
     private lateinit var createUserUi: CreateUserUi
 
     @BeforeEach
@@ -27,9 +27,10 @@ class AddUserToProjectUITest {
         inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
         getProjectsUseCase = mockk(relaxed = true)
-        manageUsersAssignedToProjectUseCase = mockk(relaxed = true)
         createUserUi = mockk(relaxed = true)
-        addUserToProjectUI = AddUserToProjectUI(inputReader, outputPrinter, getProjectsUseCase, manageUsersAssignedToProjectUseCase, createUserUi)
+        manageUserUseCase = mockk(relaxed = true)
+        addUserToProjectUI =
+            AddUserToProjectUI(inputReader, outputPrinter, getProjectsUseCase, manageUserUseCase, createUserUi)
     }
 
     @Test
@@ -50,8 +51,12 @@ class AddUserToProjectUITest {
         every { inputReader.readIntOrNull() } returnsMany listOf(1, 0)
         every { inputReader.readStringOrNull() } returnsMany listOf("n", "user1", "Project1", "done")
         val projectId = UUID.randomUUID()
-        coEvery { getProjectsUseCase.getProjectByName("Project1") } returns Project(id = projectId, title = "Project1", stateId = UUID.randomUUID())
-        coEvery { manageUsersAssignedToProjectUseCase.addUserToProject(projectId, "user1") } returns true
+        coEvery { getProjectsUseCase.getProjectByName("Project1") } returns Project(
+            id = projectId,
+            title = "Project1",
+            stateId = UUID.randomUUID()
+        )
+        coEvery { manageUserUseCase.addUserToProject(projectId, "user1") } returns true
 
         // When
         addUserToProjectUI.launchUi()
@@ -66,8 +71,12 @@ class AddUserToProjectUITest {
         every { inputReader.readIntOrNull() } returnsMany listOf(3, 0)
         every { inputReader.readStringOrNull() } returnsMany listOf("Project1", "user1")
         val projectId = UUID.randomUUID()
-        coEvery { getProjectsUseCase.getProjectByName("Project1") } returns Project(id = projectId, title = "Project1", stateId = UUID.randomUUID())
-        coEvery { manageUsersAssignedToProjectUseCase.deleteUserFromProject("Project1", "user1") } returns true
+        coEvery { getProjectsUseCase.getProjectByName("Project1") } returns Project(
+            id = projectId,
+            title = "Project1",
+            stateId = UUID.randomUUID()
+        )
+        coEvery { manageUserUseCase.deleteUserFromProject("Project1", "user1") } returns true
 
         // When
         addUserToProjectUI.launchUi()
@@ -94,8 +103,12 @@ class AddUserToProjectUITest {
         every { inputReader.readIntOrNull() } returnsMany listOf(1, 0)
         every { inputReader.readStringOrNull() } returnsMany listOf("y", "user1", "Project1", "done")
         val projectId = UUID.randomUUID()
-        coEvery { getProjectsUseCase.getProjectByName("Project1") } returns Project(id = projectId, title = "Project1", stateId = UUID.randomUUID())
-        coEvery { manageUsersAssignedToProjectUseCase.addUserToProject(projectId, "user1") } returns true
+        coEvery { getProjectsUseCase.getProjectByName("Project1") } returns Project(
+            id = projectId,
+            title = "Project1",
+            stateId = UUID.randomUUID()
+        )
+        coEvery { manageUserUseCase.addUserToProject(projectId, "user1") } returns true
 
         // When
         addUserToProjectUI.launchUi()
@@ -110,8 +123,12 @@ class AddUserToProjectUITest {
         every { inputReader.readIntOrNull() } returnsMany listOf(2, 0)
         every { inputReader.readStringOrNull() } returns "EmptyProject"
         val projectId = UUID.randomUUID()
-        coEvery { getProjectsUseCase.getProjectByName("EmptyProject") } returns Project(id = projectId, title = "Project1", stateId = UUID.randomUUID())
-        coEvery { manageUsersAssignedToProjectUseCase.getUsersByProjectId(projectId) } returns emptyList()
+        coEvery { getProjectsUseCase.getProjectByName("EmptyProject") } returns Project(
+            id = projectId,
+            title = "Project1",
+            stateId = UUID.randomUUID()
+        )
+        coEvery { manageUserUseCase.getUsersByProjectId(projectId) } returns emptyList()
 
         // When
         addUserToProjectUI.launchUi()
@@ -132,7 +149,7 @@ class AddUserToProjectUITest {
         addUserToProjectUI.launchUi()
 
         // Then
-        coVerify(exactly = 0) { manageUsersAssignedToProjectUseCase.addUserToProject(any(), any()) }
+        coVerify(exactly = 0) { manageUserUseCase.addUserToProject(any(), any()) }
     }
 
     @Test
@@ -147,7 +164,7 @@ class AddUserToProjectUITest {
         addUserToProjectUI.launchUi()
 
         // Then
-        coVerify(exactly = 0) { manageUsersAssignedToProjectUseCase.addUserToProject(any(), any()) }
+        coVerify(exactly = 0) { manageUserUseCase.addUserToProject(any(), any()) }
     }
 
     @Test
@@ -157,7 +174,7 @@ class AddUserToProjectUITest {
         every { inputReader.readStringOrNull() } returnsMany listOf("n", "user1", "Project1", "done")
         val project = Project(UUID.randomUUID(), "Project1", UUID.randomUUID())
         coEvery { getProjectsUseCase.getProjectByName("Project1") } returns project
-        coEvery { manageUsersAssignedToProjectUseCase.addUserToProject(project.id, "user1") } returns false
+        coEvery { manageUserUseCase.addUserToProject(project.id, "user1") } returns false
 
         // When
         addUserToProjectUI.launchUi()
@@ -189,7 +206,12 @@ class AddUserToProjectUITest {
         every { inputReader.readStringOrNull() } returnsMany listOf("n", "user1", "Project1", "done")
         val project = Project(UUID.randomUUID(), "Project1", UUID.randomUUID())
         coEvery { getProjectsUseCase.getProjectByName("Project1") } returns project
-        coEvery { manageUsersAssignedToProjectUseCase.addUserToProject(any(), any()) } throws RuntimeException("Insert failed")
+        coEvery {
+            manageUserUseCase.addUserToProject(
+                any(),
+                any()
+            )
+        } throws RuntimeException("Insert failed")
 
         // When
         addUserToProjectUI.launchUi()
@@ -203,11 +225,18 @@ class AddUserToProjectUITest {
     fun `showUsersAssignedToProject should print assigned users`() {
         // Given
         every { inputReader.readIntOrNull() } returnsMany listOf(2, 0)
-        val usernameList = listOf(User(UUID.randomUUID(), "user1", hashedPassword = "test"), User(UUID.randomUUID(), "user2", hashedPassword = "<PASSWORD>"))
+        val usernameList = listOf(
+            User(UUID.randomUUID(), "user1", hashedPassword = "test"),
+            User(UUID.randomUUID(), "user2", hashedPassword = "<PASSWORD>")
+        )
         every { inputReader.readStringOrNull() } returns "ProjectX"
         val projectId = UUID.randomUUID()
-        coEvery { getProjectsUseCase.getProjectByName("ProjectX") } returns Project(projectId, "ProjectX", UUID.randomUUID())
-        coEvery { manageUsersAssignedToProjectUseCase.getUsersByProjectId(projectId) } returns usernameList
+        coEvery { getProjectsUseCase.getProjectByName("ProjectX") } returns Project(
+            projectId,
+            "ProjectX",
+            UUID.randomUUID()
+        )
+        coEvery { manageUserUseCase.getUsersByProjectId(projectId) } returns usernameList
 
         // When
         addUserToProjectUI.launchUi()
@@ -224,8 +253,12 @@ class AddUserToProjectUITest {
         every { inputReader.readIntOrNull() } returnsMany listOf(2, 0)
         every { inputReader.readStringOrNull() } returns "ProjectFail"
         val projectId = UUID.randomUUID()
-        coEvery { getProjectsUseCase.getProjectByName("ProjectFail") } returns Project(projectId, "ProjectFail", UUID.randomUUID())
-        coEvery { manageUsersAssignedToProjectUseCase.getUsersByProjectId(projectId) } throws RuntimeException("Connection lost")
+        coEvery { getProjectsUseCase.getProjectByName("ProjectFail") } returns Project(
+            projectId,
+            "ProjectFail",
+            UUID.randomUUID()
+        )
+        coEvery { manageUserUseCase.getUsersByProjectId(projectId) } throws RuntimeException("Connection lost")
 
         // When
         addUserToProjectUI.launchUi()

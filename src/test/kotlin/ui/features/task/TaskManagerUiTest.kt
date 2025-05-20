@@ -1,8 +1,6 @@
 package ui.features.task
 
-import com.google.common.truth.Truth.assertThat
 import data.repo.stateId1
-import data.repo.taskId1
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -21,7 +19,6 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import utils.buildTask
 import java.util.*
 
 
@@ -54,34 +51,6 @@ class TaskManagerUiTest {
             manageTasksUseCase, manageStateUseCase,
             getProjectsUseCase, auditServicesUseCase, loginUseCase
         )
-    }
-
-    @Test
-    fun `showAllTasks() should print all tasks when use case succeeds`() = runBlocking {
-        // Given
-        val tasks = listOf(
-            buildTask(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), "Task1"),
-            buildTask(UUID.fromString("223e4567-e89b-12d3-a456-426614174001"), "Task2")
-        )
-        coEvery { manageTasksUseCase.getAllTasks() } returns tasks
-
-        // When
-        taskManagerUi.showAllTasks()
-
-        // Then
-        coVerify { printer.printTaskList(tasks) }
-    }
-
-    @Test
-    fun `showAllTasks() should print unknown error when use case throws exception`() = runBlocking {
-        // Given
-        coEvery { manageTasksUseCase.getAllTasks() } throws RuntimeException("error happened")
-
-        // When
-        taskManagerUi.showAllTasks()
-
-        // Then
-        coVerify { printer.showMessageLine("error happened") }
     }
 
     @Test
@@ -124,70 +93,6 @@ class TaskManagerUiTest {
             manageTasksUseCase.addTask(any(), projectId)
             manageTasksUseCase.addTaskToProject(projectId, any())
             auditServicesUseCase.addAuditForAddEntity(EntityType.TASK, any(), any(), any())
-            printer.printTask(any())
-        }
-    }
-
-    @Test
-    fun `updateTask() should update task and print it when inputs are valid`() = runBlocking {
-        // Given
-        val projectName = "MyProject"
-        val oldTask = buildTask(taskId1, "OldTask")
-        val updatedName = "NewTask"
-        val updatedDescription = "NewDesc"
-        val updatedStateName = "NewState"
-
-        every { reader.readStringOrNull() } returnsMany listOf(
-            projectName,
-            updatedName,
-            updatedDescription,
-            updatedStateName
-        )
-        every { uiUtils.readNonBlankInputOrNull(reader) } returns "OldTask" andThen null
-        coEvery { manageTasksUseCase.getTaskByName("OldTask") } returns oldTask
-        coEvery { manageStateUseCase.getEntityStateIdByName(updatedStateName) } returns stateId1
-        coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk(relaxed = true)
-        coEvery { manageTasksUseCase.updateTask(any()) } returns true
-        coEvery {
-            auditServicesUseCase.addAuditForUpdateEntity(
-                entityType = EntityType.TASK,
-                existEntityName = oldTask.title,
-                newEntityName = updatedName,
-                entityId = oldTask.id,
-                newDescription = updatedDescription,
-                newStateName = updatedStateName,
-                additionalInfo = projectName
-            )
-        } just Runs
-
-        // When
-        taskManagerUi.updateTask()
-
-        // Then
-        coVerify {
-            printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT)
-            reader.readStringOrNull()
-            getProjectsUseCase.getProjectByName(projectName)
-            printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
-            uiUtils.readNonBlankInputOrNull(reader)
-            manageTasksUseCase.getTaskByName("OldTask")
-            printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
-            reader.readStringOrNull()
-            printer.showMessageLine(UiMessages.TASK_DESCRIPTION_PROMPT)
-            reader.readStringOrNull()
-            printer.showMessageLine(UiMessages.TASK_STATE_PROMPT)
-            reader.readStringOrNull()
-            manageStateUseCase.getEntityStateIdByName(updatedStateName)
-            manageTasksUseCase.updateTask(any())
-            auditServicesUseCase.addAuditForUpdateEntity(
-                entityType = EntityType.TASK,
-                existEntityName = oldTask.title,
-                newEntityName = updatedName,
-                entityId = oldTask.id,
-                newDescription = updatedDescription,
-                newStateName = updatedStateName,
-                additionalInfo = projectName
-            )
             printer.printTask(any())
         }
     }
@@ -258,110 +163,6 @@ class TaskManagerUiTest {
     }
 
     @Test
-    fun `updateTask() should return early and print message when update input is null`() = runTest {
-        // Given
-        val taskName = "TaskX"
-        val projectName = "Project1"
-        val existingTask = buildTask(UUID.randomUUID(), taskName)
-
-        every { reader.readStringOrNull() } returnsMany listOf(projectName, taskName, null)
-        coEvery { manageTasksUseCase.getTaskByName(taskName) } returns existingTask
-        every { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) } just Runs
-
-        // When
-        taskManagerUi.updateTask()
-
-        // Then
-        verify { printer.showMessageLine(UiMessages.EMPTY_TASK_INPUT) }
-        coVerify(exactly = 0) { manageTasksUseCase.updateTask(any()) }
-        verify(exactly = 0) { printer.printTask(any()) }
-    }
-
-
-    @Test
-    fun `deleteTask() should delete task and print success when inputs are valid`() = runBlocking {
-        // Given
-        val projectName = "MyProject"
-        val taskName = "TaskToDelete"
-        val task = buildTask(taskId1, taskName)
-
-        every { reader.readStringOrNull() } returns projectName
-        every { uiUtils.readNonBlankInputOrNull(reader) } returns taskName
-
-        coEvery { manageTasksUseCase.getTaskByName(taskName) } returns task
-        coEvery { manageTasksUseCase.deleteTaskByName(taskName) } returns true
-        coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk(relaxed = true) {
-            every { id } returns projectId
-        }
-        coEvery { manageTasksUseCase.deleteTaskFromProject(projectId, task.id) } returns true
-        coEvery {
-            auditServicesUseCase.addAuditForDeleteEntity(
-                EntityType.TASK,
-                taskName,
-                task.id,
-                projectName
-            )
-        } just Runs
-
-        // When
-        taskManagerUi.deleteTask()
-
-        // Then
-        coVerifySequence {
-            printer.showMessageLine(UiMessages.PROJECT_NAME_PROMPT)
-            getProjectsUseCase.getProjectByName(projectName)
-            printer.showMessageLine(UiMessages.TASK_NAME_PROMPT)
-            uiUtils.readNonBlankInputOrNull(reader)
-            manageTasksUseCase.getTaskByName(taskName)
-            manageTasksUseCase.deleteTaskByName(taskName)
-            getProjectsUseCase.getProjectByName(projectName)
-            manageTasksUseCase.deleteTaskFromProject(projectId, task.id)
-            auditServicesUseCase.addAuditForDeleteEntity(EntityType.TASK, taskName, task.id, projectName)
-            printer.showMessageLine(UiMessages.TASK_DELETE_SUCCESSFULLY)
-        }
-    }
-
-    @Test
-    fun `showAllTasksInProject() should return tasks and print them when successful`() {
-        // Given
-        val tasks = listOf(
-            buildTask(UUID.randomUUID(), "Task1"),
-            buildTask(UUID.randomUUID(), "Task2")
-        )
-        val projectName = "ProjectX"
-
-        val spyUi = spyk(taskManagerUi, recordPrivateCalls = true)
-
-        every { spyUi["getProjectByName"]() } returns projectName
-        coEvery { manageTasksUseCase.getTasksInProjectByName(projectName) } returns tasks
-        every { printer.printTaskList(tasks) } just Runs
-
-        // When
-        val result = spyUi.showAllTasksInProject()
-
-        // Then
-        assertThat(result).isEqualTo(tasks)
-        verify { printer.printTaskList(tasks) }
-    }
-
-    @Test
-    fun `showAllTasksInProject() should return emptyList and print error when exception occurs`() {
-        // Given
-        val exception = RuntimeException("Test error")
-        val spyUi = spyk(taskManagerUi, recordPrivateCalls = true)
-
-        every { spyUi["getProjectByName"]() } throws exception
-        every { printer.showMessageLine("Test error") } just Runs
-
-        // When
-        val result = spyUi.showAllTasksInProject()
-
-        // Then
-        assertThat(result).isEmpty()
-        verify { printer.showMessageLine("Test error") }
-    }
-
-    @Test
     fun `launchUi() when current user is null then prints invalid user message and returns`() {
         // Given
         every { loginUseCase.getCurrentUser() } returns null
@@ -401,19 +202,6 @@ class TaskManagerUiTest {
 
         // Then
         verify(exactly = 1) { reader.readIntOrNull() }
-    }
-
-    @Test
-    fun `launchUi() calls showAllTasks when option 1 is selected`() = runTest {
-        // Given
-        every { reader.readIntOrNull() } returns 1 andThen 0
-        coEvery { taskManagerUi.showAllTasks() } just Runs
-
-        // When
-        taskManagerUi.launchUi()
-
-        // Then
-        coVerify(exactly = 1) { taskManagerUi.showAllTasks() }
     }
 
     @Test

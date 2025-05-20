@@ -1,34 +1,34 @@
 package ui.features.user
 
 import io.mockk.*
-import org.example.logic.usecase.user.AddUserUseCase
+import org.example.logic.usecase.user.ManageUserUseCase
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
-import org.example.ui.features.common.utils.UiMessages
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class CreateUserUiTest {
 
     private lateinit var createUserUi: CreateUserUi
-    private lateinit var createUserUseCase: AddUserUseCase
+    private lateinit var manageUserUseCase: ManageUserUseCase
     private lateinit var printer: OutputPrinter
     private lateinit var inputReader: InputReader
 
     @BeforeEach
     fun setup() {
-        createUserUseCase = mockk()
+        manageUserUseCase = mockk()
         printer = mockk(relaxed = true)
         inputReader = mockk()
-        createUserUi = CreateUserUi(createUserUseCase, printer, inputReader)
+        createUserUi = CreateUserUi(manageUserUseCase, printer, inputReader)
     }
 
     @Test
     fun `launchUi should add user when username and password are valid`() {
         // Given
         every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "password123")
-        coEvery { createUserUseCase.addUser("testUser", "password123") } returns true
+        coEvery { manageUserUseCase.addUser("testUser", "password123") } returns true
 
         // When
         createUserUi.launchUi()
@@ -46,7 +46,7 @@ class CreateUserUiTest {
     fun `launchUi should show failure message when addUser returns false`() {
         // Given
         every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "password123")
-        coEvery { createUserUseCase.addUser("testUser", "password123") } returns false
+        coEvery { manageUserUseCase.addUser("testUser", "password123") } returns false
 
         // When
         createUserUi.launchUi()
@@ -69,7 +69,7 @@ class CreateUserUiTest {
         verify {
             printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
         }
-        coVerify(exactly = 0) { createUserUseCase.addUser(any(), any()) }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
@@ -84,7 +84,7 @@ class CreateUserUiTest {
         verify {
             printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
         }
-        coVerify(exactly = 0) { createUserUseCase.addUser(any(), any()) }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
@@ -99,7 +99,7 @@ class CreateUserUiTest {
         verify {
             printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
         }
-        coVerify(exactly = 0) { createUserUseCase.addUser(any(), any()) }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
@@ -114,14 +114,14 @@ class CreateUserUiTest {
         verify {
             printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
         }
-        coVerify(exactly = 0) { createUserUseCase.addUser(any(), any()) }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
     fun `createUser should catch exception and print error`() {
         // Given
         every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "password123")
-        coEvery { createUserUseCase.addUser("testUser", "password123") } throws RuntimeException("Something went wrong")
+        coEvery { manageUserUseCase.addUser("testUser", "password123") } throws RuntimeException("Something went wrong")
 
         // When
         createUserUi.launchUi()

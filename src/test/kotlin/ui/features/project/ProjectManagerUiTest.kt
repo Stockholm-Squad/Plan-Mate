@@ -2,6 +2,7 @@ package ui.features.project
 
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.EntityType
 import org.example.logic.entities.Project
 import org.example.logic.usecase.audit.AuditServicesUseCase
@@ -9,16 +10,15 @@ import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.ui.features.common.utils.UiMessages
+import org.example.ui.features.project.ProjectManagerUi
 import org.example.ui.features.state.AdminEntityStateManagerUi
 import org.example.ui.features.state.ShowAllEntityStateManagerUi
 import org.example.ui.features.task.TaskManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import logic.usecase.login.LoginUseCase
-import org.example.ui.features.project.ProjectManagerUi
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import java.util.*
 
 class ProjectManagerUiTest {

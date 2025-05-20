@@ -9,7 +9,6 @@ import org.example.logic.usecase.audit.utils.AuditDescriptionProvider
 import org.example.logic.usecase.project.*
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.project.ManageProjectUseCase
-import org.example.logic.usecase.project.ManageUsersAssignedToProjectUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
 import org.example.logic.usecase.user.ManageUserUseCase

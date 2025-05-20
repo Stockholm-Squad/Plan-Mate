@@ -13,7 +13,7 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 
 class AuditManagerUITest {
     private lateinit var auditManagerUI: AuditManagerUI

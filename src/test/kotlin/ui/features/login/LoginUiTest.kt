@@ -14,7 +14,7 @@ import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 
 class LoginUiTest {
     private lateinit var loginUi: LoginUi
@@ -41,7 +41,8 @@ class LoginUiTest {
         every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
         every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
         every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
-        coEvery { loginUseCase.loginUser("testUser", "password") } returns user
+        coEvery { loginUseCase.loginUser("testUser", "password") } just runs
+        coEvery { loginUseCase.getCurrentUser() } returns user
 
         // When
         loginUi.launchUi()
@@ -116,7 +117,8 @@ class LoginUiTest {
         every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
         every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
         every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
-        coEvery { loginUseCase.loginUser("testUser", "password") } returns user
+        coEvery { loginUseCase.loginUser("testUser", "password") } just runs
+        coEvery { loginUseCase.getCurrentUser() } returns user
 
         // When
         val result = loginUi.authenticateUser()
