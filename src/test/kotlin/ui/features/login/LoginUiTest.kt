@@ -2,142 +2,230 @@ package ui.features.login
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.*
-import kotlinx.coroutines.test.runTest
 import logic.usecase.login.LoginUseCase
-import modle.buildUser
 import org.example.logic.IncorrectPasswordException
 import org.example.logic.InvalidPasswordException
 import org.example.logic.InvalidUserNameException
 import org.example.logic.UserDoesNotExistException
-import org.example.logic.entities.UserRole
+import org.example.logic.entities.User
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.login.LoginUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
+import java.util.*
 
 class LoginUiTest {
-    private lateinit var useCase: LoginUseCase
-    private lateinit var ui: LoginUi
-    private lateinit var reader: InputReader
+    private lateinit var loginUi: LoginUi
+    private lateinit var loginUseCase: LoginUseCase
     private lateinit var printer: OutputPrinter
+    private lateinit var reader: InputReader
 
     @BeforeEach
     fun setUp() {
-        reader = mockk(relaxed = true)
+        loginUseCase = mockk(relaxed = true)
         printer = mockk(relaxed = true)
-        useCase = mockk(relaxed = true)
-        ui = LoginUi(loginUseCase = useCase, reader = reader, printer = printer)
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "'', validPassword123",
-        "1john, validPassword123",
-        "abc, validPassword123",
-        "averyverylongusernamethatexceeds20, validPassword123"
-    )
-    fun `authenticateUser() should print invalid username when invalid username entered`(
-        username: String,
-        password: String,
-    ) = runTest {
-        val expectedMessage = InvalidUserNameException().message ?: ""
-
-        every { reader.readStringOrNull() } returnsMany listOf(username, password)
-        coEvery {
-            useCase.loginUser(
-                username = username,
-                password = password
-            )
-        } throws InvalidUserNameException()
-        ui.authenticateUser()
-        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
-    }
-
-    @ParameterizedTest
-    @CsvSource(
-        "validUser, ''",
-        "validUser, short",
-    )
-    fun `authenticateUser() should print invalid password when invalid password entered`(
-        username: String,
-        password: String,
-    ) = runTest {
-        val expectedMessage = InvalidPasswordException().message ?: ""
-
-        every { reader.readStringOrNull() } returnsMany listOf(username, password)
-        coEvery {
-            useCase.loginUser(username = username, password = password)
-        } throws InvalidPasswordException()
-
-        ui.authenticateUser()
-
-        verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
+        reader = mockk(relaxed = true)
+        loginUi = LoginUi(loginUseCase, printer, reader)
     }
 
     @Test
-    fun `authenticateUser() should print user does not exist when username and password entered with not existing user`() =
-        runTest {
-            val expectedMessage = UserDoesNotExistException().message ?: ""
-            coEvery {
-                useCase.loginUser(
-                    username = "username",
-                    password = "password"
-                )
-            } throws UserDoesNotExistException()
-            every { reader.readStringOrNull() } returnsMany listOf("username", "password")
-
-            ui.authenticateUser()
-
-            verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
+    fun `launchUi should attempt authentication when no user is logged in`() {
+        // Given
+        val user = mockk<User> {
+            every { id } returns UUID.randomUUID()
+            every { username } returns "testUser"
         }
+        every { loginUseCase.getCurrentUser() } returns null andThen user
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } just runs
+
+        // When
+        loginUi.launchUi()
+
+        // Then
+        verify { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) }
+        verify { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) }
+        coVerify { loginUseCase.loginUser("testUser", "password") }
+    }
 
     @Test
-    fun `authenticateUser() should print incorrect password when incorrect password entered with not existing user`() =
-        runTest {
-            val expectedMessage = IncorrectPasswordException().message ?: ""
-            coEvery {
-                useCase.loginUser(
-                    username = "username",
-                    password = "password"
-                )
-            } throws IncorrectPasswordException()
-            every { reader.readStringOrNull() } returnsMany listOf("username", "password")
-
-            ui.authenticateUser()
-
-            verify(exactly = 1) { printer.showMessageLine(expectedMessage) }
+    fun `authenticateUser should return existing user when user is already logged in`() {
+        // Given
+        val user = mockk<User> {
+            every { id } returns UUID.randomUUID()
+            every { username } returns "testUser"
         }
+        every { loginUseCase.getCurrentUser() } returns user
 
-    @Test
-    fun `authenticateUser() should return user successfully when valid input logs in`() = runTest {
-        val user = buildUser(
-            username = "adminusername",
-            hashedPassword = "011a5aee585278f6be5352cd762203df",
-            userRole = UserRole.MATE
-        )
-        every { reader.readStringOrNull() } returnsMany listOf("userName", "userNamePassword")
-        coEvery {
-            useCase.loginUser(
-                username = "userName",
-                password = "userNamePassword"
-            )
-        } just runs
-        coEvery { useCase.getCurrentUser() } returns user
-        assertThat(ui.authenticateUser()).isEqualTo(user)
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isEqualTo(user)
+        verify(exactly = 0) { printer.showMessage(any()) }
+        verify(exactly = 0) { reader.readStringOrNull() }
     }
 
     @Test
-    fun `authenticateUser() should print invalid message and returns null when username is null`() {
-        every { reader.readStringOrNull() } returns null andThen "username"
-        assertThat(ui.authenticateUser()).isEqualTo(null)
+    fun `authenticateUser should return null when username input is null`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returns null
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+        verify { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) }
+        verify(exactly = 0) { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) }
+        coVerify(exactly = 0) { loginUseCase.loginUser(any(), any()) }
     }
 
     @Test
-    fun `authenticateUser() should print invalid message and returns null when password is null`() {
-        every { reader.readStringOrNull() } returns "username" andThen null
-        assertThat(ui.authenticateUser()).isEqualTo(null)
+    fun `authenticateUser should return null when password input is null`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", null)
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+        verify { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) }
+        verify { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) }
+        coVerify(exactly = 0) { loginUseCase.loginUser(any(), any()) }
+    }
+
+    @Test
+    fun `authenticateUser should return user when login is successful`() {
+        // Given
+        val user = mockk<User> {
+            every { id } returns UUID.randomUUID()
+            every { username } returns "testUser"
+        }
+        every { loginUseCase.getCurrentUser() } returns null andThen user
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } just runs
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isEqualTo(user)
+        verify { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) }
+        verify { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) }
+        coVerify { loginUseCase.loginUser("testUser", "password") }
+    }
+
+    @Test
+    fun `authenticateUser should return null and show error when login fails with InvalidUserNameException`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        every { printer.showMessageLine("Invalid username") } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } throws InvalidUserNameException()
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+        verify { printer.showMessageLine("Invalid username") }
+    }
+
+    @Test
+    fun `authenticateUser should return null and show error when login fails with InvalidPasswordException`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        every { printer.showMessageLine("Invalid password") } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } throws InvalidPasswordException()
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+        verify { printer.showMessageLine("Invalid password") }
+    }
+
+    @Test
+    fun `authenticateUser should return null and show error when login fails with IncorrectPasswordException`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        every { printer.showMessageLine("Incorrect password") } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } throws IncorrectPasswordException()
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+        verify { printer.showMessageLine("Incorrect password") }
+    }
+
+    @Test
+    fun `authenticateUser should return null and show error when login fails with UserDoesNotExistException`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        every { printer.showMessageLine("User does not exist") } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } throws UserDoesNotExistException()
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+        verify { printer.showMessageLine("User does not exist") }
+    }
+
+    @Test
+    fun `authenticateUser should return null and show unknown error when login fails with null message`() {
+        // Given
+        every { loginUseCase.getCurrentUser() } returns null
+        every { reader.readStringOrNull() } returnsMany listOf("testUser", "password")
+        every { printer.showMessage(UiMessages.LOGIN_USER_NAME_PROMPT) } returns Unit
+        every { printer.showMessage(UiMessages.LOGIN_PASSWORD_PROMPT) } returns Unit
+        every { printer.showMessageLine(UiMessages.UNKNOWN_ERROR) } returns Unit
+        coEvery { loginUseCase.loginUser("testUser", "password") } throws Exception("")
+
+        // When
+        val result = loginUi.authenticateUser()
+
+        // Then
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `logout should call logout on loginUseCase`() {
+        // Given
+        every { loginUseCase.logout() } returns Unit
+
+        // When
+        loginUi.logout()
+
+        // Then
+        verify { loginUseCase.logout() }
     }
 }

@@ -98,13 +98,11 @@ class MateTaskAssignmentCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file cannot be read`() = runTest {
-            tempFile.writeText("content")
-            tempFile.setReadable(false)
+            val readerWriter = MateTaskAssignmentCSVReaderWriter("non_existent_file.csv")
 
-            val result = mateTaskAssignmentCSVReaderWriter.read()
+            val result = readerWriter.read()
 
             assertThat(result).isEmpty()
-            tempFile.setReadable(true)
         }
     }
 

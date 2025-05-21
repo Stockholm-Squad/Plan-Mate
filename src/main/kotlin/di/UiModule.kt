@@ -24,7 +24,7 @@ val uiModule = module {
     factory<AddUserToProjectUI> { AddUserToProjectUI(get(), get(), get(), get(), get()) }
     factory<ShowAllEntityStateManagerUi> { ShowAllEntityStateManagerUi(get(), get()) }
     factory<AdminEntityStateManagerUi> { AdminEntityStateManagerUi(get(), get(), get(), get(), get()) }
-    factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get(), get(), get()) }
+    factory<TaskManagerUi> { TaskManagerUi(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory<EntityStateManagerUi> { EntityStateManagerUi(get(), get(), get(), get()) }
     factory<UiUtils> { UiUtils() }
 }
