@@ -9,6 +9,7 @@ import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
+import org.example.logic.utils.DateHandler
 import org.example.logic.utils.DateHandlerImp
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
@@ -26,6 +27,7 @@ class TaskManagerUi(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
+    private val dateHandler: DateHandler
 ) : UiLauncher {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessageLine(throwable.message ?: UiMessages.UNKNOWN_ERROR)
@@ -100,8 +102,8 @@ class TaskManagerUi(
                     title = name,
                     description = description,
                     stateId = stateId,
-                    createdDate = DateHandlerImp().getCurrentDateTime(),
-                    updatedDate = DateHandlerImp().getCurrentDateTime()
+                    createdDate = dateHandler.getCurrentDateTime(),
+                    updatedDate = dateHandler.getCurrentDateTime()
                 )
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksUseCase.addTaskToProject(project.id, task.id)
@@ -136,7 +138,7 @@ class TaskManagerUi(
                 title = newName,
                 description = newDescription,
                 stateId = newStateId,
-                updatedDate = DateHandlerImp().getCurrentDateTime()
+                updatedDate = dateHandler.getCurrentDateTime()
             )
             getProjectsUseCase.getProjectByName(projectName)
 
