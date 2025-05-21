@@ -1,9 +1,11 @@
 package ui.features.task
 
 import data.repo.stateId1
+import io.kotest.assertions.any
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDateTime
 import logic.usecase.audit.projectId
 import logic.usecase.login.LoginUseCase
 import org.example.logic.entities.EntityType
@@ -11,6 +13,7 @@ import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
+import org.example.logic.utils.DateHandler
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
 import org.example.ui.features.task.TaskInput
@@ -32,6 +35,7 @@ class TaskManagerUiTest {
     private lateinit var getProjectsUseCase: GetProjectsUseCase
     private lateinit var auditServicesUseCase: AuditServicesUseCase
     private lateinit var loginUseCase: LoginUseCase
+    private lateinit var dateHandler: DateHandler
 
     private lateinit var taskManagerUi: TaskManagerUi
 
@@ -45,11 +49,12 @@ class TaskManagerUiTest {
         getProjectsUseCase = mockk(relaxed = true)
         auditServicesUseCase = mockk(relaxed = true)
         loginUseCase = mockk(relaxed = true)
+        dateHandler = mockk(relaxed = true)
 
         taskManagerUi = TaskManagerUi(
             reader, printer, uiUtils,
             manageTasksUseCase, manageStateUseCase,
-            getProjectsUseCase, auditServicesUseCase, loginUseCase
+            getProjectsUseCase, auditServicesUseCase, loginUseCase, dateHandler
         )
     }
 
@@ -72,6 +77,7 @@ class TaskManagerUiTest {
         }
         coEvery { manageTasksUseCase.addTask(any(), projectId) } returns true
         coEvery { manageTasksUseCase.addTaskToProject(projectId, any()) } returns true
+        every { dateHandler.getCurrentDateTime() } returns LocalDateTime.parse("2025-05-21T14:30:00")
         coEvery { auditServicesUseCase.addAuditForAddEntity(EntityType.TASK, any(), any(), any()) } just Runs
 
         // When
@@ -103,6 +109,7 @@ class TaskManagerUiTest {
         val projectName = "MyProject"
         every { reader.readStringOrNull() } returnsMany listOf(projectName, null) // simulate task input null
         coEvery { getProjectsUseCase.getProjectByName(projectName) } returns mockk(relaxed = true)
+        every { dateHandler.getCurrentDateTime() } returns LocalDateTime.parse("2025-05-21T14:30:00")
 
         // When
         taskManagerUi.addTask(null)
@@ -125,6 +132,7 @@ class TaskManagerUiTest {
             taskInput.stateName
         )
         coEvery { manageStateUseCase.getEntityStateIdByName(taskInput.stateName) } throws Exception("State error")
+        every { dateHandler.getCurrentDateTime() } returns LocalDateTime.parse("2025-05-21T14:30:00")
 
         // When
         taskManagerUi.addTask(null)
@@ -154,6 +162,7 @@ class TaskManagerUiTest {
             every { title } returns projectName
         }
         coEvery { manageTasksUseCase.addTask(any(), projectId) } throws Exception("Add task failed")
+        every { dateHandler.getCurrentDateTime() } returns LocalDateTime.parse("2025-05-21T14:30:00")
 
         // When
         taskManagerUi.addTask(null)
