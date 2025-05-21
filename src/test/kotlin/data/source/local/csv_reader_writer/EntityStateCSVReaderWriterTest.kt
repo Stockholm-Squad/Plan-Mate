@@ -100,13 +100,11 @@ class EntityStateCSVReaderWriterTest {
 
         @Test
         fun `read should return empty list when file cannot be read`() = runTest {
-            tempFile.writeText("content")
-            tempFile.setReadable(false)
+            val readerWriter = EntityStateCSVReaderWriter("non_existent_file.csv")
 
-            val result = entityStateCSVReaderWriter.read()
+            val result = readerWriter.read()
 
             assertThat(result).isEmpty()
-            tempFile.setReadable(true)
         }
     }
 

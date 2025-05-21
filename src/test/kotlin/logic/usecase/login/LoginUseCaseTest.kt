@@ -122,7 +122,7 @@ class LoginUseCaseTest {
     fun `loginUser() should return failure when user exist and incorrect password `() = runTest {
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.getUserByUsername(any()) } returns User(username =  "johnDoe", hashedPassword = "pass")
+        coEvery { repository.getUserByUsername(any()) } returns User(username = "johnDoe", hashedPassword = "pass")
 
         assertThrows<IncorrectPasswordException> {
             useCase.loginUser(
@@ -135,69 +135,60 @@ class LoginUseCaseTest {
 
     @Test
     fun `loginUser() should return user when user exist and correct password `() = runTest {
-        val user = mockk<org.example.logic.entities.User>()
+        val user = User(
+            username = "johnDoe",
+            hashedPassword = "hashedPass1"
+        )
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
+        coEvery { repository.getUserByUsername(any()) } returns user
+        coEvery { hashingService.verify(any(), any()) } returns true
+        coEvery { repository.loginUser(any()) } just runs
 
-        val result = useCase.loginUser(
-            "johnDoe",
-            "hashedPass1"
+        useCase.loginUser(
+            username = user.username,
+            password = user.hashedPassword
         )
 
-        assertThat(result).isEqualTo(user)
+        coVerify(exactly = 1) { repository.loginUser(any()) }
     }
 
     @Test
     fun `loginUser() should return failure when username and password are correct and user not exist `() = runTest {
+        val user = User(
+            username = "johnDoe",
+            hashedPassword = "hashedPass1"
+        )
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any()) } throws UserDoesNotExistException()
+        coEvery { hashingService.verify(any(), any()) } returns true
+        coEvery { repository.getUserByUsername(any()) } throws UserDoesNotExistException()
 
         assertThrows<UserDoesNotExistException> {
             useCase.loginUser(
-                "dyjftfhjgbubhkiki",
-                "sdfghgbjknllml"
+                username = user.username,
+                password = user.hashedPassword
             )
         }
-    }
-
-    @Test
-    fun `loginUser() should return success when user and password are valid`() = runTest {
-        val user = mockk<User>()
-        coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
-        coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any()) } just runs
-
-        val result = useCase.loginUser(username = "johnDoe", password = "hashedPass1")
-        assertThat(result).isEqualTo(user)
-        coVerify(exactly = 1) { repository.loginUser(any()) }
     }
 
     @Test
     fun `loginUser() should return failure when repo fails`() = runTest {
+        val user = User(
+            username = "johnDoe",
+            hashedPassword = "hashedPass1"
+        )
+
         coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
         coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
+        coEvery { hashingService.verify(any(), any()) } returns true
+        coEvery { repository.getUserByUsername(any()) } returns user
         coEvery { repository.loginUser(any()) } throws Throwable()
 
         assertThrows<Throwable> {
             useCase.loginUser(
-                username = "johnDoe",
-                password = "password2"
-            )
-        }
-        coVerify(exactly = 1) { repository.loginUser(any()) }
-    }
-
-    @Test
-    fun `loginUser() should return failure when users are empty`() = runTest {
-        coEvery { validateUserDataUseCase.isValidPassword(any()) } returns true
-        coEvery { validateUserDataUseCase.isValidUserName(any()) } returns true
-        coEvery { repository.loginUser(any()) } throws UsersDataAreEmptyException()
-
-        assertThrows<UsersDataAreEmptyException> {
-            useCase.loginUser(
-                username = "johnDoe",
-                password = "password2"
+                username = user.username,
+                password = user.hashedPassword
             )
         }
         coVerify(exactly = 1) { repository.loginUser(any()) }

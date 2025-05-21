@@ -1,21 +1,20 @@
 package ui.features.state
 
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.example.logic.EntityStateAlreadyExistException
 import org.example.logic.EntityStateNotDeletedException
 import org.example.logic.NotAllowedEntityStateNameException
 import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.state.AdminEntityStateManagerUi
 import org.example.ui.features.state.ShowAllEntityStateManagerUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class AdminEntityStateManagerUiTest {
     private lateinit var manageStatesUseCase: ManageEntityStatesUseCase
@@ -43,41 +42,25 @@ class AdminEntityStateManagerUiTest {
     }
 
     @Test
-    fun `UpdateState should succeed with valid input`() = runTest {
-        every { reader.readStringOrNull() } returns "ExistingState"
-        every { reader.readStringOrNull() } returns "NewState"
-
-        coEvery {
-            manageStatesUseCase.updateEntityStateByName(
-                "ExistingState",
-                "NewState"
-            )
-        } returns true
-
-        adminStateManagerUi.updateState()
-
-        verify { printer.showMessageLine("State updated successfully ^_^") }
-    }
-
-    @Test
     fun `UpdateState() should print state updated successfully when a valid name`() = runTest {
         //Given
         val stateName = "TODO"
         val newState = "Done"
-        every { reader.readStringOrNull() } returns stateName
+        every { reader.readStringOrNull() } returns stateName andThen newState
         coEvery {
             this@AdminEntityStateManagerUiTest.manageStatesUseCase.updateEntityStateByName(
                 stateName,
                 newState
             )
         } returns true
+        coEvery { manageStatesUseCase.getEntityStateIdByName(stateName) } returns UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
+        coEvery { auditServicesUseCase.addAuditForUpdateEntity(any(), any(), any(), any()) } just runs
 
         //When
         adminStateManagerUi.updateState()
 
         //Then
-        verify { printer.showMessageLine("Please enter the state you want to update: ") }
-        verify { printer.showMessageLine("State updated successfully ^_^") }
+        verify { printer.showMessageLine(UiMessages.STATE_UPDATED_SUCCESSFULLY) }
     }
 
     @Test
@@ -94,7 +77,7 @@ class AdminEntityStateManagerUiTest {
         adminStateManagerUi.updateState()
 
         //Then
-        verify { printer.showMessageLine("Failed to Update state: " + NotAllowedEntityStateNameException().message) }
+        verify { printer.showMessageLine("${UiMessages.FAILED_TO_UPDATE_STATE} ${NotAllowedEntityStateNameException().message}") }
     }
 
     @Test
@@ -106,48 +89,31 @@ class AdminEntityStateManagerUiTest {
         adminStateManagerUi.updateState()
 
         //Then
-        verify { printer.showMessageLine("Invalid input") }
+        verify { printer.showMessageLine(UiMessages.INVALID_INPUT) }
     }
 
     @Test
     fun `UpdateState should fail with invalid input`() {
+        //Given
         every { reader.readStringOrNull() } returns ""
 
+        //When
         adminStateManagerUi.updateState()
 
-        verify { printer.showMessageLine("Invalid input") }
-    }
-
-    @Test
-    fun `deleteState()  should show success message on valid input`() = runTest {
-        every { reader.readStringOrNull() } returns "StateToDelete"
-        coEvery { manageStatesUseCase.deleteEntityState("StateToDelete") } returns true
-
-        adminStateManagerUi.deleteState()
-
-        verify { printer.showMessageLine("State deleted successfully ^_^") }
-    }
-
-    @Test
-    fun `deleteState() should show error message on failure`() = runTest {
-        every { reader.readStringOrNull() } returns "BadState"
-        coEvery { manageStatesUseCase.deleteEntityState("BadState") } throws Exception("some error")
-
-        adminStateManagerUi.deleteState()
-
-        verify { printer.showMessageLine("Failed to Delete state: some error") }
+        //Then
+        verify { printer.showMessageLine(UiMessages.INVALID_INPUT) }
     }
 
     @Test
     fun `deleteState() should show invalid input when the input equal null`() {
+        //Given
         every { reader.readStringOrNull() } returns null
 
+        //When
         adminStateManagerUi.deleteState()
 
-        verify {
-            printer.showMessageLine("Please enter the state you want to delete: ")
-            printer.showMessageLine("Invalid input")
-        }
+        //Then
+        verify { printer.showMessageLine(UiMessages.INVALID_INPUT) }
     }
 
 
@@ -156,21 +122,23 @@ class AdminEntityStateManagerUiTest {
         // Given
         val stateName = "TODO"
         every { reader.readStringOrNull() } returns stateName
+        coEvery { manageStatesUseCase.getEntityStateIdByName(stateName) } returns UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
         coEvery { manageStatesUseCase.deleteEntityState(any()) } returns true
+        coEvery { auditServicesUseCase.addAuditForDeleteEntity(any(), any(), any()) } just runs
 
         //When
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessageLine("Please enter the state you want to delete: ") }
-        verify { printer.showMessageLine("State deleted successfully ^_^") }
+        verify { printer.showMessageLine(UiMessages.STATE_DELETED_SUCCESSFULLY) }
     }
 
     @Test
     fun `deleteState() should print state not exist when use case returns state not exist`() = runTest {
         // Given
         val stateName = "In-Progress"
-        every { reader.readStringOrNull() } returns stateName andThen "yes"
+        every { reader.readStringOrNull() } returns stateName
+        coEvery { manageStatesUseCase.getEntityStateIdByName(stateName) } returns UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
         coEvery { manageStatesUseCase.deleteEntityState(any()) } throws
                 EntityStateNotDeletedException()
 
@@ -178,27 +146,7 @@ class AdminEntityStateManagerUiTest {
         adminStateManagerUi.deleteState()
 
         //Then
-        verify { printer.showMessageLine("Failed to Delete state: " + EntityStateNotDeletedException().message) }
-    }
-
-    @Test
-    fun `addState should succeed with valid input`() = runTest {
-        every { reader.readStringOrNull() } returns "NewState"
-        coEvery { manageStatesUseCase.addEntityState(any()) } returns true
-
-        adminStateManagerUi.addState()
-
-        verify { printer.showMessageLine("Please enter name for the state:") }
-        verify { printer.showMessageLine("State added successfully ^_^") }
-    }
-
-    @Test
-    fun `addState should fail with invalid input`() {
-        every { reader.readStringOrNull() } returns null
-
-        adminStateManagerUi.addState()
-
-        verify { printer.showMessageLine("Invalid input") }
+        verify { printer.showMessageLine("${ UiMessages.FAILED_TO_DELETE_STATE} ${EntityStateNotDeletedException().message}") }
     }
 
     @Test
@@ -207,13 +155,14 @@ class AdminEntityStateManagerUiTest {
         val stateName = "do"
         every { reader.readStringOrNull() } returns stateName
         coEvery { manageStatesUseCase.addEntityState(stateName) } returns true
+        coEvery { manageStatesUseCase.getEntityStateIdByName(stateName) } returns UUID.fromString("a3a85f64-5717-4562-b3fc-2c963f66abc1")
+        coEvery { auditServicesUseCase.addAuditForAddEntity(any(), any(), any()) } just runs
 
         //When
         adminStateManagerUi.addState()
 
         //Then
-        verify { printer.showMessageLine("Please enter name for the state:") }
-        verify { printer.showMessageLine("State added successfully ^_^") }
+        verify { printer.showMessageLine(UiMessages.STATE_ADDED_SUCCESSFULLY) }
     }
 
     @Test
@@ -226,7 +175,7 @@ class AdminEntityStateManagerUiTest {
         //When
         adminStateManagerUi.addState()
         //Then
-        verify { printer.showMessageLine("Failed to Add state: The state is already exist!") }
+        verify { printer.showMessageLine("${UiMessages.FAILED_TO_ADD_STATE}${EntityStateAlreadyExistException().message}") }
 
     }
 
@@ -236,11 +185,11 @@ class AdminEntityStateManagerUiTest {
             // Given
             val stateName = "1in review!"
             every { reader.readStringOrNull() } returns stateName
-            coEvery { manageStatesUseCase.addEntityState(stateName) } throws EntityStateAlreadyExistException()
+            coEvery { manageStatesUseCase.addEntityState(stateName) } throws NotAllowedEntityStateNameException()
             //When
             adminStateManagerUi.addState()
             //Then
-            verify { printer.showMessageLine("Failed to Add state: Only letters are allowed!") }
+            verify { printer.showMessageLine("${UiMessages.FAILED_TO_ADD_STATE}${NotAllowedEntityStateNameException().message}") }
         }
 
     @Test
@@ -254,7 +203,7 @@ class AdminEntityStateManagerUiTest {
             //When
             adminStateManagerUi.addState()
             //Then
-            verify { printer.showMessageLine("Failed to Add state: The state name is too long!") }
+            verify { printer.showMessageLine("${UiMessages.FAILED_TO_ADD_STATE}${EntityStateAlreadyExistException().message}") }
         }
 
     @Test

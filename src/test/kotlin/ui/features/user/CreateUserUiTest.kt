@@ -1,175 +1,134 @@
 package ui.features.user
 
 import io.mockk.*
-import kotlinx.coroutines.test.runTest
-import org.example.logic.UsersDataAreEmptyException
-import org.example.logic.entities.User
-import org.example.logic.entities.UserRole
 import org.example.logic.usecase.user.ManageUserUseCase
+import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.user.CreateUserUi
 import org.example.ui.input_output.input.InputReader
 import org.example.ui.input_output.output.OutputPrinter
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class CreateUserUiTest {
-    private val mockCreateUserUseCase: ManageUserUseCase = mockk(relaxed = true)
-    private val mockPrinter: OutputPrinter = mockk(relaxed = true)
-    private val mockInputReader: InputReader = mockk()
+
     private lateinit var createUserUi: CreateUserUi
-    val user = User(
-        username = "rodina",
-        hashedPassword = "0192023a7bbd73250516f069df18b500",
-        id = UUID.fromString("de25ea95-fca4-4f87-90e8-fd9c6aa0a716"),
-        userRole = UserRole.ADMIN
-    )
+    private lateinit var manageUserUseCase: ManageUserUseCase
+    private lateinit var printer: OutputPrinter
+    private lateinit var inputReader: InputReader
 
     @BeforeEach
-    fun setUp() {
-        createUserUi = CreateUserUi(mockCreateUserUseCase, mockPrinter, mockInputReader)
-
+    fun setup() {
+        manageUserUseCase = mockk()
+        printer = mockk(relaxed = true)
+        inputReader = mockk()
+        createUserUi = CreateUserUi(manageUserUseCase, printer, inputReader)
     }
 
     @Test
-    fun `should show proper messages when launched`() {
+    fun `launchUi should add user when username and password are valid`() {
         // Given
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(null, null)
+        every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "password123")
+        coEvery { manageUserUseCase.addUser("testUser", "password123") } returns true
+
+        // When
+        createUserUi.launchUi()
+
+        // Then
+        verifySequence {
+            printer.showMessageLine(UiMessages.ADDING_NEW_USER)
+            printer.showMessage(UiMessages.USER_NAME_PROMPT)
+            printer.showMessage(UiMessages.PASSWORD_PROMPT)
+            printer.showMessageLine(UiMessages.USER_ADDED)
+        }
+    }
+
+    @Test
+    fun `launchUi should show failure message when addUser returns false`() {
+        // Given
+        every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "password123")
+        coEvery { manageUserUseCase.addUser("testUser", "password123") } returns false
 
         // When
         createUserUi.launchUi()
 
         // Then
         verify {
-            mockPrinter.showMessageLine("➕ Adding new user...")
-            mockPrinter.showMessageLine("Enter username:")
-            mockPrinter.showMessageLine("Enter password:")
+            printer.showMessageLine(UiMessages.FAILED_TO_ADD_USER)
         }
     }
 
     @Test
-    fun `should show error when username is empty`() {
+    fun `launchUi should show error when username is null`() {
         // Given
-        every { mockInputReader.readStringOrNull() } returnsMany listOf("", "password")
+        every { inputReader.readStringOrNull() } returnsMany listOf(null, "password123")
 
         // When
         createUserUi.launchUi()
 
         // Then
-        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
+        verify {
+            printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
+        }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
-    fun `should show error when password is empty`() {
+    fun `launchUi should show error when password is null`() {
         // Given
-        every { mockInputReader.readStringOrNull() } returnsMany listOf("username", "")
+        every { inputReader.readStringOrNull() } returnsMany listOf("testUser", null)
 
         // When
         createUserUi.launchUi()
 
         // Then
-        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
+        verify {
+            printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
+        }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
-    fun `should show error when both inputs are null`() {
+    fun `launchUi should show error when username is empty`() {
         // Given
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(null, null)
+        every { inputReader.readStringOrNull() } returnsMany listOf("", "password123")
 
         // When
         createUserUi.launchUi()
 
         // Then
-        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
-    }
-
-
-    @Test
-    fun `should show success message when user added successfully`() = runTest {
-        // Given
-        val username = "testUser"
-        val password = "testPass123"
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        coEvery { mockCreateUserUseCase.addUser(username, password) } returns true
-
-        // When
-        createUserUi.launchUi()
-
-        // Then
-        verify { mockPrinter.showMessageLine("✅ User $username added successfully!") }
+        verify {
+            printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
+        }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
-    fun `should show error message when user addition fails`() = runTest {
+    fun `launchUi should show error when password is empty`() {
         // Given
-        val username = "testUser"
-        val password = "testPass123"
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        coEvery { mockCreateUserUseCase.addUser(username, password) } returns false
+        every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "")
 
         // When
         createUserUi.launchUi()
 
         // Then
-        verify { mockPrinter.showMessageLine("Failed to add user") }
+        verify {
+            printer.showMessageLine(UiMessages.USERNAME_PASSWORD_CAN_NOT_BE_EMPTY)
+        }
+        coVerify(exactly = 0) { manageUserUseCase.addUser(any(), any()) }
     }
 
     @Test
-    fun `should show error message when exception occurs`() = runTest {
+    fun `createUser should catch exception and print error`() {
         // Given
-        val username = "testUser"
-        val password = "testPass123"
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        coEvery { mockCreateUserUseCase.addUser(username, password) } throws UsersDataAreEmptyException()
+        every { inputReader.readStringOrNull() } returnsMany listOf("testUser", "password123")
+        coEvery { manageUserUseCase.addUser("testUser", "password123") } throws RuntimeException("Something went wrong")
 
         // When
         createUserUi.launchUi()
 
         // Then
-        verify { mockPrinter.showMessageLine("${UsersDataAreEmptyException().message}") }
+        verify {
+            printer.showMessageLine("Something went wrong")
+        }
     }
-
-
-    @Test
-    fun `should call addUserUseCase with correct parameters`() = runTest {
-        // Given
-        val username = "testUser"
-        val password = "testPass123"
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(username, password)
-        coEvery { mockCreateUserUseCase.addUser(username, password) } returns true
-
-        // When
-        createUserUi.launchUi()
-
-
-        // Then
-        coVerify { mockCreateUserUseCase.addUser(username, password) }
-    }
-
-    @Test
-    fun `should reject null username`() = runTest {
-        // Given
-        every { mockInputReader.readStringOrNull() } returnsMany listOf(null, "validPass")
-
-        // When
-        createUserUi.launchUi()
-
-        // Then
-        coVerify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
-        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
-    }
-
-    @Test
-    fun `should reject null password`() = runTest {
-        // Given
-        every { mockInputReader.readStringOrNull() } returnsMany listOf("validUser", null)
-
-        // When
-        createUserUi.launchUi()
-
-        // Then
-        coVerify(exactly = 0) { mockCreateUserUseCase.addUser(any(), any()) }
-        verify { mockPrinter.showMessageLine("Username and password cannot be empty") }
-    }
-
 }

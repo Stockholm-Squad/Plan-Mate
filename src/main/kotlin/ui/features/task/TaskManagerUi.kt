@@ -9,7 +9,7 @@ import org.example.logic.usecase.audit.AuditServicesUseCase
 import org.example.logic.usecase.project.GetProjectsUseCase
 import org.example.logic.usecase.state.ManageEntityStatesUseCase
 import org.example.logic.usecase.task.ManageTasksUseCase
-import org.example.logic.utils.DateHandlerImp
+import org.example.logic.utils.DateHandler
 import org.example.ui.features.common.ui_launcher.UiLauncher
 import org.example.ui.features.common.utils.UiMessages
 import org.example.ui.features.common.utils.UiUtils
@@ -26,11 +26,11 @@ class TaskManagerUi(
     private val getProjectsUseCase: GetProjectsUseCase,
     private val auditServicesUseCase: AuditServicesUseCase,
     private val loginUseCase: LoginUseCase,
+    private val dateHandler: DateHandler
 ) : UiLauncher {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         printer.showMessageLine(throwable.message ?: UiMessages.UNKNOWN_ERROR)
     }
-    val timestamp = DateHandlerImp().getCurrentDateTime()
 
     override fun launchUi() {
 
@@ -101,8 +101,8 @@ class TaskManagerUi(
                     title = name,
                     description = description,
                     stateId = stateId,
-                    createdDate = timestamp,
-                    updatedDate = timestamp
+                    createdDate = dateHandler.getCurrentDateTime(),
+                    updatedDate = dateHandler.getCurrentDateTime()
                 )
                 manageTasksUseCase.addTask(task, project.id)
                 manageTasksUseCase.addTaskToProject(project.id, task.id)
@@ -137,7 +137,7 @@ class TaskManagerUi(
                 title = newName,
                 description = newDescription,
                 stateId = newStateId,
-                updatedDate = timestamp
+                updatedDate = dateHandler.getCurrentDateTime()
             )
             getProjectsUseCase.getProjectByName(projectName)
 
@@ -193,7 +193,7 @@ class TaskManagerUi(
         }
     }
 
-    private fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
+    fun showAllMateTaskAssignment() = runBlocking(coroutineExceptionHandler) {
         try {
             val userName = getUserName()
             val assignments = manageTasksUseCase.getAllTasksByUserName(userName)
@@ -203,7 +203,7 @@ class TaskManagerUi(
         }
     }
 
-    private fun getTaskByName() = runBlocking(coroutineExceptionHandler) {
+    fun getTaskByName() = runBlocking(coroutineExceptionHandler) {
         try {
             val taskName = getTaskName()
             val task = manageTasksUseCase.getTaskByName(taskName)
@@ -305,7 +305,13 @@ class TaskManagerUi(
         printer.showMessageLine(retryPromptMessage)
         val confirm = reader.readStringOrNull()
         if (confirm.equals(confirmRetryValue, ignoreCase = true)) {
-            return readNonBlankInputOrNull(promptMessage, invalidMessage, retryPromptMessage, confirmRetryValue, allowRetry)
+            return readNonBlankInputOrNull(
+                promptMessage,
+                invalidMessage,
+                retryPromptMessage,
+                confirmRetryValue,
+                allowRetry
+            )
         }
 
         return null

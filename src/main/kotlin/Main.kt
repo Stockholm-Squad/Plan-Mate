@@ -13,4 +13,4 @@ fun main() {
     }
     val planMateConsoleUi: PlanMateConsoleUi = getKoin().get()
     planMateConsoleUi.invoke()
-} 
+}
